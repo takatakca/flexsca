@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Bell,
   Loader2,
   Plus,
   Check,
   Clock,
   CalendarDays,
   AlertTriangle,
+  X,
+  BellRing,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,7 @@ import {
   differenceInMinutes,
 } from "date-fns";
 import { toast } from "sonner";
+import remindersEmptyImg from "@/assets/reminders-empty.png";
 
 interface Reminder {
   id: string;
@@ -83,6 +85,7 @@ export default function Reminders() {
   const [leads, setLeads] = useState<LeadOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [showTip, setShowTip] = useState(true);
   const [newReminder, setNewReminder] = useState({
     lead_id: "",
     remind_at: "",
@@ -166,84 +169,114 @@ export default function Reminders() {
   const overdueReminders = openReminders.filter((r) => isPast(new Date(r.remind_at)));
   const upcomingReminders = openReminders.filter((r) => !isPast(new Date(r.remind_at)));
   const doneReminders = reminders.filter((r) => r.status === "done");
+  const isEmpty = openReminders.length === 0 && doneReminders.length === 0;
 
   return (
-    <div className="p-4 space-y-4">
-      {/* Create button */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="w-full rounded-xl h-11">
-            <Plus className="h-4 w-4 mr-2" /> New reminder
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create reminder</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-2">
-            <Select
-              value={newReminder.lead_id}
-              onValueChange={(v) =>
-                setNewReminder((prev) => ({ ...prev, lead_id: v }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a lead" />
-              </SelectTrigger>
-              <SelectContent className="bg-popover z-50">
-                {leads.map((lead) => (
-                  <SelectItem key={lead.id} value={lead.id}>
-                    {lead.category}{lead.customer_name ? ` — ${lead.customer_name}` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Input
-              type="datetime-local"
-              value={newReminder.remind_at}
-              onChange={(e) =>
-                setNewReminder((prev) => ({
-                  ...prev,
-                  remind_at: e.target.value,
-                }))
-              }
-            />
-
-            <Textarea
-              placeholder="Add a note (optional)"
-              value={newReminder.note}
-              onChange={(e) =>
-                setNewReminder((prev) => ({ ...prev, note: e.target.value }))
-              }
-              rows={3}
-            />
-
-            <Button
-              onClick={handleCreate}
-              disabled={!newReminder.lead_id || !newReminder.remind_at}
-              className="w-full rounded-xl"
-            >
-              Create reminder
-            </Button>
+    <div className="space-y-0">
+      {/* Dismissable tip banner */}
+      {showTip && (
+        <div className="mx-4 mt-4 rounded-xl bg-accent border border-primary/10 p-4 relative">
+          <button
+            onClick={() => setShowTip(false)}
+            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="flex items-start gap-3 pr-6">
+            <BellRing className="h-8 w-8 text-primary shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-foreground mb-0.5">
+                Set a reminder
+              </p>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Hold down on a lead card anywhere in the app to set a custom
+                reminder and start receiving notifications.
+              </p>
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
 
-      {openReminders.length === 0 && doneReminders.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="h-16 w-16 rounded-full bg-accent flex items-center justify-center mb-4">
-            <Bell className="h-8 w-8 text-primary" />
-          </div>
-          <h2 className="text-xl font-bold text-foreground mb-2">
-            No reminders yet
-          </h2>
-          <p className="text-muted-foreground max-w-xs">
-            Create reminders to follow up on your leads at the right time.
+      {/* Empty state */}
+      {isEmpty && (
+        <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
+          <img
+            src={remindersEmptyImg}
+            alt="No reminders"
+            className="h-40 w-40 mb-6 object-contain"
+          />
+          <h2 className="text-xl font-bold text-foreground mb-2">Reminders</h2>
+          <p className="text-muted-foreground text-sm max-w-xs">
+            Reminders that are created will show up here.
           </p>
         </div>
-      ) : (
-        <>
+      )}
+
+      {/* Reminder list */}
+      {!isEmpty && (
+        <div className="p-4 space-y-4">
+          {/* Create button */}
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full rounded-xl h-11">
+                <Plus className="h-4 w-4 mr-2" /> New reminder
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create reminder</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-2">
+                <Select
+                  value={newReminder.lead_id}
+                  onValueChange={(v) =>
+                    setNewReminder((prev) => ({ ...prev, lead_id: v }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a lead" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    {leads.map((lead) => (
+                      <SelectItem key={lead.id} value={lead.id}>
+                        {lead.category}
+                        {lead.customer_name ? ` — ${lead.customer_name}` : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Input
+                  type="datetime-local"
+                  value={newReminder.remind_at}
+                  onChange={(e) =>
+                    setNewReminder((prev) => ({
+                      ...prev,
+                      remind_at: e.target.value,
+                    }))
+                  }
+                />
+
+                <Textarea
+                  placeholder="Add a note (optional)"
+                  value={newReminder.note}
+                  onChange={(e) =>
+                    setNewReminder((prev) => ({ ...prev, note: e.target.value }))
+                  }
+                  rows={3}
+                />
+
+                <Button
+                  onClick={handleCreate}
+                  disabled={!newReminder.lead_id || !newReminder.remind_at}
+                  className="w-full rounded-xl"
+                >
+                  Create reminder
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           {/* Overdue */}
           {overdueReminders.length > 0 && (
             <div className="space-y-3">
@@ -295,7 +328,7 @@ export default function Reminders() {
               ))}
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );
@@ -358,7 +391,13 @@ function ReminderCard({
               {format(new Date(reminder.remind_at), "PPp")}
             </span>
             {dueInfo && (
-              <span className={dueInfo.isOverdue ? "text-destructive font-medium" : "text-primary font-medium"}>
+              <span
+                className={
+                  dueInfo.isOverdue
+                    ? "text-destructive font-medium"
+                    : "text-primary font-medium"
+                }
+              >
                 {dueInfo.label}
               </span>
             )}
