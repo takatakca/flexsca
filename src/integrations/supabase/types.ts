@@ -180,6 +180,57 @@ export type Database = {
           },
         ]
       }
+      responses: {
+        Row: {
+          availability: string | null
+          created_at: string
+          id: string
+          lead_id: string
+          message: string
+          price_max: number | null
+          price_min: number | null
+          pro_id: string
+          status: string
+        }
+        Insert: {
+          availability?: string | null
+          created_at?: string
+          id?: string
+          lead_id: string
+          message: string
+          price_max?: number | null
+          price_min?: number | null
+          pro_id: string
+          status?: string
+        }
+        Update: {
+          availability?: string | null
+          created_at?: string
+          id?: string
+          lead_id?: string
+          message?: string
+          price_max?: number | null
+          price_min?: number | null
+          pro_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "responses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "responses_pro_id_fkey"
+            columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       lead_last_message: {
