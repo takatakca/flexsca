@@ -1,16 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  MapPin,
-  Phone,
-  Mail,
-  Archive,
-  ArchiveRestore,
-  Zap,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import StatusDropdown from "@/components/lead-detail/StatusDropdown";
 import type { CustomStatus } from "@/hooks/useCustomStatuses";
+import { formatDistanceToNow } from "date-fns";
 
 interface Lead {
   id: string;
@@ -39,6 +32,10 @@ interface LeadHeaderProps {
   onPass?: () => void;
 }
 
+function getInitial(name: string | null) {
+  return name?.charAt(0).toUpperCase() || "?";
+}
+
 export default function LeadHeader({
   lead,
   isContacted,
@@ -51,80 +48,73 @@ export default function LeadHeader({
 }: LeadHeaderProps) {
   const navigate = useNavigate();
 
+  const timeAgo = formatDistanceToNow(new Date(lead.created_at), {
+    addSuffix: false,
+  });
+
   return (
     <>
-      {/* ── Dark top bar (Bark-style) ── */}
-      <div className="bg-[hsl(210,30%,20%)] text-white px-4 py-3 flex items-center justify-between">
-        <button
-          onClick={() => navigate("/app/leads")}
-          className="flex items-center gap-1 text-white/90 hover:text-white"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-
-        <div className="flex items-center gap-3">
-          {/* Status dropdown */}
-          <StatusDropdown
-            statuses={customStatuses}
-            currentStatusId={customStatusId}
-            leadId={lead.id}
-            onStatusChanged={onCustomStatusChanged}
-          />
-
-          {/* Archive / Pass */}
+      {/* ── Dark top bar ── */}
+      <div className="bg-[hsl(210,30%,20%)] text-white">
+        {/* Nav row */}
+        <div className="px-4 py-3 flex items-center justify-between">
           <button
-            onClick={onPass || onArchiveToggle}
-            className="text-white font-semibold text-sm"
+            onClick={() => navigate("/app/leads")}
+            className="flex items-center gap-1 text-white/90 hover:text-white"
           >
-            {isArchived ? "Restore" : "Pass"}
+            <ArrowLeft className="h-5 w-5" />
           </button>
-        </div>
-      </div>
 
-      {/* ── Lead info section ── */}
-      <div className="px-4 pt-4 pb-3 border-b border-border">
-        <div className="flex items-center gap-2 mb-1.5">
-          <h2 className="text-lg font-bold text-foreground">{lead.category}</h2>
-          {lead.is_urgent && (
-            <Badge variant="destructive" className="text-xs">
-              <Zap className="h-3 w-3 mr-0.5" /> Urgent
-            </Badge>
-          )}
-        </div>
-
-        {lead.customer_name && (
-          <p className="text-sm font-medium text-foreground mb-1">
-            {lead.customer_name}
-          </p>
-        )}
-
-        <p className="text-sm text-muted-foreground flex items-center gap-1.5 mb-1">
-          <MapPin className="h-3.5 w-3.5" /> {lead.location_text}
-        </p>
-
-        {isContacted && lead.customer_phone && (
-          <p className="text-sm text-muted-foreground flex items-center gap-1.5 mb-1">
-            <Phone className="h-3.5 w-3.5" />
-            <a href={`tel:${lead.customer_phone}`} className="text-primary hover:underline">
-              {lead.customer_phone}
-            </a>
-          </p>
-        )}
-        {isContacted && lead.customer_email && (
-          <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-            <Mail className="h-3.5 w-3.5" />
-            <a href={`mailto:${lead.customer_email}`} className="text-primary hover:underline">
-              {lead.customer_email}
-            </a>
-          </p>
-        )}
-
-        {isArchived && (
-          <div className="mt-2 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-muted-foreground">
-            This lead is archived
+          <div className="flex items-center gap-3">
+            <StatusDropdown
+              statuses={customStatuses}
+              currentStatusId={customStatusId}
+              leadId={lead.id}
+              onStatusChanged={onCustomStatusChanged}
+            />
+            <button
+              onClick={onPass || onArchiveToggle}
+              className="text-white font-semibold text-sm"
+            >
+              {isArchived ? "Restore" : "Pass"}
+            </button>
           </div>
-        )}
+        </div>
+
+        {/* Customer info in dark area (Bark-style) */}
+        <div className="px-4 pb-4 flex items-start gap-3.5">
+          {/* Avatar */}
+          <div className="h-12 w-12 rounded-full bg-[hsl(260,40%,70%)] flex items-center justify-center text-white text-lg font-bold shrink-0">
+            {getInitial(lead.customer_name)}
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-lg font-bold text-white truncate">
+                {lead.customer_name || "Customer"}
+              </h2>
+              <Badge className="bg-[hsl(160,60%,40%)] text-white border-0 text-xs shrink-0 whitespace-nowrap">
+                {timeAgo} ago
+              </Badge>
+            </div>
+            <p className="text-sm text-white/70 mt-0.5">
+              {lead.location_text}
+            </p>
+            <p className="text-sm text-white/70">
+              {lead.category}
+            </p>
+          </div>
+        </div>
       </div>
+
+      {/* Archived notice */}
+      {isArchived && (
+        <div className="px-4 py-2 bg-muted">
+          <p className="text-xs font-medium text-muted-foreground text-center">
+            This lead is archived
+          </p>
+        </div>
+      )}
     </>
   );
 }
