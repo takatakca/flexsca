@@ -36,6 +36,30 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
 
   return (
     <div className="space-y-4">
+      {/* Service area info callout */}
+      <div className="rounded-xl bg-primary/5 border border-primary/10 p-4 space-y-1.5">
+        <p className="text-sm font-semibold text-foreground">
+          Will this affect my service area?
+        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          No, this location will not affect where you provide a service. Service
+          areas can be edited or updated in your{" "}
+          <button
+            type="button"
+            className="text-primary font-medium hover:underline"
+            onClick={() => {}}
+          >
+            lead settings
+          </button>
+          .
+        </p>
+      </div>
+
+      {/* Display notice */}
+      <p className="text-sm font-medium text-foreground leading-relaxed">
+        Customers will see the location you've selected displayed on your profile
+      </p>
+
       <div>
         <label className="text-sm font-medium text-foreground mb-1 block">
           City
