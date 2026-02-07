@@ -18,6 +18,8 @@ export interface ProviderProfile {
   twitter_handle: string | null;
   instagram_handle: string | null;
   website_links: string | null;
+  company_email: string | null;
+  company_phone: string | null;
   video_urls: string[] | null;
 }
 
@@ -65,6 +67,8 @@ const DEFAULT_PROFILE: ProviderProfile = {
   twitter_handle: null,
   instagram_handle: null,
   website_links: null,
+  company_email: null,
+  company_phone: null,
   video_urls: null,
 };
 

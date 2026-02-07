@@ -523,7 +523,9 @@ export type Database = {
         Row: {
           city: string | null
           company_description: string | null
+          company_email: string | null
           company_name: string | null
+          company_phone: string | null
           company_size: string | null
           covid_safety: string | null
           created_at: string
@@ -542,7 +544,9 @@ export type Database = {
         Insert: {
           city?: string | null
           company_description?: string | null
+          company_email?: string | null
           company_name?: string | null
+          company_phone?: string | null
           company_size?: string | null
           covid_safety?: string | null
           created_at?: string
@@ -561,7 +565,9 @@ export type Database = {
         Update: {
           city?: string | null
           company_description?: string | null
+          company_email?: string | null
           company_name?: string | null
+          company_phone?: string | null
           company_size?: string | null
           covid_safety?: string | null
           created_at?: string
