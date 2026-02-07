@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, LogOut, User, Bell, Tag, Loader2 } from "lucide-react";
-import WalletCard from "@/components/WalletCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -10,9 +9,11 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import WalletCard from "@/components/WalletCard";
 
 export default function Settings() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, signOut } = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -23,6 +24,18 @@ export default function Settings() {
     messages: true,
     reminders: true,
   });
+
+  // Handle purchase return
+  useEffect(() => {
+    const purchase = searchParams.get("purchase");
+    if (purchase === "success") {
+      toast.success("Payment successful! Credits added to your account.");
+      setSearchParams({}, { replace: true });
+    } else if (purchase === "cancel") {
+      toast.info("Purchase cancelled.");
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     if (!user) return;

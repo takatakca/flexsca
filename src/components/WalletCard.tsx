@@ -1,10 +1,18 @@
-import { Coins, TrendingUp, TrendingDown, Gift, ArrowLeftRight, Loader2 } from "lucide-react";
+import { Coins, TrendingUp, TrendingDown, Gift, ArrowLeftRight, Loader2, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCredits } from "@/hooks/useCredits";
+import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { useState } from "react";
+
+const PACKAGES = [
+  { id: "pack_20", credits: 20, price: "$19", label: "Starter" },
+  { id: "pack_50", credits: 50, price: "$39", label: "Popular", popular: true },
+  { id: "pack_120", credits: 120, price: "$79", label: "Best Value" },
+];
 
 const reasonLabels: Record<string, { label: string; icon: typeof TrendingUp }> = {
   purchase: { label: "Credits purchased", icon: TrendingUp },
@@ -15,7 +23,43 @@ const reasonLabels: Record<string, { label: string; icon: typeof TrendingUp }> =
 };
 
 export default function WalletCard() {
-  const { balance, transactions, loading } = useCredits();
+  const { balance, transactions, loading, refetch } = useCredits();
+  const [buyingPackage, setBuyingPackage] = useState<string | null>(null);
+
+  const handleBuyCredits = async (packageId: string) => {
+    setBuyingPackage(packageId);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please log in first");
+        setBuyingPackage(null);
+        return;
+      }
+
+      const response = await supabase.functions.invoke("create-checkout-session", {
+        body: {
+          packageId,
+          origin: window.location.origin,
+        },
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || "Failed to create checkout");
+      }
+
+      const { url } = response.data;
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (err: any) {
+      console.error("Buy credits error:", err);
+      toast.error(err.message || "Failed to start checkout");
+      setBuyingPackage(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -46,15 +90,36 @@ export default function WalletCard() {
           </div>
         </div>
 
-        {/* Buy credits stub */}
-        <Button
-          variant="outline"
-          className="w-full rounded-xl"
-          onClick={() => toast.info("Credit purchasing coming soon!")}
-        >
-          <TrendingUp className="h-4 w-4 mr-2" />
-          Buy credits
-        </Button>
+        {/* Credit packages */}
+        <div>
+          <p className="text-sm font-medium text-foreground mb-3">Buy credits</p>
+          <div className="grid grid-cols-3 gap-2">
+            {PACKAGES.map((pkg) => (
+              <button
+                key={pkg.id}
+                onClick={() => handleBuyCredits(pkg.id)}
+                disabled={buyingPackage !== null}
+                className={`relative flex flex-col items-center rounded-xl border p-3 transition-all ${
+                  pkg.popular
+                    ? "border-primary bg-primary/5 shadow-sm"
+                    : "border-border bg-background hover:border-primary/50"
+                } ${buyingPackage === pkg.id ? "opacity-70" : "hover:shadow-md active:scale-[0.97]"}`}
+              >
+                {pkg.popular && (
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-0.5 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                    <Sparkles className="h-2.5 w-2.5" /> Popular
+                  </span>
+                )}
+                <span className="text-xl font-bold text-foreground mt-1">{pkg.credits}</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wide">credits</span>
+                <span className="mt-1.5 text-sm font-semibold text-primary">{pkg.price}</span>
+                {buyingPackage === pkg.id && (
+                  <Loader2 className="h-4 w-4 animate-spin text-primary mt-1" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Recent transactions */}
         {transactions.length > 0 && (

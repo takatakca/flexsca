@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      credit_purchases: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          credits: number
+          currency: string
+          id: string
+          status: string
+          stripe_checkout_session_id: string
+          stripe_payment_intent_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          credits: number
+          currency?: string
+          id?: string
+          status?: string
+          stripe_checkout_session_id: string
+          stripe_payment_intent_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          credits?: number
+          currency?: string
+          id?: string
+          status?: string
+          stripe_checkout_session_id?: string
+          stripe_payment_intent_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_purchases_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_transactions: {
         Row: {
           created_at: string
@@ -377,6 +421,17 @@ export type Database = {
       }
     }
     Functions: {
+      fulfill_credit_purchase: {
+        Args: {
+          p_amount_cents: number
+          p_credits: number
+          p_currency: string
+          p_payment_intent_id: string
+          p_session_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       is_lead_assigned_to_current_user: {
         Args: { lead_row_id: string }
         Returns: boolean
