@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, LogOut, User, Bell, Tag, Loader2, ChevronRight, Palette } from "lucide-react";
+import { ArrowLeft, LogOut, User, Bell, Tag, Loader2, ChevronRight, Palette, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -128,6 +128,24 @@ export default function Settings() {
           >
             {saving ? "Saving…" : "Save changes"}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Provider Profile */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Briefcase className="h-4 w-4" /> Provider Profile
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <button
+            onClick={() => navigate("/app/settings/profile")}
+            className="w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+          >
+            Set up your business profile
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
         </CardContent>
       </Card>
 

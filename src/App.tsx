@@ -16,6 +16,7 @@ import Responses from "@/pages/app/Responses";
 import Reminders from "@/pages/app/Reminders";
 import Settings from "@/pages/app/Settings";
 import StatusManagement from "@/pages/app/StatusManagement";
+import ProfileSetup from "@/pages/app/ProfileSetup";
 import OpenInApp from "@/pages/app/OpenInApp";
 import NotFound from "@/pages/NotFound";
 
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="reminders" element={<Reminders />} />
               <Route path="settings" element={<Settings />} />
               <Route path="settings/statuses" element={<StatusManagement />} />
+              <Route path="settings/profile" element={<ProfileSetup />} />
             </Route>
 
             {/* Catch-all */}
