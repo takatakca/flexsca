@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, CheckCircle2, PenLine, BellRing, Clock, Check, AlertCircle } from "lucide-react";
+import { Bell, CheckCircle2, PenLine, BellRing, Clock, Check, AlertCircle, ChevronDown, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -67,6 +67,12 @@ export default function Onboarding() {
       bottomTitle: "Push and hold to set a reminder",
       description: "Hold down on a lead card anywhere in the app to set a custom reminder and start receiving notifications.",
       render: () => <ReminderLongPressVisual />,
+    },
+    {
+      topTitle: "Custom statuses are here!",
+      bottomTitle: "Create and set custom statuses",
+      description: "Bring more organisation to your workflow by customising lead statuses that reflect your own workflow.",
+      render: () => <CustomStatusesVisual />,
     },
   ];
 
@@ -246,6 +252,70 @@ function ReminderLongPressVisual() {
       {/* Hand icon */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/4 text-3xl">
         👆
+      </div>
+    </div>
+  );
+}
+
+/* ── Slide 6: Custom Statuses (Bark-style) ── */
+
+function CustomStatusesVisual() {
+  return (
+    <div className="w-full max-w-[300px]">
+      {/* Mock card with company + status flow */}
+      <div className="rounded-2xl border border-border bg-card shadow-sm p-5 space-y-3">
+        {/* Company header */}
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[hsl(180,60%,50%)] to-[hsl(240,60%,60%)] flex items-center justify-center shadow-sm">
+            <span className="text-2xl font-bold text-white">F</span>
+          </div>
+          <p className="text-sm font-bold text-foreground">ACME Inc.</p>
+          <div className="flex items-center gap-0.5">
+            {[1, 2, 3, 4].map((i) => (
+              <Star key={i} className="h-4 w-4 fill-[#F59E0B] text-[#F59E0B]" />
+            ))}
+            <Star className="h-4 w-4 fill-[#F59E0B]/40 text-[#F59E0B]" />
+          </div>
+        </div>
+
+        {/* Status flow with dotted lines */}
+        <div className="space-y-2 pl-2">
+          {/* Status 1 */}
+          <div className="flex items-center gap-2">
+            <div className="rounded-full bg-[#F59E0B] px-4 py-1.5 flex items-center gap-2">
+              <span className="text-xs font-semibold text-white">Called once</span>
+              <ChevronDown className="h-3 w-3 text-white" />
+            </div>
+          </div>
+
+          {/* Dotted connector */}
+          <div className="flex items-center gap-2 pl-6">
+            <div className="border-l-2 border-dashed border-muted-foreground/30 h-4" />
+          </div>
+
+          {/* Status 2 */}
+          <div className="flex items-center gap-2 pl-8">
+            <span className="text-muted-foreground/40">▸</span>
+            <div className="rounded-full bg-[#8B5CF6] px-4 py-1.5 flex items-center gap-2">
+              <span className="text-xs font-semibold text-white">Need to follow-up</span>
+              <ChevronDown className="h-3 w-3 text-white" />
+            </div>
+          </div>
+
+          {/* Dotted connector */}
+          <div className="flex items-center gap-2 pl-14">
+            <div className="border-l-2 border-dashed border-muted-foreground/30 h-4" />
+          </div>
+
+          {/* Status 3 */}
+          <div className="flex items-center gap-2 pl-16">
+            <span className="text-muted-foreground/40">▸</span>
+            <div className="rounded-full bg-[#22C55E] px-4 py-1.5 flex items-center gap-2">
+              <span className="text-xs font-semibold text-white">Contract signed</span>
+              <ChevronDown className="h-3 w-3 text-white" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
