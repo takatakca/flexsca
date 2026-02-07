@@ -1,7 +1,6 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Building2, MapPin, Briefcase, Camera, HelpCircle, Award, Share2, Star, Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ArrowLeft, ChevronRight, CheckCircle2, Loader2 } from "lucide-react";
 import ProfileCompletionMeter from "@/components/profile/ProfileCompletionMeter";
 import CompanySection from "@/components/profile/CompanySection";
 import LocationSection from "@/components/profile/LocationSection";
@@ -12,10 +11,12 @@ import AccreditationsSection from "@/components/profile/AccreditationsSection";
 import SocialMediaSection from "@/components/profile/SocialMediaSection";
 import ReviewsSection from "@/components/profile/ReviewsSection";
 import { useProviderProfile } from "@/hooks/useProviderProfile";
-import { Badge } from "@/components/ui/badge";
+
+type SectionKey = "about" | "reviews" | "services" | "photos" | "social" | "accreditations" | "qa" | "location" | null;
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
+  const [activeSection, setActiveSection] = useState<SectionKey>(null);
   const {
     profile,
     services,
@@ -44,212 +45,181 @@ export default function ProfileSetup() {
     );
   }
 
-  const sectionStatus = (filled: boolean) =>
-    filled ? (
-      <Badge variant="secondary" className="text-[10px] bg-accent text-accent-foreground">
-        ✓ Done
-      </Badge>
-    ) : (
-      <Badge variant="secondary" className="text-[10px]">
-        Incomplete
-      </Badge>
+  // Section completion checks
+  const sectionComplete: Record<string, boolean> = {
+    about: !!(
+      profile.company_name?.trim() &&
+      profile.profile_photo_url &&
+      profile.company_description &&
+      profile.company_description.length >= 50
+    ),
+    reviews: false, // optional
+    services: services.length >= 1,
+    photos: photos.length >= 1,
+    social: !!(profile.facebook_url || profile.twitter_handle || profile.instagram_handle),
+    accreditations: accreditations.length >= 1,
+    qa: qas.length >= 1,
+    location: !!profile.city?.trim(),
+  };
+
+  // If a section is open, render it as a detail page
+  if (activeSection) {
+    return (
+      <SectionDetail
+        title={SECTION_LABELS[activeSection]}
+        onBack={() => setActiveSection(null)}
+      >
+        {activeSection === "about" && (
+          <CompanySection
+            profile={profile}
+            saving={saving}
+            onSave={saveProfile}
+            onUploadPhoto={uploadPhoto}
+          />
+        )}
+        {activeSection === "location" && (
+          <LocationSection profile={profile} saving={saving} onSave={saveProfile} />
+        )}
+        {activeSection === "services" && (
+          <ServicesSection services={services} onAdd={addService} onRemove={removeService} />
+        )}
+        {activeSection === "photos" && (
+          <PhotosSection
+            photos={photos}
+            profile={profile}
+            saving={saving}
+            onUpload={uploadPhoto}
+            onAddPhoto={addPhoto}
+            onRemove={removePhoto}
+            onSaveProfile={saveProfile}
+          />
+        )}
+        {activeSection === "qa" && <QASection qas={qas} onSaveAll={saveAllQAs} />}
+        {activeSection === "accreditations" && (
+          <AccreditationsSection
+            accreditations={accreditations}
+            onAdd={addAccreditation}
+            onRemove={removeAccreditation}
+          />
+        )}
+        {activeSection === "social" && (
+          <SocialMediaSection profile={profile} saving={saving} onSave={saveProfile} />
+        )}
+        {activeSection === "reviews" && <ReviewsSection />}
+      </SectionDetail>
     );
+  }
+
+  // Main profile list view
+  const SECTIONS: { key: SectionKey; optional?: boolean }[] = [
+    { key: "about" },
+    { key: "reviews", optional: true },
+    { key: "services" },
+    { key: "photos" },
+    { key: "social", optional: true },
+    { key: "accreditations", optional: true },
+    { key: "qa" },
+    { key: "location" },
+  ];
 
   return (
-    <div className="p-4 space-y-4 pb-8">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-1 text-sm text-primary mb-2"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back
-      </button>
-
-      <div>
-        <h1 className="text-xl font-bold text-foreground">
-          Set up your profile
+    <div className="pb-8">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-1 -ml-1 text-primary"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <h1 className="flex-1 text-center text-base font-semibold text-foreground">
+          Your profile
         </h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Complete your profile to start receiving leads on FLEX'S
-        </p>
+        <div className="w-6" /> {/* Spacer for centering */}
       </div>
 
       {/* Completion meter */}
-      <Card>
-        <CardContent className="pt-5">
-          <ProfileCompletionMeter completion={completion} />
-        </CardContent>
-      </Card>
+      <div className="px-4 pt-5 pb-4">
+        <ProfileCompletionMeter completion={completion} />
 
-      {/* Accordion sections */}
-      <Accordion type="single" collapsible defaultValue="company" className="space-y-3">
-        {/* Company identity */}
-        <AccordionItem value="company" className="border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
-              <Building2 className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Company</span>
-              <div className="ml-auto mr-2">
-                {sectionStatus(
-                  !!(profile.company_name?.trim() && profile.profile_photo_url && profile.company_description && profile.company_description.length >= 50)
-                )}
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4">
-            <CompanySection
-              profile={profile}
-              saving={saving}
-              onSave={saveProfile}
-              onUploadPhoto={uploadPhoto}
-            />
-          </AccordionContent>
-        </AccordionItem>
+        <button className="text-sm text-primary font-medium mt-3 hover:underline">
+          View public profile
+        </button>
+      </div>
 
-        {/* Location */}
-        <AccordionItem value="location" className="border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Location</span>
-              <div className="ml-auto mr-2">
-                {sectionStatus(!!profile.city?.trim())}
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4">
-            <LocationSection
-              profile={profile}
-              saving={saving}
-              onSave={saveProfile}
-            />
-          </AccordionContent>
-        </AccordionItem>
+      {/* Sections list */}
+      <div className="border-t border-border">
+        {SECTIONS.map(({ key }) => (
+          <button
+            key={key}
+            onClick={() => setActiveSection(key)}
+            className="flex items-center w-full px-4 py-4 border-b border-border hover:bg-muted/30 transition-colors text-left"
+          >
+            <span className="flex-1 text-base font-medium text-foreground">
+              {SECTION_LABELS[key!]}
+            </span>
+            <SectionCheckmark completed={sectionComplete[key!]} />
+            <ChevronRight className="h-5 w-5 text-muted-foreground ml-2" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-        {/* Services */}
-        <AccordionItem value="services" className="border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
-              <Briefcase className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Services</span>
-              <div className="ml-auto mr-2">
-                {sectionStatus(services.length >= 1)}
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4">
-            <ServicesSection
-              services={services}
-              onAdd={addService}
-              onRemove={removeService}
-            />
-          </AccordionContent>
-        </AccordionItem>
+/* ── Section labels ── */
 
-        {/* Photos */}
-        <AccordionItem value="photos" className="border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
-              <Camera className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Photos</span>
-              <div className="ml-auto mr-2">
-                {sectionStatus(photos.length >= 1)}
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4">
-            <PhotosSection
-              photos={photos}
-              profile={profile}
-              saving={saving}
-              onUpload={uploadPhoto}
-              onAddPhoto={addPhoto}
-              onRemove={removePhoto}
-              onSaveProfile={saveProfile}
-            />
-          </AccordionContent>
-        </AccordionItem>
+const SECTION_LABELS: Record<string, string> = {
+  about: "About",
+  reviews: "Reviews",
+  services: "Services",
+  photos: "Photos",
+  social: "Social media & links",
+  accreditations: "Accreditations",
+  qa: "Q&A",
+  location: "Location",
+};
 
-        {/* Q&A */}
-        <AccordionItem value="qa" className="border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
-              <HelpCircle className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Q&A</span>
-              <div className="ml-auto mr-2">
-                {sectionStatus(qas.length >= 1)}
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4">
-            <QASection
-              qas={qas}
-              onSaveAll={saveAllQAs}
-            />
-          </AccordionContent>
-        </AccordionItem>
+/* ── Checkmark indicator ── */
 
-        {/* Accreditations */}
-        <AccordionItem value="accreditations" className="border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
-              <Award className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Accreditations</span>
-              <div className="ml-auto mr-2">
-                <Badge variant="secondary" className="text-[10px]">
-                  Optional
-                </Badge>
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4">
-            <AccreditationsSection
-              accreditations={accreditations}
-              onAdd={addAccreditation}
-              onRemove={removeAccreditation}
-            />
-          </AccordionContent>
-        </AccordionItem>
+function SectionCheckmark({ completed }: { completed: boolean }) {
+  return (
+    <CheckCircle2
+      className={`h-6 w-6 ${
+        completed
+          ? "text-primary fill-primary/10"
+          : "text-muted-foreground/30"
+      }`}
+    />
+  );
+}
 
-        {/* Social Media & Links */}
-        <AccordionItem value="social" className="border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
-              <Share2 className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Social media & links</span>
-              <div className="ml-auto mr-2">
-                <Badge variant="secondary" className="text-[10px]">
-                  Optional
-                </Badge>
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4">
-            <SocialMediaSection
-              profile={profile}
-              saving={saving}
-              onSave={saveProfile}
-            />
-          </AccordionContent>
-        </AccordionItem>
+/* ── Section detail wrapper ── */
 
-        {/* Reviews */}
-        <AccordionItem value="reviews" className="border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-4 py-3 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
-              <Star className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Reviews</span>
-              <div className="ml-auto mr-2">
-                <Badge variant="secondary" className="text-[10px]">
-                  Optional
-                </Badge>
-              </div>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="px-4 pb-4">
-            <ReviewsSection />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+function SectionDetail({
+  title,
+  onBack,
+  children,
+}: {
+  title: string;
+  onBack: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="pb-8">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center">
+        <button onClick={onBack} className="p-1 -ml-1 text-primary">
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <h1 className="flex-1 text-center text-base font-semibold text-foreground">
+          {title}
+        </h1>
+        <div className="w-6" />
+      </div>
+
+      {/* Content */}
+      <div className="px-4 pt-5">{children}</div>
     </div>
   );
 }
