@@ -20,6 +20,7 @@ export type Database = {
           id: string
           lead_id: string
           message: string
+          read_at: string | null
           sender_type: string
         }
         Insert: {
@@ -27,6 +28,7 @@ export type Database = {
           id?: string
           lead_id: string
           message: string
+          read_at?: string | null
           sender_type: string
         }
         Update: {
@@ -34,6 +36,7 @@ export type Database = {
           id?: string
           lead_id?: string
           message?: string
+          read_at?: string | null
           sender_type?: string
         }
         Relationships: [
@@ -48,6 +51,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          archived: boolean
           assigned_to: string
           category: string
           created_at: string
@@ -56,11 +60,13 @@ export type Database = {
           customer_phone: string | null
           details: string | null
           id: string
+          last_activity_at: string
           location_text: string
           status: string
           updated_at: string
         }
         Insert: {
+          archived?: boolean
           assigned_to: string
           category: string
           created_at?: string
@@ -69,11 +75,13 @@ export type Database = {
           customer_phone?: string | null
           details?: string | null
           id?: string
+          last_activity_at?: string
           location_text: string
           status?: string
           updated_at?: string
         }
         Update: {
+          archived?: boolean
           assigned_to?: string
           category?: string
           created_at?: string
@@ -82,6 +90,7 @@ export type Database = {
           customer_phone?: string | null
           details?: string | null
           id?: string
+          last_activity_at?: string
           location_text?: string
           status?: string
           updated_at?: string
@@ -170,7 +179,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      lead_last_message: {
+        Row: {
+          created_at: string | null
+          lead_id: string | null
+          message: string | null
+          sender_type: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       is_lead_assigned_to_current_user: {

@@ -7,18 +7,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDistanceToNow } from "date-fns";
 
-interface LeadWithMessages {
+interface ConversationRow {
   id: string;
   category: string;
   location_text: string;
   status: string;
-  lastMessage: string;
-  lastMessageTime: string;
-  messageCount: number;
+  last_message: string | null;
+  last_message_time: string | null;
 }
 
 export default function Responses() {
-  const [conversations, setConversations] = useState<LeadWithMessages[]>([]);
+  const [conversations, setConversations] = useState<ConversationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -27,44 +26,42 @@ export default function Responses() {
     if (!user) return;
 
     const fetchConversations = async () => {
-      // Fetch leads that have messages
+      // Single query: join leads with lead_last_message view
       const { data: leads } = await supabase
         .from("leads")
-        .select("id, category, location_text, status");
+        .select("id, category, location_text, status, last_activity_at")
+        .eq("archived", false)
+        .order("last_activity_at", { ascending: false });
 
-      if (!leads) {
+      if (!leads || leads.length === 0) {
         setLoading(false);
         return;
       }
 
-      const leadsWithMessages: LeadWithMessages[] = [];
+      // Fetch last messages for all leads in one query
+      const { data: lastMessages } = await supabase
+        .from("lead_last_message")
+        .select("lead_id, message, created_at");
 
-      for (const lead of leads) {
-        const { data: messages, count } = await supabase
-          .from("lead_messages")
-          .select("message, created_at", { count: "exact" })
-          .eq("lead_id", lead.id)
-          .order("created_at", { ascending: false })
-          .limit(1);
-
-        if (messages && messages.length > 0) {
-          leadsWithMessages.push({
-            ...lead,
-            lastMessage: messages[0].message,
-            lastMessageTime: messages[0].created_at,
-            messageCount: count || 0,
-          });
-        }
-      }
-
-      // Sort by most recent message
-      leadsWithMessages.sort(
-        (a, b) =>
-          new Date(b.lastMessageTime).getTime() -
-          new Date(a.lastMessageTime).getTime()
+      const messageMap = new Map(
+        (lastMessages || []).map((m) => [m.lead_id, m])
       );
 
-      setConversations(leadsWithMessages);
+      const convos: ConversationRow[] = leads
+        .map((lead) => {
+          const msg = messageMap.get(lead.id);
+          return {
+            id: lead.id,
+            category: lead.category,
+            location_text: lead.location_text,
+            status: lead.status,
+            last_message: msg?.message || null,
+            last_message_time: msg?.created_at || null,
+          };
+        })
+        .filter((c) => c.last_message !== null);
+
+      setConversations(convos);
       setLoading(false);
     };
 
@@ -104,23 +101,22 @@ export default function Responses() {
         >
           <div className="flex items-start justify-between mb-1">
             <h3 className="font-semibold text-foreground">{convo.category}</h3>
-            <span className="text-xs text-muted-foreground">
-              {formatDistanceToNow(new Date(convo.lastMessageTime), {
-                addSuffix: true,
-              })}
-            </span>
+            {convo.last_message_time && (
+              <span className="text-xs text-muted-foreground">
+                {formatDistanceToNow(new Date(convo.last_message_time), {
+                  addSuffix: true,
+                })}
+              </span>
+            )}
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-1 mb-2">
-            {convo.lastMessage}
-          </p>
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">
-              {convo.location_text}
-            </span>
-            <Badge variant="secondary" className="text-xs">
-              {convo.messageCount} message{convo.messageCount !== 1 ? "s" : ""}
-            </Badge>
-          </div>
+          {convo.last_message && (
+            <p className="text-sm text-muted-foreground line-clamp-1 mb-2">
+              {convo.last_message}
+            </p>
+          )}
+          <span className="text-xs text-muted-foreground">
+            {convo.location_text}
+          </span>
         </Card>
       ))}
     </div>
