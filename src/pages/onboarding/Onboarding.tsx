@@ -74,6 +74,12 @@ export default function Onboarding() {
       description: "Bring more organisation to your workflow by customising lead statuses that reflect your own workflow.",
       render: () => <CustomStatusesVisual />,
     },
+    {
+      topTitle: "Custom statuses are here!",
+      bottomTitle: "Easy access",
+      description: "Create and manage your custom statuses from the leads drop-down menu",
+      render: () => <CustomStatusesDropdownVisual />,
+    },
   ];
 
   const completeOnboarding = async () => {
@@ -314,6 +320,54 @@ function CustomStatusesVisual() {
               <span className="text-xs font-semibold text-white">Contract signed</span>
               <ChevronDown className="h-3 w-3 text-white" />
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Slide 7: Custom Statuses Dropdown (Easy access) ── */
+
+const MOCK_STATUS_PILLS = [
+  { label: "Hired", color: "#22C55E" },
+  { label: "Need to schedule kickoff", color: "#6EE7B7" },
+  { label: "Pending", color: "#F59E0B" },
+  { label: "Called twice", color: "#FDE68A" },
+  { label: "First project starting soon", color: "#F9A8D4" },
+  { label: "Archived", color: "#9CA3AF" },
+];
+
+function CustomStatusesDropdownVisual() {
+  return (
+    <div className="w-full max-w-[300px]">
+      <div className="rounded-2xl border border-border bg-card shadow-sm p-4 space-y-2.5">
+        {/* Pending dropdown header */}
+        <div className="rounded-xl bg-[#F59E0B] px-4 py-2.5 flex items-center justify-between">
+          <span className="text-sm font-semibold text-white">Pending</span>
+          <ChevronDown className="h-4 w-4 text-white" />
+        </div>
+
+        {/* Status pills */}
+        <div className="space-y-1.5 pt-1">
+          {MOCK_STATUS_PILLS.map((s) => (
+            <div
+              key={s.label}
+              className="rounded-xl px-4 py-2.5 text-center text-xs font-semibold text-white"
+              style={{ backgroundColor: s.color, color: s.color === "#FDE68A" ? "#78350f" : "white" }}
+            >
+              {s.label}
+            </div>
+          ))}
+        </div>
+
+        {/* Action buttons */}
+        <div className="space-y-1.5 pt-1">
+          <div className="rounded-xl border border-border py-2.5 flex items-center justify-center gap-2 text-sm font-medium text-foreground">
+            <span className="text-base">+</span> Create new
+          </div>
+          <div className="rounded-xl border border-border py-2.5 flex items-center justify-center gap-2 text-sm font-medium text-foreground">
+            <span className="text-base">✎</span> Manage all
           </div>
         </div>
       </div>
