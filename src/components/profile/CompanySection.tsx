@@ -29,6 +29,8 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
   const [size, setSize] = useState(profile.company_size || "solo");
   const [years, setYears] = useState(profile.years_in_business?.toString() || "0");
   const [website, setWebsite] = useState(profile.website_links || "");
+  const [companyEmail, setCompanyEmail] = useState(profile.company_email || "");
+  const [companyPhone, setCompanyPhone] = useState(profile.company_phone || "");
   const [uploading, setUploading] = useState(false);
   const [showTips, setShowTips] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -57,6 +59,8 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
       company_size: size,
       years_in_business: parseInt(years) || 0,
       website_links: website.trim() || null,
+      company_email: companyEmail.trim() || null,
+      company_phone: companyPhone.trim() || null,
     });
   };
 
@@ -103,7 +107,7 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
       {/* Company name */}
       <div>
         <label className="text-sm font-medium text-foreground mb-1 block">
-          Company name
+          Name
         </label>
         <Input
           value={companyName}
@@ -111,6 +115,47 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
           placeholder="e.g. I Clean Services"
           className="rounded-xl"
           maxLength={100}
+        />
+      </div>
+
+      {/* Company contact details heading */}
+      <div className="space-y-1.5 pt-2">
+        <h3 className="text-lg font-semibold text-foreground">
+          Company contact details
+        </h3>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          This information will be seen by customers on FLEX'S. Change the details FLEX'S uses to contact you privately in{" "}
+          <span className="text-primary font-medium">Account details</span>
+        </p>
+      </div>
+
+      {/* Company email */}
+      <div>
+        <label className="text-sm font-medium text-foreground mb-1 block">
+          Company email address
+        </label>
+        <Input
+          type="email"
+          value={companyEmail}
+          onChange={(e) => setCompanyEmail(e.target.value)}
+          placeholder="your@company.com"
+          className="rounded-xl"
+          maxLength={200}
+        />
+      </div>
+
+      {/* Company phone */}
+      <div>
+        <label className="text-sm font-medium text-foreground mb-1 block">
+          Company phone number
+        </label>
+        <Input
+          type="tel"
+          value={companyPhone}
+          onChange={(e) => setCompanyPhone(e.target.value)}
+          placeholder="Company phone number"
+          className="rounded-xl"
+          maxLength={30}
         />
       </div>
 
