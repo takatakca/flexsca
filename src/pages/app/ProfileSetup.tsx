@@ -158,9 +158,12 @@ export default function ProfileSetup() {
           <AccordionContent className="px-4 pb-4">
             <PhotosSection
               photos={photos}
+              profile={profile}
+              saving={saving}
               onUpload={uploadPhoto}
               onAddPhoto={addPhoto}
               onRemove={removePhoto}
+              onSaveProfile={saveProfile}
             />
           </AccordionContent>
         </AccordionItem>

@@ -535,6 +535,7 @@ export type Database = {
           twitter_handle: string | null
           updated_at: string
           user_id: string
+          video_urls: string[] | null
           website_links: string | null
           years_in_business: number | null
         }
@@ -553,6 +554,7 @@ export type Database = {
           twitter_handle?: string | null
           updated_at?: string
           user_id: string
+          video_urls?: string[] | null
           website_links?: string | null
           years_in_business?: number | null
         }
@@ -571,6 +573,7 @@ export type Database = {
           twitter_handle?: string | null
           updated_at?: string
           user_id?: string
+          video_urls?: string[] | null
           website_links?: string | null
           years_in_business?: number | null
         }
