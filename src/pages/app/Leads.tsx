@@ -1,12 +1,13 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, MapPin, Clock, ClipboardList, Search, X } from "lucide-react";
+import { Loader2, MapPin, Clock, ClipboardList, Search, X, Archive } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 
 interface Lead {
   id: string;
@@ -17,6 +18,7 @@ interface Lead {
   status: string;
   created_at: string;
   last_activity_at: string;
+  archived: boolean;
 }
 
 const statusColors: Record<string, string> = {
@@ -33,6 +35,7 @@ export default function Leads() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [showArchived, setShowArchived] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -42,8 +45,8 @@ export default function Leads() {
     const fetchLeads = async () => {
       const { data, error } = await supabase
         .from("leads")
-        .select("id, category, location_text, customer_name, details, status, created_at, last_activity_at")
-        .eq("archived", false)
+        .select("id, category, location_text, customer_name, details, status, created_at, last_activity_at, archived")
+        .eq("archived", showArchived)
         .order("last_activity_at", { ascending: false });
 
       if (!error && data) {
@@ -53,7 +56,22 @@ export default function Leads() {
     };
 
     fetchLeads();
-  }, [user]);
+  }, [user, showArchived]);
+
+  const handleRestore = async (e: React.MouseEvent, leadId: string) => {
+    e.stopPropagation();
+    const { error } = await supabase
+      .from("leads")
+      .update({ archived: false, archived_at: null })
+      .eq("id", leadId);
+
+    if (!error) {
+      setLeads((prev) => prev.filter((l) => l.id !== leadId));
+      toast.success("Lead restored");
+    } else {
+      toast.error("Failed to restore lead");
+    }
+  };
 
   const filteredLeads = useMemo(() => {
     let result = leads;
@@ -101,6 +119,26 @@ export default function Leads() {
 
   return (
     <div className="p-4 space-y-3">
+      {/* Active / Archived toggle */}
+      <div className="flex rounded-full bg-muted p-1">
+        <button
+          onClick={() => { setShowArchived(false); setLoading(true); }}
+          className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
+            !showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          Active
+        </button>
+        <button
+          onClick={() => { setShowArchived(true); setLoading(true); }}
+          className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
+            showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+          }`}
+        >
+          Archived
+        </button>
+      </div>
+
       {/* Search bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -121,21 +159,23 @@ export default function Leads() {
       </div>
 
       {/* Status filter chips */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {statusFilters.map((s) => (
-          <button
-            key={s}
-            onClick={() => setStatusFilter(s)}
-            className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
-              statusFilter === s
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-border hover:bg-accent"
-            }`}
-          >
-            {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
-          </button>
-        ))}
-      </div>
+      {!showArchived && (
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {statusFilters.map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
+                statusFilter === s
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background text-muted-foreground border-border hover:bg-accent"
+              }`}
+            >
+              {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Lead cards */}
       {filteredLeads.length === 0 ? (
@@ -177,6 +217,15 @@ export default function Leads() {
               <p className="mt-2 text-xs text-muted-foreground">
                 Customer: {lead.customer_name}
               </p>
+            )}
+
+            {showArchived && (
+              <button
+                onClick={(e) => handleRestore(e, lead.id)}
+                className="mt-2 flex items-center gap-1 text-xs text-primary font-medium hover:underline"
+              >
+                <Archive className="h-3.5 w-3.5" /> Restore
+              </button>
             )}
           </Card>
         ))
