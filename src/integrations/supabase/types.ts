@@ -527,11 +527,15 @@ export type Database = {
           company_size: string | null
           covid_safety: string | null
           created_at: string
+          facebook_url: string | null
+          instagram_handle: string | null
           location_private: boolean | null
           profile_photo_url: string | null
           province: string | null
+          twitter_handle: string | null
           updated_at: string
           user_id: string
+          website_links: string | null
           years_in_business: number | null
         }
         Insert: {
@@ -541,11 +545,15 @@ export type Database = {
           company_size?: string | null
           covid_safety?: string | null
           created_at?: string
+          facebook_url?: string | null
+          instagram_handle?: string | null
           location_private?: boolean | null
           profile_photo_url?: string | null
           province?: string | null
+          twitter_handle?: string | null
           updated_at?: string
           user_id: string
+          website_links?: string | null
           years_in_business?: number | null
         }
         Update: {
@@ -555,11 +563,15 @@ export type Database = {
           company_size?: string | null
           covid_safety?: string | null
           created_at?: string
+          facebook_url?: string | null
+          instagram_handle?: string | null
           location_private?: boolean | null
           profile_photo_url?: string | null
           province?: string | null
+          twitter_handle?: string | null
           updated_at?: string
           user_id?: string
+          website_links?: string | null
           years_in_business?: number | null
         }
         Relationships: [

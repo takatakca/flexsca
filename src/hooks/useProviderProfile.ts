@@ -14,6 +14,10 @@ export interface ProviderProfile {
   location_private: boolean;
   profile_photo_url: string | null;
   covid_safety: string | null;
+  facebook_url: string | null;
+  twitter_handle: string | null;
+  instagram_handle: string | null;
+  website_links: string | null;
 }
 
 export interface ProviderService {
@@ -56,6 +60,10 @@ const DEFAULT_PROFILE: ProviderProfile = {
   location_private: true,
   profile_photo_url: null,
   covid_safety: null,
+  facebook_url: null,
+  twitter_handle: null,
+  instagram_handle: null,
+  website_links: null,
 };
 
 export function calculateCompletion(
