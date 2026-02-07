@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,35 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
     setAdding(false);
     setSubmitting(false);
   };
+
+  const hasServices = services.length > 0;
+
+  // Empty state — matches Bark "Get started!" screen
+  if (!adding && !hasServices) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between py-2 border-b">
+          <span className="text-sm text-muted-foreground">Get started!</span>
+          <CheckCircle2 className="h-5 w-5 text-muted-foreground/40" />
+        </div>
+
+        <div className="pt-2 space-y-2">
+          <h3 className="text-lg font-semibold text-foreground">Service</h3>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            Include all services you offer in some detail to give customers the
+            confidence they're looking for when making a hiring decision.
+          </p>
+        </div>
+
+        <Button
+          onClick={() => setAdding(true)}
+          className="w-full rounded-xl text-base py-6"
+        >
+          <Plus className="h-5 w-5 mr-1" /> Add service
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -97,7 +126,7 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
             <Button
               onClick={handleAdd}
               disabled={submitting || !title.trim()}
-              className="rounded-xl flex-1"
+              className="rounded-xl flex-1 py-5 text-base"
             >
               {submitting ? "Adding…" : "Add"}
             </Button>
@@ -117,10 +146,9 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
       ) : (
         <Button
           onClick={() => setAdding(true)}
-          variant="outline"
-          className="w-full rounded-xl"
+          className="w-full rounded-xl py-5 text-base"
         >
-          <Plus className="h-4 w-4 mr-1" /> Add service
+          <Plus className="h-5 w-5 mr-1" /> Add service
         </Button>
       )}
     </div>
