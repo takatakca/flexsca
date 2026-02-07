@@ -37,6 +37,14 @@ export interface ProviderQA {
   sort_order: number;
 }
 
+export interface ProviderAccreditation {
+  id: string;
+  name: string;
+  issuer: string | null;
+  year_obtained: number | null;
+  sort_order: number;
+}
+
 const DEFAULT_PROFILE: ProviderProfile = {
   user_id: "",
   company_name: null,
@@ -76,6 +84,7 @@ export function useProviderProfile() {
   const [services, setServices] = useState<ProviderService[]>([]);
   const [photos, setPhotos] = useState<ProviderPhoto[]>([]);
   const [qas, setQAs] = useState<ProviderQA[]>([]);
+  const [accreditations, setAccreditations] = useState<ProviderAccreditation[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -83,11 +92,12 @@ export function useProviderProfile() {
     if (!user) return;
     setLoading(true);
 
-    const [profileRes, servicesRes, photosRes, qasRes] = await Promise.all([
+    const [profileRes, servicesRes, photosRes, qasRes, accredRes] = await Promise.all([
       supabase.from("provider_profiles").select("*").eq("user_id", user.id).maybeSingle(),
       supabase.from("provider_services").select("*").eq("user_id", user.id).order("sort_order"),
       supabase.from("provider_photos").select("*").eq("user_id", user.id).order("sort_order"),
       supabase.from("provider_qas").select("*").eq("user_id", user.id).order("sort_order"),
+      supabase.from("provider_accreditations").select("*").eq("user_id", user.id).order("sort_order"),
     ]);
 
     if (profileRes.data) {
@@ -99,6 +109,7 @@ export function useProviderProfile() {
     setServices((servicesRes.data as unknown as ProviderService[]) || []);
     setPhotos((photosRes.data as unknown as ProviderPhoto[]) || []);
     setQAs((qasRes.data as unknown as ProviderQA[]) || []);
+    setAccreditations((accredRes.data as unknown as ProviderAccreditation[]) || []);
     setLoading(false);
   }, [user]);
 
@@ -251,6 +262,37 @@ export function useProviderProfile() {
     return data.publicUrl;
   };
 
+  const addAccreditation = async (name: string, issuer?: string, year?: number) => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("provider_accreditations")
+      .insert({
+        user_id: user.id,
+        name,
+        issuer: issuer || null,
+        year_obtained: year || null,
+        sort_order: accreditations.length,
+      } as any)
+      .select()
+      .single();
+
+    if (error) {
+      toast.error("Failed to add accreditation");
+    } else {
+      setAccreditations((prev) => [...prev, data as unknown as ProviderAccreditation]);
+      toast.success("Accreditation added");
+    }
+  };
+
+  const removeAccreditation = async (id: string) => {
+    const { error } = await supabase.from("provider_accreditations").delete().eq("id", id);
+    if (error) {
+      toast.error("Failed to remove accreditation");
+    } else {
+      setAccreditations((prev) => prev.filter((a) => a.id !== id));
+    }
+  };
+
   const completion = calculateCompletion(profile, services, photos, qas);
 
   return {
@@ -258,6 +300,7 @@ export function useProviderProfile() {
     services,
     photos,
     qas,
+    accreditations,
     loading,
     saving,
     completion,
@@ -269,6 +312,8 @@ export function useProviderProfile() {
     addQA,
     removeQA,
     saveAllQAs,
+    addAccreditation,
+    removeAccreditation,
     uploadPhoto,
     refetch: fetchAll,
   };

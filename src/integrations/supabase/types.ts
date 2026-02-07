@@ -446,6 +446,44 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_accreditations: {
+        Row: {
+          created_at: string
+          id: string
+          issuer: string | null
+          name: string
+          sort_order: number
+          user_id: string
+          year_obtained: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issuer?: string | null
+          name: string
+          sort_order?: number
+          user_id: string
+          year_obtained?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issuer?: string | null
+          name?: string
+          sort_order?: number
+          user_id?: string
+          year_obtained?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_accreditations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_photos: {
         Row: {
           caption: string | null
