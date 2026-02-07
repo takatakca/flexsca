@@ -1,5 +1,4 @@
-import { Coins, Loader2, UserCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 interface ContactButtonProps {
   customerName: string | null;
@@ -17,48 +16,37 @@ export default function ContactButton({
   contacting,
 }: ContactButtonProps) {
   const hasEnough = (balance ?? 0) >= creditsCost;
-  const name = customerName || "Customer";
+  const name = customerName?.split(" ")[0] || "Customer";
 
   return (
-    <div className="p-4 space-y-3">
-      <div className="flex items-center justify-between rounded-xl bg-primary/5 border border-primary/10 p-3">
-        <div className="text-center flex-1">
-          <p className="text-2xl font-bold text-foreground">{creditsCost}</p>
-          <p className="text-xs text-muted-foreground">Credits needed</p>
-        </div>
-        <div className="h-8 w-px bg-border" />
-        <div className="text-center flex-1">
-          <p className={`text-2xl font-bold ${hasEnough ? "text-success" : "text-destructive"}`}>
-            {balance ?? 0}
-          </p>
-          <p className="text-xs text-muted-foreground">Your balance</p>
-        </div>
-      </div>
-
-      <Button
-        size="lg"
-        className="w-full rounded-xl h-12 text-base font-semibold"
-        disabled={!hasEnough || contacting}
-        onClick={onContact}
-      >
-        {contacting ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Processing…
-          </>
-        ) : (
-          <>
-            <UserCheck className="h-5 w-5 mr-2" />
-            {hasEnough ? `Contact ${name}` : "Not enough credits"}
-          </>
-        )}
-      </Button>
-
+    <div className="sticky bottom-0 bg-background px-4 pb-4 pt-2 border-t border-border">
+      {/* Credit info (only show if not enough) */}
       {!hasEnough && (
-        <p className="text-xs text-muted-foreground text-center">
-          You need {creditsCost - (balance ?? 0)} more credits.
+        <p className="text-xs text-muted-foreground text-center mb-2">
+          You need {creditsCost} credits ({creditsCost - (balance ?? 0)} more).
         </p>
       )}
+
+      {/* Bark-style full-width CTA */}
+      <button
+        disabled={!hasEnough || contacting}
+        onClick={onContact}
+        className="w-full rounded-xl py-3.5 text-base font-bold text-white transition-colors disabled:opacity-50"
+        style={{
+          backgroundColor: hasEnough ? "#22C55E" : "#9CA3AF",
+        }}
+      >
+        {contacting ? (
+          <span className="flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Processing…
+          </span>
+        ) : hasEnough ? (
+          `Contact ${name}`
+        ) : (
+          "Not enough credits"
+        )}
+      </button>
     </div>
   );
 }

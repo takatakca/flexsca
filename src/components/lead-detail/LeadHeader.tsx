@@ -6,10 +6,8 @@ import {
   Mail,
   Archive,
   ArchiveRestore,
-  Coins,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import StatusDropdown from "@/components/lead-detail/StatusDropdown";
 import type { CustomStatus } from "@/hooks/useCustomStatuses";
@@ -38,6 +36,7 @@ interface LeadHeaderProps {
   customStatuses: CustomStatus[];
   onArchiveToggle: () => void;
   onCustomStatusChanged: (statusId: string) => void;
+  onPass?: () => void;
 }
 
 export default function LeadHeader({
@@ -48,88 +47,84 @@ export default function LeadHeader({
   customStatuses,
   onArchiveToggle,
   onCustomStatusChanged,
+  onPass,
 }: LeadHeaderProps) {
   const navigate = useNavigate();
 
   return (
-    <div className="border-b p-4">
-      <div className="flex items-center justify-between mb-3">
+    <>
+      {/* ── Dark top bar (Bark-style) ── */}
+      <div className="bg-[hsl(210,30%,20%)] text-white px-4 py-3 flex items-center justify-between">
         <button
           onClick={() => navigate("/app/leads")}
-          className="flex items-center gap-1 text-sm text-primary"
+          className="flex items-center gap-1 text-white/90 hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-5 w-5" />
         </button>
 
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-8 w-8 rounded-full"
-            onClick={onArchiveToggle}
-          >
-            {isArchived ? (
-              <ArchiveRestore className="h-4 w-4" />
-            ) : (
-              <Archive className="h-4 w-4" />
-            )}
-          </Button>
-
-          {/* Custom status dropdown */}
+        <div className="flex items-center gap-3">
+          {/* Status dropdown */}
           <StatusDropdown
             statuses={customStatuses}
             currentStatusId={customStatusId}
             leadId={lead.id}
             onStatusChanged={onCustomStatusChanged}
           />
+
+          {/* Archive / Pass */}
+          <button
+            onClick={onPass || onArchiveToggle}
+            className="text-white font-semibold text-sm"
+          >
+            {isArchived ? "Restore" : "Pass"}
+          </button>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 mb-2">
-        <h2 className="text-xl font-bold text-foreground">{lead.category}</h2>
-        {lead.is_urgent && (
-          <Badge variant="destructive" className="text-xs">
-            <Zap className="h-3 w-3 mr-0.5" /> Urgent
-          </Badge>
+      {/* ── Lead info section ── */}
+      <div className="px-4 pt-4 pb-3 border-b border-border">
+        <div className="flex items-center gap-2 mb-1.5">
+          <h2 className="text-lg font-bold text-foreground">{lead.category}</h2>
+          {lead.is_urgent && (
+            <Badge variant="destructive" className="text-xs">
+              <Zap className="h-3 w-3 mr-0.5" /> Urgent
+            </Badge>
+          )}
+        </div>
+
+        {lead.customer_name && (
+          <p className="text-sm font-medium text-foreground mb-1">
+            {lead.customer_name}
+          </p>
         )}
-      </div>
 
-      <div className="flex items-center gap-3 mb-2">
-        <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
-          <Coins className="h-3 w-3 mr-0.5" />
-          {lead.credits_cost} Credits
-        </Badge>
-      </div>
-
-      <div className="space-y-1 text-sm text-muted-foreground">
-        <p className="flex items-center gap-1.5">
-          <MapPin className="h-4 w-4" /> {lead.location_text}
+        <p className="text-sm text-muted-foreground flex items-center gap-1.5 mb-1">
+          <MapPin className="h-3.5 w-3.5" /> {lead.location_text}
         </p>
-        {lead.customer_name && <p>Customer: {lead.customer_name}</p>}
 
         {isContacted && lead.customer_phone && (
-          <p className="flex items-center gap-1.5">
-            <Phone className="h-4 w-4" />
+          <p className="text-sm text-muted-foreground flex items-center gap-1.5 mb-1">
+            <Phone className="h-3.5 w-3.5" />
             <a href={`tel:${lead.customer_phone}`} className="text-primary hover:underline">
               {lead.customer_phone}
             </a>
           </p>
         )}
         {isContacted && lead.customer_email && (
-          <p className="flex items-center gap-1.5">
-            <Mail className="h-4 w-4" />
+          <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+            <Mail className="h-3.5 w-3.5" />
             <a href={`mailto:${lead.customer_email}`} className="text-primary hover:underline">
               {lead.customer_email}
             </a>
           </p>
         )}
-      </div>
 
-      {isArchived && (
-        <div className="mt-3 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-muted-foreground">
-          This lead is archived
-        </div>
-      )}
-    </div>
+        {isArchived && (
+          <div className="mt-2 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-muted-foreground">
+            This lead is archived
+          </div>
+        )}
+      </div>
+    </>
   );
 }
