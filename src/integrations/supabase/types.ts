@@ -532,6 +532,8 @@ export type Database = {
           facebook_url: string | null
           instagram_handle: string | null
           location_private: boolean | null
+          personal_name: string | null
+          personal_photo_url: string | null
           profile_photo_url: string | null
           province: string | null
           twitter_handle: string | null
@@ -553,6 +555,8 @@ export type Database = {
           facebook_url?: string | null
           instagram_handle?: string | null
           location_private?: boolean | null
+          personal_name?: string | null
+          personal_photo_url?: string | null
           profile_photo_url?: string | null
           province?: string | null
           twitter_handle?: string | null
@@ -574,6 +578,8 @@ export type Database = {
           facebook_url?: string | null
           instagram_handle?: string | null
           location_private?: boolean | null
+          personal_name?: string | null
+          personal_photo_url?: string | null
           profile_photo_url?: string | null
           province?: string | null
           twitter_handle?: string | null
