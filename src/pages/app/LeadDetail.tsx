@@ -5,13 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
-import { useLeadPurchase } from "@/hooks/useLeadPurchase";
+import { useLeadAgentState } from "@/hooks/useLeadAgentState";
+import { useContactLead } from "@/hooks/useContactLead";
 import { useCredits } from "@/hooks/useCredits";
 import LeadHeader from "@/components/lead-detail/LeadHeader";
+import LeadAnswers from "@/components/lead-detail/LeadAnswers";
 import MessageThread from "@/components/lead-detail/MessageThread";
-import QuoteComposer from "@/components/lead-detail/QuoteComposer";
 import MessageInput from "@/components/lead-detail/MessageInput";
-import UnlockPaywall from "@/components/lead-detail/UnlockPaywall";
+import ContactButton from "@/components/lead-detail/ContactButton";
 
 interface Lead {
   id: string;
@@ -22,7 +23,11 @@ interface Lead {
   customer_phone: string | null;
   details: string | null;
   status: string;
-  archived: boolean;
+  credits_cost: number;
+  is_urgent: boolean;
+  answers: Record<string, unknown>;
+  city: string | null;
+  postal_code: string | null;
   created_at: string;
 }
 
@@ -42,135 +47,83 @@ export default function LeadDetail() {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [hasQuoted, setHasQuoted] = useState(false);
-  const [reminderOpen, setReminderOpen] = useState(false);
-  const [reminderDate, setReminderDate] = useState("");
-  const [reminderNote, setReminderNote] = useState("");
 
-  const { purchased, cost, loading: purchaseLoading, refetch: refetchPurchase } =
-    useLeadPurchase(id, lead?.category);
+  const { state: agentState, loading: stateLoading, markRead, toggleArchive, refetch: refetchState } =
+    useLeadAgentState(id);
+  const { contactLead, contacting } = useContactLead();
   const { balance, refetch: refetchCredits } = useCredits();
 
+  const isContacted = agentState?.contacted ?? false;
+  const isArchived = agentState?.is_archived ?? false;
+
+  // Fetch lead data
   useEffect(() => {
     if (!id || !user) return;
 
     const fetchData = async () => {
-      const [leadRes, messagesRes, responsesRes] = await Promise.all([
+      const [leadRes, messagesRes] = await Promise.all([
         supabase.from("leads").select("*").eq("id", id).single(),
         supabase
           .from("lead_messages")
           .select("*")
           .eq("lead_id", id)
           .order("created_at", { ascending: true }),
-        supabase
-          .from("responses")
-          .select("id")
-          .eq("lead_id", id)
-          .eq("pro_id", user.id)
-          .limit(1),
       ]);
 
       if (leadRes.data) setLead(leadRes.data as Lead);
       if (messagesRes.data) setMessages(messagesRes.data as Message[]);
-      if (responsesRes.data && responsesRes.data.length > 0) setHasQuoted(true);
       setLoading(false);
     };
 
     fetchData();
   }, [id, user]);
 
-  const handleRealtimeMessage = useCallback(
-    (newMsg: Message) => {
-      setMessages((prev) => {
-        if (prev.some((m) => m.id === newMsg.id)) return prev;
-        return [...prev, newMsg];
-      });
-    },
-    []
-  );
+  // Mark as read when opening
+  useEffect(() => {
+    if (agentState?.is_unread) {
+      markRead();
+    }
+  }, [agentState?.is_unread, markRead]);
+
+  // Realtime messages
+  const handleRealtimeMessage = useCallback((newMsg: Message) => {
+    setMessages((prev) => {
+      if (prev.some((m) => m.id === newMsg.id)) return prev;
+      return [...prev, newMsg];
+    });
+  }, []);
 
   useRealtimeMessages(id, handleRealtimeMessage);
 
-  const updateLeadStatus = async (newStatus: string) => {
+  // Contact lead (spend credits)
+  const handleContact = async () => {
     if (!id) return;
-    await supabase.from("leads").update({ status: newStatus }).eq("id", id);
-    setLead((prev) => (prev ? { ...prev, status: newStatus } : prev));
+    const result = await contactLead(id);
+    if (result) {
+      refetchState();
+      refetchCredits();
+    }
   };
 
+  // Send message
   const sendMessage = async (text: string) => {
-    if (!text.trim() || !id) return;
+    if (!text.trim() || !id || !user) return;
     setSending(true);
     const { data, error } = await supabase
       .from("lead_messages")
-      .insert({ lead_id: id, sender_type: "pro", message: text.trim() })
+      .insert({
+        lead_id: id,
+        sender_type: "pro",
+        message: text.trim(),
+        agent_id: user.id,
+      })
       .select()
       .single();
 
     if (!error && data) {
       setMessages((prev) => [...prev, data as Message]);
       setNewMessage("");
-      if (lead?.status === "new") await updateLeadStatus("contacted");
     }
-    setSending(false);
-  };
-
-  const handleSendQuote = async (data: {
-    message: string;
-    priceMin: number | null;
-    priceMax: number | null;
-    availability: string | null;
-  }) => {
-    if (!id || !user) return;
-    setSending(true);
-
-    let fullMessage = data.message;
-    if (data.priceMin !== null || data.priceMax !== null) {
-      const priceStr =
-        data.priceMin !== null && data.priceMax !== null
-          ? `£${data.priceMin} – £${data.priceMax}`
-          : data.priceMin !== null
-          ? `From £${data.priceMin}`
-          : `Up to £${data.priceMax}`;
-      fullMessage += `\n💰 ${priceStr}`;
-    }
-    if (data.availability) {
-      const availMap: Record<string, string> = {
-        today: "Today",
-        tomorrow: "Tomorrow",
-        this_week: "This week",
-        custom: "Custom dates",
-      };
-      fullMessage += `\n📅 Available: ${availMap[data.availability] || data.availability}`;
-    }
-
-    const { error: respError } = await supabase.from("responses").insert({
-      lead_id: id,
-      pro_id: user.id,
-      message: data.message,
-      price_min: data.priceMin,
-      price_max: data.priceMax,
-      availability: data.availability,
-    });
-
-    if (respError) {
-      toast.error("Failed to send quote");
-      setSending(false);
-      return;
-    }
-
-    const { data: msgData, error: msgError } = await supabase
-      .from("lead_messages")
-      .insert({ lead_id: id, sender_type: "pro", message: fullMessage })
-      .select()
-      .single();
-
-    if (!msgError && msgData) {
-      setMessages((prev) => [...prev, msgData as Message]);
-    }
-
-    if (lead?.status === "new") await updateLeadStatus("contacted");
-    setHasQuoted(true);
-    toast.success("Quote sent!");
     setSending(false);
   };
 
@@ -179,6 +132,19 @@ export default function LeadDetail() {
     await sendMessage(newMessage);
   };
 
+  // Archive toggle
+  const handleArchiveToggle = async () => {
+    const success = await toggleArchive();
+    if (success) {
+      const wasArchived = agentState?.is_archived;
+      toast.success(wasArchived ? "Lead restored" : "Lead archived");
+      if (!wasArchived) navigate("/app/leads");
+    } else {
+      toast.error("Failed to update archive status");
+    }
+  };
+
+  // Status change (on lead itself)
   const handleStatusChange = async (newStatus: string) => {
     if (!id || !lead) return;
     const { error } = await supabase
@@ -193,49 +159,7 @@ export default function LeadDetail() {
     }
   };
 
-  const handleArchiveToggle = async () => {
-    if (!id || !lead) return;
-    const newArchived = !lead.archived;
-    const { error } = await supabase
-      .from("leads")
-      .update({
-        archived: newArchived,
-        archived_at: newArchived ? new Date().toISOString() : null,
-      })
-      .eq("id", id);
-    if (!error) {
-      setLead((prev) => (prev ? { ...prev, archived: newArchived } : prev));
-      toast.success(newArchived ? "Lead archived" : "Lead restored");
-      if (newArchived) navigate("/app/leads");
-    } else {
-      toast.error("Failed to update archive status");
-    }
-  };
-
-  const handleCreateReminder = async () => {
-    if (!id || !user || !reminderDate) return;
-    const { error } = await supabase.from("reminders").insert({
-      lead_id: id,
-      user_id: user.id,
-      remind_at: new Date(reminderDate).toISOString(),
-      note: reminderNote || null,
-    });
-    if (!error) {
-      toast.success("Reminder created");
-      setReminderOpen(false);
-      setReminderDate("");
-      setReminderNote("");
-    } else {
-      toast.error("Failed to create reminder");
-    }
-  };
-
-  const handleUnlocked = () => {
-    refetchPurchase();
-    refetchCredits();
-  };
-
-  if (loading) {
+  if (loading || stateLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -251,59 +175,47 @@ export default function LeadDetail() {
     );
   }
 
-  const isUnlocked = purchased || purchaseLoading;
-
   return (
     <div className="flex flex-col min-h-[calc(100vh-7.5rem)]">
       <LeadHeader
         lead={lead}
+        isContacted={isContacted}
+        isArchived={isArchived}
         onStatusChange={handleStatusChange}
         onArchiveToggle={handleArchiveToggle}
-        reminderOpen={reminderOpen}
-        onReminderOpenChange={setReminderOpen}
-        reminderDate={reminderDate}
-        onReminderDateChange={setReminderDate}
-        reminderNote={reminderNote}
-        onReminderNoteChange={setReminderNote}
-        onCreateReminder={handleCreateReminder}
       />
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        <MessageThread messages={messages} />
+      {/* Lead Q&A answers */}
+      <div className="p-4">
+        <LeadAnswers answers={lead.answers} details={lead.details} />
       </div>
 
-      {/* Bottom: unlock paywall OR quote/message input */}
-      {!isUnlocked && !lead.archived ? (
-        <div className="border-t bg-background">
-          <UnlockPaywall
-            leadId={lead.id}
-            category={lead.category}
-            cost={cost}
-            balance={balance}
-            onUnlocked={handleUnlocked}
-          />
-        </div>
-      ) : (
-        <div className="border-t bg-background">
-          {!hasQuoted && !lead.archived ? (
-            <div className="p-3">
-              <QuoteComposer
-                onSend={handleSendQuote}
-                sending={sending}
-                disabled={lead.archived}
-              />
-            </div>
-          ) : (
-            <MessageInput
-              value={newMessage}
-              onChange={setNewMessage}
-              onSubmit={handleSendMessage}
-              sending={sending}
-            />
-          )}
+      {/* Messages (only visible when contacted) */}
+      {isContacted && (
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <MessageThread messages={messages} />
         </div>
       )}
+
+      {/* Bottom: contact button OR message input */}
+      {!isContacted && !isArchived ? (
+        <div className="mt-auto border-t bg-background">
+          <ContactButton
+            customerName={lead.customer_name}
+            creditsCost={lead.credits_cost}
+            balance={balance}
+            onContact={handleContact}
+            contacting={contacting}
+          />
+        </div>
+      ) : isContacted && !isArchived ? (
+        <MessageInput
+          value={newMessage}
+          onChange={setNewMessage}
+          onSubmit={handleSendMessage}
+          sending={sending}
+        />
+      ) : null}
     </div>
   );
 }

@@ -4,28 +4,20 @@ import {
   MapPin,
   Phone,
   Mail,
-  Bell,
-  ChevronDown,
   Archive,
   ArchiveRestore,
+  ChevronDown,
+  Coins,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 interface Lead {
   id: string;
@@ -36,7 +28,10 @@ interface Lead {
   customer_phone: string | null;
   details: string | null;
   status: string;
-  archived: boolean;
+  credits_cost: number;
+  is_urgent: boolean;
+  city: string | null;
+  postal_code: string | null;
   created_at: string;
 }
 
@@ -51,28 +46,18 @@ const statusOptions = ["new", "contacted", "won", "lost"] as const;
 
 interface LeadHeaderProps {
   lead: Lead;
+  isContacted: boolean;
+  isArchived: boolean;
   onStatusChange: (status: string) => void;
   onArchiveToggle: () => void;
-  reminderOpen: boolean;
-  onReminderOpenChange: (open: boolean) => void;
-  reminderDate: string;
-  onReminderDateChange: (date: string) => void;
-  reminderNote: string;
-  onReminderNoteChange: (note: string) => void;
-  onCreateReminder: () => void;
 }
 
 export default function LeadHeader({
   lead,
+  isContacted,
+  isArchived,
   onStatusChange,
   onArchiveToggle,
-  reminderOpen,
-  onReminderOpenChange,
-  reminderDate,
-  onReminderDateChange,
-  reminderNote,
-  onReminderNoteChange,
-  onCreateReminder,
 }: LeadHeaderProps) {
   const navigate = useNavigate();
 
@@ -87,55 +72,19 @@ export default function LeadHeader({
         </button>
 
         <div className="flex items-center gap-2">
-          {/* Archive button */}
           <Button
             variant="outline"
             size="icon"
             className="h-8 w-8 rounded-full"
             onClick={onArchiveToggle}
           >
-            {lead.archived ? (
+            {isArchived ? (
               <ArchiveRestore className="h-4 w-4" />
             ) : (
               <Archive className="h-4 w-4" />
             )}
           </Button>
 
-          {/* Reminder button */}
-          <Dialog open={reminderOpen} onOpenChange={onReminderOpenChange}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon" className="h-8 w-8 rounded-full">
-                <Bell className="h-4 w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Set reminder for {lead.category}</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-2">
-                <Input
-                  type="datetime-local"
-                  value={reminderDate}
-                  onChange={(e) => onReminderDateChange(e.target.value)}
-                />
-                <Textarea
-                  placeholder="Add a note (optional)"
-                  value={reminderNote}
-                  onChange={(e) => onReminderNoteChange(e.target.value)}
-                  rows={2}
-                />
-                <Button
-                  onClick={onCreateReminder}
-                  disabled={!reminderDate}
-                  className="w-full rounded-xl"
-                >
-                  Create reminder
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          {/* Status dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -162,32 +111,48 @@ export default function LeadHeader({
         </div>
       </div>
 
-      <h2 className="text-xl font-bold text-foreground mb-2">{lead.category}</h2>
+      <div className="flex items-center gap-2 mb-2">
+        <h2 className="text-xl font-bold text-foreground">{lead.category}</h2>
+        {lead.is_urgent && (
+          <Badge variant="destructive" className="text-xs">
+            <Zap className="h-3 w-3 mr-0.5" /> Urgent
+          </Badge>
+        )}
+      </div>
+
+      <div className="flex items-center gap-3 mb-2">
+        <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+          <Coins className="h-3 w-3 mr-0.5" />
+          {lead.credits_cost} Credits
+        </Badge>
+      </div>
 
       <div className="space-y-1 text-sm text-muted-foreground">
         <p className="flex items-center gap-1.5">
           <MapPin className="h-4 w-4" /> {lead.location_text}
         </p>
         {lead.customer_name && <p>Customer: {lead.customer_name}</p>}
-        {lead.customer_phone && (
+
+        {/* Contact info only visible when contacted */}
+        {isContacted && lead.customer_phone && (
           <p className="flex items-center gap-1.5">
-            <Phone className="h-4 w-4" /> {lead.customer_phone}
+            <Phone className="h-4 w-4" />
+            <a href={`tel:${lead.customer_phone}`} className="text-primary hover:underline">
+              {lead.customer_phone}
+            </a>
           </p>
         )}
-        {lead.customer_email && (
+        {isContacted && lead.customer_email && (
           <p className="flex items-center gap-1.5">
-            <Mail className="h-4 w-4" /> {lead.customer_email}
+            <Mail className="h-4 w-4" />
+            <a href={`mailto:${lead.customer_email}`} className="text-primary hover:underline">
+              {lead.customer_email}
+            </a>
           </p>
         )}
       </div>
 
-      {lead.details && (
-        <Card className="mt-3 p-3 bg-muted/50">
-          <p className="text-sm text-foreground">{lead.details}</p>
-        </Card>
-      )}
-
-      {lead.archived && (
+      {isArchived && (
         <div className="mt-3 rounded-lg bg-muted px-3 py-2 text-xs font-medium text-muted-foreground">
           This lead is archived
         </div>

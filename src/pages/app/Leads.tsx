@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, MapPin, Clock, ClipboardList, Search, X, Archive, Lock, Coins } from "lucide-react";
+import { Loader2, MapPin, Clock, ClipboardList, Search, X, Archive, Coins, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,12 +18,19 @@ interface Lead {
   status: string;
   created_at: string;
   last_activity_at: string;
-  archived: boolean;
+  credits_cost: number;
+  is_urgent: boolean;
+  has_additional_details: boolean;
+  city: string | null;
+  postal_code: string | null;
 }
 
-interface PricingRule {
-  category: string;
-  base_cost: number;
+interface AgentState {
+  lead_id: string;
+  is_unread: boolean;
+  is_archived: boolean;
+  contacted: boolean;
+  first_to_respond: boolean;
 }
 
 const statusColors: Record<string, string> = {
@@ -37,12 +44,11 @@ const statusFilters = ["all", "new", "contacted", "won", "lost"] as const;
 
 export default function Leads() {
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [agentStates, setAgentStates] = useState<Map<string, AgentState>>(new Map());
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showArchived, setShowArchived] = useState(false);
-  const [purchasedLeadIds, setPurchasedLeadIds] = useState<Set<string>>(new Set());
-  const [pricingMap, setPricingMap] = useState<Map<string, number>>(new Map());
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -50,43 +56,42 @@ export default function Leads() {
     if (!user) return;
 
     const fetchData = async () => {
-      const [leadsRes, purchasesRes, pricingRes] = await Promise.all([
+      const [leadsRes, statesRes] = await Promise.all([
         supabase
           .from("leads")
-          .select("id, category, location_text, customer_name, details, status, created_at, last_activity_at, archived")
-          .eq("archived", showArchived)
+          .select("id, category, location_text, customer_name, details, status, created_at, last_activity_at, credits_cost, is_urgent, has_additional_details, city, postal_code")
           .order("last_activity_at", { ascending: false }),
         supabase
-          .from("lead_purchases")
-          .select("lead_id")
-          .eq("user_id", user.id),
-        supabase
-          .from("lead_pricing_rules")
-          .select("category, base_cost"),
+          .from("lead_agent_state")
+          .select("lead_id, is_unread, is_archived, contacted, first_to_respond")
+          .eq("agent_id", user.id),
       ]);
 
       if (leadsRes.data) setLeads(leadsRes.data);
-      if (purchasesRes.data) {
-        setPurchasedLeadIds(new Set(purchasesRes.data.map((p) => p.lead_id)));
-      }
-      if (pricingRes.data) {
-        setPricingMap(new Map(pricingRes.data.map((r) => [r.category, r.base_cost])));
+      if (statesRes.data) {
+        setAgentStates(new Map(statesRes.data.map((s) => [s.lead_id, s])));
       }
       setLoading(false);
     };
 
     fetchData();
-  }, [user, showArchived]);
+  }, [user]);
 
   const handleRestore = async (e: React.MouseEvent, leadId: string) => {
     e.stopPropagation();
     const { error } = await supabase
-      .from("leads")
-      .update({ archived: false, archived_at: null })
-      .eq("id", leadId);
+      .from("lead_agent_state")
+      .update({ is_archived: false, archived_at: null, updated_at: new Date().toISOString() })
+      .eq("lead_id", leadId)
+      .eq("agent_id", user!.id);
 
     if (!error) {
-      setLeads((prev) => prev.filter((l) => l.id !== leadId));
+      setAgentStates((prev) => {
+        const next = new Map(prev);
+        const existing = next.get(leadId);
+        if (existing) next.set(leadId, { ...existing, is_archived: false });
+        return next;
+      });
       toast.success("Lead restored");
     } else {
       toast.error("Failed to restore lead");
@@ -95,6 +100,13 @@ export default function Leads() {
 
   const filteredLeads = useMemo(() => {
     let result = leads;
+
+    // Filter by archive state
+    result = result.filter((l) => {
+      const state = agentStates.get(l.id);
+      const isArchived = state?.is_archived ?? false;
+      return showArchived ? isArchived : !isArchived;
+    });
 
     if (statusFilter !== "all") {
       result = result.filter((l) => l.status === statusFilter);
@@ -112,7 +124,7 @@ export default function Leads() {
     }
 
     return result;
-  }, [leads, statusFilter, searchQuery]);
+  }, [leads, agentStates, statusFilter, searchQuery, showArchived]);
 
   if (loading) {
     return (
@@ -142,7 +154,7 @@ export default function Leads() {
       {/* Active / Archived toggle */}
       <div className="flex rounded-full bg-muted p-1">
         <button
-          onClick={() => { setShowArchived(false); setLoading(true); }}
+          onClick={() => setShowArchived(false)}
           className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
             !showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
           }`}
@@ -150,7 +162,7 @@ export default function Leads() {
           Active
         </button>
         <button
-          onClick={() => { setShowArchived(true); setLoading(true); }}
+          onClick={() => setShowArchived(true)}
           className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
             showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
           }`}
@@ -204,8 +216,9 @@ export default function Leads() {
         </p>
       ) : (
         filteredLeads.map((lead) => {
-          const isPurchased = purchasedLeadIds.has(lead.id);
-          const leadCost = pricingMap.get(lead.category) ?? 5;
+          const state = agentStates.get(lead.id);
+          const isUnread = state?.is_unread ?? true;
+          const isContacted = state?.contacted ?? false;
 
           return (
             <Card
@@ -214,18 +227,27 @@ export default function Leads() {
               onClick={() => navigate(`/app/leads/${lead.id}`)}
             >
               <div className="flex items-start justify-between mb-2">
-                <h3 className="font-semibold text-foreground">{lead.category}</h3>
+                <div className="flex items-center gap-2">
+                  {isUnread && !showArchived && (
+                    <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                  )}
+                  <h3 className="font-semibold text-foreground">{lead.category}</h3>
+                </div>
                 <div className="flex items-center gap-1.5">
-                  {/* Credit badge */}
+                  {lead.is_urgent && (
+                    <Badge variant="destructive" className="text-xs">
+                      <Zap className="h-3 w-3 mr-0.5" /> Urgent
+                    </Badge>
+                  )}
                   {!showArchived && (
-                    isPurchased ? (
+                    isContacted ? (
                       <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/20">
-                        Unlocked
+                        Contacted
                       </Badge>
                     ) : (
                       <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
                         <Coins className="h-3 w-3 mr-0.5" />
-                        {leadCost}
+                        {lead.credits_cost}
                       </Badge>
                     )
                   )}
