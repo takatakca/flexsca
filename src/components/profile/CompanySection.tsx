@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import type { ProviderProfile } from "@/hooks/useProviderProfile";
 
 interface Props {
@@ -28,6 +29,7 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
   const [size, setSize] = useState(profile.company_size || "solo");
   const [years, setYears] = useState(profile.years_in_business?.toString() || "0");
   const [uploading, setUploading] = useState(false);
+  const [showTips, setShowTips] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +62,7 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
   const descLength = description.length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Profile photo */}
       <div className="flex flex-col items-center gap-3">
         <div className="relative">
@@ -110,6 +112,11 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
         />
       </div>
 
+      {/* About the company heading */}
+      <h3 className="text-lg font-semibold text-foreground pt-2">
+        About the company
+      </h3>
+
       {/* Company size */}
       <div>
         <label className="text-sm font-medium text-foreground mb-1 block">
@@ -117,7 +124,7 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
         </label>
         <Select value={size} onValueChange={setSize}>
           <SelectTrigger className="rounded-xl">
-            <SelectValue />
+            <SelectValue placeholder="Select one" />
           </SelectTrigger>
           <SelectContent>
             {COMPANY_SIZES.map((s) => (
@@ -140,19 +147,20 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
           max={100}
           value={years}
           onChange={(e) => setYears(e.target.value)}
+          placeholder="Number of years"
           className="rounded-xl"
         />
       </div>
 
-      {/* Description */}
+      {/* Company Description */}
       <div>
         <label className="text-sm font-medium text-foreground mb-1 block">
-          Company description
+          Company Description
         </label>
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Tell potential customers about your business, experience, and what makes you different..."
+          placeholder="What sets you apart from other businesses?"
           className="rounded-xl min-h-[120px]"
           maxLength={1000}
         />
@@ -160,6 +168,27 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
           {descLength}/1000 {descLength < 50 && "(min 50 characters)"}
         </p>
       </div>
+
+      {/* Tips collapsible */}
+      <Collapsible open={showTips} onOpenChange={setShowTips}>
+        <CollapsibleTrigger asChild>
+          <button className="text-sm text-primary font-medium hover:underline">
+            Here's our tips for writing a great description
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="pt-3">
+          <div className="rounded-xl bg-muted/50 p-4 space-y-2 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">Tips for a great profile description:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Introduce yourself and your business</li>
+              <li>Mention your experience and qualifications</li>
+              <li>Highlight what makes you different from competitors</li>
+              <li>Keep it friendly and professional</li>
+              <li>Aim for at least 50 characters — more detail helps customers trust you</li>
+            </ul>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
 
       <Button onClick={handleSave} disabled={saving} className="w-full rounded-xl">
         {saving ? "Saving…" : "Save company info"}

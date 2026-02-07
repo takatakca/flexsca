@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ProviderProfile } from "@/hooks/useProviderProfile";
 
 interface Props {
@@ -11,10 +13,18 @@ interface Props {
   onSave: (updates: Partial<ProviderProfile>) => Promise<void>;
 }
 
+const LOCATION_REASONS = [
+  { value: "home_based", label: "I work from home" },
+  { value: "travel_to_clients", label: "I travel to my clients" },
+  { value: "security", label: "Security reasons" },
+  { value: "other", label: "Other" },
+];
+
 export default function LocationSection({ profile, saving, onSave }: Props) {
   const [city, setCity] = useState(profile.city || "");
   const [province, setProvince] = useState(profile.province || "");
   const [locationPrivate, setLocationPrivate] = useState(profile.location_private);
+  const [privateReason, setPrivateReason] = useState("");
 
   const handleSave = () => {
     onSave({
@@ -26,13 +36,6 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <MapPin className="h-4 w-4" />
-        <p className="text-xs">
-          Enter your city only — never your home address. Turn "Make private" on to keep your location hidden from public view.
-        </p>
-      </div>
-
       <div>
         <label className="text-sm font-medium text-foreground mb-1 block">
           City
@@ -59,13 +62,55 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
         />
       </div>
 
-      <div className="flex items-center justify-between rounded-xl border px-4 py-3">
-        <span className="text-sm text-foreground">Make location private</span>
-        <Switch
+      {/* Make private checkbox — Bark-style */}
+      <div className="flex items-center gap-2 pt-1">
+        <Checkbox
+          id="make-private"
           checked={locationPrivate}
-          onCheckedChange={setLocationPrivate}
+          onCheckedChange={(checked) => setLocationPrivate(!!checked)}
+          className="rounded"
         />
+        <label
+          htmlFor="make-private"
+          className="text-sm font-medium text-foreground cursor-pointer"
+        >
+          Make private
+        </label>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs max-w-[200px]">
+                When enabled, your exact location won't be shown on your public profile.
+                Only your city will be visible.
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
+
+      {/* Reason dropdown — only shown when private is checked */}
+      {locationPrivate && (
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium text-foreground block">
+            Can't give us a particular location?
+          </label>
+          <Select value={privateReason} onValueChange={setPrivateReason}>
+            <SelectTrigger className="rounded-xl">
+              <SelectValue placeholder="Select a reason" />
+            </SelectTrigger>
+            <SelectContent>
+              {LOCATION_REASONS.map((r) => (
+                <SelectItem key={r.value} value={r.value}>
+                  {r.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <Button onClick={handleSave} disabled={saving} className="w-full rounded-xl">
         {saving ? "Saving…" : "Save location"}
