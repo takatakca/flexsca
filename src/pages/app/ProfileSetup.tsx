@@ -26,8 +26,7 @@ export default function ProfileSetup() {
     removeService,
     addPhoto,
     removePhoto,
-    addQA,
-    removeQA,
+    saveAllQAs,
     uploadPhoto,
   } = useProviderProfile();
 
@@ -175,8 +174,7 @@ export default function ProfileSetup() {
           <AccordionContent className="px-4 pb-4">
             <QASection
               qas={qas}
-              onAdd={addQA}
-              onRemove={removeQA}
+              onSaveAll={saveAllQAs}
             />
           </AccordionContent>
         </AccordionItem>

@@ -1,140 +1,125 @@
-import { useState } from "react";
-import { Plus, Trash2, HelpCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { ProviderQA } from "@/hooks/useProviderProfile";
 
-const SUGGESTED_QUESTIONS = [
+const ALL_QUESTIONS = [
   "How long have you been in business?",
   "Do you bring your own equipment and supplies?",
   "What do you love most about your job?",
   "What inspired you to start your own business?",
-  "Why should clients choose you?",
-  "Can you provide services online or remotely?",
-  "What are your Covid-19 safety measures?",
+  "Why should our clients choose you?",
+  "Can you provide your services online or remotely? If so, please add details.",
+  "What changes have you made to keep your customers safe from Covid-19?",
 ];
+
+const MIN_CHARS = 50;
 
 interface Props {
   qas: ProviderQA[];
-  onAdd: (question: string, answer: string) => Promise<void>;
-  onRemove: (id: string) => Promise<void>;
+  onSaveAll: (entries: { question: string; answer: string }[]) => Promise<void>;
 }
 
-export default function QASection({ qas, onAdd, onRemove }: Props) {
-  const [adding, setAdding] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+export default function QASection({ qas, onSaveAll }: Props) {
+  // Build a map of question → answer from existing data
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
 
-  const usedQuestions = new Set(qas.map((q) => q.question));
-  const availableQuestions = SUGGESTED_QUESTIONS.filter(
-    (q) => !usedQuestions.has(q)
-  );
+  // Populate answers from existing QAs on mount/change
+  useEffect(() => {
+    const map: Record<string, string> = {};
+    for (const qa of qas) {
+      map[qa.question] = qa.answer;
+    }
+    // Also keep any local edits for questions not yet saved
+    setAnswers((prev) => {
+      const merged = { ...map };
+      for (const q of ALL_QUESTIONS) {
+        if (!merged[q] && prev[q]) {
+          merged[q] = prev[q];
+        }
+      }
+      return merged;
+    });
+  }, [qas]);
 
-  const handleAdd = async () => {
-    if (!question.trim() || !answer.trim()) return;
-    setSubmitting(true);
-    await onAdd(question.trim(), answer.trim());
-    setQuestion("");
-    setAnswer("");
-    setAdding(false);
-    setSubmitting(false);
+  const filledCount = ALL_QUESTIONS.filter(
+    (q) => (answers[q] || "").trim().length >= MIN_CHARS
+  ).length;
+
+  const allFilled = filledCount === ALL_QUESTIONS.length;
+
+  const handleSave = async () => {
+    const entries = ALL_QUESTIONS
+      .filter((q) => (answers[q] || "").trim().length >= MIN_CHARS)
+      .map((q) => ({ question: q, answer: answers[q].trim() }));
+
+    if (entries.length === 0) return;
+
+    setSaving(true);
+    await onSaveAll(entries);
+    setSaving(false);
   };
 
   return (
-    <div className="space-y-3">
-      <p className="text-xs text-muted-foreground">
-        Answer common questions to build trust and remove buyer hesitation. These appear on your public profile.
-      </p>
-
-      {qas.map((qa) => (
-        <div
-          key={qa.id}
-          className="rounded-xl border p-3 space-y-1"
-        >
-          <div className="flex items-start justify-between gap-2">
-            <p className="text-sm font-medium text-foreground">{qa.question}</p>
-            <button
-              onClick={() => onRemove(qa.id)}
-              className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
-          </div>
-          <p className="text-xs text-muted-foreground">{qa.answer}</p>
+    <div className="space-y-5">
+      {/* Status header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-primary">Get started!</span>
+          <span className="text-xs text-muted-foreground">
+            {filledCount}/{ALL_QUESTIONS.length} answered
+          </span>
         </div>
-      ))}
+        {allFilled && (
+          <CheckCircle2 className="h-5 w-5 text-primary" />
+        )}
+      </div>
 
-      {adding ? (
-        <div className="rounded-xl border p-3 space-y-3">
-          {availableQuestions.length > 0 && (
-            <Select value={question} onValueChange={setQuestion}>
-              <SelectTrigger className="rounded-xl">
-                <SelectValue placeholder="Pick a suggested question…" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableQuestions.map((q) => (
-                  <SelectItem key={q} value={q}>
-                    {q}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
+      {/* All questions */}
+      {ALL_QUESTIONS.map((question) => {
+        const value = answers[question] || "";
+        const charCount = value.trim().length;
+        const isValid = charCount >= MIN_CHARS;
 
-          {question && (
+        return (
+          <div key={question} className="space-y-2">
+            <label className="text-sm font-medium text-foreground leading-snug block">
+              {question}
+            </label>
             <Textarea
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder="Your answer…"
-              className="rounded-xl min-h-[80px]"
+              value={value}
+              onChange={(e) =>
+                setAnswers((prev) => ({ ...prev, [question]: e.target.value }))
+              }
+              placeholder={`Minimum ${MIN_CHARS} characters`}
+              className="rounded-xl min-h-[80px] text-sm"
               maxLength={500}
-              autoFocus
             />
-          )}
-
-          <div className="flex gap-2">
-            <Button
-              onClick={handleAdd}
-              disabled={submitting || !question.trim() || !answer.trim()}
-              size="sm"
-              className="rounded-xl flex-1"
-            >
-              {submitting ? "Adding…" : "Save answer"}
-            </Button>
-            <Button
-              onClick={() => {
-                setAdding(false);
-                setQuestion("");
-                setAnswer("");
-              }}
-              variant="outline"
-              size="sm"
-              className="rounded-xl"
-            >
-              Cancel
-            </Button>
+            <div className="flex items-center justify-between">
+              <p
+                className={`text-xs ${
+                  isValid ? "text-muted-foreground" : "text-destructive"
+                }`}
+              >
+                {charCount}/{MIN_CHARS} min
+              </p>
+              {isValid && (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <Button
-          onClick={() => setAdding(true)}
-          variant="outline"
-          className="w-full rounded-xl"
-          disabled={availableQuestions.length === 0}
-        >
-          <Plus className="h-4 w-4 mr-1" />{" "}
-          {availableQuestions.length === 0 ? "All questions answered" : "Add Q&A"}
-        </Button>
-      )}
+        );
+      })}
 
-      {qas.length === 0 && !adding && (
-        <div className="flex flex-col items-center gap-2 py-4 text-muted-foreground">
-          <HelpCircle className="h-8 w-8" />
-          <p className="text-sm">No Q&A yet</p>
-        </div>
-      )}
+      <Button
+        onClick={handleSave}
+        disabled={saving || filledCount === 0}
+        className="w-full rounded-xl"
+      >
+        {saving ? "Saving…" : `Save answers (${filledCount})`}
+      </Button>
     </div>
   );
 }
