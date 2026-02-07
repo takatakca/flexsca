@@ -135,6 +135,11 @@ export default function ReviewsSection() {
 
   const hasReviews = reviews.length > 0;
 
+  // Calculate average rating
+  const avgRating = hasReviews
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
+
   return (
     <div className="space-y-6">
       {/* Get started prompt */}
@@ -142,15 +147,120 @@ export default function ReviewsSection() {
         <span className="text-sm text-muted-foreground">Get started!</span>
         <CheckCircle2
           className={`h-5 w-5 ${
-            hasReviews
-              ? "text-primary"
-              : "text-muted-foreground/40"
+            hasReviews ? "text-primary" : "text-muted-foreground/40"
           }`}
         />
       </div>
 
-      {/* Email invites */}
-      <div className="space-y-3">
+      {/* Overall rating */}
+      <div className="space-y-2">
+        <h3 className="text-xl font-semibold text-foreground">Overall rating</h3>
+
+        {hasReviews ? (
+          <div className="rounded-xl bg-muted/50 p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-foreground">
+                {avgRating.toFixed(1)}
+              </span>
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 ${
+                      i < Math.round(avgRating)
+                        ? "text-yellow-400 fill-yellow-400"
+                        : "text-muted-foreground/30"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-sm text-muted-foreground">
+                ({reviews.length} review{reviews.length !== 1 ? "s" : ""})
+              </span>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-xl bg-muted/50 p-5 space-y-3">
+            <p className="text-sm font-medium text-foreground leading-relaxed">
+              You don't have a rating because you don't have any customer reviews.
+            </p>
+            <p className="text-sm font-medium text-foreground leading-relaxed">
+              For nearly 9 in 10 consumers, an online review is as important as a
+              personal recommendation.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* No reviews prompt */}
+      <div className="rounded-xl bg-muted/50 p-5 space-y-4">
+        <div className="space-y-2">
+          <h4 className="text-base font-semibold text-foreground">
+            {hasReviews
+              ? `Your reviews (${reviews.length})`
+              : "You have no reviews on FLEX'S yet"}
+          </h4>
+          {!hasReviews && (
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Your reviews don't have to just come from customers you found on
+              FLEX'S, they can also be from your existing customers.
+            </p>
+          )}
+        </div>
+
+        {/* Existing reviews list */}
+        {hasReviews && (
+          <div className="space-y-3">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="rounded-xl border bg-background p-3 space-y-1"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-3.5 w-3.5 ${
+                          i < review.rating
+                            ? "text-yellow-400 fill-yellow-400"
+                            : "text-muted-foreground/30"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => handleDeleteReview(review.id)}
+                    className="text-muted-foreground hover:text-destructive transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+                {review.reviewer_name && (
+                  <p className="text-xs font-medium text-foreground">
+                    {review.reviewer_name}
+                  </p>
+                )}
+                {review.review_text && (
+                  <p className="text-xs text-muted-foreground line-clamp-3">
+                    {review.review_text}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Reviews on FLEX'S — invite section */}
+        <div className="space-y-1 pt-2">
+          <h4 className="text-base font-semibold text-foreground">
+            Reviews on FLEX'S
+          </h4>
+          <p className="text-sm text-muted-foreground">
+            Invite your customers to leave reviews
+          </p>
+        </div>
+
         <Textarea
           value={emails}
           onChange={(e) => setEmails(e.target.value)}
@@ -213,7 +323,7 @@ export default function ReviewsSection() {
         </Button>
       </div>
 
-      {/* Existing invitations */}
+      {/* Sent invitations */}
       {invitations.length > 0 && (
         <div className="space-y-2 pt-2">
           <h4 className="text-sm font-medium text-foreground">
@@ -228,52 +338,6 @@ export default function ReviewsSection() {
               <span className="capitalize text-[10px] ml-2 shrink-0">
                 {inv.status}
               </span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Existing reviews */}
-      {reviews.length > 0 && (
-        <div className="space-y-3 pt-2">
-          <h4 className="text-sm font-medium text-foreground">
-            Your reviews ({reviews.length})
-          </h4>
-          {reviews.map((review) => (
-            <div
-              key={review.id}
-              className="rounded-xl border p-3 space-y-1"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-3.5 w-3.5 ${
-                        i < review.rating
-                          ? "text-yellow-400 fill-yellow-400"
-                          : "text-muted-foreground/30"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <button
-                  onClick={() => handleDeleteReview(review.id)}
-                  className="text-muted-foreground hover:text-destructive transition-colors"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-              {review.reviewer_name && (
-                <p className="text-xs font-medium text-foreground">
-                  {review.reviewer_name}
-                </p>
-              )}
-              {review.review_text && (
-                <p className="text-xs text-muted-foreground line-clamp-3">
-                  {review.review_text}
-                </p>
-              )}
             </div>
           ))}
         </div>
