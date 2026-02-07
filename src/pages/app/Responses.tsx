@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { MessageSquare, Loader2, MapPin, Clock, Circle } from "lucide-react";
+import { MessageSquare, Loader2, MapPin, Clock, Circle, Pencil } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,29 +16,25 @@ interface ContactedLead {
   details: string | null;
   created_at: string;
   credits_cost: number;
-  // From agent state
   contacted_at: string | null;
   custom_status_id: string | null;
-  // Last message
   last_message: string | null;
   last_message_time: string | null;
 }
 
-const categoryFilters = ["all", "pending", "hired", "archived"] as const;
-
 export default function Responses() {
   const [leads, setLeads] = useState<ContactedLead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [activeStatusId, setActiveStatusId] = useState<string | null>(null);
+  const [showStatusPicker, setShowStatusPicker] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { statuses, loading: statusesLoading } = useCustomStatuses();
+  const { statuses, loading: statusesLoading, byCategory } = useCustomStatuses();
 
   useEffect(() => {
     if (!user) return;
 
     const fetchContactedLeads = async () => {
-      // Get all leads where agent has contacted
       const { data: stateData } = await supabase
         .from("lead_agent_state")
         .select("lead_id, contacted_at, custom_status_id")
@@ -53,13 +49,11 @@ export default function Responses() {
       const leadIds = stateData.map((s) => s.lead_id);
       const stateMap = new Map(stateData.map((s) => [s.lead_id, s]));
 
-      // Fetch lead details
       const { data: leadsData } = await supabase
         .from("leads")
         .select("id, category, location_text, customer_name, details, created_at, credits_cost")
         .in("id", leadIds);
 
-      // Fetch last messages
       const { data: lastMessages } = await supabase
         .from("lead_last_message")
         .select("lead_id, message, created_at")
@@ -81,7 +75,6 @@ export default function Responses() {
         };
       });
 
-      // Sort by most recently contacted
       rows.sort((a, b) => {
         const ta = a.contacted_at ? new Date(a.contacted_at).getTime() : 0;
         const tb = b.contacted_at ? new Date(b.contacted_at).getTime() : 0;
@@ -100,14 +93,17 @@ export default function Responses() {
     [statuses]
   );
 
-  const filteredLeads = useMemo(() => {
-    if (categoryFilter === "all") return leads;
+  // Determine active status's category color for top accent bar
+  const activeStatus = activeStatusId ? statusMap.get(activeStatusId) : null;
 
-    return leads.filter((l) => {
-      const status = l.custom_status_id ? statusMap.get(l.custom_status_id) : null;
-      return status?.category === categoryFilter;
-    });
-  }, [leads, categoryFilter, statusMap]);
+  const filteredLeads = useMemo(() => {
+    if (!activeStatusId) return leads;
+    return leads.filter((l) => l.custom_status_id === activeStatusId);
+  }, [leads, activeStatusId]);
+
+  const pending = byCategory("pending");
+  const hired = byCategory("hired");
+  const archived = byCategory("archived");
 
   if (loading || statusesLoading) {
     return (
@@ -134,26 +130,138 @@ export default function Responses() {
 
   return (
     <div className="p-4 space-y-3">
-      {/* Category filter chips */}
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {categoryFilters.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setCategoryFilter(cat)}
-            className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
-              categoryFilter === cat
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-border hover:bg-accent"
-            }`}
-          >
-            {cat === "all" ? "All" : cat.charAt(0).toUpperCase() + cat.slice(1)}
-          </button>
-        ))}
+      {/* ── Bark-style status filter card ── */}
+      <div className="relative">
+        <button
+          onClick={() => setShowStatusPicker(!showStatusPicker)}
+          className="w-full rounded-2xl border border-border bg-card overflow-hidden shadow-sm"
+          style={{
+            borderTopColor: activeStatus?.color || "hsl(var(--primary))",
+            borderTopWidth: "4px",
+          }}
+        >
+          <div className="px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {activeStatus ? (
+                <>
+                  <div
+                    className="h-4 w-4 rounded-sm"
+                    style={{ backgroundColor: activeStatus.color }}
+                  />
+                  <span className="text-sm font-semibold text-foreground">
+                    {activeStatus.name}
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm font-semibold text-foreground">
+                  All statuses
+                </span>
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {showStatusPicker ? "▲" : "▼"}
+            </span>
+          </div>
+        </button>
+
+        {/* Dropdown card */}
+        {showStatusPicker && (
+          <Card className="absolute left-0 right-0 top-full mt-1 z-20 rounded-2xl shadow-lg border border-border overflow-hidden">
+            <div
+              className="h-1.5 w-full"
+              style={{
+                backgroundColor: activeStatus?.color || "hsl(var(--primary))",
+              }}
+            />
+
+            <div className="p-4 space-y-4">
+              {/* All option */}
+              <button
+                onClick={() => {
+                  setActiveStatusId(null);
+                  setShowStatusPicker(false);
+                }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  !activeStatusId
+                    ? "bg-accent text-foreground"
+                    : "text-muted-foreground hover:bg-muted"
+                }`}
+              >
+                All statuses
+              </button>
+
+              {/* Pending */}
+              {pending.length > 0 && (
+                <StatusFilterGroup
+                  title="Pending statuses"
+                  statuses={pending}
+                  activeStatusId={activeStatusId}
+                  onSelect={(id) => {
+                    setActiveStatusId(id);
+                    setShowStatusPicker(false);
+                  }}
+                />
+              )}
+
+              {/* Hired */}
+              {hired.length > 0 && (
+                <>
+                  <div className="border-t border-border" />
+                  <StatusFilterGroup
+                    title="Hired statuses"
+                    statuses={hired}
+                    activeStatusId={activeStatusId}
+                    onSelect={(id) => {
+                      setActiveStatusId(id);
+                      setShowStatusPicker(false);
+                    }}
+                  />
+                </>
+              )}
+
+              {/* Archived */}
+              {archived.length > 0 && (
+                <>
+                  <div className="border-t border-border" />
+                  <StatusFilterGroup
+                    title="Archived statuses"
+                    statuses={archived}
+                    activeStatusId={activeStatusId}
+                    onSelect={(id) => {
+                      setActiveStatusId(id);
+                      setShowStatusPicker(false);
+                    }}
+                  />
+                </>
+              )}
+
+              {/* Create / Manage link */}
+              <div className="border-t border-border pt-3">
+                <button
+                  onClick={() => navigate("/app/status-management")}
+                  className="flex items-center justify-center gap-2 w-full text-primary font-semibold text-sm hover:underline"
+                >
+                  <Pencil className="h-4 w-4" />
+                  Create / Manage
+                </button>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
 
+      {/* View leads link */}
+      <button
+        onClick={() => navigate("/app/leads")}
+        className="w-full text-center text-sm font-semibold text-foreground underline underline-offset-2"
+      >
+        View leads
+      </button>
+
+      {/* Lead cards */}
       {filteredLeads.length === 0 ? (
         <p className="text-center text-muted-foreground text-sm py-8">
-          No leads in this category.
+          No leads with this status.
         </p>
       ) : (
         filteredLeads.map((lead) => {
@@ -203,7 +311,9 @@ export default function Responses() {
                 {lead.contacted_at && (
                   <span className="flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" />
-                    {formatDistanceToNow(new Date(lead.contacted_at), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(lead.contacted_at), {
+                      addSuffix: true,
+                    })}
                   </span>
                 )}
               </div>
@@ -211,6 +321,45 @@ export default function Responses() {
           );
         })
       )}
+    </div>
+  );
+}
+
+/* ── Status filter group (inside dropdown) ── */
+
+function StatusFilterGroup({
+  title,
+  statuses,
+  activeStatusId,
+  onSelect,
+}: {
+  title: string;
+  statuses: CustomStatus[];
+  activeStatusId: string | null;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <div>
+      <h3 className="text-sm font-bold text-foreground mb-2">{title}</h3>
+      <div className="space-y-1">
+        {statuses.map((s) => (
+          <button
+            key={s.id}
+            onClick={() => onSelect(s.id)}
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeStatusId === s.id
+                ? "bg-accent text-foreground"
+                : "text-foreground hover:bg-muted"
+            }`}
+          >
+            <div
+              className="h-4 w-4 rounded-sm shrink-0"
+              style={{ backgroundColor: s.color }}
+            />
+            {s.name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
