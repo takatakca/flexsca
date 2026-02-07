@@ -622,6 +622,50 @@ export type Database = {
           },
         ]
       }
+      provider_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          rating: number
+          review_text: string | null
+          reviewer_email: string | null
+          reviewer_name: string | null
+          source: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          rating: number
+          review_text?: string | null
+          reviewer_email?: string | null
+          reviewer_name?: string | null
+          source?: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          rating?: number
+          review_text?: string | null
+          reviewer_email?: string | null
+          reviewer_name?: string | null
+          source?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_services: {
         Row: {
           created_at: string
@@ -747,6 +791,38 @@ export type Database = {
           {
             foreignKeyName: "responses_pro_id_fkey"
             columns: ["pro_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      review_invitations: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_invitations_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
