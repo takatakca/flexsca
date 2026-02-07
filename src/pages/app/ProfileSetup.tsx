@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Building2, MapPin, Briefcase, Camera, HelpCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Building2, MapPin, Briefcase, Camera, HelpCircle, Award, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import ProfileCompletionMeter from "@/components/profile/ProfileCompletionMeter";
@@ -8,6 +8,7 @@ import LocationSection from "@/components/profile/LocationSection";
 import ServicesSection from "@/components/profile/ServicesSection";
 import PhotosSection from "@/components/profile/PhotosSection";
 import QASection from "@/components/profile/QASection";
+import AccreditationsSection from "@/components/profile/AccreditationsSection";
 import { useProviderProfile } from "@/hooks/useProviderProfile";
 import { Badge } from "@/components/ui/badge";
 
@@ -18,6 +19,7 @@ export default function ProfileSetup() {
     services,
     photos,
     qas,
+    accreditations,
     loading,
     saving,
     completion,
@@ -27,6 +29,8 @@ export default function ProfileSetup() {
     addPhoto,
     removePhoto,
     saveAllQAs,
+    addAccreditation,
+    removeAccreditation,
     uploadPhoto,
   } = useProviderProfile();
 
@@ -175,6 +179,28 @@ export default function ProfileSetup() {
             <QASection
               qas={qas}
               onSaveAll={saveAllQAs}
+            />
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* Accreditations */}
+        <AccordionItem value="accreditations" className="border rounded-xl overflow-hidden">
+          <AccordionTrigger className="px-4 py-3 hover:no-underline">
+            <div className="flex items-center gap-2 flex-1">
+              <Award className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium">Accreditations</span>
+              <div className="ml-auto mr-2">
+                <Badge variant="secondary" className="text-[10px]">
+                  Optional
+                </Badge>
+              </div>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-4">
+            <AccreditationsSection
+              accreditations={accreditations}
+              onAdd={addAccreditation}
+              onRemove={removeAccreditation}
             />
           </AccordionContent>
         </AccordionItem>
