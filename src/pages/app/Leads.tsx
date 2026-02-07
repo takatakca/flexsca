@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, MapPin, Clock, ClipboardList, Search, X, Archive } from "lucide-react";
+import { Loader2, MapPin, Clock, ClipboardList, Search, X, Archive, Lock, Coins } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,11 @@ interface Lead {
   archived: boolean;
 }
 
+interface PricingRule {
+  category: string;
+  base_cost: number;
+}
+
 const statusColors: Record<string, string> = {
   new: "bg-primary text-primary-foreground",
   contacted: "bg-warning text-warning-foreground",
@@ -36,26 +41,41 @@ export default function Leads() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showArchived, setShowArchived] = useState(false);
+  const [purchasedLeadIds, setPurchasedLeadIds] = useState<Set<string>>(new Set());
+  const [pricingMap, setPricingMap] = useState<Map<string, number>>(new Map());
   const navigate = useNavigate();
   const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
 
-    const fetchLeads = async () => {
-      const { data, error } = await supabase
-        .from("leads")
-        .select("id, category, location_text, customer_name, details, status, created_at, last_activity_at, archived")
-        .eq("archived", showArchived)
-        .order("last_activity_at", { ascending: false });
+    const fetchData = async () => {
+      const [leadsRes, purchasesRes, pricingRes] = await Promise.all([
+        supabase
+          .from("leads")
+          .select("id, category, location_text, customer_name, details, status, created_at, last_activity_at, archived")
+          .eq("archived", showArchived)
+          .order("last_activity_at", { ascending: false }),
+        supabase
+          .from("lead_purchases")
+          .select("lead_id")
+          .eq("user_id", user.id),
+        supabase
+          .from("lead_pricing_rules")
+          .select("category, base_cost"),
+      ]);
 
-      if (!error && data) {
-        setLeads(data);
+      if (leadsRes.data) setLeads(leadsRes.data);
+      if (purchasesRes.data) {
+        setPurchasedLeadIds(new Set(purchasesRes.data.map((p) => p.lead_id)));
+      }
+      if (pricingRes.data) {
+        setPricingMap(new Map(pricingRes.data.map((r) => [r.category, r.base_cost])));
       }
       setLoading(false);
     };
 
-    fetchLeads();
+    fetchData();
   }, [user, showArchived]);
 
   const handleRestore = async (e: React.MouseEvent, leadId: string) => {
@@ -183,52 +203,72 @@ export default function Leads() {
           No leads match your filters.
         </p>
       ) : (
-        filteredLeads.map((lead) => (
-          <Card
-            key={lead.id}
-            className="p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] transition-transform"
-            onClick={() => navigate(`/app/leads/${lead.id}`)}
-          >
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="font-semibold text-foreground">{lead.category}</h3>
-              <Badge className={`text-xs ${statusColors[lead.status] || ""}`}>
-                {lead.status}
-              </Badge>
-            </div>
+        filteredLeads.map((lead) => {
+          const isPurchased = purchasedLeadIds.has(lead.id);
+          const leadCost = pricingMap.get(lead.category) ?? 5;
 
-            {lead.details && (
-              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                {lead.details}
-              </p>
-            )}
+          return (
+            <Card
+              key={lead.id}
+              className="p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] transition-transform"
+              onClick={() => navigate(`/app/leads/${lead.id}`)}
+            >
+              <div className="flex items-start justify-between mb-2">
+                <h3 className="font-semibold text-foreground">{lead.category}</h3>
+                <div className="flex items-center gap-1.5">
+                  {/* Credit badge */}
+                  {!showArchived && (
+                    isPurchased ? (
+                      <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/20">
+                        Unlocked
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+                        <Coins className="h-3 w-3 mr-0.5" />
+                        {leadCost}
+                      </Badge>
+                    )
+                  )}
+                  <Badge className={`text-xs ${statusColors[lead.status] || ""}`}>
+                    {lead.status}
+                  </Badge>
+                </div>
+              </div>
 
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5" />
-                {lead.location_text}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5" />
-                {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
-              </span>
-            </div>
+              {lead.details && (
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                  {lead.details}
+                </p>
+              )}
 
-            {lead.customer_name && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                Customer: {lead.customer_name}
-              </p>
-            )}
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {lead.location_text}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5" />
+                  {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
+                </span>
+              </div>
 
-            {showArchived && (
-              <button
-                onClick={(e) => handleRestore(e, lead.id)}
-                className="mt-2 flex items-center gap-1 text-xs text-primary font-medium hover:underline"
-              >
-                <Archive className="h-3.5 w-3.5" /> Restore
-              </button>
-            )}
-          </Card>
-        ))
+              {lead.customer_name && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Customer: {lead.customer_name}
+                </p>
+              )}
+
+              {showArchived && (
+                <button
+                  onClick={(e) => handleRestore(e, lead.id)}
+                  className="mt-2 flex items-center gap-1 text-xs text-primary font-medium hover:underline"
+                >
+                  <Archive className="h-3.5 w-3.5" /> Restore
+                </button>
+              )}
+            </Card>
+          );
+        })
       )}
     </div>
   );

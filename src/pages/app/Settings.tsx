@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogOut, User, Bell, Tag, Loader2 } from "lucide-react";
+import WalletCard from "@/components/WalletCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -116,6 +117,9 @@ export default function Settings() {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Wallet */}
+      <WalletCard />
 
       {/* Notifications */}
       <Card>
