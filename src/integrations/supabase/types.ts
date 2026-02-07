@@ -126,8 +126,63 @@ export type Database = {
           },
         ]
       }
+      lead_agent_state: {
+        Row: {
+          agent_id: string
+          archived_at: string | null
+          contacted: boolean
+          contacted_at: string | null
+          created_at: string
+          first_to_respond: boolean
+          is_archived: boolean
+          is_unread: boolean
+          lead_id: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          archived_at?: string | null
+          contacted?: boolean
+          contacted_at?: string | null
+          created_at?: string
+          first_to_respond?: boolean
+          is_archived?: boolean
+          is_unread?: boolean
+          lead_id: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          archived_at?: string | null
+          contacted?: boolean
+          contacted_at?: string | null
+          created_at?: string
+          first_to_respond?: boolean
+          is_archived?: boolean
+          is_unread?: boolean
+          lead_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_agent_state_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_agent_state_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_messages: {
         Row: {
+          agent_id: string | null
           created_at: string
           id: string
           lead_id: string
@@ -136,6 +191,7 @@ export type Database = {
           sender_type: string
         }
         Insert: {
+          agent_id?: string | null
           created_at?: string
           id?: string
           lead_id: string
@@ -144,6 +200,7 @@ export type Database = {
           sender_type: string
         }
         Update: {
+          agent_id?: string | null
           created_at?: string
           id?: string
           lead_id?: string
@@ -152,6 +209,13 @@ export type Database = {
           sender_type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "lead_messages_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "lead_messages_lead_id_fkey"
             columns: ["lead_id"]
@@ -220,51 +284,78 @@ export type Database = {
       }
       leads: {
         Row: {
+          answers: Json
           archived: boolean
           archived_at: string | null
-          assigned_to: string
+          assigned_to: string | null
           category: string
+          city: string | null
           created_at: string
+          credits_cost: number
           customer_email: string | null
           customer_name: string | null
           customer_phone: string | null
           details: string | null
+          has_additional_details: boolean
           id: string
+          is_urgent: boolean
           last_activity_at: string
           location_text: string
+          postal_code: string | null
+          province: string | null
+          service_subtype: string | null
           status: string
+          submitted_at: string
           updated_at: string
         }
         Insert: {
+          answers?: Json
           archived?: boolean
           archived_at?: string | null
-          assigned_to: string
+          assigned_to?: string | null
           category: string
+          city?: string | null
           created_at?: string
+          credits_cost?: number
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           details?: string | null
+          has_additional_details?: boolean
           id?: string
+          is_urgent?: boolean
           last_activity_at?: string
           location_text: string
+          postal_code?: string | null
+          province?: string | null
+          service_subtype?: string | null
           status?: string
+          submitted_at?: string
           updated_at?: string
         }
         Update: {
+          answers?: Json
           archived?: boolean
           archived_at?: string | null
-          assigned_to?: string
+          assigned_to?: string | null
           category?: string
+          city?: string | null
           created_at?: string
+          credits_cost?: number
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
           details?: string | null
+          has_additional_details?: boolean
           id?: string
+          is_urgent?: boolean
           last_activity_at?: string
           location_text?: string
+          postal_code?: string | null
+          province?: string | null
+          service_subtype?: string | null
           status?: string
+          submitted_at?: string
           updated_at?: string
         }
         Relationships: [
@@ -421,6 +512,7 @@ export type Database = {
       }
     }
     Functions: {
+      contact_lead: { Args: { p_lead_id: string }; Returns: Json }
       fulfill_credit_purchase: {
         Args: {
           p_amount_cents: number
