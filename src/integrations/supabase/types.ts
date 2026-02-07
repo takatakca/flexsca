@@ -126,6 +126,47 @@ export type Database = {
           },
         ]
       }
+      custom_statuses: {
+        Row: {
+          agent_id: string
+          category: string
+          color: string
+          created_at: string
+          id: string
+          is_default: boolean
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          agent_id: string
+          category?: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          agent_id?: string
+          category?: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_statuses_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_agent_state: {
         Row: {
           agent_id: string
@@ -133,6 +174,7 @@ export type Database = {
           contacted: boolean
           contacted_at: string | null
           created_at: string
+          custom_status_id: string | null
           first_to_respond: boolean
           is_archived: boolean
           is_unread: boolean
@@ -145,6 +187,7 @@ export type Database = {
           contacted?: boolean
           contacted_at?: string | null
           created_at?: string
+          custom_status_id?: string | null
           first_to_respond?: boolean
           is_archived?: boolean
           is_unread?: boolean
@@ -157,6 +200,7 @@ export type Database = {
           contacted?: boolean
           contacted_at?: string | null
           created_at?: string
+          custom_status_id?: string | null
           first_to_respond?: boolean
           is_archived?: boolean
           is_unread?: boolean
@@ -169,6 +213,13 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_agent_state_custom_status_id_fkey"
+            columns: ["custom_status_id"]
+            isOneToOne: false
+            referencedRelation: "custom_statuses"
             referencedColumns: ["id"]
           },
           {
@@ -527,6 +578,11 @@ export type Database = {
       is_lead_assigned_to_current_user: {
         Args: { lead_row_id: string }
         Returns: boolean
+      }
+      seed_default_statuses: { Args: { p_user_id: string }; Returns: undefined }
+      set_lead_custom_status: {
+        Args: { p_lead_id: string; p_status_id: string }
+        Returns: undefined
       }
       unlock_lead: { Args: { p_lead_id: string }; Returns: number }
     }

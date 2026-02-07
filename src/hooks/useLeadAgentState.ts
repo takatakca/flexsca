@@ -11,6 +11,7 @@ export interface LeadAgentState {
   contacted: boolean;
   contacted_at: string | null;
   first_to_respond: boolean;
+  custom_status_id: string | null;
   created_at: string;
   updated_at: string;
 }
