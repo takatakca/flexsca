@@ -15,6 +15,7 @@ import LeadDetail from "@/pages/app/LeadDetail";
 import Responses from "@/pages/app/Responses";
 import Reminders from "@/pages/app/Reminders";
 import Settings from "@/pages/app/Settings";
+import OpenInApp from "@/pages/app/OpenInApp";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/auth/welcome" element={<Welcome />} />
             <Route path="/auth/check-email" element={<CheckEmail />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/open-in-app" element={<OpenInApp />} />
 
             {/* Onboarding */}
             <Route

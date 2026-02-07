@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
 import LeadHeader from "@/components/lead-detail/LeadHeader";
 import MessageThread from "@/components/lead-detail/MessageThread";
 import QuickReplies from "@/components/lead-detail/QuickReplies";
@@ -62,6 +63,20 @@ export default function LeadDetail() {
 
     fetchData();
   }, [id, user]);
+
+  // Realtime: listen for new messages from other senders
+  const handleRealtimeMessage = useCallback(
+    (newMsg: Message) => {
+      setMessages((prev) => {
+        // Avoid duplicates (we already optimistically add our own messages)
+        if (prev.some((m) => m.id === newMsg.id)) return prev;
+        return [...prev, newMsg];
+      });
+    },
+    []
+  );
+
+  useRealtimeMessages(id, handleRealtimeMessage);
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || !id) return;
