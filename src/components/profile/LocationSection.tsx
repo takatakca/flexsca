@@ -34,8 +34,44 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
     });
   };
 
+  // Build a static map URL from city+province
+  const mapQuery = [city, province].filter(Boolean).join(", ") || "Canada";
+  const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=-141,42,-52,70&layer=mapnik&marker=56,-106`;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Company location heading */}
+      <div className="space-y-1.5">
+        <h3 className="text-xl font-semibold text-foreground">Company location</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Use a specific address to help customers searching for a local business.
+        </p>
+      </div>
+
+      {/* Business location */}
+      <div>
+        <label className="text-sm font-medium text-foreground mb-1 block">
+          What's the business location?
+        </label>
+        <Input
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          placeholder="Enter the company's address"
+          className="rounded-xl"
+          maxLength={200}
+        />
+      </div>
+
+      {/* Map preview */}
+      <div className="rounded-xl overflow-hidden border">
+        <iframe
+          title="Location map"
+          src={mapSrc}
+          className="w-full h-[220px] border-0"
+          loading="lazy"
+        />
+      </div>
+
       {/* Service area info callout */}
       <div className="rounded-xl bg-primary/5 border border-primary/10 p-4 space-y-1.5">
         <p className="text-sm font-semibold text-foreground">
@@ -60,33 +96,7 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
         Customers will see the location you've selected displayed on your profile
       </p>
 
-      <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          City
-        </label>
-        <Input
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="e.g. Montréal"
-          className="rounded-xl"
-          maxLength={100}
-        />
-      </div>
-
-      <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          Province / Region
-        </label>
-        <Input
-          value={province}
-          onChange={(e) => setProvince(e.target.value)}
-          placeholder="e.g. QC"
-          className="rounded-xl"
-          maxLength={50}
-        />
-      </div>
-
-      {/* Make private checkbox — Bark-style */}
+      {/* Make private checkbox */}
       <div className="flex items-center gap-2 pt-1">
         <Checkbox
           id="make-private"
@@ -135,6 +145,20 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
           </Select>
         </div>
       )}
+
+      {/* Province — kept for data but secondary */}
+      <div>
+        <label className="text-sm font-medium text-foreground mb-1 block">
+          Province / Region
+        </label>
+        <Input
+          value={province}
+          onChange={(e) => setProvince(e.target.value)}
+          placeholder="e.g. QC"
+          className="rounded-xl"
+          maxLength={50}
+        />
+      </div>
 
       <Button onClick={handleSave} disabled={saving} className="w-full rounded-xl">
         {saving ? "Saving…" : "Save location"}

@@ -28,6 +28,7 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
   const [description, setDescription] = useState(profile.company_description || "");
   const [size, setSize] = useState(profile.company_size || "solo");
   const [years, setYears] = useState(profile.years_in_business?.toString() || "0");
+  const [website, setWebsite] = useState(profile.website_links || "");
   const [uploading, setUploading] = useState(false);
   const [showTips, setShowTips] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -55,6 +56,7 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
       company_description: description.trim() || null,
       company_size: size,
       years_in_business: parseInt(years) || 0,
+      website_links: website.trim() || null,
     });
   };
 
@@ -109,6 +111,20 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
           placeholder="e.g. I Clean Services"
           className="rounded-xl"
           maxLength={100}
+        />
+      </div>
+
+      {/* Website */}
+      <div>
+        <label className="text-sm font-medium text-foreground mb-1 block">
+          Website
+        </label>
+        <Input
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
+          placeholder="Website"
+          className="rounded-xl"
+          maxLength={300}
         />
       </div>
 
