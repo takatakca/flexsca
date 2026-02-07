@@ -6,18 +6,13 @@ import {
   Mail,
   Archive,
   ArchiveRestore,
-  ChevronDown,
   Coins,
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import StatusDropdown from "@/components/lead-detail/StatusDropdown";
+import type { CustomStatus } from "@/hooks/useCustomStatuses";
 
 interface Lead {
   id: string;
@@ -35,29 +30,24 @@ interface Lead {
   created_at: string;
 }
 
-const statusColors: Record<string, string> = {
-  new: "bg-primary text-primary-foreground",
-  contacted: "bg-warning text-warning-foreground",
-  won: "bg-success text-success-foreground",
-  lost: "bg-destructive text-destructive-foreground",
-};
-
-const statusOptions = ["new", "contacted", "won", "lost"] as const;
-
 interface LeadHeaderProps {
   lead: Lead;
   isContacted: boolean;
   isArchived: boolean;
-  onStatusChange: (status: string) => void;
+  customStatusId: string | null;
+  customStatuses: CustomStatus[];
   onArchiveToggle: () => void;
+  onCustomStatusChanged: (statusId: string) => void;
 }
 
 export default function LeadHeader({
   lead,
   isContacted,
   isArchived,
-  onStatusChange,
+  customStatusId,
+  customStatuses,
   onArchiveToggle,
+  onCustomStatusChanged,
 }: LeadHeaderProps) {
   const navigate = useNavigate();
 
@@ -85,29 +75,13 @@ export default function LeadHeader({
             )}
           </Button>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
-                  statusColors[lead.status] || "bg-muted text-foreground"
-                }`}
-              >
-                {lead.status}
-                <ChevronDown className="h-3 w-3" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {statusOptions.map((s) => (
-                <DropdownMenuItem
-                  key={s}
-                  onClick={() => onStatusChange(s)}
-                  className={lead.status === s ? "font-bold" : ""}
-                >
-                  {s.charAt(0).toUpperCase() + s.slice(1)}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Custom status dropdown */}
+          <StatusDropdown
+            statuses={customStatuses}
+            currentStatusId={customStatusId}
+            leadId={lead.id}
+            onStatusChanged={onCustomStatusChanged}
+          />
         </div>
       </div>
 
@@ -133,7 +107,6 @@ export default function LeadHeader({
         </p>
         {lead.customer_name && <p>Customer: {lead.customer_name}</p>}
 
-        {/* Contact info only visible when contacted */}
         {isContacted && lead.customer_phone && (
           <p className="flex items-center gap-1.5">
             <Phone className="h-4 w-4" />

@@ -8,6 +8,7 @@ import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
 import { useLeadAgentState } from "@/hooks/useLeadAgentState";
 import { useContactLead } from "@/hooks/useContactLead";
 import { useCredits } from "@/hooks/useCredits";
+import { useCustomStatuses } from "@/hooks/useCustomStatuses";
 import LeadHeader from "@/components/lead-detail/LeadHeader";
 import LeadAnswers from "@/components/lead-detail/LeadAnswers";
 import MessageThread from "@/components/lead-detail/MessageThread";
@@ -52,6 +53,7 @@ export default function LeadDetail() {
     useLeadAgentState(id);
   const { contactLead, contacting } = useContactLead();
   const { balance, refetch: refetchCredits } = useCredits();
+  const { statuses } = useCustomStatuses();
 
   const isContacted = agentState?.contacted ?? false;
   const isArchived = agentState?.is_archived ?? false;
@@ -144,19 +146,9 @@ export default function LeadDetail() {
     }
   };
 
-  // Status change (on lead itself)
-  const handleStatusChange = async (newStatus: string) => {
-    if (!id || !lead) return;
-    const { error } = await supabase
-      .from("leads")
-      .update({ status: newStatus })
-      .eq("id", id);
-    if (!error) {
-      setLead((prev) => (prev ? { ...prev, status: newStatus } : prev));
-      toast.success(`Status updated to ${newStatus}`);
-    } else {
-      toast.error("Failed to update status");
-    }
+  // Custom status changed
+  const handleCustomStatusChanged = (statusId: string) => {
+    refetchState();
   };
 
   if (loading || stateLoading) {
@@ -181,8 +173,10 @@ export default function LeadDetail() {
         lead={lead}
         isContacted={isContacted}
         isArchived={isArchived}
-        onStatusChange={handleStatusChange}
+        customStatusId={agentState?.custom_status_id ?? null}
+        customStatuses={statuses}
         onArchiveToggle={handleArchiveToggle}
+        onCustomStatusChanged={handleCustomStatusChanged}
       />
 
       {/* Lead Q&A answers */}
