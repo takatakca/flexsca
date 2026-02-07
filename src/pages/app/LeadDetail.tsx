@@ -11,9 +11,17 @@ import { useCredits } from "@/hooks/useCredits";
 import { useCustomStatuses } from "@/hooks/useCustomStatuses";
 import LeadHeader from "@/components/lead-detail/LeadHeader";
 import LeadAnswers from "@/components/lead-detail/LeadAnswers";
+import {
+  FirstToRespondBanner,
+  SetReminderButton,
+  Highlights,
+  ContactDetailsSection,
+  CreditsCostDisplay,
+} from "@/components/lead-detail/LeadInfoSections";
 import MessageThread from "@/components/lead-detail/MessageThread";
 import MessageInput from "@/components/lead-detail/MessageInput";
 import ContactButton from "@/components/lead-detail/ContactButton";
+import ReminderModal from "@/components/leads/ReminderModal";
 
 interface Lead {
   id: string;
@@ -26,6 +34,7 @@ interface Lead {
   status: string;
   credits_cost: number;
   is_urgent: boolean;
+  has_additional_details: boolean;
   answers: Record<string, unknown>;
   city: string | null;
   postal_code: string | null;
@@ -48,15 +57,22 @@ export default function LeadDetail() {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [reminderOpen, setReminderOpen] = useState(false);
 
-  const { state: agentState, loading: stateLoading, markRead, toggleArchive, refetch: refetchState } =
-    useLeadAgentState(id);
+  const {
+    state: agentState,
+    loading: stateLoading,
+    markRead,
+    toggleArchive,
+    refetch: refetchState,
+  } = useLeadAgentState(id);
   const { contactLead, contacting } = useContactLead();
   const { balance, refetch: refetchCredits } = useCredits();
   const { statuses } = useCustomStatuses();
 
   const isContacted = agentState?.contacted ?? false;
   const isArchived = agentState?.is_archived ?? false;
+  const isFirstToRespond = agentState?.first_to_respond ?? false;
 
   // Fetch lead data
   useEffect(() => {
@@ -147,7 +163,7 @@ export default function LeadDetail() {
   };
 
   // Custom status changed
-  const handleCustomStatusChanged = (statusId: string) => {
+  const handleCustomStatusChanged = (_statusId: string) => {
     refetchState();
   };
 
@@ -179,15 +195,51 @@ export default function LeadDetail() {
         onCustomStatusChanged={handleCustomStatusChanged}
       />
 
-      {/* Lead Q&A answers + location (Bark-style) */}
+      {/* Scrollable content area */}
       <div className="flex-1 overflow-y-auto">
-        <LeadAnswers
-          answers={lead.answers}
-          details={lead.details}
-          locationText={lead.location_text}
-          city={lead.city}
-          postalCode={lead.postal_code}
-        />
+        {/* Pre-contact info sections */}
+        {!isContacted && !isArchived && (
+          <>
+            <FirstToRespondBanner isFirstToRespond={isFirstToRespond} />
+            <SetReminderButton onSetReminder={() => setReminderOpen(true)} />
+
+            <Highlights
+              hasVerifiedPhone={!!lead.customer_phone}
+              hasAdditionalDetails={lead.has_additional_details || !!lead.details}
+            />
+
+            <ContactDetailsSection
+              phone={lead.customer_phone}
+              email={lead.customer_email}
+              isContacted={false}
+            />
+
+            <CreditsCostDisplay creditsCost={lead.credits_cost} />
+          </>
+        )}
+
+        {/* Revealed contact info when contacted */}
+        {isContacted && (
+          <ContactDetailsSection
+            phone={lead.customer_phone}
+            email={lead.customer_email}
+            isContacted={true}
+          />
+        )}
+
+        {/* Lead Q&A details */}
+        <div className="mt-4">
+          <div className="px-4 mb-1">
+            <h3 className="text-base font-bold text-foreground">Details</h3>
+          </div>
+          <LeadAnswers
+            answers={lead.answers}
+            details={lead.details}
+            locationText={lead.location_text}
+            city={lead.city}
+            postalCode={lead.postal_code}
+          />
+        </div>
 
         {/* Messages (only visible when contacted) */}
         {isContacted && (
@@ -214,6 +266,17 @@ export default function LeadDetail() {
           sending={sending}
         />
       ) : null}
+
+      {/* Reminder modal */}
+      {id && lead && (
+        <ReminderModal
+          open={reminderOpen}
+          onClose={() => setReminderOpen(false)}
+          leadId={id}
+          leadCategory={lead.category}
+          customerName={lead.customer_name}
+        />
+      )}
     </div>
   );
 }
