@@ -1,15 +1,30 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, LogOut, User, Bell, Tag, Loader2, ChevronRight, Palette, Briefcase } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  ArrowLeft,
+  LogOut,
+  ChevronRight,
+  Loader2,
+  Trash2,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import WalletCard from "@/components/WalletCard";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -88,78 +103,92 @@ export default function Settings() {
   }
 
   return (
-    <div className="p-4 space-y-4 pb-8">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-1 text-sm text-primary mb-2"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back
-      </button>
+    <div className="pb-8">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center">
+        <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-primary">
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <h1 className="flex-1 text-center text-base font-semibold text-foreground">
+          Settings
+        </h1>
+        <div className="w-6" />
+      </div>
 
-      {/* Profile */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <User className="h-4 w-4" /> Profile
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div>
-            <label className="text-sm text-muted-foreground mb-1 block">
-              Display name
-            </label>
-            <Input
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Your name"
-              className="rounded-xl"
-            />
-          </div>
-          <div>
-            <label className="text-sm text-muted-foreground mb-1 block">
-              Email
-            </label>
-            <Input value={email} disabled className="rounded-xl opacity-60" />
-          </div>
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full rounded-xl"
-          >
-            {saving ? "Saving…" : "Save changes"}
-          </Button>
-        </CardContent>
-      </Card>
+      {/* ── My account ── */}
+      <SectionHeader label="My account" />
 
-      {/* Provider Profile */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Briefcase className="h-4 w-4" /> Provider Profile
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <button
-            onClick={() => navigate("/app/settings/profile")}
-            className="w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
-          >
-            Set up your business profile
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
-          </button>
-        </CardContent>
-      </Card>
+      <SettingsRow
+        title="Account details"
+        description="Your name and email for FLEX'S to contact you"
+        onClick={() => {}}
+      />
+
+      <div className="px-4 py-4 space-y-3 bg-background">
+        <div>
+          <label className="text-sm text-muted-foreground mb-1 block">
+            Display name
+          </label>
+          <Input
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="Your name"
+            className="rounded-xl"
+          />
+        </div>
+        <div>
+          <label className="text-sm text-muted-foreground mb-1 block">
+            Email
+          </label>
+          <Input value={email} disabled className="rounded-xl opacity-60" />
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="w-full text-sm font-semibold text-primary py-2 hover:underline"
+        >
+          {saving ? "Saving…" : "Save changes"}
+        </button>
+      </div>
+
+      <Separator />
+
+      <SettingsRow
+        title="Your profile"
+        description="Set up your business profile to contact more customers"
+        onClick={() => navigate("/app/settings/profile")}
+        chevron
+      />
+
+      <Separator />
+
+      <SettingsRow
+        title="Custom statuses"
+        description="Manage your lead statuses and pipeline"
+        onClick={() => navigate("/app/settings/statuses")}
+        chevron
+      />
+
+      <Separator />
 
       {/* Wallet */}
-      <WalletCard />
+      <div className="px-4 py-4">
+        <WalletCard />
+      </div>
 
-      {/* Notifications */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Bell className="h-4 w-4" /> Notifications
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      {/* ── My notifications ── */}
+      <SectionHeader label="My notifications" />
+
+      <div className="bg-background px-4 py-4 space-y-0">
+        <p className="text-sm font-semibold text-foreground mb-1">
+          Notifications
+        </p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Decide how you want to communicate across FLEX'S and how you want us
+          to contact you
+        </p>
+
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-foreground">New leads</span>
             <Switch
@@ -189,44 +218,101 @@ export default function Settings() {
               }
             />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Status Management */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Palette className="h-4 w-4" /> Custom statuses
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <button
-            onClick={() => navigate("/app/settings/statuses")}
-            className="w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
-          >
-            Manage your lead statuses
-            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      {/* ── Support ── */}
+      <SectionHeader label="Support" />
+
+      <SettingsRow
+        title="Support"
+        description="Contact us if you need anything"
+        onClick={() => {}}
+      />
+
+      <Separator />
+
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button className="w-full text-left px-4 py-4 hover:bg-muted/30 transition-colors bg-background">
+            <p className="text-sm font-semibold text-destructive">
+              Delete Account
+            </p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              This action will delete both your buyer and seller accounts.
+            </p>
           </button>
-        </CardContent>
-      </Card>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action is permanent and cannot be undone. All your data,
+              leads, credits, and profile information will be permanently
+              deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete Account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-      {/* Account */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Tag className="h-4 w-4" /> Account
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="destructive"
-            onClick={handleLogout}
-            className="w-full rounded-xl"
-          >
-            <LogOut className="h-4 w-4 mr-2" /> Log out
-          </Button>
-        </CardContent>
-      </Card>
+      {/* ── Logout ── */}
+      <div className="py-6">
+        <button
+          onClick={handleLogout}
+          className="w-full text-center text-base font-semibold text-foreground py-3 hover:bg-muted/30 transition-colors"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Version */}
+      <p className="text-center text-sm text-muted-foreground pb-4">
+        v1.0.0
+      </p>
     </div>
+  );
+}
+
+/* ── Section header (grey background strip) ── */
+
+function SectionHeader({ label }: { label: string }) {
+  return (
+    <div className="bg-muted px-4 py-3">
+      <h2 className="text-base font-medium text-muted-foreground">{label}</h2>
+    </div>
+  );
+}
+
+/* ── Reusable settings row ── */
+
+function SettingsRow({
+  title,
+  description,
+  onClick,
+  chevron,
+}: {
+  title: string;
+  description: string;
+  onClick: () => void;
+  chevron?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left px-4 py-4 flex items-center hover:bg-muted/30 transition-colors bg-background"
+    >
+      <div className="flex-1">
+        <p className="text-sm font-semibold text-foreground">{title}</p>
+        <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
+      </div>
+      {chevron && <ChevronRight className="h-5 w-5 text-muted-foreground ml-2 shrink-0" />}
+    </button>
   );
 }
