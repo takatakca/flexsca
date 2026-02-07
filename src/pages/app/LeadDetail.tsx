@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
 import LeadHeader from "@/components/lead-detail/LeadHeader";
 import MessageThread from "@/components/lead-detail/MessageThread";
-import QuickReplies from "@/components/lead-detail/QuickReplies";
+import QuoteComposer from "@/components/lead-detail/QuoteComposer";
 import MessageInput from "@/components/lead-detail/MessageInput";
 
 interface Lead {
@@ -39,6 +39,7 @@ export default function LeadDetail() {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [hasQuoted, setHasQuoted] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
   const [reminderDate, setReminderDate] = useState("");
   const [reminderNote, setReminderNote] = useState("");
@@ -47,28 +48,34 @@ export default function LeadDetail() {
     if (!id || !user) return;
 
     const fetchData = async () => {
-      const [leadRes, messagesRes] = await Promise.all([
+      const [leadRes, messagesRes, responsesRes] = await Promise.all([
         supabase.from("leads").select("*").eq("id", id).single(),
         supabase
           .from("lead_messages")
           .select("*")
           .eq("lead_id", id)
           .order("created_at", { ascending: true }),
+        supabase
+          .from("responses")
+          .select("id")
+          .eq("lead_id", id)
+          .eq("pro_id", user.id)
+          .limit(1),
       ]);
 
       if (leadRes.data) setLead(leadRes.data as Lead);
       if (messagesRes.data) setMessages(messagesRes.data as Message[]);
+      if (responsesRes.data && responsesRes.data.length > 0) setHasQuoted(true);
       setLoading(false);
     };
 
     fetchData();
   }, [id, user]);
 
-  // Realtime: listen for new messages from other senders
+  // Realtime: listen for new messages
   const handleRealtimeMessage = useCallback(
     (newMsg: Message) => {
       setMessages((prev) => {
-        // Avoid duplicates (we already optimistically add our own messages)
         if (prev.some((m) => m.id === newMsg.id)) return prev;
         return [...prev, newMsg];
       });
@@ -77,6 +84,12 @@ export default function LeadDetail() {
   );
 
   useRealtimeMessages(id, handleRealtimeMessage);
+
+  const updateLeadStatus = async (newStatus: string) => {
+    if (!id) return;
+    await supabase.from("leads").update({ status: newStatus }).eq("id", id);
+    setLead((prev) => (prev ? { ...prev, status: newStatus } : prev));
+  };
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || !id) return;
@@ -96,12 +109,82 @@ export default function LeadDetail() {
       setMessages((prev) => [...prev, data as Message]);
       setNewMessage("");
 
-      // Auto-update status to contacted if new
       if (lead?.status === "new") {
-        await supabase.from("leads").update({ status: "contacted" }).eq("id", id);
-        setLead((prev) => (prev ? { ...prev, status: "contacted" } : prev));
+        await updateLeadStatus("contacted");
       }
     }
+    setSending(false);
+  };
+
+  const handleSendQuote = async (data: {
+    message: string;
+    priceMin: number | null;
+    priceMax: number | null;
+    availability: string | null;
+  }) => {
+    if (!id || !user) return;
+
+    setSending(true);
+
+    // Build display message with price + availability info
+    let fullMessage = data.message;
+    if (data.priceMin !== null || data.priceMax !== null) {
+      const priceStr =
+        data.priceMin !== null && data.priceMax !== null
+          ? `£${data.priceMin} – £${data.priceMax}`
+          : data.priceMin !== null
+          ? `From £${data.priceMin}`
+          : `Up to £${data.priceMax}`;
+      fullMessage += `\n💰 ${priceStr}`;
+    }
+    if (data.availability) {
+      const availMap: Record<string, string> = {
+        today: "Today",
+        tomorrow: "Tomorrow",
+        this_week: "This week",
+        custom: "Custom dates",
+      };
+      fullMessage += `\n📅 Available: ${availMap[data.availability] || data.availability}`;
+    }
+
+    // Insert response record
+    const { error: respError } = await supabase.from("responses").insert({
+      lead_id: id,
+      pro_id: user.id,
+      message: data.message,
+      price_min: data.priceMin,
+      price_max: data.priceMax,
+      availability: data.availability,
+    });
+
+    if (respError) {
+      toast.error("Failed to send quote");
+      setSending(false);
+      return;
+    }
+
+    // Insert into lead_messages so it shows in thread
+    const { data: msgData, error: msgError } = await supabase
+      .from("lead_messages")
+      .insert({
+        lead_id: id,
+        sender_type: "pro",
+        message: fullMessage,
+      })
+      .select()
+      .single();
+
+    if (!msgError && msgData) {
+      setMessages((prev) => [...prev, msgData as Message]);
+    }
+
+    // Auto-update status
+    if (lead?.status === "new") {
+      await updateLeadStatus("contacted");
+    }
+
+    setHasQuoted(true);
+    toast.success("Quote sent!");
     setSending(false);
   };
 
@@ -205,14 +288,25 @@ export default function LeadDetail() {
         <MessageThread messages={messages} />
       </div>
 
-      <QuickReplies onSelect={sendMessage} disabled={sending} />
-
-      <MessageInput
-        value={newMessage}
-        onChange={setNewMessage}
-        onSubmit={handleSendMessage}
-        sending={sending}
-      />
+      {/* Quote CTA or message input */}
+      <div className="border-t bg-background">
+        {!hasQuoted && !lead.archived ? (
+          <div className="p-3">
+            <QuoteComposer
+              onSend={handleSendQuote}
+              sending={sending}
+              disabled={lead.archived}
+            />
+          </div>
+        ) : (
+          <MessageInput
+            value={newMessage}
+            onChange={setNewMessage}
+            onSubmit={handleSendMessage}
+            sending={sending}
+          />
+        )}
+      </div>
     </div>
   );
 }
