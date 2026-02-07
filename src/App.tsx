@@ -15,6 +15,7 @@ import LeadDetail from "@/pages/app/LeadDetail";
 import Responses from "@/pages/app/Responses";
 import Reminders from "@/pages/app/Reminders";
 import Settings from "@/pages/app/Settings";
+import StatusManagement from "@/pages/app/StatusManagement";
 import OpenInApp from "@/pages/app/OpenInApp";
 import NotFound from "@/pages/NotFound";
 
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="responses" element={<Responses />} />
               <Route path="reminders" element={<Reminders />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="settings/statuses" element={<StatusManagement />} />
             </Route>
 
             {/* Catch-all */}

@@ -1,13 +1,17 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, MapPin, Clock, ClipboardList, Search, X, Archive, Coins, Zap } from "lucide-react";
+import { Loader2, MapPin, Clock, ClipboardList, Search, X, Archive, Coins, Zap, SlidersHorizontal, Circle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useCustomStatuses } from "@/hooks/useCustomStatuses";
+import { useLongPress } from "@/hooks/useLongPress";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import FiltersSheet, { type LeadsFilters, defaultFilters } from "@/components/leads/FiltersSheet";
+import ReminderModal from "@/components/leads/ReminderModal";
 
 interface Lead {
   id: string;
@@ -31,26 +35,20 @@ interface AgentState {
   is_archived: boolean;
   contacted: boolean;
   first_to_respond: boolean;
+  custom_status_id: string | null;
 }
-
-const statusColors: Record<string, string> = {
-  new: "bg-primary text-primary-foreground",
-  contacted: "bg-warning text-warning-foreground",
-  won: "bg-success text-success-foreground",
-  lost: "bg-destructive text-destructive-foreground",
-};
-
-const statusFilters = ["all", "new", "contacted", "won", "lost"] as const;
 
 export default function Leads() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [agentStates, setAgentStates] = useState<Map<string, AgentState>>(new Map());
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showArchived, setShowArchived] = useState(false);
+  const [filters, setFilters] = useState<LeadsFilters>(defaultFilters);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [reminderLead, setReminderLead] = useState<Lead | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { statuses } = useCustomStatuses();
 
   useEffect(() => {
     if (!user) return;
@@ -63,7 +61,7 @@ export default function Leads() {
           .order("last_activity_at", { ascending: false }),
         supabase
           .from("lead_agent_state")
-          .select("lead_id, is_unread, is_archived, contacted, first_to_respond")
+          .select("lead_id, is_unread, is_archived, contacted, first_to_respond, custom_status_id")
           .eq("agent_id", user.id),
       ]);
 
@@ -98,22 +96,21 @@ export default function Leads() {
     }
   };
 
+  const statusMap = useMemo(() => new Map(statuses.map((s) => [s.id, s])), [statuses]);
+
   const filteredLeads = useMemo(() => {
     let result = leads;
 
-    // Filter by archive state
+    // Archive filter
     result = result.filter((l) => {
       const state = agentStates.get(l.id);
       const isArchived = state?.is_archived ?? false;
       return showArchived ? isArchived : !isArchived;
     });
 
-    if (statusFilter !== "all") {
-      result = result.filter((l) => l.status === statusFilter);
-    }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
+    // Keyword
+    if (filters.keyword.trim()) {
+      const q = filters.keyword.toLowerCase();
       result = result.filter(
         (l) =>
           l.category.toLowerCase().includes(q) ||
@@ -123,8 +120,65 @@ export default function Leads() {
       );
     }
 
+    // Services
+    if (filters.services.length > 0) {
+      result = result.filter((l) => filters.services.includes(l.category));
+    }
+
+    // Credits
+    if (filters.credits.length > 0) {
+      result = result.filter((l) => filters.credits.includes(l.credits_cost));
+    }
+
+    // Urgent
+    if (filters.urgentOnly) {
+      result = result.filter((l) => l.is_urgent);
+    }
+
+    // Has additional details
+    if (filters.hasAdditionalDetails) {
+      result = result.filter((l) => l.has_additional_details);
+    }
+
+    // Unread only
+    if (filters.unreadOnly) {
+      result = result.filter((l) => {
+        const state = agentStates.get(l.id);
+        return state?.is_unread ?? true;
+      });
+    }
+
+    // First to respond
+    if (filters.firstToRespondOnly) {
+      result = result.filter((l) => {
+        const state = agentStates.get(l.id);
+        return state?.first_to_respond ?? false;
+      });
+    }
+
+    // Status filter
+    if (filters.statusIds.length > 0) {
+      result = result.filter((l) => {
+        const state = agentStates.get(l.id);
+        return state?.custom_status_id ? filters.statusIds.includes(state.custom_status_id) : false;
+      });
+    }
+
     return result;
-  }, [leads, agentStates, statusFilter, searchQuery, showArchived]);
+  }, [leads, agentStates, showArchived, filters]);
+
+  const activeFilterCount = useMemo(() => {
+    return [
+      filters.unreadOnly,
+      filters.hasAdditionalDetails,
+      filters.urgentOnly,
+      filters.firstToRespondOnly,
+      filters.services.length > 0,
+      filters.credits.length > 0,
+      filters.statusIds.length > 0,
+      filters.keyword.trim().length > 0,
+    ].filter(Boolean).length;
+  }, [filters]);
 
   if (loading) {
     return (
@@ -152,62 +206,47 @@ export default function Leads() {
   return (
     <div className="p-4 space-y-3">
       {/* Active / Archived toggle */}
-      <div className="flex rounded-full bg-muted p-1">
-        <button
-          onClick={() => setShowArchived(false)}
-          className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
-            !showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          Active
-        </button>
-        <button
-          onClick={() => setShowArchived(true)}
-          className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
-            showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
-          }`}
-        >
-          Archived
-        </button>
-      </div>
-
-      {/* Search bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search leads…"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 pr-9 rounded-full h-10"
-        />
-        {searchQuery && (
+      <div className="flex items-center gap-2">
+        <div className="flex flex-1 rounded-full bg-muted p-1">
           <button
-            onClick={() => setSearchQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            onClick={() => setShowArchived(false)}
+            className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
+              !showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+            }`}
           >
-            <X className="h-4 w-4" />
+            Active
           </button>
-        )}
+          <button
+            onClick={() => setShowArchived(true)}
+            className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
+              showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
+            }`}
+          >
+            Archived
+          </button>
+        </div>
+        <button
+          onClick={() => setFiltersOpen(true)}
+          className={`relative flex items-center gap-1 rounded-full border px-3 py-2 text-sm font-medium transition-colors ${
+            activeFilterCount > 0
+              ? "border-primary text-primary bg-primary/5"
+              : "text-muted-foreground hover:bg-accent"
+          }`}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          Filter
+          {activeFilterCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+              {activeFilterCount}
+            </span>
+          )}
+        </button>
       </div>
 
-      {/* Status filter chips */}
-      {!showArchived && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {statusFilters.map((s) => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium border transition-colors ${
-                statusFilter === s
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background text-muted-foreground border-border hover:bg-accent"
-              }`}
-            >
-              {s === "all" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Results count */}
+      <p className="text-xs text-muted-foreground">
+        {filteredLeads.length} lead{filteredLeads.length !== 1 ? "s" : ""}
+      </p>
 
       {/* Lead cards */}
       {filteredLeads.length === 0 ? (
@@ -217,81 +256,138 @@ export default function Leads() {
       ) : (
         filteredLeads.map((lead) => {
           const state = agentStates.get(lead.id);
-          const isUnread = state?.is_unread ?? true;
-          const isContacted = state?.contacted ?? false;
-
           return (
-            <Card
+            <LeadCard
               key={lead.id}
-              className="p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] transition-transform"
-              onClick={() => navigate(`/app/leads/${lead.id}`)}
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  {isUnread && !showArchived && (
-                    <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                  )}
-                  <h3 className="font-semibold text-foreground">{lead.category}</h3>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  {lead.is_urgent && (
-                    <Badge variant="destructive" className="text-xs">
-                      <Zap className="h-3 w-3 mr-0.5" /> Urgent
-                    </Badge>
-                  )}
-                  {!showArchived && (
-                    isContacted ? (
-                      <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/20">
-                        Contacted
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
-                        <Coins className="h-3 w-3 mr-0.5" />
-                        {lead.credits_cost}
-                      </Badge>
-                    )
-                  )}
-                  <Badge className={`text-xs ${statusColors[lead.status] || ""}`}>
-                    {lead.status}
-                  </Badge>
-                </div>
-              </div>
-
-              {lead.details && (
-                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                  {lead.details}
-                </p>
-              )}
-
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {lead.location_text}
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5" />
-                  {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
-                </span>
-              </div>
-
-              {lead.customer_name && (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Customer: {lead.customer_name}
-                </p>
-              )}
-
-              {showArchived && (
-                <button
-                  onClick={(e) => handleRestore(e, lead.id)}
-                  className="mt-2 flex items-center gap-1 text-xs text-primary font-medium hover:underline"
-                >
-                  <Archive className="h-3.5 w-3.5" /> Restore
-                </button>
-              )}
-            </Card>
+              lead={lead}
+              state={state ?? null}
+              statusMap={statusMap}
+              showArchived={showArchived}
+              onNavigate={() => navigate(`/app/leads/${lead.id}`)}
+              onRestore={handleRestore}
+              onLongPress={() => setReminderLead(lead)}
+            />
           );
         })
       )}
+
+      <FiltersSheet
+        open={filtersOpen}
+        onClose={() => setFiltersOpen(false)}
+        value={filters}
+        onChange={setFilters}
+        customStatuses={statuses}
+      />
+
+      {reminderLead && (
+        <ReminderModal
+          open={!!reminderLead}
+          onClose={() => setReminderLead(null)}
+          leadId={reminderLead.id}
+          leadCategory={reminderLead.category}
+          customerName={reminderLead.customer_name}
+        />
+      )}
     </div>
+  );
+}
+
+function LeadCard({
+  lead,
+  state,
+  statusMap,
+  showArchived,
+  onNavigate,
+  onRestore,
+  onLongPress,
+}: {
+  lead: Lead;
+  state: AgentState | null;
+  statusMap: Map<string, { name: string; color: string; category: string }>;
+  showArchived: boolean;
+  onNavigate: () => void;
+  onRestore: (e: React.MouseEvent, id: string) => void;
+  onLongPress: () => void;
+}) {
+  const isUnread = state?.is_unread ?? true;
+  const isContacted = state?.contacted ?? false;
+  const customStatus = state?.custom_status_id ? statusMap.get(state.custom_status_id) : null;
+
+  const longPressHandlers = useLongPress({
+    onLongPress,
+    onClick: onNavigate,
+  });
+
+  return (
+    <Card
+      className="p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] transition-transform select-none"
+      {...longPressHandlers}
+    >
+      <div className="flex items-start justify-between mb-2">
+        <div className="flex items-center gap-2 min-w-0">
+          {isUnread && !showArchived && (
+            <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
+          )}
+          <h3 className="font-semibold text-foreground truncate">{lead.category}</h3>
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {lead.is_urgent && (
+            <Badge variant="destructive" className="text-xs">
+              <Zap className="h-3 w-3 mr-0.5" /> Urgent
+            </Badge>
+          )}
+          {customStatus && (
+            <Badge
+              variant="outline"
+              className="text-xs"
+              style={{
+                borderColor: customStatus.color,
+                color: customStatus.color,
+                backgroundColor: `${customStatus.color}15`,
+              }}
+            >
+              <Circle className="h-2 w-2 mr-1 fill-current" />
+              {customStatus.name}
+            </Badge>
+          )}
+          {!showArchived && !isContacted && (
+            <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
+              <Coins className="h-3 w-3 mr-0.5" />
+              {lead.credits_cost}
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {lead.customer_name && (
+        <p className="text-sm font-medium text-foreground mb-1">{lead.customer_name}</p>
+      )}
+
+      {lead.details && (
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+          {lead.details}
+        </p>
+      )}
+
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1">
+          <MapPin className="h-3.5 w-3.5" />
+          {lead.location_text}
+        </span>
+        <span className="flex items-center gap-1">
+          <Clock className="h-3.5 w-3.5" />
+          {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
+        </span>
+      </div>
+
+      {showArchived && (
+        <button
+          onClick={(e) => onRestore(e, lead.id)}
+          className="mt-2 flex items-center gap-1 text-xs text-primary font-medium hover:underline"
+        >
+          <Archive className="h-3.5 w-3.5" /> Restore
+        </button>
+      )}
+    </Card>
   );
 }

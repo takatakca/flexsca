@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, LogOut, User, Bell, Tag, Loader2 } from "lucide-react";
+import { ArrowLeft, LogOut, User, Bell, Tag, Loader2, ChevronRight, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -171,6 +171,24 @@ export default function Settings() {
               }
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Status Management */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Palette className="h-4 w-4" /> Custom statuses
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <button
+            onClick={() => navigate("/app/settings/statuses")}
+            className="w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+          >
+            Manage your lead statuses
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </button>
         </CardContent>
       </Card>
 
