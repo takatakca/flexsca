@@ -5,10 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
+import { useLeadPurchase } from "@/hooks/useLeadPurchase";
+import { useCredits } from "@/hooks/useCredits";
 import LeadHeader from "@/components/lead-detail/LeadHeader";
 import MessageThread from "@/components/lead-detail/MessageThread";
 import QuoteComposer from "@/components/lead-detail/QuoteComposer";
 import MessageInput from "@/components/lead-detail/MessageInput";
+import UnlockPaywall from "@/components/lead-detail/UnlockPaywall";
 
 interface Lead {
   id: string;
@@ -44,6 +47,10 @@ export default function LeadDetail() {
   const [reminderDate, setReminderDate] = useState("");
   const [reminderNote, setReminderNote] = useState("");
 
+  const { purchased, cost, loading: purchaseLoading, refetch: refetchPurchase } =
+    useLeadPurchase(id, lead?.category);
+  const { balance, refetch: refetchCredits } = useCredits();
+
   useEffect(() => {
     if (!id || !user) return;
 
@@ -72,7 +79,6 @@ export default function LeadDetail() {
     fetchData();
   }, [id, user]);
 
-  // Realtime: listen for new messages
   const handleRealtimeMessage = useCallback(
     (newMsg: Message) => {
       setMessages((prev) => {
@@ -93,25 +99,17 @@ export default function LeadDetail() {
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || !id) return;
-
     setSending(true);
     const { data, error } = await supabase
       .from("lead_messages")
-      .insert({
-        lead_id: id,
-        sender_type: "pro",
-        message: text.trim(),
-      })
+      .insert({ lead_id: id, sender_type: "pro", message: text.trim() })
       .select()
       .single();
 
     if (!error && data) {
       setMessages((prev) => [...prev, data as Message]);
       setNewMessage("");
-
-      if (lead?.status === "new") {
-        await updateLeadStatus("contacted");
-      }
+      if (lead?.status === "new") await updateLeadStatus("contacted");
     }
     setSending(false);
   };
@@ -123,10 +121,8 @@ export default function LeadDetail() {
     availability: string | null;
   }) => {
     if (!id || !user) return;
-
     setSending(true);
 
-    // Build display message with price + availability info
     let fullMessage = data.message;
     if (data.priceMin !== null || data.priceMax !== null) {
       const priceStr =
@@ -147,7 +143,6 @@ export default function LeadDetail() {
       fullMessage += `\n📅 Available: ${availMap[data.availability] || data.availability}`;
     }
 
-    // Insert response record
     const { error: respError } = await supabase.from("responses").insert({
       lead_id: id,
       pro_id: user.id,
@@ -163,14 +158,9 @@ export default function LeadDetail() {
       return;
     }
 
-    // Insert into lead_messages so it shows in thread
     const { data: msgData, error: msgError } = await supabase
       .from("lead_messages")
-      .insert({
-        lead_id: id,
-        sender_type: "pro",
-        message: fullMessage,
-      })
+      .insert({ lead_id: id, sender_type: "pro", message: fullMessage })
       .select()
       .single();
 
@@ -178,11 +168,7 @@ export default function LeadDetail() {
       setMessages((prev) => [...prev, msgData as Message]);
     }
 
-    // Auto-update status
-    if (lead?.status === "new") {
-      await updateLeadStatus("contacted");
-    }
-
+    if (lead?.status === "new") await updateLeadStatus("contacted");
     setHasQuoted(true);
     toast.success("Quote sent!");
     setSending(false);
@@ -199,7 +185,6 @@ export default function LeadDetail() {
       .from("leads")
       .update({ status: newStatus })
       .eq("id", id);
-
     if (!error) {
       setLead((prev) => (prev ? { ...prev, status: newStatus } : prev));
       toast.success(`Status updated to ${newStatus}`);
@@ -218,15 +203,10 @@ export default function LeadDetail() {
         archived_at: newArchived ? new Date().toISOString() : null,
       })
       .eq("id", id);
-
     if (!error) {
-      setLead((prev) =>
-        prev ? { ...prev, archived: newArchived } : prev
-      );
+      setLead((prev) => (prev ? { ...prev, archived: newArchived } : prev));
       toast.success(newArchived ? "Lead archived" : "Lead restored");
-      if (newArchived) {
-        navigate("/app/leads");
-      }
+      if (newArchived) navigate("/app/leads");
     } else {
       toast.error("Failed to update archive status");
     }
@@ -234,14 +214,12 @@ export default function LeadDetail() {
 
   const handleCreateReminder = async () => {
     if (!id || !user || !reminderDate) return;
-
     const { error } = await supabase.from("reminders").insert({
       lead_id: id,
       user_id: user.id,
       remind_at: new Date(reminderDate).toISOString(),
       note: reminderNote || null,
     });
-
     if (!error) {
       toast.success("Reminder created");
       setReminderOpen(false);
@@ -250,6 +228,11 @@ export default function LeadDetail() {
     } else {
       toast.error("Failed to create reminder");
     }
+  };
+
+  const handleUnlocked = () => {
+    refetchPurchase();
+    refetchCredits();
   };
 
   if (loading) {
@@ -267,6 +250,8 @@ export default function LeadDetail() {
       </div>
     );
   }
+
+  const isUnlocked = purchased || purchaseLoading;
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-7.5rem)]">
@@ -288,25 +273,37 @@ export default function LeadDetail() {
         <MessageThread messages={messages} />
       </div>
 
-      {/* Quote CTA or message input */}
-      <div className="border-t bg-background">
-        {!hasQuoted && !lead.archived ? (
-          <div className="p-3">
-            <QuoteComposer
-              onSend={handleSendQuote}
-              sending={sending}
-              disabled={lead.archived}
-            />
-          </div>
-        ) : (
-          <MessageInput
-            value={newMessage}
-            onChange={setNewMessage}
-            onSubmit={handleSendMessage}
-            sending={sending}
+      {/* Bottom: unlock paywall OR quote/message input */}
+      {!isUnlocked && !lead.archived ? (
+        <div className="border-t bg-background">
+          <UnlockPaywall
+            leadId={lead.id}
+            category={lead.category}
+            cost={cost}
+            balance={balance}
+            onUnlocked={handleUnlocked}
           />
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="border-t bg-background">
+          {!hasQuoted && !lead.archived ? (
+            <div className="p-3">
+              <QuoteComposer
+                onSend={handleSendQuote}
+                sending={sending}
+                disabled={lead.archived}
+              />
+            </div>
+          ) : (
+            <MessageInput
+              value={newMessage}
+              onChange={setNewMessage}
+              onSubmit={handleSendMessage}
+              sending={sending}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
