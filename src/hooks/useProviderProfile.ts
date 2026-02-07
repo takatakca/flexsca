@@ -181,6 +181,36 @@ export function useProviderProfile() {
     }
   };
 
+  const saveAllQAs = async (entries: { question: string; answer: string }[]) => {
+    if (!user) return;
+
+    // Delete all existing QAs and re-insert
+    await supabase.from("provider_qas").delete().eq("user_id", user.id);
+
+    const rows = entries.map((e, i) => ({
+      user_id: user.id,
+      question: e.question,
+      answer: e.answer,
+      sort_order: i,
+    }));
+
+    if (rows.length > 0) {
+      const { data, error } = await supabase
+        .from("provider_qas")
+        .insert(rows as any)
+        .select();
+
+      if (error) {
+        toast.error("Failed to save Q&A");
+      } else {
+        setQAs((data as unknown as ProviderQA[]) || []);
+        toast.success("Q&A saved");
+      }
+    } else {
+      setQAs([]);
+    }
+  };
+
   const addQA = async (question: string, answer: string) => {
     if (!user) return;
     const { data, error } = await supabase
@@ -238,6 +268,7 @@ export function useProviderProfile() {
     removePhoto,
     addQA,
     removeQA,
+    saveAllQAs,
     uploadPhoto,
     refetch: fetchAll,
   };
