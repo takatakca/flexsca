@@ -52,6 +52,7 @@ export type Database = {
       leads: {
         Row: {
           archived: boolean
+          archived_at: string | null
           assigned_to: string
           category: string
           created_at: string
@@ -67,6 +68,7 @@ export type Database = {
         }
         Insert: {
           archived?: boolean
+          archived_at?: string | null
           assigned_to: string
           category: string
           created_at?: string
@@ -82,6 +84,7 @@ export type Database = {
         }
         Update: {
           archived?: boolean
+          archived_at?: string | null
           assigned_to?: string
           category?: string
           created_at?: string
