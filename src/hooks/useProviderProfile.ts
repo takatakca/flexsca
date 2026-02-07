@@ -18,6 +18,7 @@ export interface ProviderProfile {
   twitter_handle: string | null;
   instagram_handle: string | null;
   website_links: string | null;
+  video_urls: string[] | null;
 }
 
 export interface ProviderService {
@@ -64,6 +65,7 @@ const DEFAULT_PROFILE: ProviderProfile = {
   twitter_handle: null,
   instagram_handle: null,
   website_links: null,
+  video_urls: null,
 };
 
 export function calculateCompletion(
