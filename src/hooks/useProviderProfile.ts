@@ -20,6 +20,8 @@ export interface ProviderProfile {
   website_links: string | null;
   company_email: string | null;
   company_phone: string | null;
+  personal_name: string | null;
+  personal_photo_url: string | null;
   video_urls: string[] | null;
 }
 
@@ -69,6 +71,8 @@ const DEFAULT_PROFILE: ProviderProfile = {
   website_links: null,
   company_email: null,
   company_phone: null,
+  personal_name: null,
+  personal_photo_url: null,
   video_urls: null,
 };
 

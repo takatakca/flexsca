@@ -25,36 +25,43 @@ const COMPANY_SIZES = [
 
 export default function CompanySection({ profile, saving, onSave, onUploadPhoto }: Props) {
   const [companyName, setCompanyName] = useState(profile.company_name || "");
+  const [personalName, setPersonalName] = useState(profile.personal_name || "");
   const [description, setDescription] = useState(profile.company_description || "");
   const [size, setSize] = useState(profile.company_size || "solo");
   const [years, setYears] = useState(profile.years_in_business?.toString() || "0");
   const [website, setWebsite] = useState(profile.website_links || "");
   const [companyEmail, setCompanyEmail] = useState(profile.company_email || "");
   const [companyPhone, setCompanyPhone] = useState(profile.company_phone || "");
-  const [uploading, setUploading] = useState(false);
+  const [uploadingCompany, setUploadingCompany] = useState(false);
+  const [uploadingPersonal, setUploadingPersonal] = useState(false);
   const [showTips, setShowTips] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+  const companyFileRef = useRef<HTMLInputElement>(null);
+  const personalFileRef = useRef<HTMLInputElement>(null);
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCompanyPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 5 * 1024 * 1024) {
-      return;
-    }
-
-    setUploading(true);
+    if (!file || file.size > 5 * 1024 * 1024) return;
+    setUploadingCompany(true);
     const url = await onUploadPhoto(file);
-    if (url) {
-      await onSave({ profile_photo_url: url });
-    }
-    setUploading(false);
-    if (fileRef.current) fileRef.current.value = "";
+    if (url) await onSave({ profile_photo_url: url });
+    setUploadingCompany(false);
+    if (companyFileRef.current) companyFileRef.current.value = "";
+  };
+
+  const handlePersonalPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || file.size > 5 * 1024 * 1024) return;
+    setUploadingPersonal(true);
+    const url = await onUploadPhoto(file);
+    if (url) await onSave({ personal_photo_url: url });
+    setUploadingPersonal(false);
+    if (personalFileRef.current) personalFileRef.current.value = "";
   };
 
   const handleSave = () => {
     onSave({
       company_name: companyName.trim() || null,
+      personal_name: personalName.trim() || null,
       company_description: description.trim() || null,
       company_size: size,
       years_in_business: parseInt(years) || 0,
@@ -64,76 +71,77 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
     });
   };
 
-  const initial = companyName?.charAt(0)?.toUpperCase() || "C";
+  const companyInitial = companyName?.charAt(0)?.toUpperCase() || "C";
+  const personalInitial = personalName?.charAt(0)?.toUpperCase() || "P";
   const descLength = description.length;
 
   return (
-    <div className="space-y-5">
-      {/* Profile photo */}
-      <div className="flex flex-col items-center gap-3">
-        <div className="relative">
-          <Avatar className="h-24 w-24 border-2 border-border">
-            {profile.profile_photo_url ? (
-              <AvatarImage src={profile.profile_photo_url} alt="Profile" />
-            ) : null}
-            <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
-              {initial}
-            </AvatarFallback>
-          </Avatar>
-          <button
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading}
-            className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md"
-          >
-            {uploading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Camera className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handlePhotoUpload}
-        />
-        <p className="text-xs text-muted-foreground">
-          Tap to add a profile photo
+    <div className="space-y-6">
+      {/* ── Section 1: Company name & logo ── */}
+      <div className="space-y-1.5">
+        <h3 className="text-xl font-semibold text-foreground">Company name & logo</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          This is the first thing customers will see when searching for a professional. As a sole-trader, you can just enter your name.
         </p>
       </div>
 
-      {/* Company name */}
+      <PhotoUpload
+        photoUrl={profile.profile_photo_url}
+        initial={companyInitial}
+        uploading={uploadingCompany}
+        fileRef={companyFileRef}
+        onFileChange={handleCompanyPhotoUpload}
+      />
+
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          Name
-        </label>
+        <label className="text-sm font-medium text-foreground mb-1 block">Company name</label>
         <Input
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
-          placeholder="e.g. I Clean Services"
+          placeholder="e.g. Cleaning inc"
           className="rounded-xl"
           maxLength={100}
         />
       </div>
 
-      {/* Company contact details heading */}
-      <div className="space-y-1.5 pt-2">
-        <h3 className="text-lg font-semibold text-foreground">
-          Company contact details
-        </h3>
+      {/* ── Section 2: Name & profile picture ── */}
+      <div className="space-y-1.5 pt-4 border-t border-border">
+        <h3 className="text-xl font-semibold text-foreground">Name & profile picture</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          This is the person who will be communicating with customers on FLEX'S. The photo will appear alongside your messages with customers.
+        </p>
+      </div>
+
+      <PhotoUpload
+        photoUrl={profile.personal_photo_url}
+        initial={personalInitial}
+        uploading={uploadingPersonal}
+        fileRef={personalFileRef}
+        onFileChange={handlePersonalPhotoUpload}
+      />
+
+      <div>
+        <label className="text-sm font-medium text-foreground mb-1 block">Name</label>
+        <Input
+          value={personalName}
+          onChange={(e) => setPersonalName(e.target.value)}
+          placeholder="Your name"
+          className="rounded-xl"
+          maxLength={100}
+        />
+      </div>
+
+      {/* ── Section 3: Company contact details ── */}
+      <div className="space-y-1.5 pt-4 border-t border-border">
+        <h3 className="text-xl font-semibold text-foreground">Company contact details</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">
           This information will be seen by customers on FLEX'S. Change the details FLEX'S uses to contact you privately in{" "}
           <span className="text-primary font-medium">Account details</span>
         </p>
       </div>
 
-      {/* Company email */}
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          Company email address
-        </label>
+        <label className="text-sm font-medium text-foreground mb-1 block">Company email address</label>
         <Input
           type="email"
           value={companyEmail}
@@ -144,11 +152,8 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
         />
       </div>
 
-      {/* Company phone */}
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          Company phone number
-        </label>
+        <label className="text-sm font-medium text-foreground mb-1 block">Company phone number</label>
         <Input
           type="tel"
           value={companyPhone}
@@ -159,11 +164,8 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
         />
       </div>
 
-      {/* Website */}
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          Website
-        </label>
+        <label className="text-sm font-medium text-foreground mb-1 block">Website</label>
         <Input
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
@@ -173,35 +175,27 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
         />
       </div>
 
-      {/* About the company heading */}
-      <h3 className="text-lg font-semibold text-foreground pt-2">
-        About the company
-      </h3>
+      {/* ── Section 4: About the company ── */}
+      <div className="pt-4 border-t border-border">
+        <h3 className="text-xl font-semibold text-foreground">About the company</h3>
+      </div>
 
-      {/* Company size */}
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          Company size
-        </label>
+        <label className="text-sm font-medium text-foreground mb-1 block">Company size</label>
         <Select value={size} onValueChange={setSize}>
           <SelectTrigger className="rounded-xl">
             <SelectValue placeholder="Select one" />
           </SelectTrigger>
           <SelectContent>
             {COMPANY_SIZES.map((s) => (
-              <SelectItem key={s.value} value={s.value}>
-                {s.label}
-              </SelectItem>
+              <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      {/* Years in business */}
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          Years in business
-        </label>
+        <label className="text-sm font-medium text-foreground mb-1 block">Years in business</label>
         <Input
           type="number"
           min={0}
@@ -213,11 +207,8 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
         />
       </div>
 
-      {/* Company Description */}
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          Company Description
-        </label>
+        <label className="text-sm font-medium text-foreground mb-1 block">Company Description</label>
         <Textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -230,7 +221,6 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
         </p>
       </div>
 
-      {/* Tips collapsible */}
       <Collapsible open={showTips} onOpenChange={setShowTips}>
         <CollapsibleTrigger asChild>
           <button className="text-sm text-primary font-medium hover:underline">
@@ -254,6 +244,40 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
       <Button onClick={handleSave} disabled={saving} className="w-full rounded-xl">
         {saving ? "Saving…" : "Save company info"}
       </Button>
+    </div>
+  );
+}
+
+/* ── Reusable photo upload sub-component ── */
+
+interface PhotoUploadProps {
+  photoUrl: string | null;
+  initial: string;
+  uploading: boolean;
+  fileRef: React.RefObject<HTMLInputElement>;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function PhotoUpload({ photoUrl, initial, uploading, fileRef, onFileChange }: PhotoUploadProps) {
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="relative">
+        <Avatar className="h-24 w-24 border-2 border-border">
+          {photoUrl ? <AvatarImage src={photoUrl} alt="Photo" /> : null}
+          <AvatarFallback className="bg-muted text-muted-foreground text-2xl font-bold">
+            {initial}
+          </AvatarFallback>
+        </Avatar>
+        <button
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md"
+        >
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+        </button>
+      </div>
+      <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onFileChange} />
+      <p className="text-xs text-muted-foreground">Tap to add a photo</p>
     </div>
   );
 }
