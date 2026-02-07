@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import type { ProviderService } from "@/hooks/useProviderProfile";
 
@@ -58,30 +59,47 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
       ))}
 
       {adding ? (
-        <div className="rounded-xl border p-3 space-y-3">
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Service title (e.g. Residential Cleaning)"
-            className="rounded-xl"
-            maxLength={100}
-            autoFocus
-          />
-          <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe this service..."
-            className="rounded-xl min-h-[80px]"
-            maxLength={500}
-          />
-          <div className="flex gap-2">
+        <div className="space-y-5">
+          <p className="text-base font-medium text-foreground">
+            Describe what you can offer to customers
+          </p>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="service-title" className="text-sm text-muted-foreground">
+              Project title
+            </Label>
+            <Input
+              id="service-title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Service Type"
+              className="rounded-xl"
+              maxLength={100}
+              autoFocus
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="service-desc" className="text-sm text-muted-foreground">
+              Service description
+            </Label>
+            <Textarea
+              id="service-desc"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder=""
+              className="rounded-xl min-h-[100px]"
+              maxLength={500}
+            />
+          </div>
+
+          <div className="flex gap-2 pt-2">
             <Button
               onClick={handleAdd}
               disabled={submitting || !title.trim()}
-              size="sm"
               className="rounded-xl flex-1"
             >
-              {submitting ? "Adding…" : "Add service"}
+              {submitting ? "Adding…" : "Add"}
             </Button>
             <Button
               onClick={() => {
@@ -90,7 +108,6 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
                 setDescription("");
               }}
               variant="outline"
-              size="sm"
               className="rounded-xl"
             >
               Cancel
