@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, MapPin, Clock } from "lucide-react";
+import { Loader2, MapPin, Clock, ClipboardList } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,7 @@ interface Lead {
   details: string | null;
   status: string;
   created_at: string;
+  last_activity_at: string;
 }
 
 const statusColors: Record<string, string> = {
@@ -36,8 +37,9 @@ export default function Leads() {
     const fetchLeads = async () => {
       const { data, error } = await supabase
         .from("leads")
-        .select("id, category, location_text, customer_name, details, status, created_at")
-        .order("created_at", { ascending: false });
+        .select("id, category, location_text, customer_name, details, status, created_at, last_activity_at")
+        .eq("archived", false)
+        .order("last_activity_at", { ascending: false });
 
       if (!error && data) {
         setLeads(data);
@@ -113,6 +115,3 @@ export default function Leads() {
     </div>
   );
 }
-
-// Need to import for empty state
-import { ClipboardList } from "lucide-react";
