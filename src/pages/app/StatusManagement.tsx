@@ -2,9 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
-  Plus,
+  PlusCircle,
   Trash2,
-  Circle,
   Loader2,
   Pencil,
 } from "lucide-react";
@@ -17,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { useCustomStatuses } from "@/hooks/useCustomStatuses";
 import { toast } from "sonner";
 
@@ -31,14 +29,15 @@ const COLOR_PALETTE = [
   "#06B6D4", "#22D3EE", "#67E8F9",
   "#F97316", "#FB923C", "#FDBA74",
   "#6B7280", "#9CA3AF", "#D1D5DB",
-  "#10B981",
+  "#10B981", "#1E3A5F",
 ];
 
 type View = "list" | "create";
 
 export default function StatusManagement() {
   const navigate = useNavigate();
-  const { statuses, loading, createStatus, deleteStatus, byCategory } = useCustomStatuses();
+  const { statuses, loading, createStatus, deleteStatus, byCategory } =
+    useCustomStatuses();
   const [view, setView] = useState<View>("list");
   const [newName, setNewName] = useState("");
   const [newCategory, setNewCategory] = useState<string>("pending");
@@ -65,7 +64,11 @@ export default function StatusManagement() {
     setSaving(false);
   };
 
-  const handleDelete = async (id: string, name: string, isDefault: boolean) => {
+  const handleDelete = async (
+    id: string,
+    name: string,
+    isDefault: boolean
+  ) => {
     if (isDefault) {
       toast.error("Default statuses cannot be deleted");
       return;
@@ -86,16 +89,18 @@ export default function StatusManagement() {
     );
   }
 
-  // ── Create status view ──
+  /* ── Create status view ── */
   if (view === "create") {
     return (
-      <div className="pb-8">
-        {/* Header */}
+      <div className="pb-8 min-h-screen bg-background">
         <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center">
-          <button onClick={() => setView("list")} className="p-1 -ml-1 text-primary">
+          <button
+            onClick={() => setView("list")}
+            className="p-1 -ml-1 text-primary"
+          >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="flex-1 text-center text-base font-semibold text-foreground">
+          <h1 className="flex-1 text-center text-lg font-bold text-foreground">
             Create status
           </h1>
           <div className="w-6" />
@@ -104,9 +109,11 @@ export default function StatusManagement() {
         <div className="px-4 pt-5 space-y-6">
           {/* Category */}
           <div>
-            <p className="text-base font-medium text-foreground mb-2">Select category</p>
+            <p className="text-base font-semibold text-foreground mb-2">
+              Select category
+            </p>
             <Select value={newCategory} onValueChange={setNewCategory}>
-              <SelectTrigger className="rounded-xl">
+              <SelectTrigger className="rounded-xl h-12">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover z-50">
@@ -122,7 +129,9 @@ export default function StatusManagement() {
 
           {/* Color picker */}
           <div>
-            <p className="text-base font-medium text-foreground mb-3">Select colour</p>
+            <p className="text-base font-semibold text-foreground mb-3">
+              Select colour
+            </p>
             <div className="flex flex-wrap gap-2.5 items-center">
               {COLOR_PALETTE.slice(0, 7).map((c) => (
                 <button
@@ -138,7 +147,6 @@ export default function StatusManagement() {
               ))}
               <button
                 onClick={() => {
-                  // Show full palette in an expanded view
                   const el = document.getElementById("full-palette");
                   if (el) el.classList.toggle("hidden");
                 }}
@@ -148,7 +156,6 @@ export default function StatusManagement() {
               </button>
             </div>
 
-            {/* Expanded palette */}
             <div id="full-palette" className="hidden mt-3">
               <div className="flex flex-wrap gap-2">
                 {COLOR_PALETTE.map((c) => (
@@ -169,17 +176,18 @@ export default function StatusManagement() {
 
           {/* Status name */}
           <div>
-            <p className="text-base font-medium text-foreground mb-2">Status name</p>
+            <p className="text-base font-semibold text-foreground mb-2">
+              Status name
+            </p>
             <Input
               placeholder="e.g. Contacted twice"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
-              className="rounded-xl"
+              className="rounded-xl h-12"
               maxLength={50}
             />
           </div>
 
-          {/* Create button */}
           <Button
             onClick={handleCreate}
             disabled={saving || !newName.trim()}
@@ -192,42 +200,55 @@ export default function StatusManagement() {
     );
   }
 
-  // ── List view ──
+  /* ── List view (Bark-style colored pills) ── */
   return (
-    <div className="pb-8">
-      {/* Header */}
+    <div className="pb-8 min-h-screen bg-background">
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center">
-        <button onClick={() => navigate(-1)} className="p-1 -ml-1 text-primary">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-1 -ml-1 text-foreground"
+        >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <h1 className="flex-1 text-center text-base font-semibold text-foreground">
+        <h1 className="flex-1 text-center text-lg font-bold text-foreground">
           Manage statuses
         </h1>
-        <button onClick={() => setView("create")} className="p-1 -mr-1 text-primary">
-          <Plus className="h-5 w-5" />
-        </button>
+        <div className="w-6" />
       </div>
 
-      <StatusGroup title="Pending" statuses={pending} onDelete={handleDelete} />
-      <StatusGroup title="Hired" statuses={hired} onDelete={handleDelete} />
-      <StatusGroup title="Archived" statuses={archived} onDelete={handleDelete} />
-
-      {/* Add button at bottom */}
-      <div className="px-4 pt-6">
-        <Button
+      <div className="px-4 pt-4 space-y-6">
+        {/* Create new button */}
+        <button
           onClick={() => setView("create")}
-          className="w-full h-12 rounded-xl text-base font-semibold"
+          className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 py-4 text-primary font-semibold text-base hover:bg-primary/10 transition-colors"
         >
-          <Plus className="h-4 w-4 mr-2" /> Create new status
-        </Button>
+          <PlusCircle className="h-5 w-5" />
+          Create new
+        </button>
+
+        <StatusPillGroup
+          title="Pending statuses"
+          statuses={pending}
+          onDelete={handleDelete}
+        />
+        <StatusPillGroup
+          title="Hired statuses"
+          statuses={hired}
+          onDelete={handleDelete}
+        />
+        <StatusPillGroup
+          title="Archived statuses"
+          statuses={archived}
+          onDelete={handleDelete}
+        />
       </div>
     </div>
   );
 }
 
-/* ── Status group ── */
+/* ── Bark-style pill group ── */
 
-function StatusGroup({
+function StatusPillGroup({
   title,
   statuses,
   onDelete,
@@ -240,37 +261,29 @@ function StatusGroup({
 
   return (
     <div>
-      <div className="bg-muted px-4 py-2.5">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          {title}
-        </h2>
-      </div>
-      <div className="divide-y divide-border">
+      <h2 className="text-base font-bold text-foreground mb-3">{title}</h2>
+      <div className="space-y-3">
         {statuses.map((s) => (
           <div
             key={s.id}
-            className="flex items-center justify-between px-4 py-3.5"
+            className="relative rounded-2xl border border-border bg-card overflow-hidden"
           >
-            <div className="flex items-center gap-3">
-              <Circle
-                className="h-4 w-4 shrink-0"
-                style={{ color: s.color, fill: s.color }}
-              />
-              <span className="text-sm font-medium text-foreground">{s.name}</span>
-              {s.is_default && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
-                  Default
-                </span>
+            <div className="flex items-center justify-between pr-3">
+              <div
+                className="flex-1 rounded-xl m-2 px-5 py-3.5 text-white font-semibold text-sm"
+                style={{ backgroundColor: s.color }}
+              >
+                {s.name}
+              </div>
+              {!s.is_default && (
+                <button
+                  onClick={() => onDelete(s.id, s.name, s.is_default)}
+                  className="p-2 text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               )}
             </div>
-            {!s.is_default && (
-              <button
-                onClick={() => onDelete(s.id, s.name, s.is_default)}
-                className="text-muted-foreground hover:text-destructive transition-colors p-1"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            )}
           </div>
         ))}
       </div>
