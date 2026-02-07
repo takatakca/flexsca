@@ -179,29 +179,33 @@ export default function LeadDetail() {
         onCustomStatusChanged={handleCustomStatusChanged}
       />
 
-      {/* Lead Q&A answers */}
-      <div className="p-4">
-        <LeadAnswers answers={lead.answers} details={lead.details} />
-      </div>
+      {/* Lead Q&A answers + location (Bark-style) */}
+      <div className="flex-1 overflow-y-auto">
+        <LeadAnswers
+          answers={lead.answers}
+          details={lead.details}
+          locationText={lead.location_text}
+          city={lead.city}
+          postalCode={lead.postal_code}
+        />
 
-      {/* Messages (only visible when contacted) */}
-      {isContacted && (
-        <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          <MessageThread messages={messages} />
-        </div>
-      )}
+        {/* Messages (only visible when contacted) */}
+        {isContacted && (
+          <div className="p-4 space-y-3">
+            <MessageThread messages={messages} />
+          </div>
+        )}
+      </div>
 
       {/* Bottom: contact button OR message input */}
       {!isContacted && !isArchived ? (
-        <div className="mt-auto border-t bg-background">
-          <ContactButton
-            customerName={lead.customer_name}
-            creditsCost={lead.credits_cost}
-            balance={balance}
-            onContact={handleContact}
-            contacting={contacting}
-          />
-        </div>
+        <ContactButton
+          customerName={lead.customer_name}
+          creditsCost={lead.credits_cost}
+          balance={balance}
+          onContact={handleContact}
+          contacting={contacting}
+        />
       ) : isContacted && !isArchived ? (
         <MessageInput
           value={newMessage}
