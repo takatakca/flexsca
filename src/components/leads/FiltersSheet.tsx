@@ -1,16 +1,14 @@
-import { useState, useEffect } from "react";
-import { X, RotateCcw } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { ArrowLeft, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
 } from "@/components/ui/sheet";
 import type { CustomStatus } from "@/hooks/useCustomStatuses";
+import { isAfter, subHours, subDays, subWeeks, startOfDay, subBusinessDays } from "date-fns";
 
 export interface LeadsFilters {
   keyword: string;
@@ -22,6 +20,7 @@ export interface LeadsFilters {
   services: string[];
   credits: number[];
   statusIds: string[];
+  timeRange: "any" | "last_hour" | "today" | "yesterday" | "3_days" | "7_days" | "2_weeks";
 }
 
 export const defaultFilters: LeadsFilters = {
@@ -34,21 +33,17 @@ export const defaultFilters: LeadsFilters = {
   services: [],
   credits: [],
   statusIds: [],
+  timeRange: "any",
 };
 
-const SERVICE_OPTIONS = [
-  "House Cleaning",
-  "Deep Cleaning Services",
-  "End of Tenancy Cleaning",
-  "Plumbing",
-  "Electrical Work",
-  "Painting & Decorating",
-  "Garden Maintenance",
-  "Removals",
-  "Dog Walking",
-];
-
-const CREDIT_OPTIONS = [1, 3, 5, 6, 7, 8, 9, 10];
+interface LeadForCounts {
+  id: string;
+  category: string;
+  credits_cost: number;
+  has_additional_details: boolean;
+  created_at: string;
+  customer_phone: string | null;
+}
 
 interface FiltersSheetProps {
   open: boolean;
@@ -56,6 +51,30 @@ interface FiltersSheetProps {
   value: LeadsFilters;
   onChange: (v: LeadsFilters) => void;
   customStatuses: CustomStatus[];
+  leads: LeadForCounts[];
+}
+
+const TIME_RANGES = [
+  { value: "any" as const, label: "Any time" },
+  { value: "last_hour" as const, label: "Last hour" },
+  { value: "today" as const, label: "Today" },
+  { value: "yesterday" as const, label: "Yesterday" },
+  { value: "3_days" as const, label: "Less than 3 days ago" },
+  { value: "7_days" as const, label: "Less than 7 days ago" },
+  { value: "2_weeks" as const, label: "Within the last 2 weeks" },
+];
+
+function getTimeRangeCutoff(range: string): Date | null {
+  const now = new Date();
+  switch (range) {
+    case "last_hour": return subHours(now, 1);
+    case "today": return startOfDay(now);
+    case "yesterday": return subDays(startOfDay(now), 1);
+    case "3_days": return subDays(now, 3);
+    case "7_days": return subDays(now, 7);
+    case "2_weeks": return subWeeks(now, 2);
+    default: return null;
+  }
 }
 
 export default function FiltersSheet({
@@ -64,6 +83,7 @@ export default function FiltersSheet({
   value,
   onChange,
   customStatuses,
+  leads,
 }: FiltersSheetProps) {
   const [draft, setDraft] = useState<LeadsFilters>(value);
 
@@ -71,96 +91,151 @@ export default function FiltersSheet({
     if (open) setDraft(value);
   }, [open, value]);
 
+  // Compute counts for each filter option
+  const serviceCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    leads.forEach((l) => {
+      map.set(l.category, (map.get(l.category) || 0) + 1);
+    });
+    return map;
+  }, [leads]);
+
+  const creditCounts = useMemo(() => {
+    const map = new Map<number, number>();
+    leads.forEach((l) => {
+      map.set(l.credits_cost, (map.get(l.credits_cost) || 0) + 1);
+    });
+    return map;
+  }, [leads]);
+
+  const timeRangeCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    TIME_RANGES.forEach(({ value: range }) => {
+      if (range === "any") {
+        counts[range] = leads.length;
+      } else {
+        const cutoff = getTimeRangeCutoff(range);
+        if (cutoff) {
+          counts[range] = leads.filter((l) => isAfter(new Date(l.created_at), cutoff)).length;
+        }
+      }
+    });
+    return counts;
+  }, [leads]);
+
+  const additionalDetailsCount = useMemo(
+    () => leads.filter((l) => l.has_additional_details).length,
+    [leads]
+  );
+
+  const uniqueServices = useMemo(() => {
+    return Array.from(serviceCounts.keys()).sort();
+  }, [serviceCounts]);
+
+  const uniqueCredits = useMemo(() => {
+    return Array.from(creditCounts.keys()).sort((a, b) => a - b);
+  }, [creditCounts]);
+
+  // Count filtered results
+  const filteredCount = useMemo(() => {
+    let result = leads;
+    
+    if (draft.services.length > 0) {
+      result = result.filter((l) => draft.services.includes(l.category));
+    }
+    if (draft.credits.length > 0) {
+      result = result.filter((l) => draft.credits.includes(l.credits_cost));
+    }
+    if (draft.hasAdditionalDetails) {
+      result = result.filter((l) => l.has_additional_details);
+    }
+    if (draft.timeRange !== "any") {
+      const cutoff = getTimeRangeCutoff(draft.timeRange);
+      if (cutoff) {
+        result = result.filter((l) => isAfter(new Date(l.created_at), cutoff));
+      }
+    }
+    return result.length;
+  }, [leads, draft]);
+
   function toggleArr<T extends string | number>(arr: T[], item: T): T[] {
     return arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item];
   }
 
-  const activeCount = [
-    draft.unreadOnly,
-    draft.hasAdditionalDetails,
-    draft.urgentOnly,
-    draft.firstToRespondOnly,
-    draft.services.length > 0,
-    draft.credits.length > 0,
-    draft.statusIds.length > 0,
-    draft.keyword.trim().length > 0,
-  ].filter(Boolean).length;
-
-  const pending = customStatuses.filter((s) => s.category === "pending");
-  const hired = customStatuses.filter((s) => s.category === "hired");
-  const archived = customStatuses.filter((s) => s.category === "archived");
-
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto p-0">
-        <SheetHeader className="sticky top-0 z-10 bg-background border-b px-4 py-3">
-          <div className="flex items-center justify-between">
-            <SheetTitle className="text-lg">Filters</SheetTitle>
-            <button
-              onClick={() => setDraft(defaultFilters)}
-              className="flex items-center gap-1 text-xs text-primary font-medium"
-            >
-              <RotateCcw className="h-3 w-3" /> Reset
-            </button>
-          </div>
-        </SheetHeader>
+      <SheetContent
+        side="bottom"
+        className="rounded-t-none h-full max-h-full p-0 flex flex-col [&>button]:hidden"
+      >
+        {/* ── Header ── */}
+        <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center justify-between shrink-0">
+          <button onClick={onClose} className="text-foreground">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <h2 className="text-lg font-bold text-foreground">Filter</h2>
+          <button
+            onClick={() => setDraft(defaultFilters)}
+            className="text-sm font-medium text-muted-foreground hover:text-foreground"
+          >
+            Reset
+          </button>
+        </div>
 
-        <div className="p-4 space-y-5">
-          {/* Keyword search */}
-          <div>
-            <label className="text-sm font-semibold text-foreground">Keyword search</label>
-            <Input
-              className="mt-2 rounded-xl"
-              placeholder="e.g. cleaning, plumbing…"
-              value={draft.keyword}
-              onChange={(e) => setDraft((d) => ({ ...d, keyword: e.target.value }))}
-            />
+        {/* ── Scrollable content ── */}
+        <div className="flex-1 overflow-y-auto px-4 pb-24">
+          {/* Filtered results count */}
+          <div className="pt-5 pb-4">
+            <h3 className="text-xl font-bold text-foreground">
+              Filtered results: {filteredCount}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {leads.length} leads matching your Lead Settings
+            </p>
           </div>
 
           <Separator />
 
-          {/* Toggle filters */}
-          <div className="space-y-3">
-            <label className="text-sm font-semibold text-foreground">View</label>
-            <FilterToggle
+          {/* ── Highlights ── */}
+          <div className="py-4 space-y-3">
+            <CheckboxRow
+              label="Has additional details"
+              count={additionalDetailsCount}
+              checked={draft.hasAdditionalDetails}
+              onChange={(v) => setDraft((d) => ({ ...d, hasAdditionalDetails: v }))}
+            />
+            <CheckboxRow
               label="Unread only"
               checked={draft.unreadOnly}
               onChange={(v) => setDraft((d) => ({ ...d, unreadOnly: v }))}
             />
-            <FilterToggle
-              label="Has additional details"
-              checked={draft.hasAdditionalDetails}
-              onChange={(v) => setDraft((d) => ({ ...d, hasAdditionalDetails: v }))}
-            />
-            <FilterToggle
-              label="Urgent"
-              checked={draft.urgentOnly}
-              onChange={(v) => setDraft((d) => ({ ...d, urgentOnly: v }))}
-            />
-            <FilterToggle
+            <CheckboxRow
               label="1st to respond"
               checked={draft.firstToRespondOnly}
               onChange={(v) => setDraft((d) => ({ ...d, firstToRespondOnly: v }))}
             />
+            <CheckboxRow
+              label="Urgent"
+              checked={draft.urgentOnly}
+              onChange={(v) => setDraft((d) => ({ ...d, urgentOnly: v }))}
+            />
           </div>
 
           <Separator />
 
-          {/* Services */}
-          <div>
-            <label className="text-sm font-semibold text-foreground">Services</label>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {SERVICE_OPTIONS.map((s) => (
-                <ChipToggle
-                  key={s}
-                  label={s}
-                  active={draft.services.includes(s)}
-                  onClick={() =>
-                    setDraft((d) => ({
-                      ...d,
-                      services: toggleArr(d.services, s),
-                    }))
-                  }
+          {/* ── When the lead was submitted ── */}
+          <div className="py-4">
+            <h4 className="text-base font-bold text-foreground mb-3">
+              When the lead was submitted
+            </h4>
+            <div className="space-y-3">
+              {TIME_RANGES.map(({ value: range, label }) => (
+                <RadioRow
+                  key={range}
+                  label={label}
+                  count={timeRangeCounts[range]}
+                  selected={draft.timeRange === range}
+                  onChange={() => setDraft((d) => ({ ...d, timeRange: range }))}
                 />
               ))}
             </div>
@@ -168,101 +243,83 @@ export default function FiltersSheet({
 
           <Separator />
 
-          {/* Credits */}
-          <div>
-            <label className="text-sm font-semibold text-foreground">Credits</label>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {CREDIT_OPTIONS.map((c) => (
-                <ChipToggle
-                  key={c}
-                  label={`${c}`}
-                  active={draft.credits.includes(c)}
-                  onClick={() =>
-                    setDraft((d) => ({
-                      ...d,
-                      credits: toggleArr(d.credits, c),
-                    }))
-                  }
-                />
-              ))}
-            </div>
-          </div>
+          {/* ── Services ── */}
+          {uniqueServices.length > 0 && (
+            <>
+              <div className="py-4">
+                <h4 className="text-base font-bold text-foreground mb-3">Services</h4>
+                <div className="space-y-3">
+                  {uniqueServices.map((s) => (
+                    <CheckboxRow
+                      key={s}
+                      label={s}
+                      count={serviceCounts.get(s)}
+                      checked={draft.services.includes(s)}
+                      onChange={() =>
+                        setDraft((d) => ({
+                          ...d,
+                          services: toggleArr(d.services, s),
+                        }))
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
 
-          <Separator />
+          {/* ── Credits ── */}
+          {uniqueCredits.length > 0 && (
+            <>
+              <div className="py-4">
+                <h4 className="text-base font-bold text-foreground mb-3">Credits</h4>
+                <div className="space-y-3">
+                  {uniqueCredits.map((c) => (
+                    <CheckboxRow
+                      key={c}
+                      label={`${c} Credit${c !== 1 ? "s" : ""}`}
+                      count={creditCounts.get(c)}
+                      checked={draft.credits.includes(c)}
+                      onChange={() =>
+                        setDraft((d) => ({
+                          ...d,
+                          credits: toggleArr(d.credits, c),
+                        }))
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+              <Separator />
+            </>
+          )}
 
-          {/* Status */}
+          {/* ── Custom Statuses ── */}
           {customStatuses.length > 0 && (
-            <div>
-              <label className="text-sm font-semibold text-foreground">Status</label>
-              {pending.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-xs text-muted-foreground mb-1">Pending</p>
-                  <div className="flex flex-wrap gap-2">
-                    {pending.map((s) => (
-                      <ChipToggle
-                        key={s.id}
-                        label={s.name}
-                        active={draft.statusIds.includes(s.id)}
-                        color={s.color}
-                        onClick={() =>
-                          setDraft((d) => ({
-                            ...d,
-                            statusIds: toggleArr(d.statusIds, s.id),
-                          }))
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              {hired.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-xs text-muted-foreground mb-1">Hired</p>
-                  <div className="flex flex-wrap gap-2">
-                    {hired.map((s) => (
-                      <ChipToggle
-                        key={s.id}
-                        label={s.name}
-                        active={draft.statusIds.includes(s.id)}
-                        color={s.color}
-                        onClick={() =>
-                          setDraft((d) => ({
-                            ...d,
-                            statusIds: toggleArr(d.statusIds, s.id),
-                          }))
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              {archived.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-xs text-muted-foreground mb-1">Archived</p>
-                  <div className="flex flex-wrap gap-2">
-                    {archived.map((s) => (
-                      <ChipToggle
-                        key={s.id}
-                        label={s.name}
-                        active={draft.statusIds.includes(s.id)}
-                        color={s.color}
-                        onClick={() =>
-                          setDraft((d) => ({
-                            ...d,
-                            statusIds: toggleArr(d.statusIds, s.id),
-                          }))
-                        }
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+            <div className="py-4">
+              <h4 className="text-base font-bold text-foreground mb-3">Status</h4>
+              <div className="space-y-3">
+                {customStatuses.map((s) => (
+                  <CheckboxRow
+                    key={s.id}
+                    label={s.name}
+                    checked={draft.statusIds.includes(s.id)}
+                    onChange={() =>
+                      setDraft((d) => ({
+                        ...d,
+                        statusIds: toggleArr(d.statusIds, s.id),
+                      }))
+                    }
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Apply button */}
-        <div className="sticky bottom-0 bg-background border-t p-4 space-y-2">
+        {/* ── Apply button (sticky bottom) ── */}
+        <div className="sticky bottom-0 bg-background border-t p-4 shrink-0">
           <Button
             className="w-full rounded-xl h-12 text-base font-semibold"
             onClick={() => {
@@ -270,14 +327,7 @@ export default function FiltersSheet({
               onClose();
             }}
           >
-            Apply filters{activeCount > 0 ? ` (${activeCount})` : ""}
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full rounded-xl"
-            onClick={onClose}
-          >
-            Close
+            Apply filter
           </Button>
         </div>
       </SheetContent>
@@ -285,49 +335,66 @@ export default function FiltersSheet({
   );
 }
 
-function FilterToggle({
+/* ─── Checkbox row with optional count ─── */
+function CheckboxRow({
   label,
+  count,
   checked,
   onChange,
 }: {
   label: string;
+  count?: number;
   checked: boolean;
   onChange: (v: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-sm text-foreground">{label}</span>
-      <Switch checked={checked} onCheckedChange={onChange} />
-    </div>
+    <label className="flex items-center gap-3 cursor-pointer">
+      <Checkbox
+        checked={checked}
+        onCheckedChange={(v) => onChange(v === true)}
+        className="h-5 w-5 rounded border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+      />
+      <span className="text-base text-foreground flex-1">
+        {label}
+        {count !== undefined && (
+          <span className="text-muted-foreground"> ({count})</span>
+        )}
+      </span>
+    </label>
   );
 }
 
-function ChipToggle({
+/* ─── Radio row with optional count ─── */
+function RadioRow({
   label,
-  active,
-  onClick,
-  color,
+  count,
+  selected,
+  onChange,
 }: {
   label: string;
-  active: boolean;
-  onClick: () => void;
-  color?: string;
+  count?: number;
+  selected: boolean;
+  onChange: () => void;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium border transition-colors ${
-        active
-          ? "bg-primary text-primary-foreground border-primary"
-          : "bg-background text-muted-foreground border-border hover:bg-accent"
-      }`}
-      style={
-        active && color
-          ? { backgroundColor: color, borderColor: color, color: "#fff" }
-          : undefined
-      }
-    >
-      {label}
-    </button>
+    <label className="flex items-center gap-3 cursor-pointer" onClick={onChange}>
+      <div
+        className={`h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+          selected
+            ? "border-primary"
+            : "border-border"
+        }`}
+      >
+        {selected && (
+          <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+        )}
+      </div>
+      <span className="text-base text-foreground flex-1">
+        {label}
+        {count !== undefined && (
+          <span className="text-muted-foreground"> ({count})</span>
+        )}
+      </span>
+    </label>
   );
 }

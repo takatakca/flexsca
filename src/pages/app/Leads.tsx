@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, ClipboardList, SlidersHorizontal, ListFilter, LayoutList } from "lucide-react";
+import { Loader2, ClipboardList, SlidersHorizontal, LayoutList } from "lucide-react";
+import { isAfter, subHours, subDays, subWeeks, startOfDay } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCustomStatuses } from "@/hooks/useCustomStatuses";
@@ -167,6 +168,23 @@ export default function Leads() {
       });
     }
 
+    // Time range filter
+    if (filters.timeRange && filters.timeRange !== "any") {
+      const now = new Date();
+      let cutoff: Date | null = null;
+      switch (filters.timeRange) {
+        case "last_hour": cutoff = subHours(now, 1); break;
+        case "today": cutoff = startOfDay(now); break;
+        case "yesterday": cutoff = subDays(startOfDay(now), 1); break;
+        case "3_days": cutoff = subDays(now, 3); break;
+        case "7_days": cutoff = subDays(now, 7); break;
+        case "2_weeks": cutoff = subWeeks(now, 2); break;
+      }
+      if (cutoff) {
+        result = result.filter((l) => isAfter(new Date(l.created_at), cutoff));
+      }
+    }
+
     return result;
   }, [leads, agentStates, showArchived, filters]);
 
@@ -292,6 +310,7 @@ export default function Leads() {
         value={filters}
         onChange={setFilters}
         customStatuses={statuses}
+        leads={leads}
       />
 
       {reminderLead && (
