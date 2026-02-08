@@ -1,23 +1,20 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, MapPin, Clock, ClipboardList, Search, X, Archive, Coins, Zap, SlidersHorizontal, Circle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Loader2, ClipboardList, SlidersHorizontal, ListFilter, LayoutList } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCustomStatuses } from "@/hooks/useCustomStatuses";
-import { useLongPress } from "@/hooks/useLongPress";
-import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import FiltersSheet, { type LeadsFilters, defaultFilters } from "@/components/leads/FiltersSheet";
 import ReminderModal from "@/components/leads/ReminderModal";
+import LeadCard from "@/components/leads/LeadCard";
 
 interface Lead {
   id: string;
   category: string;
   location_text: string;
   customer_name: string | null;
+  customer_phone: string | null;
   details: string | null;
   status: string;
   created_at: string;
@@ -27,6 +24,7 @@ interface Lead {
   has_additional_details: boolean;
   city: string | null;
   postal_code: string | null;
+  answers: Record<string, unknown>;
 }
 
 interface AgentState {
@@ -57,7 +55,7 @@ export default function Leads() {
       const [leadsRes, statesRes] = await Promise.all([
         supabase
           .from("leads")
-          .select("id, category, location_text, customer_name, details, status, created_at, last_activity_at, credits_cost, is_urgent, has_additional_details, city, postal_code")
+          .select("id, category, location_text, customer_name, customer_phone, details, status, created_at, last_activity_at, credits_cost, is_urgent, has_additional_details, city, postal_code, answers")
           .order("last_activity_at", { ascending: false }),
         supabase
           .from("lead_agent_state")
@@ -65,7 +63,14 @@ export default function Leads() {
           .eq("agent_id", user.id),
       ]);
 
-      if (leadsRes.data) setLeads(leadsRes.data);
+      if (leadsRes.data) {
+        setLeads(
+          leadsRes.data.map((l) => ({
+            ...l,
+            answers: (l.answers as Record<string, unknown>) ?? {},
+          }))
+        );
+      }
       if (statesRes.data) {
         setAgentStates(new Map(statesRes.data.map((s) => [s.lead_id, s])));
       }
@@ -95,8 +100,6 @@ export default function Leads() {
       toast.error("Failed to restore lead");
     }
   };
-
-  const statusMap = useMemo(() => new Map(statuses.map((s) => [s.id, s])), [statuses]);
 
   const filteredLeads = useMemo(() => {
     let result = leads;
@@ -167,6 +170,17 @@ export default function Leads() {
     return result;
   }, [leads, agentStates, showArchived, filters]);
 
+  // Compute summary stats for the header
+  const serviceCount = useMemo(() => {
+    const services = new Set(filteredLeads.map((l) => l.category));
+    return services.size;
+  }, [filteredLeads]);
+
+  const locationCount = useMemo(() => {
+    const locations = new Set(filteredLeads.map((l) => l.city || l.location_text));
+    return locations.size;
+  }, [filteredLeads]);
+
   const activeFilterCount = useMemo(() => {
     return [
       filters.unreadOnly,
@@ -204,72 +218,73 @@ export default function Leads() {
   }
 
   return (
-    <div className="p-4 space-y-3">
-      {/* Active / Archived toggle */}
-      <div className="flex items-center gap-2">
-        <div className="flex flex-1 rounded-full bg-muted p-1">
-          <button
-            onClick={() => setShowArchived(false)}
-            className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
-              !showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
-            }`}
-          >
-            Active
-          </button>
-          <button
-            onClick={() => setShowArchived(true)}
-            className={`flex-1 rounded-full py-1.5 text-sm font-medium transition-colors ${
-              showArchived ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
-            }`}
-          >
-            Archived
-          </button>
+    <div className="pb-4">
+      {/* ── Bark-style header bar ── */}
+      <div className="mx-4 mt-4 rounded-2xl bg-accent/60 border border-border px-4 py-3 flex items-center gap-3">
+        {/* Edit icon + count */}
+        <div className="flex-1 min-w-0">
+          <p className="text-base font-bold text-foreground">
+            {filteredLeads.length} matching lead{filteredLeads.length !== 1 ? "s" : ""}
+          </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {serviceCount} service{serviceCount !== 1 ? "s" : ""} • {locationCount} location{locationCount !== 1 ? "s" : ""}
+          </p>
         </div>
+
+        {/* Filter button */}
         <button
           onClick={() => setFiltersOpen(true)}
-          className={`relative flex items-center gap-1 rounded-full border px-3 py-2 text-sm font-medium transition-colors ${
+          className={`relative flex items-center justify-center h-10 w-10 rounded-full border transition-colors ${
             activeFilterCount > 0
-              ? "border-primary text-primary bg-primary/5"
-              : "text-muted-foreground hover:bg-accent"
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border bg-background text-muted-foreground hover:bg-muted"
           }`}
         >
-          <SlidersHorizontal className="h-4 w-4" />
-          Filter
+          <SlidersHorizontal className="h-4.5 w-4.5" />
           {activeFilterCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
               {activeFilterCount}
             </span>
           )}
         </button>
+
+        {/* List/Archive toggle */}
+        <button
+          onClick={() => setShowArchived((v) => !v)}
+          className={`flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium transition-colors ${
+            showArchived
+              ? "border-primary bg-primary/10 text-primary"
+              : "border-border bg-background text-muted-foreground hover:bg-muted"
+          }`}
+        >
+          <LayoutList className="h-4 w-4" />
+          {showArchived ? "Archived" : "List"}
+        </button>
       </div>
 
-      {/* Results count */}
-      <p className="text-xs text-muted-foreground">
-        {filteredLeads.length} lead{filteredLeads.length !== 1 ? "s" : ""}
-      </p>
-
-      {/* Lead cards */}
-      {filteredLeads.length === 0 ? (
-        <p className="text-center text-muted-foreground text-sm py-8">
-          No leads match your filters.
-        </p>
-      ) : (
-        filteredLeads.map((lead) => {
-          const state = agentStates.get(lead.id);
-          return (
-            <LeadCard
-              key={lead.id}
-              lead={lead}
-              state={state ?? null}
-              statusMap={statusMap}
-              showArchived={showArchived}
-              onNavigate={() => navigate(`/app/leads/${lead.id}`)}
-              onRestore={handleRestore}
-              onLongPress={() => setReminderLead(lead)}
-            />
-          );
-        })
-      )}
+      {/* ── Lead cards ── */}
+      <div className="px-4 mt-4 space-y-3">
+        {filteredLeads.length === 0 ? (
+          <p className="text-center text-muted-foreground text-sm py-8">
+            No leads match your filters.
+          </p>
+        ) : (
+          filteredLeads.map((lead) => {
+            const state = agentStates.get(lead.id);
+            return (
+              <LeadCard
+                key={lead.id}
+                lead={lead}
+                state={state ?? null}
+                showArchived={showArchived}
+                onNavigate={() => navigate(`/app/leads/${lead.id}`)}
+                onRestore={handleRestore}
+                onLongPress={() => setReminderLead(lead)}
+              />
+            );
+          })
+        )}
+      </div>
 
       <FiltersSheet
         open={filtersOpen}
@@ -289,105 +304,5 @@ export default function Leads() {
         />
       )}
     </div>
-  );
-}
-
-function LeadCard({
-  lead,
-  state,
-  statusMap,
-  showArchived,
-  onNavigate,
-  onRestore,
-  onLongPress,
-}: {
-  lead: Lead;
-  state: AgentState | null;
-  statusMap: Map<string, { name: string; color: string; category: string }>;
-  showArchived: boolean;
-  onNavigate: () => void;
-  onRestore: (e: React.MouseEvent, id: string) => void;
-  onLongPress: () => void;
-}) {
-  const isUnread = state?.is_unread ?? true;
-  const isContacted = state?.contacted ?? false;
-  const customStatus = state?.custom_status_id ? statusMap.get(state.custom_status_id) : null;
-
-  const longPressHandlers = useLongPress({
-    onLongPress,
-    onClick: onNavigate,
-  });
-
-  return (
-    <Card
-      className="p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] transition-transform select-none"
-      {...longPressHandlers}
-    >
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2 min-w-0">
-          {isUnread && !showArchived && (
-            <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
-          )}
-          <h3 className="font-semibold text-foreground truncate">{lead.category}</h3>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {lead.is_urgent && (
-            <Badge variant="destructive" className="text-xs">
-              <Zap className="h-3 w-3 mr-0.5" /> Urgent
-            </Badge>
-          )}
-          {customStatus && (
-            <Badge
-              variant="outline"
-              className="text-xs"
-              style={{
-                borderColor: customStatus.color,
-                color: customStatus.color,
-                backgroundColor: `${customStatus.color}15`,
-              }}
-            >
-              <Circle className="h-2 w-2 mr-1 fill-current" />
-              {customStatus.name}
-            </Badge>
-          )}
-          {!showArchived && !isContacted && (
-            <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20">
-              <Coins className="h-3 w-3 mr-0.5" />
-              {lead.credits_cost}
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      {lead.customer_name && (
-        <p className="text-sm font-medium text-foreground mb-1">{lead.customer_name}</p>
-      )}
-
-      {lead.details && (
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-          {lead.details}
-        </p>
-      )}
-
-      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <MapPin className="h-3.5 w-3.5" />
-          {lead.location_text}
-        </span>
-        <span className="flex items-center gap-1">
-          <Clock className="h-3.5 w-3.5" />
-          {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
-        </span>
-      </div>
-
-      {showArchived && (
-        <button
-          onClick={(e) => onRestore(e, lead.id)}
-          className="mt-2 flex items-center gap-1 text-xs text-primary font-medium hover:underline"
-        >
-          <Archive className="h-3.5 w-3.5" /> Restore
-        </button>
-      )}
-    </Card>
   );
 }
