@@ -196,29 +196,94 @@ export default function FiltersSheet({
 
           <Separator />
 
-          {/* ── Highlights ── */}
-          <div className="py-4 space-y-3">
-            <CheckboxRow
-              label="Has additional details"
-              count={additionalDetailsCount}
-              checked={draft.hasAdditionalDetails}
-              onChange={(v) => setDraft((d) => ({ ...d, hasAdditionalDetails: v }))}
+          {/* ── Keyword search ── */}
+          <div className="py-4">
+            <h4 className="text-base font-bold text-foreground mb-3">Keyword search</h4>
+            <input
+              type="text"
+              value={draft.keyword}
+              onChange={(e) => setDraft((d) => ({ ...d, keyword: e.target.value }))}
+              placeholder=""
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
-            <CheckboxRow
-              label="Unread only"
-              checked={draft.unreadOnly}
-              onChange={(v) => setDraft((d) => ({ ...d, unreadOnly: v }))}
-            />
-            <CheckboxRow
-              label="1st to respond"
-              checked={draft.firstToRespondOnly}
-              onChange={(v) => setDraft((d) => ({ ...d, firstToRespondOnly: v }))}
-            />
-            <CheckboxRow
-              label="Urgent"
-              checked={draft.urgentOnly}
-              onChange={(v) => setDraft((d) => ({ ...d, urgentOnly: v }))}
-            />
+          </div>
+
+          <Separator />
+
+          {/* ── Sort by ── */}
+          <div className="py-4">
+            <h4 className="text-base font-bold text-foreground mb-3">Sort by</h4>
+            <div className="space-y-3">
+              <RadioRow
+                label="Recommended"
+                selected={draft.sort === "recommended"}
+                onChange={() => setDraft((d) => ({ ...d, sort: "recommended" }))}
+              />
+              <RadioRow
+                label="Newest first"
+                selected={draft.sort === "newest"}
+                onChange={() => setDraft((d) => ({ ...d, sort: "newest" }))}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* ── View ── */}
+          <div className="py-4">
+            <h4 className="text-base font-bold text-foreground mb-3">View</h4>
+            <div className="space-y-3">
+              <CheckboxRow
+                label="Unread"
+                checked={draft.unreadOnly}
+                onChange={(v) => setDraft((d) => ({ ...d, unreadOnly: v }))}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* ── Lead spotlights ── */}
+          <div className="py-4">
+            <h4 className="text-base font-bold text-foreground mb-3">Lead spotlights</h4>
+            <div className="space-y-3">
+              <CheckboxRow
+                label="All lead spotlights"
+                checked={draft.hasAdditionalDetails && draft.firstToRespondOnly && draft.urgentOnly}
+                onChange={(v) =>
+                  setDraft((d) => ({
+                    ...d,
+                    hasAdditionalDetails: v,
+                    firstToRespondOnly: v,
+                    urgentOnly: v,
+                  }))
+                }
+              />
+              <div className="pl-4 space-y-3">
+                <CheckboxRow
+                  label="Free leads"
+                  checked={draft.credits.includes(0)}
+                  onChange={() =>
+                    setDraft((d) => ({
+                      ...d,
+                      credits: d.credits.includes(0)
+                        ? d.credits.filter((c) => c !== 0)
+                        : [...d.credits, 0],
+                    }))
+                  }
+                />
+                <CheckboxRow
+                  label="1st to respond"
+                  checked={draft.firstToRespondOnly}
+                  onChange={(v) => setDraft((d) => ({ ...d, firstToRespondOnly: v }))}
+                />
+                <CheckboxRow
+                  label="Urgent"
+                  checked={draft.urgentOnly}
+                  onChange={(v) => setDraft((d) => ({ ...d, urgentOnly: v }))}
+                />
+              </div>
+            </div>
           </div>
 
           <Separator />
