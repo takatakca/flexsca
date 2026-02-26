@@ -841,6 +841,42 @@ export type Database = {
           },
         ]
       }
+      service_categories: {
+        Row: {
+          base_credit_cost: number
+          created_at: string
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          questions: Json
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          base_credit_cost?: number
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          questions?: Json
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          base_credit_cost?: number
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          questions?: Json
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       lead_last_message: {

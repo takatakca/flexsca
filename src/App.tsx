@@ -18,6 +18,11 @@ import Settings from "@/pages/app/Settings";
 import StatusManagement from "@/pages/app/StatusManagement";
 import ProfileSetup from "@/pages/app/ProfileSetup";
 import OpenInApp from "@/pages/app/OpenInApp";
+import PostJob from "@/pages/customer/PostJob";
+import JobQuestionnaire from "@/pages/customer/JobQuestionnaire";
+import JobContact from "@/pages/customer/JobContact";
+import JobSuccess from "@/pages/customer/JobSuccess";
+import Index from "@/pages/Index";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,8 +35,16 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            {/* Public landing */}
+            <Route path="/" element={<Index />} />
+
+            {/* Customer lead posting flow (no auth required) */}
+            <Route path="/post-job" element={<PostJob />} />
+            <Route path="/post-job/contact" element={<JobContact />} />
+            <Route path="/post-job/success" element={<JobSuccess />} />
+            <Route path="/post-job/:slug" element={<JobQuestionnaire />} />
+
             {/* Auth routes */}
-            <Route path="/" element={<Navigate to="/auth/welcome" replace />} />
             <Route path="/auth/welcome" element={<Welcome />} />
             <Route path="/auth/check-email" element={<CheckEmail />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
