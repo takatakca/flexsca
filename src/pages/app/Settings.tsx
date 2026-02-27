@@ -2,18 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
-  LogOut,
   ChevronRight,
   Loader2,
   Trash2,
+  Star,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import WalletCard from "@/components/WalletCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,10 +28,10 @@ export default function Settings() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, signOut } = useAuth();
-  const [displayName, setDisplayName] = useState("");
-  const [email, setEmail] = useState("");
-  const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [avgRating, setAvgRating] = useState(0);
   const [notifications, setNotifications] = useState({
     newLeads: true,
     messages: true,
@@ -55,39 +53,27 @@ export default function Settings() {
   useEffect(() => {
     if (!user) return;
 
-    const fetchProfile = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("display_name, email")
-        .eq("id", user.id)
-        .single();
+    const fetchData = async () => {
+      const [profileRes, reviewsRes] = await Promise.all([
+        supabase.from("provider_profiles").select("profile_photo_url").eq("user_id", user.id).maybeSingle(),
+        supabase.from("provider_reviews").select("rating").eq("user_id", user.id),
+      ]);
 
-      if (data) {
-        setDisplayName(data.display_name || "");
-        setEmail(data.email || user.email || "");
+      if (profileRes.data?.profile_photo_url) {
+        setProfilePhoto(profileRes.data.profile_photo_url);
       }
+
+      if (reviewsRes.data && reviewsRes.data.length > 0) {
+        setReviewCount(reviewsRes.data.length);
+        const sum = reviewsRes.data.reduce((acc, r) => acc + r.rating, 0);
+        setAvgRating(sum / reviewsRes.data.length);
+      }
+
       setLoading(false);
     };
 
-    fetchProfile();
+    fetchData();
   }, [user]);
-
-  const handleSave = async () => {
-    if (!user) return;
-    setSaving(true);
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({ display_name: displayName })
-      .eq("id", user.id);
-
-    if (error) {
-      toast.error("Failed to save profile");
-    } else {
-      toast.success("Profile saved");
-    }
-    setSaving(false);
-  };
 
   const handleLogout = async () => {
     await signOut();
@@ -115,66 +101,82 @@ export default function Settings() {
         <div className="w-6" />
       </div>
 
-      {/* ── My account ── */}
-      <SectionHeader label="My account" />
+      {/* Profile avatar + rating */}
+      <div className="bg-muted flex flex-col items-center py-8">
+        <div className="h-28 w-28 rounded-lg bg-muted-foreground/10 overflow-hidden flex items-center justify-center">
+          {profilePhoto ? (
+            <img src={profilePhoto} alt="Profile" className="h-full w-full object-cover" />
+          ) : (
+            <svg className="h-16 w-16 text-muted-foreground/40" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z" />
+            </svg>
+          )}
+        </div>
+        <div className="flex items-center gap-1 mt-3">
+          {[1, 2, 3, 4, 5].map((s) => (
+            <Star
+              key={s}
+              className={`h-5 w-5 ${s <= Math.round(avgRating) ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground/30"}`}
+            />
+          ))}
+          <span className="text-sm text-muted-foreground ml-1">({reviewCount})</span>
+        </div>
+      </div>
+
+      {/* ── Profile ── */}
+      <SectionHeader label="Profile" />
+
+      <SettingsRow
+        title="My profile"
+        description="Your profile is key to attracting customers. Update your profile to stand out"
+        onClick={() => navigate("/app/settings/profile")}
+      />
+      <Separator className="mx-4" />
+
+      <SettingsRow
+        title="Reviews"
+        description="All your reviews in one place"
+        onClick={() => navigate("/app/settings/profile", { state: { section: "reviews" } })}
+      />
+      <Separator className="mx-4" />
 
       <SettingsRow
         title="Account details"
-        description="Your name and email for FLEX'S to contact you"
-        onClick={() => {}}
+        description="Your email address and password you use to log in, and the phone numbers we use to contact you privately"
+        onClick={() => navigate("/app/settings/account")}
       />
 
-      <div className="px-4 py-4 space-y-3 bg-background">
-        <div>
-          <label className="text-sm text-muted-foreground mb-1 block">
-            Display name
-          </label>
-          <Input
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Your name"
-            className="rounded-xl"
-          />
-        </div>
-        <div>
-          <label className="text-sm text-muted-foreground mb-1 block">
-            Email
-          </label>
-          <Input value={email} disabled className="rounded-xl opacity-60" />
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="w-full text-sm font-semibold text-primary py-2 hover:underline"
-        >
-          {saving ? "Saving…" : "Save changes"}
-        </button>
-      </div>
-
-      <Separator />
+      {/* ── Lead settings ── */}
+      <SectionHeader label="Lead settings" />
 
       <SettingsRow
-        title="Your profile"
-        description="Set up your business profile to contact more customers"
-        onClick={() => navigate("/app/settings/profile")}
-        chevron
+        title="My services"
+        description="Tell us what services you provide so we can send you the most relevant leads"
+        onClick={() => navigate("/app/settings/profile", { state: { section: "services" } })}
       />
+      <Separator className="mx-4" />
 
-      <Separator />
+      <SettingsRow
+        title="My locations"
+        description="Tell us what locations you provide your services in"
+        onClick={() => navigate("/app/settings/profile", { state: { section: "location" } })}
+      />
+      <Separator className="mx-4" />
 
       <SettingsRow
         title="Custom statuses"
         description="Manage your lead statuses and pipeline"
         onClick={() => navigate("/app/settings/statuses")}
-        chevron
       />
 
-      <Separator />
+      {/* ── Account & Credits ── */}
+      <SectionHeader label="Account & Credits" />
 
-      {/* Wallet */}
-      <div className="px-4 py-4">
-        <WalletCard />
-      </div>
+      <SettingsRow
+        title="My credits"
+        description="View credit history and buy credits to contact more customers"
+        onClick={() => navigate("/app/settings/credits")}
+      />
 
       {/* ── My notifications ── */}
       <SectionHeader label="My notifications" />
@@ -230,7 +232,7 @@ export default function Settings() {
         onClick={() => {}}
       />
 
-      <Separator />
+      <Separator className="mx-4" />
 
       <AlertDialog>
         <AlertDialogTrigger asChild>
@@ -263,6 +265,7 @@ export default function Settings() {
       </AlertDialog>
 
       {/* ── Logout ── */}
+      <div className="bg-muted py-2" />
       <div className="py-6">
         <button
           onClick={handleLogout}
@@ -296,12 +299,10 @@ function SettingsRow({
   title,
   description,
   onClick,
-  chevron,
 }: {
   title: string;
   description: string;
   onClick: () => void;
-  chevron?: boolean;
 }) {
   return (
     <button
@@ -312,7 +313,7 @@ function SettingsRow({
         <p className="text-sm font-semibold text-foreground">{title}</p>
         <p className="text-sm text-muted-foreground mt-0.5">{description}</p>
       </div>
-      {chevron && <ChevronRight className="h-5 w-5 text-muted-foreground ml-2 shrink-0" />}
+      <ChevronRight className="h-5 w-5 text-muted-foreground ml-2 shrink-0" />
     </button>
   );
 }
