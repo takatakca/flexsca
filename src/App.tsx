@@ -23,6 +23,7 @@ import JobQuestionnaire from "@/pages/customer/JobQuestionnaire";
 import JobContact from "@/pages/customer/JobContact";
 import JobSuccess from "@/pages/customer/JobSuccess";
 import Index from "@/pages/Index";
+import PublicProfile from "@/pages/PublicProfile";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
           <Routes>
             {/* Public landing */}
             <Route path="/" element={<Index />} />
+            <Route path="/profile/:userId" element={<PublicProfile />} />
 
             {/* Customer lead posting flow (no auth required) */}
             <Route path="/post-job" element={<PostJob />} />

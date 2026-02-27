@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, ChevronRight, CheckCircle2, Loader2 } from "lucide-react";
 import ProfileCompletionMeter from "@/components/profile/ProfileCompletionMeter";
 import CompanySection from "@/components/profile/CompanySection";
@@ -16,6 +17,7 @@ type SectionKey = "about" | "reviews" | "services" | "photos" | "social" | "accr
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<SectionKey>(null);
   const {
     profile,
@@ -142,7 +144,14 @@ export default function ProfileSetup() {
       <div className="px-4 pt-5 pb-4">
         <ProfileCompletionMeter completion={completion} />
 
-        <button className="text-sm text-primary font-medium mt-3 hover:underline">
+        <button
+          className="text-sm text-primary font-medium mt-3 hover:underline"
+          onClick={() => {
+            if (user) {
+              window.open(`/profile/${user.id}`, "_blank");
+            }
+          }}
+        >
           View public profile
         </button>
       </div>
