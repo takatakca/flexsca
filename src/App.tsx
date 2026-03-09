@@ -22,6 +22,7 @@ import OpenInApp from "@/pages/app/OpenInApp";
 import PostJob from "@/pages/customer/PostJob";
 import JobQuestionnaire from "@/pages/customer/JobQuestionnaire";
 import JobContact from "@/pages/customer/JobContact";
+import BuyerDashboard from "@/pages/customer/BuyerDashboard";
 import JobSuccess from "@/pages/customer/JobSuccess";
 import ServiceCategoryPage from "@/pages/ServiceCategoryPage";
 import AboutPage from "@/pages/AboutPage";
