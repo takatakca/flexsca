@@ -10,7 +10,7 @@ const Index = () => {
       {/* Hero */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-          FLEXS
+          QMAPS
         </h1>
         <p className="mt-3 text-lg text-muted-foreground max-w-md">
           Connect with trusted local professionals — or find your next client.
