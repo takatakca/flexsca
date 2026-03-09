@@ -274,7 +274,7 @@ export default function Leads() {
         >
           {viewMode === "list" ? (
             <>
-              <Map className="h-4 w-4" />
+              <MapIcon className="h-4 w-4" />
               Map
             </>
           ) : (
