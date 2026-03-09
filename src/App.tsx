@@ -54,6 +54,9 @@ const App = () => (
             {/* Public marketing pages */}
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/affiliates" element={<AffiliatePage />} />
+            <Route path="/help" element={<HelpCenter />} />
+            <Route path="/help/:slug" element={<HelpCenter />} />
 
             {/* Auth routes */}
             <Route path="/auth/welcome" element={<Welcome />} />
