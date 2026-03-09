@@ -467,12 +467,7 @@ export default function ServiceFlowModal({
           <div className="flex items-center justify-between">
             <Button
               variant="outline"
-              onClick={() => {
-                if (questions.length > 0) {
-                  setCurrentQ(questions.length - 1);
-                  setStep("questionnaire");
-                }
-              }}
+              onClick={() => setStep("location-step")}
               className="px-6"
             >
               Back
