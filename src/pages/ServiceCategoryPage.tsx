@@ -53,11 +53,12 @@ const reviews = [
 export default function ServiceCategoryPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [category, setCategory] = useState<Category | null>(null);
-  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const [category, setCategory] = useState<CategoryFull | null>(null);
+  const [allCategories, setAllCategories] = useState<CategoryFull[]>([]);
   const [loading, setLoading] = useState(true);
   const [serviceSearch, setServiceSearch] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
+  const [showFlow, setShowFlow] = useState(false);
 
   useEffect(() => {
     Promise.all([
