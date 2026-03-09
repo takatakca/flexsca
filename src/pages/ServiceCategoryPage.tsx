@@ -139,9 +139,11 @@ const categoryRelatedImages: Record<string, { services: string[]; guides: string
 
 function getCategoryTheme(slug: string, parentSlug: string | null): string {
   const s = parentSlug || slug;
-  if (s.includes("financial") || s.includes("tax") || s.includes("budget") || s.includes("valuation") || s.includes("pension") || s.includes("venture")) return "financial";
+  if (s.includes("financial") || s.includes("tax") || s.includes("budget") || s.includes("valuation") || s.includes("pension") || s.includes("venture") || s.includes("accounting") || s.includes("bookkeep") || s.includes("invoice")) return "financial";
   if (s.includes("event") || s.includes("catering") || s.includes("coach") || s.includes("venue") || s.includes("entertainment")) return "event";
   if (s.includes("legal") || s.includes("lawyer") || s.includes("employment")) return "legal";
+  if (s.includes("advertis") || s.includes("media-buying") || s.includes("broadline") || s.includes("slogan") || s.includes("copywriting")) return "default";
+  if (s.includes("brand") || s.includes("logo") || s.includes("flyer") || s.includes("stationery") || s.includes("design")) return "default";
   return "default";
 }
 
@@ -150,6 +152,7 @@ export default function ServiceCategoryPage() {
   const navigate = useNavigate();
   const [category, setCategory] = useState<CategoryFull | null>(null);
   const [parentCategory, setParentCategory] = useState<CategoryFull | null>(null);
+  const [grandparentCategory, setGrandparentCategory] = useState<CategoryFull | null>(null);
   const [childCategories, setChildCategories] = useState<CategoryFull[]>([]);
   const [siblingCategories, setSiblingCategories] = useState<CategoryFull[]>([]);
   const [allCategories, setAllCategories] = useState<CategoryFull[]>([]);
@@ -163,6 +166,7 @@ export default function ServiceCategoryPage() {
   useEffect(() => {
     setLoading(true);
     setParentCategory(null);
+    setGrandparentCategory(null);
     setSiblingCategories([]);
 
     Promise.all([
@@ -180,7 +184,15 @@ export default function ServiceCategoryPage() {
         // Fetch parent category if this is a child
         if (cat.parent_slug) {
           const { data: parentData } = await supabase.from("service_categories").select("*").eq("slug", cat.parent_slug).eq("is_active", true).single();
-          if (parentData) setParentCategory(mapCat(parentData));
+          if (parentData) {
+            const parent = mapCat(parentData);
+            setParentCategory(parent);
+            // Fetch grandparent if parent also has a parent
+            if (parent.parent_slug) {
+              const { data: gpData } = await supabase.from("service_categories").select("*").eq("slug", parent.parent_slug).eq("is_active", true).single();
+              if (gpData) setGrandparentCategory(mapCat(gpData));
+            }
+          }
 
           // Fetch siblings
           if (allRes.data) {
@@ -239,6 +251,9 @@ export default function ServiceCategoryPage() {
 
   // Breadcrumb
   const breadcrumbParts: { label: string; to?: string }[] = [{ label: "Business", to: "/" }];
+  if (grandparentCategory) {
+    breadcrumbParts.push({ label: grandparentCategory.name, to: `/services/${grandparentCategory.slug}` });
+  }
   if (parentCategory) {
     breadcrumbParts.push({ label: parentCategory.name, to: `/services/${parentCategory.slug}` });
   } else if (isChild && category.parent_slug) {
