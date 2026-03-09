@@ -102,7 +102,7 @@ export default function LeadCard({
             {isUnread && !showArchived && (
               <span className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" />
             )}
-            <div className="h-12 w-12 rounded-full bg-[hsl(260,40%,70%)] flex items-center justify-center text-white text-lg font-bold">
+            <div className="h-12 w-12 rounded-full bg-[hsl(75,60%,55%)] flex items-center justify-center text-foreground text-lg font-bold">
               {getInitial(lead.customer_name)}
             </div>
           </div>
