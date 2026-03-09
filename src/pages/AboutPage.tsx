@@ -170,7 +170,7 @@ export default function AboutPage() {
             The people behind the platform
           </h2>
           <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-            FLEXS is built by a passionate team dedicated to connecting customers with the best professionals.
+            QMAPS is built by a passionate team dedicated to connecting customers with the best professionals.
             We're on a mission to make hiring trusted help simple and reliable.
           </p>
           <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-900 shadow-xl">
