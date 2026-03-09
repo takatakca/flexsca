@@ -22,10 +22,28 @@ const MOCK_REMINDERS = [
   { name: "John", location: "Stratford, E15 2TF", initial: "J", color: "bg-[hsl(68,60%,50%)]", label: "Response", due: "Due in 1 week", overdue: false },
 ];
 
+type OnboardingPhase = "carousel" | "location" | "details";
+
+const RADIUS_OPTIONS = ["10 miles", "20 miles", "30 miles", "50 miles", "75 miles", "100 miles"];
+const COMPANY_SIZE_OPTIONS = ["Self-employed, Sole trader", "2-10", "11-50", "51-200", "200+"];
+
 export default function Onboarding() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [phase, setPhase] = useState<OnboardingPhase>("carousel");
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  // Location step state
+  const [radius, setRadius] = useState("30 miles");
+  const [locationPostcode, setLocationPostcode] = useState("");
+
+  // Details step state
+  const [yourName, setYourName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [hasWebsite, setHasWebsite] = useState<"yes" | "no" | null>(null);
+  const [companySize, setCompanySize] = useState("");
 
   const slides: Slide[] = [
     {
