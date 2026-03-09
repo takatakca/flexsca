@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, CheckCircle2, PenLine, BellRing, Clock, Check, AlertCircle, ChevronDown, Star } from "lucide-react";
+import { Bell, CheckCircle2, PenLine, BellRing, Clock, Check, AlertCircle, ChevronDown, Star, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { toast } from "sonner";
 
 interface Slide {
   topTitle: string;
