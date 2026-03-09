@@ -615,6 +615,102 @@ export default function ServiceFlowModal({
     </div>
   );
 
+  // ── Matches Found modal ──
+  const renderMatchesFound = () => {
+    const progress = questions.length > 0
+      ? ((questions.length + 0.5) / (questions.length + 5)) * 100
+      : 70;
+    return (
+      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+        <div className="h-1.5 bg-gray-200">
+          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="flex justify-end px-4 pt-4">
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+        </div>
+        <div className="px-6 pb-6 text-center">
+          <div className="h-16 w-16 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-4">
+            <Check className="h-8 w-8 text-white stroke-[3]" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Great! We've found you the perfect matches.</h2>
+          <p className="text-sm text-gray-500 mb-6">Lastly, we need your details to attach to your request.</p>
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={() => {
+              if (questions.length > 0) { setCurrentQ(questions.length - 1); setStep("questionnaire"); }
+            }} className="px-6">Back</Button>
+            <Button onClick={() => setStep("email-step")} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">Continue</Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ── Email step modal ──
+  const renderEmailStep = () => {
+    const progress = questions.length > 0
+      ? ((questions.length + 1.5) / (questions.length + 5)) * 100
+      : 75;
+    return (
+      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+        <div className="h-1.5 bg-gray-200">
+          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="flex justify-end px-4 pt-4">
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+        </div>
+        <div className="px-6 pb-6">
+          <h2 className="text-xl font-bold text-gray-900 text-center mb-6">What email address would you like quotes sent to?</h2>
+          <input
+            type="email"
+            value={contactEmail}
+            onChange={(e) => setContactEmail(e.target.value)}
+            placeholder="Email address"
+            className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-blue-500 mb-6"
+          />
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={() => setStep("matches-found")} className="px-6">Back</Button>
+            <Button onClick={() => setStep("location-step")} disabled={!contactEmail.trim()} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">Continue</Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ── Location step modal ──
+  const renderLocationStep = () => {
+    const progress = questions.length > 0
+      ? ((questions.length + 2.5) / (questions.length + 5)) * 100
+      : 82;
+    return (
+      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+        <div className="h-1.5 bg-gray-200">
+          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="flex justify-end px-4 pt-4">
+          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+        </div>
+        <div className="px-6 pb-6">
+          <h2 className="text-xl font-bold text-gray-900 text-center mb-2">Where do you need the {categoryName}?</h2>
+          <p className="text-sm text-gray-500 text-center mb-6">The postcode or town for the address where you want the {categoryName}.</p>
+          <div className="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-3 mb-6">
+            <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Enter postcode or town"
+              className="flex-1 text-sm text-gray-800 outline-none placeholder:text-gray-400"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={() => setStep("email-step")} className="px-6">Back</Button>
+            <Button onClick={() => setStep("welcome-back")} disabled={!location.trim()} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">Continue</Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderStep = () => {
     switch (step) {
       case "loading":
@@ -623,6 +719,12 @@ export default function ServiceFlowModal({
         return renderLoading();
       case "questionnaire":
         return renderQuestionnaire();
+      case "matches-found":
+        return renderMatchesFound();
+      case "email-step":
+        return renderEmailStep();
+      case "location-step":
+        return renderLocationStep();
       case "welcome-back":
         return renderWelcomeBack();
       case "details":
