@@ -5,6 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const sidebarArticles = [
+  { title: "What is QMAPS Verified?", slug: "verified" },
+  { title: "What is Elite Pro?", slug: "elite-pro" },
+  { title: "What is Enquiries?", slug: "enquiries" },
+  { title: "How many responses can a customer receive?", slug: "customer-responses" },
+  { title: "How can I submit a general press enquiry?", slug: "press-enquiry" },
+  { title: "Why am I missing Elite Pro features?", slug: "elite-pro-features" },
+  { title: "Why Didn't I Get Hired?", slug: "why-not-hired" },
+  { title: "Contact FLEX'S customer support", slug: "contact-support" },
   { title: "Banned Reviews Policy", slug: "banned-reviews" },
   { title: "Chat Guidelines: Keeping Conversations Safe and Professional", slug: "chat-guidelines" },
   { title: "Safeguarding and Welfare", slug: "safeguarding" },
