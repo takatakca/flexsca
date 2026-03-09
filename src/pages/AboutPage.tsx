@@ -100,15 +100,15 @@ const perks = [
 
 const faqs = [
   {
-    question: "How does FLEXS's hiring process work?",
+    question: "How does QMAPS's hiring process work?",
     answer: "Our hiring process typically includes an initial call, a skills assessment, team interviews, and a final conversation with leadership. We aim to make decisions within 2-3 weeks.",
   },
   {
-    question: "What is the culture like at FLEXS?",
+    question: "What is the culture like at QMAPS?",
     answer: "We're a diverse, inclusive team that values collaboration, innovation, and work-life balance. We believe in empowering our employees to do their best work.",
   },
   {
-    question: "Does FLEXS offer remote work options?",
+    question: "Does QMAPS offer remote work options?",
     answer: "Yes! We offer flexible remote and hybrid work arrangements depending on the role and team needs.",
   },
   {
