@@ -31,6 +31,7 @@ import HelpCenter from "@/pages/HelpCenter";
 import CookiesPage from "@/pages/CookiesPage";
 import Index from "@/pages/Index";
 import PublicProfile from "@/pages/PublicProfile";
+import ProLanding from "@/pages/ProLanding";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
