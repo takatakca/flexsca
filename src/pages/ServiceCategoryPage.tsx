@@ -17,12 +17,13 @@ interface Question {
   placeholder?: string;
 }
 
-interface Category {
+interface CategoryFull {
   id: string;
   name: string;
   slug: string;
   icon: string | null;
   base_credit_cost: number;
+  questions: Question[];
 }
 
 const popularCities = [
