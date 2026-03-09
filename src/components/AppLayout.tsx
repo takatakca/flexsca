@@ -14,7 +14,7 @@ function getPageTitle(pathname: string) {
   if (pathname.startsWith("/app/responses")) return "Responses";
   if (pathname.startsWith("/app/reminders")) return "Reminders";
   if (pathname.startsWith("/app/settings")) return "Settings";
-  return "FLEX'S";
+  return "FLEXS";
 }
 
 export default function AppLayout() {

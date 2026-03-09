@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Send, Lock } from "lucide-react";
+import { ArrowLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,7 +45,6 @@ export default function CheckEmail() {
       });
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          // Try to sign up instead
           const { error: signUpError } = await supabase.auth.signUp({
             email,
             password,
@@ -77,10 +76,8 @@ export default function CheckEmail() {
     <div className="flex min-h-screen flex-col px-6 bg-background">
       {/* Back arrow */}
       <div className="pt-4">
-        <button onClick={() => navigate("/auth/welcome")} className="text-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
+        <button onClick={() => navigate("/auth/welcome")} className="text-foreground">
+          <ArrowLeft className="h-6 w-6" />
         </button>
       </div>
 
@@ -88,25 +85,30 @@ export default function CheckEmail() {
         <div className="w-full max-w-sm space-y-8 text-center">
           <div className="space-y-4">
             <h1 className="text-2xl font-bold text-foreground leading-snug">
-              You already have an account with FLEX'S, check your email to login
+              You already have an account with FLEXS, check your email to login
             </h1>
-
             <p className="text-primary font-semibold text-lg">{email}</p>
           </div>
 
           {/* Paper plane illustration */}
-          <div className="flex justify-center py-4">
-            <Send className="h-16 w-16 text-primary" />
+          <div className="flex justify-center py-6">
+            <div className="relative">
+              <svg width="120" height="80" viewBox="0 0 120 80" fill="none" className="text-primary">
+                <path d="M10 50 Q30 20 50 40 Q70 60 90 30" stroke="currentColor" strokeWidth="2" strokeDasharray="6 4" fill="none" opacity="0.4"/>
+                <path d="M80 15 L110 25 L95 45 L80 15Z" fill="currentColor"/>
+                <path d="M80 15 L95 45 L85 30Z" fill="currentColor" opacity="0.7"/>
+              </svg>
+            </div>
           </div>
 
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">Not received the link?</p>
+            <p className="text-sm text-muted-foreground">Not Received The Link?</p>
             <Button
               onClick={handleResend}
               disabled={resending}
               className="w-full h-12 text-base font-semibold rounded-xl"
             >
-              {resending ? "Sending…" : "Send another link"}
+              {resending ? "Sending…" : "Send Another Link"}
             </Button>
           </div>
 
@@ -125,7 +127,7 @@ export default function CheckEmail() {
               onClick={() => setShowPassword(true)}
               className="w-full h-12 text-base font-medium rounded-xl text-primary border-primary"
             >
-              Sign in with a password
+              Sign In With a Password
             </Button>
           ) : (
             <form onSubmit={handlePasswordLogin} className="space-y-3">

@@ -207,7 +207,7 @@ export default function Reminders() {
           />
           <h2 className="text-xl font-bold text-foreground mb-2">Reminders</h2>
           <p className="text-muted-foreground text-sm max-w-xs">
-            Reminders that are created will show up here.
+            Reminders you create will appear here.
           </p>
         </div>
       )}

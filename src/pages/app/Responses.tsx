@@ -335,7 +335,7 @@ export default function Responses() {
   );
 }
 
-/* ── Empty state (matches Bark screenshot) ── */
+/* ── Empty state ── */
 
 function EmptyResponsesState({ onViewLeads }: { onViewLeads: () => void }) {
   return (
