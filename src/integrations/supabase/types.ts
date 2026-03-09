@@ -960,6 +960,21 @@ export type Database = {
         Args: { p_lead_id: string; p_status_id: string }
         Returns: undefined
       }
+      submit_lead: {
+        Args: {
+          p_answers?: Json
+          p_category: string
+          p_city?: string
+          p_customer_email?: string
+          p_customer_name?: string
+          p_customer_phone?: string
+          p_details?: string
+          p_is_urgent?: boolean
+          p_location_text: string
+          p_postal_code?: string
+        }
+        Returns: string
+      }
       unlock_lead: { Args: { p_lead_id: string }; Returns: number }
     }
     Enums: {
