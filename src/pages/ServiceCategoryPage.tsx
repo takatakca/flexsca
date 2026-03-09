@@ -429,7 +429,7 @@ export default function ServiceCategoryPage() {
             <div>
               <h4 className="font-semibold mb-4">About</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/about" className="hover:text-white">About FLEXS</Link></li>
+                <li><Link to="/about" className="hover:text-white">About QMAPS</Link></li>
                 <li><Link to="/" className="hover:text-white">Careers</Link></li>
                 <li><Link to="/" className="hover:text-white">Blog</Link></li>
                 <li><Link to="/" className="hover:text-white">Press</Link></li>
