@@ -456,7 +456,57 @@ export default function ServiceCategoryPage() {
           </div>
         </section>
 
-        {/* All Services */}
+        {/* Related Services */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related services</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedServices.map((s) => (
+              <div key={s.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={s.image} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-foreground text-sm">{s.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Service Guides */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related service guides</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {relatedGuides.map((g) => (
+              <div key={g.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
+                <div className="aspect-[16/9] overflow-hidden">
+                  <img src={g.image} alt={g.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-foreground text-sm">{g.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Price Guides */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related price guides</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedPriceGuides.map((p) => (
+              <div key={p.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-foreground text-sm">{p.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">All services</h2>
           <div className="flex flex-wrap gap-2">
