@@ -115,9 +115,11 @@ export default function Onboarding() {
         </button>
       </div>
 
-      {/* Top title */}
-      <div className="px-6 pt-4 pb-2">
-        <h1 className="text-2xl font-bold text-foreground">{slide.topTitle}</h1>
+      {/* Centered welcome header */}
+      <div className="px-6 pt-6 pb-2 text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground leading-tight">
+          Welcome to FLEXS for{"\n"}professionals 👨‍🔧
+        </h1>
       </div>
 
       {/* Visual */}
@@ -134,12 +136,12 @@ export default function Onboarding() {
       </div>
 
       {/* Dot indicators */}
-      <div className="flex justify-center gap-2 py-6">
+      <div className="flex justify-center gap-2.5 py-6">
         {slides.map((_, i) => (
           <div
             key={i}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === currentSlide ? "w-6 bg-primary" : "w-2 bg-muted-foreground/30"
+            className={`h-2.5 w-2.5 rounded-full transition-all duration-300 ${
+              i === currentSlide ? "bg-primary" : "bg-muted-foreground/25"
             }`}
           />
         ))}
