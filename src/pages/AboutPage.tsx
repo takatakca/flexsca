@@ -100,15 +100,15 @@ const perks = [
 
 const faqs = [
   {
-    question: "How does FLEXS's hiring process work?",
+    question: "How does QMAPS's hiring process work?",
     answer: "Our hiring process typically includes an initial call, a skills assessment, team interviews, and a final conversation with leadership. We aim to make decisions within 2-3 weeks.",
   },
   {
-    question: "What is the culture like at FLEXS?",
+    question: "What is the culture like at QMAPS?",
     answer: "We're a diverse, inclusive team that values collaboration, innovation, and work-life balance. We believe in empowering our employees to do their best work.",
   },
   {
-    question: "Does FLEXS offer remote work options?",
+    question: "Does QMAPS offer remote work options?",
     answer: "Yes! We offer flexible remote and hybrid work arrangements depending on the role and team needs.",
   },
   {
@@ -124,7 +124,7 @@ export default function AboutPage() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="text-xl font-bold text-primary">
-            FLEXS
+            QMAPS
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <button className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1">
@@ -170,7 +170,7 @@ export default function AboutPage() {
             The people behind the platform
           </h2>
           <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
-            FLEXS is built by a passionate team dedicated to connecting customers with the best professionals.
+            QMAPS is built by a passionate team dedicated to connecting customers with the best professionals.
             We're on a mission to make hiring trusted help simple and reliable.
           </p>
           <div className="relative aspect-video rounded-xl overflow-hidden bg-gray-900 shadow-xl">
@@ -342,8 +342,8 @@ export default function AboutPage() {
       {/* FAQs */}
       <section className="py-16 md:py-24">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">FLEXS FAQs</h2>
-          <p className="text-center text-gray-600 mb-12">Common questions about working at FLEXS</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">QMAPS FAQs</h2>
+          <p className="text-center text-gray-600 mb-12">Common questions about working at QMAPS</p>
           <div className="space-y-4">
             {faqs.map((faq, idx) => (
               <details key={idx} className="border border-gray-200 rounded-lg group">
@@ -361,7 +361,7 @@ export default function AboutPage() {
       {/* CTA */}
       <section className="py-16 md:py-24 bg-primary text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Already working at FLEXS?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Already working at QMAPS?</h2>
           <p className="text-white/80 mb-8">
             Help us find great people to join our team. Refer a friend and earn rewards.
           </p>
@@ -393,7 +393,7 @@ export default function AboutPage() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
-          <p>© {new Date().getFullYear()} FLEXS. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} QMAPS. All rights reserved.</p>
         </div>
       </footer>
     </div>

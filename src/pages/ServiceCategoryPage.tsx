@@ -4,13 +4,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { Search, MapPin, ChevronRight, Star, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
 
-interface Category {
+interface Question {
+  id: string;
+  label: string;
+  subtitle?: string;
+  type: "radio" | "checkbox" | "textarea" | "location" | "select";
+  options: string[];
+  required: boolean;
+  hasOther?: boolean;
+  placeholder?: string;
+}
+
+interface CategoryFull {
   id: string;
   name: string;
   slug: string;
   icon: string | null;
   base_credit_cost: number;
+  questions: Question[];
 }
 
 const popularCities = [
@@ -22,7 +35,7 @@ const popularCities = [
 const reviews = [
   {
     rating: 5,
-    text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend FLEXS!",
+    text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend QMAPS!",
     author: "Sarah M.",
   },
   {
@@ -40,11 +53,12 @@ const reviews = [
 export default function ServiceCategoryPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [category, setCategory] = useState<Category | null>(null);
-  const [allCategories, setAllCategories] = useState<Category[]>([]);
+  const [category, setCategory] = useState<CategoryFull | null>(null);
+  const [allCategories, setAllCategories] = useState<CategoryFull[]>([]);
   const [loading, setLoading] = useState(true);
   const [serviceSearch, setServiceSearch] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
+  const [showFlow, setShowFlow] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -62,10 +76,16 @@ export default function ServiceCategoryPage() {
         .limit(7),
     ]).then(([categoryRes, allRes]) => {
       if (categoryRes.data) {
-        setCategory(categoryRes.data);
+        setCategory({
+          ...categoryRes.data,
+          questions: (categoryRes.data.questions as unknown as Question[]) || [],
+        });
       }
       if (allRes.data) {
-        setAllCategories(allRes.data);
+        setAllCategories(allRes.data.map((c: any) => ({
+          ...c,
+          questions: (c.questions as unknown as Question[]) || [],
+        })));
       }
       setLoading(false);
     });
@@ -73,7 +93,7 @@ export default function ServiceCategoryPage() {
 
   const handleStartRequest = () => {
     if (category) {
-      navigate(`/post-job/${category.slug}`);
+      setShowFlow(true);
     }
   };
 
@@ -98,11 +118,21 @@ export default function ServiceCategoryPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Flow Modal */}
+      {showFlow && category && (
+        <ServiceFlowModal
+          categoryId={category.id}
+          categoryName={category.name}
+          categorySlug={category.slug}
+          questions={category.questions}
+          onClose={() => setShowFlow(false)}
+        />
+      )}
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="text-xl font-bold text-primary">
-            FLEXS
+            QMAPS
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             <button className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1">
@@ -201,7 +231,7 @@ export default function ServiceCategoryPage() {
             Need help finding an {categoryDisplayName} professional?
           </h2>
           <p className="text-gray-600 mb-4">
-            You can find the best {categoryDisplayName} professionals on FLEXS. Start your
+            You can find the best {categoryDisplayName} professionals on QMAPS. Start your
             search and get free quotes now!
           </p>
           <p className="text-gray-600 mb-6">
@@ -317,11 +347,11 @@ export default function ServiceCategoryPage() {
 
         {/* FAQ Section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">FLEXS FAQs</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">QMAPS FAQs</h2>
           <div className="space-y-4">
             <details className="border border-gray-200 rounded-lg">
               <summary className="px-4 py-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
-                How does FLEXS work for customers?
+                How does QMAPS work for customers?
               </summary>
               <p className="px-4 py-3 text-gray-600 text-sm border-t">
                 Simply tell us what service you need and where you're located. We'll match you with
@@ -349,10 +379,10 @@ export default function ServiceCategoryPage() {
             </details>
             <details className="border border-gray-200 rounded-lg">
               <summary className="px-4 py-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
-                What services does FLEXS provide?
+                What services does QMAPS provide?
               </summary>
               <p className="px-4 py-3 text-gray-600 text-sm border-t">
-                FLEXS connects customers with professionals across hundreds of service categories,
+                QMAPS connects customers with professionals across hundreds of service categories,
                 from home improvement to business services. Whatever you need, we can help you find
                 the right professional.
               </p>
@@ -399,7 +429,7 @@ export default function ServiceCategoryPage() {
             <div>
               <h4 className="font-semibold mb-4">About</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><Link to="/about" className="hover:text-white">About FLEXS</Link></li>
+                <li><Link to="/about" className="hover:text-white">About QMAPS</Link></li>
                 <li><Link to="/" className="hover:text-white">Careers</Link></li>
                 <li><Link to="/" className="hover:text-white">Blog</Link></li>
                 <li><Link to="/" className="hover:text-white">Press</Link></li>
@@ -413,7 +443,7 @@ export default function ServiceCategoryPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} FLEXS. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} QMAPS. All rights reserved.</p>
             <div className="flex justify-center gap-4 mt-4">
               <Link to="/" className="hover:text-gray-400">Terms & Conditions</Link>
               <Link to="/" className="hover:text-gray-400">Privacy Policy</Link>
