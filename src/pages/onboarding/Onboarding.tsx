@@ -104,6 +104,26 @@ export default function Onboarding() {
 
   const completeOnboarding = async () => {
     if (user) {
+      // Save provider profile details
+      const { error: profileError } = await supabase
+        .from("provider_profiles")
+        .upsert({
+          user_id: user.id,
+          personal_name: yourName.trim() || null,
+          company_name: companyName.trim() || null,
+          company_email: emailAddress.trim() || null,
+          company_phone: phoneNumber.trim() || null,
+          company_size: companySize || "solo",
+          city: locationPostcode.trim() || null,
+        }, { onConflict: "user_id" });
+
+      if (profileError) console.error("Profile save error:", profileError);
+
+      // Update display name
+      if (yourName.trim()) {
+        await supabase.from("profiles").update({ display_name: yourName.trim() }).eq("id", user.id);
+      }
+
       await supabase
         .from("profiles")
         .update({ onboarding_completed: true })
@@ -116,7 +136,8 @@ export default function Onboarding() {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide((prev) => prev + 1);
     } else {
-      completeOnboarding();
+      // Move to location step after carousel
+      setPhase("location");
     }
   };
 
@@ -124,8 +145,192 @@ export default function Onboarding() {
     completeOnboarding();
   };
 
+  const handleLocationNext = () => {
+    setPhase("details");
+  };
+
+  const handleDetailsNext = () => {
+    completeOnboarding();
+  };
+
   const slide = slides[currentSlide];
 
+  // ── Location phase ──
+  if (phase === "location") {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+          <div className="flex h-14 items-center justify-between px-4">
+            <span className="text-xl font-bold text-primary italic">FLEXS</span>
+            <div className="h-6 w-6" />
+          </div>
+        </header>
+
+        <div className="flex-1 flex flex-col items-center px-6 pt-16">
+          <h1 className="text-2xl font-bold text-foreground text-center mb-2">
+            Where would you like to see leads from?
+          </h1>
+          <p className="text-sm text-muted-foreground text-center mb-10">
+            Tell us the area you cover so we can show you leads for your location
+          </p>
+
+          <div className="w-full max-w-sm border border-border rounded-xl p-6 space-y-5">
+            <h2 className="text-xl font-bold text-foreground">I serve customers within</h2>
+
+            <select
+              value={radius}
+              onChange={(e) => setRadius(e.target.value)}
+              className="w-full h-12 border border-border rounded-xl px-4 text-sm text-foreground bg-background"
+            >
+              {RADIUS_OPTIONS.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+
+            <p className="text-sm text-muted-foreground">From</p>
+
+            <div className="flex items-center gap-3 border border-border rounded-xl px-4 py-3">
+              <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
+              <input
+                type="text"
+                value={locationPostcode}
+                onChange={(e) => setLocationPostcode(e.target.value)}
+                placeholder="Enter your postcode or town"
+                className="flex-1 text-sm text-foreground outline-none bg-transparent placeholder:text-muted-foreground"
+              />
+            </div>
+
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <MapPin className="h-3 w-3" /> You can change your location at any time
+            </p>
+
+            <Button onClick={handleLocationNext} className="px-8 rounded-xl">
+              Next
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Details phase ──
+  if (phase === "details") {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+          <div className="flex h-14 items-center justify-between px-4">
+            <span className="text-xl font-bold text-primary italic">FLEXS</span>
+            <div className="h-6 w-6" />
+          </div>
+        </header>
+
+        <div className="flex-1 flex flex-col items-center px-6 pt-10">
+          <h1 className="text-2xl font-bold text-foreground text-center mb-2">
+            Some details about you
+          </h1>
+          <p className="text-sm text-primary text-center mb-8">
+            You're just a few steps away from viewing our leads
+          </p>
+
+          <div className="w-full max-w-sm border border-border rounded-xl p-6 space-y-5">
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-1.5 block">Your name</label>
+              <Input
+                value={yourName}
+                onChange={(e) => setYourName(e.target.value)}
+                placeholder="Your full name"
+                className="h-12 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-1.5 block">Company name</label>
+              <Input
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Company name"
+                className="h-12 rounded-xl"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                If you aren't a business or don't have this information, you can leave this blank
+              </p>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-1.5 block">Email address</label>
+              <Input
+                type="email"
+                value={emailAddress}
+                onChange={(e) => setEmailAddress(e.target.value)}
+                placeholder="your@email.com"
+                className="h-12 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-1.5 block">Phone number</label>
+              <Input
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="Optional"
+                className="h-12 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">Does your company have a website?</label>
+              <div className="flex gap-2">
+                {(["yes", "no"] as const).map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setHasWebsite(v)}
+                    className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
+                      hasWebsite === v ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary"
+                    }`}
+                  >
+                    {v === "yes" ? "Yes" : "No"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">Company size, employees</label>
+              <div className="flex flex-wrap gap-2">
+                {COMPANY_SIZE_OPTIONS.map((size) => (
+                  <button
+                    key={size}
+                    onClick={() => setCompanySize(size)}
+                    className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
+                      companySize === size ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary"
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <Button variant="outline" onClick={() => setPhase("location")} className="px-8 rounded-xl">
+                Back
+              </Button>
+              <Button onClick={handleDetailsNext} className="px-8 rounded-xl">
+                Next
+              </Button>
+            </div>
+
+            <p className="text-xs text-muted-foreground text-center">
+              By continuing, you confirm your agreement to our{" "}
+              <a href="#" className="text-primary hover:underline">Terms & Conditions</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Carousel phase (default) ──
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Skip button */}
