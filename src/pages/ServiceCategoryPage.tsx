@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, MapPin, ChevronRight, Star, Menu, User } from "lucide-react";
+import { Search, MapPin, ChevronRight, Star, Menu, User, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
@@ -59,6 +59,7 @@ export default function ServiceCategoryPage() {
   const [serviceSearch, setServiceSearch] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
   const [showFlow, setShowFlow] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
 
   useEffect(() => {
     Promise.all([
@@ -93,7 +94,11 @@ export default function ServiceCategoryPage() {
 
   const handleStartRequest = () => {
     if (category) {
-      setShowFlow(true);
+      setShowLoading(true);
+      setTimeout(() => {
+        setShowLoading(false);
+        setShowFlow(true);
+      }, 1500);
     }
   };
 
@@ -118,6 +123,16 @@ export default function ServiceCategoryPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Loading Modal */}
+      {showLoading && (
+        <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-12 shadow-xl flex flex-col items-center gap-4 min-w-[300px]">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-lg font-semibold text-foreground">Please wait...</p>
+          </div>
+        </div>
+      )}
+
       {/* Flow Modal */}
       {showFlow && category && (
         <ServiceFlowModal
@@ -207,6 +222,17 @@ export default function ServiceCategoryPage() {
           </div>
         </div>
       </section>
+
+      {/* Press Logos Bar */}
+      <div className="border-b border-border bg-background py-6">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-8 md:gap-16 flex-wrap opacity-40">
+          <span className="text-xl md:text-2xl font-bold tracking-tight font-serif">CBC</span>
+          <span className="text-xl md:text-2xl font-bold tracking-tight italic">Globe&Mail</span>
+          <span className="text-xl md:text-2xl font-bold tracking-tight text-red-700 font-serif">theglobeandmail</span>
+          <span className="text-xl md:text-2xl font-bold tracking-widest uppercase font-serif">TORONTO STAR</span>
+          <span className="text-xl md:text-2xl font-bold tracking-widest uppercase">MACLEAN'S</span>
+        </div>
+      </div>
 
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-4">
