@@ -152,6 +152,7 @@ export default function ServiceCategoryPage() {
   const navigate = useNavigate();
   const [category, setCategory] = useState<CategoryFull | null>(null);
   const [parentCategory, setParentCategory] = useState<CategoryFull | null>(null);
+  const [grandparentCategory, setGrandparentCategory] = useState<CategoryFull | null>(null);
   const [childCategories, setChildCategories] = useState<CategoryFull[]>([]);
   const [siblingCategories, setSiblingCategories] = useState<CategoryFull[]>([]);
   const [allCategories, setAllCategories] = useState<CategoryFull[]>([]);
