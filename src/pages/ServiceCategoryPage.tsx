@@ -347,11 +347,11 @@ export default function ServiceCategoryPage() {
 
         {/* FAQ Section */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">FLEXS FAQs</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">QMAPS FAQs</h2>
           <div className="space-y-4">
             <details className="border border-gray-200 rounded-lg">
               <summary className="px-4 py-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
-                How does FLEXS work for customers?
+                How does QMAPS work for customers?
               </summary>
               <p className="px-4 py-3 text-gray-600 text-sm border-t">
                 Simply tell us what service you need and where you're located. We'll match you with
@@ -379,10 +379,10 @@ export default function ServiceCategoryPage() {
             </details>
             <details className="border border-gray-200 rounded-lg">
               <summary className="px-4 py-3 cursor-pointer font-medium text-gray-900 hover:bg-gray-50">
-                What services does FLEXS provide?
+                What services does QMAPS provide?
               </summary>
               <p className="px-4 py-3 text-gray-600 text-sm border-t">
-                FLEXS connects customers with professionals across hundreds of service categories,
+                QMAPS connects customers with professionals across hundreds of service categories,
                 from home improvement to business services. Whatever you need, we can help you find
                 the right professional.
               </p>
