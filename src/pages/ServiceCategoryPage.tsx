@@ -59,6 +59,7 @@ export default function ServiceCategoryPage() {
   const [serviceSearch, setServiceSearch] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
   const [showFlow, setShowFlow] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
 
   useEffect(() => {
     Promise.all([
