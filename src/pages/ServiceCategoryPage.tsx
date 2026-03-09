@@ -184,7 +184,15 @@ export default function ServiceCategoryPage() {
         // Fetch parent category if this is a child
         if (cat.parent_slug) {
           const { data: parentData } = await supabase.from("service_categories").select("*").eq("slug", cat.parent_slug).eq("is_active", true).single();
-          if (parentData) setParentCategory(mapCat(parentData));
+          if (parentData) {
+            const parent = mapCat(parentData);
+            setParentCategory(parent);
+            // Fetch grandparent if parent also has a parent
+            if (parent.parent_slug) {
+              const { data: gpData } = await supabase.from("service_categories").select("*").eq("slug", parent.parent_slug).eq("is_active", true).single();
+              if (gpData) setGrandparentCategory(mapCat(gpData));
+            }
+          }
 
           // Fetch siblings
           if (allRes.data) {
