@@ -30,7 +30,7 @@ export default function LeadAnswers({
 
   return (
     <div className="space-y-0">
-      {/* Q&A rows (Bark-style) */}
+      {/* Q&A rows */}
       {entries.length > 0 && (
         <div className="divide-y divide-border">
           {entries.map(([k, v]) => (

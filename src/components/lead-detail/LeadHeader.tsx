@@ -81,7 +81,7 @@ export default function LeadHeader({
           </div>
         </div>
 
-        {/* Customer info in dark area (Bark-style) */}
+        {/* Customer info in dark area */}
         <div className="px-4 pb-4 flex items-start gap-3.5">
           {/* Avatar */}
           <div className="h-12 w-12 rounded-full bg-[hsl(260,40%,70%)] flex items-center justify-center text-white text-lg font-bold shrink-0">

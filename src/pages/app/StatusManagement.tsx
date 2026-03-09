@@ -246,7 +246,7 @@ export default function StatusManagement() {
   );
 }
 
-/* ── Bark-style pill group ── */
+/* ── Status pill group ── */
 
 function StatusPillGroup({
   title,

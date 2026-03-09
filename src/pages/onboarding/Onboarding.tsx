@@ -263,7 +263,7 @@ function ReminderLongPressVisual() {
   );
 }
 
-/* ── Slide 6: Custom Statuses (Bark-style) ── */
+/* ── Slide 6: Custom Statuses ── */
 
 function CustomStatusesVisual() {
   return (

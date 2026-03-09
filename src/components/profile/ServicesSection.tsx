@@ -30,7 +30,7 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
 
   const hasServices = services.length > 0;
 
-  // Empty state — matches Bark "Get started!" screen
+  // Empty state
   if (!adding && !hasServices) {
     return (
       <div className="space-y-6">
