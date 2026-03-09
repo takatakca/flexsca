@@ -92,6 +92,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "credit_transactions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "credit_transactions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -229,6 +236,13 @@ export type Database = {
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "lead_agent_state_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       lead_messages: {
@@ -272,6 +286,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -322,6 +343,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_purchases_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_safe"
             referencedColumns: ["id"]
           },
           {
@@ -750,6 +778,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "reminders_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_safe"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "reminders_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -798,6 +833,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "responses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_safe"
             referencedColumns: ["id"]
           },
           {
@@ -892,6 +934,99 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads_safe: {
+        Row: {
+          answers: Json | null
+          archived: boolean | null
+          archived_at: string | null
+          assigned_to: string | null
+          category: string | null
+          city: string | null
+          created_at: string | null
+          credits_cost: number | null
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          details: string | null
+          has_additional_details: boolean | null
+          id: string | null
+          is_urgent: boolean | null
+          last_activity_at: string | null
+          location_text: string | null
+          postal_code: string | null
+          province: string | null
+          service_subtype: string | null
+          status: string | null
+          submitted_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          answers?: Json | null
+          archived?: boolean | null
+          archived_at?: string | null
+          assigned_to?: string | null
+          category?: string | null
+          city?: string | null
+          created_at?: string | null
+          credits_cost?: number | null
+          customer_email?: never
+          customer_name?: never
+          customer_phone?: never
+          details?: string | null
+          has_additional_details?: boolean | null
+          id?: string | null
+          is_urgent?: boolean | null
+          last_activity_at?: string | null
+          location_text?: string | null
+          postal_code?: string | null
+          province?: string | null
+          service_subtype?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          answers?: Json | null
+          archived?: boolean | null
+          archived_at?: string | null
+          assigned_to?: string | null
+          category?: string | null
+          city?: string | null
+          created_at?: string | null
+          credits_cost?: number | null
+          customer_email?: never
+          customer_name?: never
+          customer_phone?: never
+          details?: string | null
+          has_additional_details?: boolean | null
+          id?: string | null
+          is_urgent?: boolean | null
+          last_activity_at?: string | null
+          location_text?: string | null
+          postal_code?: string | null
+          province?: string | null
+          service_subtype?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
