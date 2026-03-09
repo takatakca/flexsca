@@ -42,6 +42,7 @@ export default function Leads() {
   const [agentStates, setAgentStates] = useState<Map<string, AgentState>>(new Map());
   const [loading, setLoading] = useState(true);
   const [showArchived, setShowArchived] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
   const [filters, setFilters] = useState<LeadsFilters>(defaultFilters);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [reminderLead, setReminderLead] = useState<Lead | null>(null);
