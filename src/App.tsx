@@ -25,6 +25,8 @@ import JobContact from "@/pages/customer/JobContact";
 import JobSuccess from "@/pages/customer/JobSuccess";
 import ServiceCategoryPage from "@/pages/ServiceCategoryPage";
 import AboutPage from "@/pages/AboutPage";
+import AffiliatePage from "@/pages/AffiliatePage";
+import HelpCenter from "@/pages/HelpCenter";
 import Index from "@/pages/Index";
 import PublicProfile from "@/pages/PublicProfile";
 import NotFound from "@/pages/NotFound";
@@ -52,6 +54,9 @@ const App = () => (
             {/* Public marketing pages */}
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/affiliates" element={<AffiliatePage />} />
+            <Route path="/help" element={<HelpCenter />} />
+            <Route path="/help/:slug" element={<HelpCenter />} />
 
             {/* Auth routes */}
             <Route path="/auth/welcome" element={<Welcome />} />

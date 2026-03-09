@@ -272,28 +272,44 @@ export default function ServiceCategoryPage() {
           </Button>
         </section>
 
-        {/* Popular Categories */}
+        {/* 3-Step How It Works */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Popular Categories</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {allCategories.slice(0, 6).map((cat) => (
-              <Link
-                key={cat.id}
-                to={`/services/${cat.slug}`}
-                className="group relative aspect-[4/3] rounded-lg overflow-hidden"
-              >
-                <div
-                  className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-300"
-                  style={{
-                    backgroundImage: `url(https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=300&fit=crop)`,
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <span className="text-white font-medium text-sm">{cat.name}</span>
-                </div>
-              </Link>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white border border-border rounded-xl p-6 text-center">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-bold text-foreground mb-2">Tell us what you need</h3>
+              <p className="text-sm text-muted-foreground">
+                Tell QMAPS what {categoryDisplayName} service you need. We'll help you find professionals who can do the work
+                for you, so you have more time to do the things you want.
+              </p>
+            </div>
+            <div className="bg-white border border-border rounded-xl p-6 text-center">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Star className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-bold text-foreground mb-2">Receive Free Quotes</h3>
+              <p className="text-sm text-muted-foreground">
+                You'll receive free quotes from the best professionals. Once you've reviewed them,
+                compare profiles, read reviews and ask for more information.
+              </p>
+            </div>
+            <div className="bg-white border border-border rounded-xl p-6 text-center">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <ChevronRight className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="font-bold text-foreground mb-2">Choose your {categoryDisplayName}</h3>
+              <p className="text-sm text-muted-foreground">
+                Pick the professional that's right for your needs. With access to reviews, profiles
+                and pricing, you can find the perfect match for you.
+              </p>
+            </div>
+          </div>
+          <div className="text-center mt-6">
+            <Button onClick={handleStartRequest} className="bg-primary hover:bg-primary/90">
+              Find a {categoryDisplayName} professional near you
+            </Button>
           </div>
         </section>
 
