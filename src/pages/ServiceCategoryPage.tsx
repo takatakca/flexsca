@@ -231,7 +231,7 @@ export default function ServiceCategoryPage() {
             Need help finding an {categoryDisplayName} professional?
           </h2>
           <p className="text-gray-600 mb-4">
-            You can find the best {categoryDisplayName} professionals on FLEXS. Start your
+            You can find the best {categoryDisplayName} professionals on QMAPS. Start your
             search and get free quotes now!
           </p>
           <p className="text-gray-600 mb-6">
