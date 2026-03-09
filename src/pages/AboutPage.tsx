@@ -342,8 +342,8 @@ export default function AboutPage() {
       {/* FAQs */}
       <section className="py-16 md:py-24">
         <div className="max-w-3xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">FLEXS FAQs</h2>
-          <p className="text-center text-gray-600 mb-12">Common questions about working at FLEXS</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">QMAPS FAQs</h2>
+          <p className="text-center text-gray-600 mb-12">Common questions about working at QMAPS</p>
           <div className="space-y-4">
             {faqs.map((faq, idx) => (
               <details key={idx} className="border border-gray-200 rounded-lg group">
