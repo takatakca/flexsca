@@ -93,7 +93,7 @@ export default function ServiceCategoryPage() {
 
   const handleStartRequest = () => {
     if (category) {
-      navigate(`/post-job/${category.slug}`);
+      setShowFlow(true);
     }
   };
 
