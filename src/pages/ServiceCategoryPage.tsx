@@ -26,6 +26,71 @@ interface CategoryFull {
   questions: Question[];
 }
 
+const regions = [
+  "Ontario",
+  "Quebec",
+  "British Columbia",
+  "Alberta",
+  "Manitoba",
+  "Saskatchewan",
+  "Nova Scotia",
+  "New Brunswick",
+  "Newfoundland and Labrador",
+  "Prince Edward Island",
+];
+
+const regionTabs = ["Ontario", "Quebec", "British Columbia", "Alberta", "Atlantic"];
+
+function PopularRegions() {
+  const [activeTab, setActiveTab] = useState("Ontario");
+  return (
+    <div>
+      <div className="flex gap-2 flex-wrap mb-4">
+        {regionTabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+              activeTab === tab
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background text-muted-foreground border-border hover:border-primary hover:text-primary"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+      <div className="space-y-0 border border-border rounded-lg overflow-hidden">
+        {regions.map((region) => (
+          <button
+            key={region}
+            className="w-full text-left px-4 py-3 text-sm text-foreground hover:bg-muted/50 border-b border-border last:border-b-0 transition-colors"
+          >
+            {region}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const relatedServices = [
+  { title: "Web Design", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop" },
+  { title: "Social Media Marketing", image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=250&fit=crop" },
+  { title: "Email Marketing Services", image: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=400&h=250&fit=crop" },
+];
+
+const relatedGuides = [
+  { title: "A complete social media marketing guide for all businesses and budgets", image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=250&fit=crop" },
+  { title: "How to get more followers on social media in 2024", image: "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=400&h=250&fit=crop" },
+];
+
+const relatedPriceGuides = [
+  { title: "How much does social media management cost?", image: "https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=400&h=250&fit=crop" },
+  { title: "How much does website design cost?", image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=400&h=250&fit=crop" },
+  { title: "How much does logo design cost?", image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=250&fit=crop" },
+];
+
 const popularCities = [
   { name: "Toronto", image: "https://images.unsplash.com/photo-1517090504586-fde19ea6066f?w=400&h=300&fit=crop" },
   { name: "Montreal", image: "https://images.unsplash.com/photo-1519178614-68673b201f36?w=400&h=300&fit=crop" },
@@ -342,13 +407,33 @@ export default function ServiceCategoryPage() {
           </div>
         </section>
 
+        {/* Popular Regions */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Popular Regions</h2>
+          <PopularRegions />
+        </section>
+
+        {/* Pick the best */}
+        <section className="mb-12 text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Pick the best</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+            Compare quotes from top {categoryDisplayName} professionals near you on QMAPS.
+          </p>
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto mb-6">
+            Get responses from trusted professionals, read real reviews, compare prices and choose the best one for your needs.
+          </p>
+          <Button onClick={handleStartRequest} className="bg-primary hover:bg-primary/90 rounded-full px-8">
+            Get quotes from {categoryDisplayName} near you
+          </Button>
+        </section>
+
         {/* Average Price */}
-        <section className="mb-12 bg-gray-50 rounded-xl p-6 md:p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+        <section className="mb-12 bg-muted/50 rounded-xl p-6 md:p-8">
+          <h2 className="text-xl font-bold text-foreground mb-2">
             The average price of {categoryDisplayName} is
           </h2>
           <p className="text-3xl font-bold text-primary">C${category.base_credit_cost * 50}</p>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Prices vary based on location, project scope, and professional experience.
           </p>
         </section>
@@ -371,7 +456,57 @@ export default function ServiceCategoryPage() {
           </div>
         </section>
 
-        {/* All Services */}
+        {/* Related Services */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related services</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedServices.map((s) => (
+              <div key={s.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={s.image} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-foreground text-sm">{s.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Service Guides */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related service guides</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {relatedGuides.map((g) => (
+              <div key={g.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
+                <div className="aspect-[16/9] overflow-hidden">
+                  <img src={g.image} alt={g.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-foreground text-sm">{g.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Related Price Guides */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related price guides</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedPriceGuides.map((p) => (
+              <div key={p.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-foreground text-sm">{p.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">All services</h2>
           <div className="flex flex-wrap gap-2">
