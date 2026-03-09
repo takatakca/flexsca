@@ -23,6 +23,8 @@ import PostJob from "@/pages/customer/PostJob";
 import JobQuestionnaire from "@/pages/customer/JobQuestionnaire";
 import JobContact from "@/pages/customer/JobContact";
 import JobSuccess from "@/pages/customer/JobSuccess";
+import ServiceCategoryPage from "@/pages/ServiceCategoryPage";
+import AboutPage from "@/pages/AboutPage";
 import Index from "@/pages/Index";
 import PublicProfile from "@/pages/PublicProfile";
 import NotFound from "@/pages/NotFound";
@@ -46,6 +48,10 @@ const App = () => (
             <Route path="/post-job/contact" element={<JobContact />} />
             <Route path="/post-job/success" element={<JobSuccess />} />
             <Route path="/post-job/:slug" element={<JobQuestionnaire />} />
+
+            {/* Public marketing pages */}
+            <Route path="/services/:slug" element={<ServiceCategoryPage />} />
+            <Route path="/about" element={<AboutPage />} />
 
             {/* Auth routes */}
             <Route path="/auth/welcome" element={<Welcome />} />
