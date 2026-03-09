@@ -123,6 +123,16 @@ export default function ServiceCategoryPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Loading Modal */}
+      {showLoading && (
+        <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-12 shadow-xl flex flex-col items-center gap-4 min-w-[300px]">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            <p className="text-lg font-semibold text-foreground">Please wait...</p>
+          </div>
+        </div>
+      )}
+
       {/* Flow Modal */}
       {showFlow && category && (
         <ServiceFlowModal
