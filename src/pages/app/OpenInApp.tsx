@@ -19,10 +19,10 @@ export default function OpenInApp() {
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold text-foreground">
-            Open in FLEX'S
+            Open in FLEXS
           </h1>
           <p className="text-muted-foreground text-sm">
-            You'll need to use the FLEX'S for Professionals app to continue.
+            You'll need to use the FLEXS for Professionals app to continue.
             Get the best experience with our mobile app.
           </p>
         </div>
