@@ -25,6 +25,8 @@ import JobContact from "@/pages/customer/JobContact";
 import JobSuccess from "@/pages/customer/JobSuccess";
 import ServiceCategoryPage from "@/pages/ServiceCategoryPage";
 import AboutPage from "@/pages/AboutPage";
+import AffiliatePage from "@/pages/AffiliatePage";
+import HelpCenter from "@/pages/HelpCenter";
 import Index from "@/pages/Index";
 import PublicProfile from "@/pages/PublicProfile";
 import NotFound from "@/pages/NotFound";
