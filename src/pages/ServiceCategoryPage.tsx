@@ -26,6 +26,71 @@ interface CategoryFull {
   questions: Question[];
 }
 
+const regions = [
+  "Ontario",
+  "Quebec",
+  "British Columbia",
+  "Alberta",
+  "Manitoba",
+  "Saskatchewan",
+  "Nova Scotia",
+  "New Brunswick",
+  "Newfoundland and Labrador",
+  "Prince Edward Island",
+];
+
+const regionTabs = ["Ontario", "Quebec", "British Columbia", "Alberta", "Atlantic"];
+
+function PopularRegions() {
+  const [activeTab, setActiveTab] = useState("Ontario");
+  return (
+    <div>
+      <div className="flex gap-2 flex-wrap mb-4">
+        {regionTabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+              activeTab === tab
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background text-muted-foreground border-border hover:border-primary hover:text-primary"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+      <div className="space-y-0 border border-border rounded-lg overflow-hidden">
+        {regions.map((region) => (
+          <button
+            key={region}
+            className="w-full text-left px-4 py-3 text-sm text-foreground hover:bg-muted/50 border-b border-border last:border-b-0 transition-colors"
+          >
+            {region}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const relatedServices = [
+  { title: "Web Design", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop" },
+  { title: "Social Media Marketing", image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=250&fit=crop" },
+  { title: "Email Marketing Services", image: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=400&h=250&fit=crop" },
+];
+
+const relatedGuides = [
+  { title: "A complete social media marketing guide for all businesses and budgets", image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=250&fit=crop" },
+  { title: "How to get more followers on social media in 2024", image: "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=400&h=250&fit=crop" },
+];
+
+const relatedPriceGuides = [
+  { title: "How much does social media management cost?", image: "https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=400&h=250&fit=crop" },
+  { title: "How much does website design cost?", image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=400&h=250&fit=crop" },
+  { title: "How much does logo design cost?", image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=250&fit=crop" },
+];
+
 const popularCities = [
   { name: "Toronto", image: "https://images.unsplash.com/photo-1517090504586-fde19ea6066f?w=400&h=300&fit=crop" },
   { name: "Montreal", image: "https://images.unsplash.com/photo-1519178614-68673b201f36?w=400&h=300&fit=crop" },
