@@ -51,6 +51,7 @@ const App = () => (
             <Route path="/auth/welcome" element={<Welcome />} />
             <Route path="/auth/check-email" element={<CheckEmail />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/auth/login" element={<Login />} />
             <Route path="/open-in-app" element={<OpenInApp />} />
 
             {/* Onboarding */}
