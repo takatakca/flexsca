@@ -84,7 +84,7 @@ export default function ServiceFlowModal({
   // Loading between steps
   useEffect(() => {
     if (step === "loading-contact") {
-      const timer = setTimeout(() => setStep("welcome-back"), 1500);
+      const timer = setTimeout(() => setStep("matches-found"), 1500);
       return () => clearTimeout(timer);
     }
     if (step === "loading-submit") {
