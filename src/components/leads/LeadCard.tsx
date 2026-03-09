@@ -122,9 +122,16 @@ export default function LeadCard({
                 lead.location_text}
             </p>
             <p className="text-xs text-muted-foreground">Nationwide</p>
+          </div>
+        </div>
 
         {/* Row 2: Badges */}
         <div className="flex flex-wrap gap-2 mt-3">
+          {lead.is_urgent && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[hsl(75,60%,90%)] px-2.5 py-1 text-xs font-semibold text-foreground">
+              ⚡ High hiring intent
+            </span>
+          )}
           {hasVerifiedPhone && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground">
               <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(var(--success))]" />
