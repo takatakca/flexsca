@@ -5,6 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const sidebarArticles = [
+  { title: "What is QMAPS Verified?", slug: "verified" },
+  { title: "What is Elite Pro?", slug: "elite-pro" },
+  { title: "What is Enquiries?", slug: "enquiries" },
+  { title: "How many responses can a customer receive?", slug: "customer-responses" },
+  { title: "How can I submit a general press enquiry?", slug: "press-enquiry" },
+  { title: "Why am I missing Elite Pro features?", slug: "elite-pro-features" },
+  { title: "Why Didn't I Get Hired?", slug: "why-not-hired" },
+  { title: "Contact FLEX'S customer support", slug: "contact-support" },
   { title: "Banned Reviews Policy", slug: "banned-reviews" },
   { title: "Chat Guidelines: Keeping Conversations Safe and Professional", slug: "chat-guidelines" },
   { title: "Safeguarding and Welfare", slug: "safeguarding" },
@@ -281,6 +289,47 @@ function ChatGuidelinesContent() {
   );
 }
 
+function ContactSupportContent() {
+  return (
+    <div className="prose prose-sm max-w-none text-muted-foreground space-y-6">
+      <div className="flex items-start gap-4 py-4 border-b border-border">
+        <Mail className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
+        <div>
+          <a href="#" className="text-primary font-semibold hover:underline">Submit a request</a>
+          <p className="text-sm text-muted-foreground">Reply by end of next working day</p>
+        </div>
+      </div>
+      <div className="flex items-start gap-4 py-4 border-b border-border">
+        <Mail className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
+        <div>
+          <a href="#" className="text-primary font-semibold hover:underline">Request a credit return</a>
+          <p className="text-sm text-muted-foreground">Processed within 48 hours</p>
+        </div>
+      </div>
+      <div className="flex items-start gap-4 py-4 border-b border-border">
+        <Phone className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
+        <div>
+          <a href="tel:+15551234567" className="text-primary font-semibold hover:underline">1-555-123-4567</a>
+          <p className="text-sm text-muted-foreground">24 hrs (Mon-Fri) / 8am-8pm (Weekends)</p>
+        </div>
+      </div>
+
+      <p className="text-xs text-muted-foreground">Updated 3 months ago</p>
+
+      <div className="flex justify-between pt-4 border-t border-border">
+        <div>
+          <p className="text-xs text-muted-foreground">Previous article</p>
+          <Link to="/help/why-not-hired" className="text-sm text-primary hover:underline">Why Didn't I Get Hired?</Link>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-muted-foreground">Next article</p>
+          <Link to="/help/banned-reviews" className="text-sm text-primary hover:underline">Submit a request to connect with professionals</Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const articleData: Record<string, { title: string; toc: string[]; Content: () => React.ReactNode }> = {
   "banned-reviews": {
     title: "Banned Reviews Policy",
@@ -291,6 +340,11 @@ const articleData: Record<string, { title: string; toc: string[]; Content: () =>
     title: "Chat Guidelines: Keeping Conversations Safe and Professional",
     toc: ["Using Chat the Right Way", "Why We Moderate Chats", "How Chat Moderation Works", "What We Look Out For", "What Happens If You Break the Rules", "Personal Data"],
     Content: ChatGuidelinesContent,
+  },
+  "contact-support": {
+    title: "Contact FLEX'S customer support",
+    toc: [],
+    Content: ContactSupportContent,
   },
 };
 

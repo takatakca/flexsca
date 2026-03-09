@@ -28,6 +28,7 @@ import ServiceCategoryPage from "@/pages/ServiceCategoryPage";
 import AboutPage from "@/pages/AboutPage";
 import AffiliatePage from "@/pages/AffiliatePage";
 import HelpCenter from "@/pages/HelpCenter";
+import CookiesPage from "@/pages/CookiesPage";
 import Index from "@/pages/Index";
 import PublicProfile from "@/pages/PublicProfile";
 import NotFound from "@/pages/NotFound";
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/affiliates" element={<AffiliatePage />} />
+            <Route path="/cookies" element={<CookiesPage />} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/help/:slug" element={<HelpCenter />} />
 
