@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, MapPin, ChevronRight, Star, Menu, User } from "lucide-react";
+import { Search, MapPin, ChevronRight, Star, Menu, User, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
