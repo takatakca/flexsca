@@ -887,10 +887,12 @@ export type Database = {
         Row: {
           base_credit_cost: number
           created_at: string
+          hero_image: string | null
           icon: string | null
           id: string
           is_active: boolean
           name: string
+          parent_slug: string | null
           questions: Json
           slug: string
           sort_order: number
@@ -898,10 +900,12 @@ export type Database = {
         Insert: {
           base_credit_cost?: number
           created_at?: string
+          hero_image?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean
           name: string
+          parent_slug?: string | null
           questions?: Json
           slug: string
           sort_order?: number
@@ -909,10 +913,12 @@ export type Database = {
         Update: {
           base_credit_cost?: number
           created_at?: string
+          hero_image?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean
           name?: string
+          parent_slug?: string | null
           questions?: Json
           slug?: string
           sort_order?: number

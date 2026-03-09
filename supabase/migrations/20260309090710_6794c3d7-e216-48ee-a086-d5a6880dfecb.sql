@@ -1,0 +1,117 @@
+
+-- Add parent_slug and hero_image columns to service_categories
+ALTER TABLE public.service_categories 
+  ADD COLUMN IF NOT EXISTS parent_slug text DEFAULT NULL,
+  ADD COLUMN IF NOT EXISTS hero_image text DEFAULT NULL;
+
+-- Set parent-child relationships
+-- Financial and Tax children
+UPDATE public.service_categories SET parent_slug = 'financial-and-tax' WHERE slug IN ('tax-lawyer', 'pensions-and-incentives');
+
+-- Financial Planning children
+UPDATE public.service_categories SET parent_slug = 'financial-planning' WHERE slug IN ('business-financial-planning', 'budgeting-forecasting-services', 'business-modelling-services', 'valuations', 'venture-capital');
+
+-- General Accounting children
+UPDATE public.service_categories SET parent_slug = 'general-accounting' WHERE slug IN ('bookkeeping-services', 'business-accounting-services', 'invoice-finance', 'card-processing', 'pos-systems', 'small-business-loans', 'accounting-software');
+
+-- Event and Travel Services children
+UPDATE public.service_categories SET parent_slug = 'event-and-travel-services' WHERE slug IN ('security-guard-services', 'corporate-coach-minibus-hire', 'corporate-event-photography', 'corporate-event-entertainment', 'corporate-event-venue-hire', 'commercial-catering', 'commercial-event-planning');
+
+-- Set hero images for all categories
+UPDATE public.service_categories SET hero_image = CASE slug
+  WHEN 'advertising-media-buying' THEN 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop'
+  WHEN 'house-cleaning' THEN 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=400&fit=crop'
+  WHEN 'plumbing' THEN 'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=800&h=400&fit=crop'
+  WHEN 'copywriting' THEN 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=400&fit=crop'
+  WHEN 'accounting' THEN 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop'
+  WHEN 'electrical-work' THEN 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&h=400&fit=crop'
+  WHEN 'painting-decorating' THEN 'https://images.unsplash.com/photo-1562259929-b4e1fd3aef09?w=800&h=400&fit=crop'
+  WHEN 'garden-maintenance' THEN 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop'
+  WHEN 'removals' THEN 'https://images.unsplash.com/photo-1600518464441-9154a4dea21b?w=800&h=400&fit=crop'
+  WHEN 'dog-walking' THEN 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&h=400&fit=crop'
+  WHEN 'personal-training' THEN 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&h=400&fit=crop'
+  WHEN 'photography' THEN 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=800&h=400&fit=crop'
+  WHEN 'web-design' THEN 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=800&h=400&fit=crop'
+  WHEN 'seo-services' THEN 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=800&h=400&fit=crop'
+  WHEN 'bookkeeping' THEN 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop'
+  WHEN 'it-support' THEN 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop'
+  WHEN 'interior-design' THEN 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&h=400&fit=crop'
+  WHEN 'tax-accounting' THEN 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop'
+  WHEN 'video-production' THEN 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44v?w=800&h=400&fit=crop'
+  WHEN 'logo-design' THEN 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800&h=400&fit=crop'
+  WHEN 'moving-relocation' THEN 'https://images.unsplash.com/photo-1600518464441-9154a4dea21b?w=800&h=400&fit=crop'
+  WHEN 'web-development' THEN 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=400&fit=crop'
+  WHEN 'mobile-software-development' THEN 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=400&fit=crop'
+  WHEN 'general-software-development' THEN 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop'
+  WHEN 'database-development' THEN 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=800&h=400&fit=crop'
+  WHEN 'software-testing' THEN 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop'
+  WHEN 'email-marketing' THEN 'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=800&h=400&fit=crop'
+  WHEN 'ppc-specialists' THEN 'https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=800&h=400&fit=crop'
+  WHEN 'financial-and-tax' THEN 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop'
+  WHEN 'financial-planning' THEN 'https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?w=800&h=400&fit=crop'
+  WHEN 'general-accounting' THEN 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop'
+  WHEN 'event-and-travel-services' THEN 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'
+  WHEN 'tax-lawyer' THEN 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=400&fit=crop'
+  WHEN 'pensions-and-incentives' THEN 'https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?w=800&h=400&fit=crop'
+  WHEN 'business-financial-planning' THEN 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
+  WHEN 'budgeting-forecasting-services' THEN 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop'
+  WHEN 'business-modelling-services' THEN 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=400&fit=crop'
+  WHEN 'valuations' THEN 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop'
+  WHEN 'venture-capital' THEN 'https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=800&h=400&fit=crop'
+  WHEN 'bookkeeping-services' THEN 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop'
+  WHEN 'business-accounting-services' THEN 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
+  WHEN 'invoice-finance' THEN 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop'
+  WHEN 'card-processing' THEN 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400&fit=crop'
+  WHEN 'pos-systems' THEN 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=400&fit=crop'
+  WHEN 'small-business-loans' THEN 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop'
+  WHEN 'accounting-software' THEN 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
+  WHEN 'security-guard-services' THEN 'https://images.unsplash.com/photo-1521791055366-0d553872125f?w=800&h=400&fit=crop'
+  WHEN 'corporate-coach-minibus-hire' THEN 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&h=400&fit=crop'
+  WHEN 'corporate-event-photography' THEN 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'
+  WHEN 'corporate-event-entertainment' THEN 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=400&fit=crop'
+  WHEN 'corporate-event-venue-hire' THEN 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800&h=400&fit=crop'
+  WHEN 'commercial-catering' THEN 'https://images.unsplash.com/photo-1555244162-803834f70033?w=800&h=400&fit=crop'
+  WHEN 'commercial-event-planning' THEN 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'
+  WHEN 'employment-law-specialists' THEN 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=400&fit=crop'
+  WHEN 'debt-recovery-collection' THEN 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop'
+  WHEN 'arbitration-services' THEN 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=400&fit=crop'
+  WHEN 'ip-patent-lawyer' THEN 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=400&fit=crop'
+  WHEN 'coding-tuition' THEN 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=400&fit=crop'
+  WHEN 'script-writer' THEN 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=400&fit=crop'
+  WHEN 'social-media-marketing' THEN 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400&fit=crop'
+  WHEN 'digital-marketing-services' THEN 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
+  WHEN 'franchising' THEN 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=400&fit=crop'
+  WHEN 'catering' THEN 'https://images.unsplash.com/photo-1555244162-803834f70033?w=800&h=400&fit=crop'
+  WHEN 'event-planning' THEN 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'
+  WHEN 'legal-services' THEN 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=400&fit=crop'
+  WHEN 'roofing' THEN 'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=800&h=400&fit=crop'
+  WHEN 'car-detailing' THEN 'https://images.unsplash.com/photo-1507136566006-cfc505b114fc?w=800&h=400&fit=crop'
+  WHEN 'pest-control' THEN 'https://images.unsplash.com/photo-1632935191558-a0c1150f3078?w=800&h=400&fit=crop'
+  WHEN 'hvac-services' THEN 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=800&h=400&fit=crop'
+  WHEN 'landscaping' THEN 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&h=400&fit=crop'
+  WHEN 'commercial-cleaning' THEN 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&h=400&fit=crop'
+  WHEN 'music-lessons' THEN 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=400&fit=crop'
+  WHEN 'tutoring' THEN 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=400&fit=crop'
+  WHEN 'franchise-consulting' THEN 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=400&fit=crop'
+  WHEN 'trademark-lawyer' THEN 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=400&fit=crop'
+  WHEN 'trademark-lawyers' THEN 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=400&fit=crop'
+  WHEN 'phone-systems' THEN 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop'
+  WHEN 'telephone-system-services' THEN 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop'
+  WHEN 'debt-collection' THEN 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop'
+  WHEN 'tax-preparation' THEN 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop'
+  WHEN 'tax-investigation' THEN 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop'
+  WHEN 'tax-resolution' THEN 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800&h=400&fit=crop'
+  WHEN 'payroll-services' THEN 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop'
+  WHEN 'data-analytics' THEN 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop'
+  WHEN 'machine-learning-ai-experts' THEN 'https://images.unsplash.com/photo-1677442135146-1d42c27c6c2a?w=800&h=400&fit=crop'
+  WHEN 'managed-it-services' THEN 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop'
+  WHEN 'statistical-analysis' THEN 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop'
+  WHEN 'vehicle-tracking' THEN 'https://images.unsplash.com/photo-1507136566006-cfc505b114fc?w=800&h=400&fit=crop'
+  WHEN 'branded-merchandise' THEN 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=400&fit=crop'
+  WHEN 'commercial-law' THEN 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=400&fit=crop'
+  WHEN 'commercial-legal-services' THEN 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&h=400&fit=crop'
+  WHEN 'auditing-services' THEN 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop'
+  WHEN 'recovery-repossession-services' THEN 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop'
+  WHEN 'merger-acquisition-lawyers' THEN 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=400&fit=crop'
+  ELSE 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=400&fit=crop'
+END;
