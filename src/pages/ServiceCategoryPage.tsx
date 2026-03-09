@@ -4,6 +4,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Search, MapPin, ChevronRight, Star, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
+
+interface Question {
+  id: string;
+  label: string;
+  subtitle?: string;
+  type: "radio" | "checkbox" | "textarea" | "location" | "select";
+  options: string[];
+  required: boolean;
+  hasOther?: boolean;
+  placeholder?: string;
+}
 
 interface Category {
   id: string;
