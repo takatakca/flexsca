@@ -19,10 +19,10 @@ export default function OpenInApp() {
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold text-foreground">
-            Open in FLEX'S
+            Open in FLEXS
           </h1>
           <p className="text-muted-foreground text-sm">
-            You'll need to use the FLEX'S for Professionals app to continue.
+            You'll need to use the FLEXS for Professionals app to continue.
             Get the best experience with our mobile app.
           </p>
         </div>
@@ -31,7 +31,7 @@ export default function OpenInApp() {
           onClick={handleOpen}
           className="w-full rounded-xl h-12 text-base font-semibold gap-2"
         >
-          Open FLEX'S app <ArrowRight className="h-5 w-5" />
+          Open FLEXS app <ArrowRight className="h-5 w-5" />
         </Button>
 
         <p className="text-xs text-muted-foreground">

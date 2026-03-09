@@ -108,7 +108,7 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
       <div className="space-y-1.5 pt-4 border-t border-border">
         <h3 className="text-xl font-semibold text-foreground">Name & profile picture</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          This is the person who will be communicating with customers on FLEX'S. The photo will appear alongside your messages with customers.
+          This is the person who will be communicating with customers on FLEXS. The photo will appear alongside your messages with customers.
         </p>
       </div>
 
@@ -135,7 +135,7 @@ export default function CompanySection({ profile, saving, onSave, onUploadPhoto 
       <div className="space-y-1.5 pt-4 border-t border-border">
         <h3 className="text-xl font-semibold text-foreground">Company contact details</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          This information will be seen by customers on FLEX'S. Change the details FLEX'S uses to contact you privately in{" "}
+          This information will be seen by customers on FLEXS. Change the details FLEXS uses to contact you privately in{" "}
           <span className="text-primary font-medium">Account details</span>
         </p>
       </div>

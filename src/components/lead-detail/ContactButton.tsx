@@ -27,7 +27,7 @@ export default function ContactButton({
         </p>
       )}
 
-      {/* Bark-style full-width CTA */}
+      {/* Full-width CTA */}
       <button
         disabled={!hasEnough || contacting}
         onClick={onContact}

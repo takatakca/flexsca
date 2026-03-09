@@ -186,7 +186,7 @@ export default function Settings() {
           Notifications
         </p>
         <p className="text-sm text-muted-foreground mb-4">
-          Decide how you want to communicate across FLEX'S and how you want us
+          Decide how you want to communicate across FLEXS and how you want us
           to contact you
         </p>
 

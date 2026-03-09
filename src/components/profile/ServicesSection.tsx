@@ -30,7 +30,7 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
 
   const hasServices = services.length > 0;
 
-  // Empty state — matches Bark "Get started!" screen
+  // Empty state
   if (!adding && !hasServices) {
     return (
       <div className="space-y-6">
@@ -60,7 +60,7 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        Add the services you offer. FLEX'S matches leads based on your services — put your most important one first.
+        Add the services you offer. FLEXS matches leads based on your services — put your most important one first.
       </p>
 
       {services.map((service) => (

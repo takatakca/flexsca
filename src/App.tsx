@@ -8,6 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Welcome from "@/pages/auth/Welcome";
 import CheckEmail from "@/pages/auth/CheckEmail";
 import AuthCallback from "@/pages/auth/AuthCallback";
+import Login from "@/pages/auth/Login";
 import Onboarding from "@/pages/onboarding/Onboarding";
 import AppLayout from "@/components/AppLayout";
 import Leads from "@/pages/app/Leads";
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/auth/welcome" element={<Welcome />} />
             <Route path="/auth/check-email" element={<CheckEmail />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/auth/login" element={<Login />} />
             <Route path="/open-in-app" element={<OpenInApp />} />
 
             {/* Onboarding */}

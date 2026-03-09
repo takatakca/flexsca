@@ -102,7 +102,7 @@ export default function LeadCard({
             {isUnread && !showArchived && (
               <span className="absolute -left-2.5 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary" />
             )}
-            <div className="h-12 w-12 rounded-full bg-[hsl(260,40%,70%)] flex items-center justify-center text-white text-lg font-bold">
+            <div className="h-12 w-12 rounded-full bg-[hsl(75,60%,55%)] flex items-center justify-center text-foreground text-lg font-bold">
               {getInitial(lead.customer_name)}
             </div>
           </div>
@@ -121,11 +121,17 @@ export default function LeadCard({
               {[lead.city, lead.postal_code].filter(Boolean).join(", ") ||
                 lead.location_text}
             </p>
+            <p className="text-xs text-muted-foreground">Nationwide</p>
           </div>
         </div>
 
         {/* Row 2: Badges */}
         <div className="flex flex-wrap gap-2 mt-3">
+          {lead.is_urgent && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[hsl(75,60%,90%)] px-2.5 py-1 text-xs font-semibold text-foreground">
+              ⚡ High hiring intent
+            </span>
+          )}
           {hasVerifiedPhone && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground">
               <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(var(--success))]" />

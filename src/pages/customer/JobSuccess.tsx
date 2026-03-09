@@ -49,7 +49,7 @@ export default function JobSuccess() {
       </div>
 
       <p className="text-xs text-muted-foreground mt-8">
-        Powered by <span className="font-semibold text-primary">FLEX'S</span>
+        Powered by <span className="font-semibold text-primary">FLEXS</span>
       </p>
     </div>
   );

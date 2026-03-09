@@ -10,14 +10,13 @@ const Index = () => {
       {/* Hero */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
-          FLEX'S
+          FLEXS
         </h1>
         <p className="mt-3 text-lg text-muted-foreground max-w-md">
           Connect with trusted local professionals — or find your next client.
         </p>
 
         <div className="mt-10 w-full max-w-sm space-y-4">
-          {/* Customer CTA */}
           <Button
             size="lg"
             className="w-full h-14 rounded-xl text-base font-semibold gap-2"
@@ -28,7 +27,6 @@ const Index = () => {
             <ArrowRight className="h-4 w-4 ml-auto" />
           </Button>
 
-          {/* Pro CTA */}
           <Button
             size="lg"
             variant="outline"
@@ -42,9 +40,8 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Footer */}
       <footer className="py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} FLEX'S. All rights reserved.
+        © {new Date().getFullYear()} FLEXS. All rights reserved.
       </footer>
     </div>
   );

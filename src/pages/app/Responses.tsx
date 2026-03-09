@@ -154,7 +154,7 @@ export default function Responses() {
 
   return (
     <div>
-      {/* ── Bark-style full-width status pill ── */}
+      {/* ── Full-width status pill ── */}
       <div className="px-4 pt-3 pb-1 relative" ref={dropdownRef}>
         <button
           onClick={() => setShowStatusPicker(!showStatusPicker)}
@@ -335,7 +335,7 @@ export default function Responses() {
   );
 }
 
-/* ── Empty state (matches Bark screenshot) ── */
+/* ── Empty state ── */
 
 function EmptyResponsesState({ onViewLeads }: { onViewLeads: () => void }) {
   return (

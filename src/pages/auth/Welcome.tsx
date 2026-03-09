@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,10 +8,12 @@ import { toast } from "sonner";
 export default function Welcome() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     if (!email.trim()) return;
 
     setLoading(true);
@@ -27,47 +28,65 @@ export default function Welcome() {
       if (error) throw error;
 
       navigate("/auth/check-email", { state: { email: email.trim() } });
-    } catch (error: any) {
-      toast.error(error.message || "Something went wrong");
+    } catch (err: any) {
+      const msg = err.message || "We failed to verify your request. If the problem persists, please contact support.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-6 bg-background">
-      <div className="w-full max-w-sm space-y-8 text-center">
-        <div className="space-y-3">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Welcome to FLEX'S for professionals 👋
-          </h1>
-          <p className="text-muted-foreground text-base">
-            Enter your email to start looking for your next job!
+    <div className="flex min-h-screen flex-col bg-background">
+      {/* Error banner */}
+      {error && (
+        <div className="bg-destructive px-4 py-3">
+          <p className="text-sm text-destructive-foreground font-medium">
+            {error}
           </p>
         </div>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+      {/* Logo */}
+      <div className="pt-8 pb-4 text-center">
+        <h2 className="text-2xl font-extrabold tracking-tight text-foreground italic">
+          FLEXS
+        </h2>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 flex flex-col justify-center px-6 pb-12">
+        <div className="w-full max-w-sm mx-auto space-y-8">
+          <div className="space-y-3">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Welcome to FLEXS for professionals 👨‍🔧
+            </h1>
+            <p className="text-muted-foreground text-base">
+              Enter your email to start looking for your next job!
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               type="email"
-              placeholder="Your email address"
+              placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 h-12 text-base rounded-xl"
+              className="h-12 text-base rounded-xl border-border"
               required
               autoFocus
             />
-          </div>
 
-          <Button
-            type="submit"
-            disabled={loading || !email.trim()}
-            className="w-full h-12 text-base font-semibold rounded-xl"
-          >
-            {loading ? "Sending…" : "Let's go! 🚀"}
-          </Button>
-        </form>
+            <Button
+              type="submit"
+              disabled={loading || !email.trim()}
+              className="w-full h-12 text-base font-semibold rounded-xl"
+            >
+              {loading ? "Sending…" : "Let's Go!"}
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );
