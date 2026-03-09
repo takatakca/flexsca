@@ -28,6 +28,7 @@ import ServiceCategoryPage from "@/pages/ServiceCategoryPage";
 import AboutPage from "@/pages/AboutPage";
 import AffiliatePage from "@/pages/AffiliatePage";
 import HelpCenter from "@/pages/HelpCenter";
+import CookiesPage from "@/pages/CookiesPage";
 import Index from "@/pages/Index";
 import PublicProfile from "@/pages/PublicProfile";
 import NotFound from "@/pages/NotFound";
