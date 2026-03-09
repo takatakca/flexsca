@@ -361,7 +361,7 @@ export default function AboutPage() {
       {/* CTA */}
       <section className="py-16 md:py-24 bg-primary text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Already working at FLEXS?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Already working at QMAPS?</h2>
           <p className="text-white/80 mb-8">
             Help us find great people to join our team. Refer a friend and earn rewards.
           </p>
