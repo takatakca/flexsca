@@ -51,6 +51,7 @@ const App = () => (
             <Route path="/post-job/contact" element={<JobContact />} />
             <Route path="/post-job/success" element={<JobSuccess />} />
             <Route path="/post-job/:slug" element={<JobQuestionnaire />} />
+            <Route path="/my-requests" element={<BuyerDashboard />} />
 
             {/* Public marketing pages */}
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
