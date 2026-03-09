@@ -49,6 +49,10 @@ const App = () => (
             <Route path="/post-job/success" element={<JobSuccess />} />
             <Route path="/post-job/:slug" element={<JobQuestionnaire />} />
 
+            {/* Public marketing pages */}
+            <Route path="/services/:slug" element={<ServiceCategoryPage />} />
+            <Route path="/about" element={<AboutPage />} />
+
             {/* Auth routes */}
             <Route path="/auth/welcome" element={<Welcome />} />
             <Route path="/auth/check-email" element={<CheckEmail />} />
