@@ -238,12 +238,12 @@ export default function Leads() {
 
   return (
     <div className="pb-4">
-      {/* ── Bark-style header bar ── */}
+      {/* ── Header bar ── */}
       <div className="mx-4 mt-4 rounded-2xl bg-accent/60 border border-border px-4 py-3 flex items-center gap-3">
-        {/* Edit icon + count */}
+        {/* Count */}
         <div className="flex-1 min-w-0">
           <p className="text-base font-bold text-foreground">
-            {filteredLeads.length} matching lead{filteredLeads.length !== 1 ? "s" : ""}
+            {filteredLeads.length} Matching lead{filteredLeads.length !== 1 ? "s" : ""}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
             {serviceCount} service{serviceCount !== 1 ? "s" : ""} • {locationCount} location{locationCount !== 1 ? "s" : ""}
@@ -267,17 +267,22 @@ export default function Leads() {
           )}
         </button>
 
-        {/* List/Archive toggle */}
+        {/* List/Map toggle */}
         <button
-          onClick={() => setShowArchived((v) => !v)}
-          className={`flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm font-medium transition-colors ${
-            showArchived
-              ? "border-primary bg-primary/10 text-primary"
-              : "border-border bg-background text-muted-foreground hover:bg-muted"
-          }`}
+          onClick={() => setViewMode((v) => v === "list" ? "map" : "list")}
+          className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
         >
-          <LayoutList className="h-4 w-4" />
-          {showArchived ? "Archived" : "List"}
+          {viewMode === "list" ? (
+            <>
+              <Map className="h-4 w-4" />
+              Map
+            </>
+          ) : (
+            <>
+              <LayoutList className="h-4 w-4" />
+              List
+            </>
+          )}
         </button>
       </div>
 
