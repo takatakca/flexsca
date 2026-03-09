@@ -8,6 +8,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Welcome from "@/pages/auth/Welcome";
 import CheckEmail from "@/pages/auth/CheckEmail";
 import AuthCallback from "@/pages/auth/AuthCallback";
+import Login from "@/pages/auth/Login";
 import Onboarding from "@/pages/onboarding/Onboarding";
 import AppLayout from "@/components/AppLayout";
 import Leads from "@/pages/app/Leads";
