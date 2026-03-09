@@ -200,7 +200,7 @@ export default function StatusManagement() {
     );
   }
 
-  /* ── List view (Bark-style colored pills) ── */
+  /* ── List view (colored pills) ── */
   return (
     <div className="pb-8 min-h-screen bg-background">
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center">
