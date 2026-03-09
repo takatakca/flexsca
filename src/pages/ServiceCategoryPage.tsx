@@ -76,10 +76,16 @@ export default function ServiceCategoryPage() {
         .limit(7),
     ]).then(([categoryRes, allRes]) => {
       if (categoryRes.data) {
-        setCategory(categoryRes.data);
+        setCategory({
+          ...categoryRes.data,
+          questions: (categoryRes.data.questions as unknown as Question[]) || [],
+        });
       }
       if (allRes.data) {
-        setAllCategories(allRes.data);
+        setAllCategories(allRes.data.map((c: any) => ({
+          ...c,
+          questions: (c.questions as unknown as Question[]) || [],
+        })));
       }
       setLoading(false);
     });
