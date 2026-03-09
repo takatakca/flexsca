@@ -121,8 +121,7 @@ export default function LeadCard({
               {[lead.city, lead.postal_code].filter(Boolean).join(", ") ||
                 lead.location_text}
             </p>
-          </div>
-        </div>
+            <p className="text-xs text-muted-foreground">Nationwide</p>
 
         {/* Row 2: Badges */}
         <div className="flex flex-wrap gap-2 mt-3">
