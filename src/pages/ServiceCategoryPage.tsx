@@ -166,6 +166,7 @@ export default function ServiceCategoryPage() {
   useEffect(() => {
     setLoading(true);
     setParentCategory(null);
+    setGrandparentCategory(null);
     setSiblingCategories([]);
 
     Promise.all([
