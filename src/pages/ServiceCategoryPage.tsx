@@ -139,9 +139,11 @@ const categoryRelatedImages: Record<string, { services: string[]; guides: string
 
 function getCategoryTheme(slug: string, parentSlug: string | null): string {
   const s = parentSlug || slug;
-  if (s.includes("financial") || s.includes("tax") || s.includes("budget") || s.includes("valuation") || s.includes("pension") || s.includes("venture")) return "financial";
+  if (s.includes("financial") || s.includes("tax") || s.includes("budget") || s.includes("valuation") || s.includes("pension") || s.includes("venture") || s.includes("accounting") || s.includes("bookkeep") || s.includes("invoice")) return "financial";
   if (s.includes("event") || s.includes("catering") || s.includes("coach") || s.includes("venue") || s.includes("entertainment")) return "event";
   if (s.includes("legal") || s.includes("lawyer") || s.includes("employment")) return "legal";
+  if (s.includes("advertis") || s.includes("media-buying") || s.includes("broadline") || s.includes("slogan") || s.includes("copywriting")) return "default";
+  if (s.includes("brand") || s.includes("logo") || s.includes("flyer") || s.includes("stationery") || s.includes("design")) return "default";
   return "default";
 }
 
