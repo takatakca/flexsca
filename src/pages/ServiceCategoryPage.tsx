@@ -342,13 +342,33 @@ export default function ServiceCategoryPage() {
           </div>
         </section>
 
+        {/* Popular Regions */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Popular Regions</h2>
+          <PopularRegions />
+        </section>
+
+        {/* Pick the best */}
+        <section className="mb-12 text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Pick the best</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
+            Compare quotes from top {categoryDisplayName} professionals near you on QMAPS.
+          </p>
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto mb-6">
+            Get responses from trusted professionals, read real reviews, compare prices and choose the best one for your needs.
+          </p>
+          <Button onClick={handleStartRequest} className="bg-primary hover:bg-primary/90 rounded-full px-8">
+            Get quotes from {categoryDisplayName} near you
+          </Button>
+        </section>
+
         {/* Average Price */}
-        <section className="mb-12 bg-gray-50 rounded-xl p-6 md:p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+        <section className="mb-12 bg-muted/50 rounded-xl p-6 md:p-8">
+          <h2 className="text-xl font-bold text-foreground mb-2">
             The average price of {categoryDisplayName} is
           </h2>
           <p className="text-3xl font-bold text-primary">C${category.base_credit_cost * 50}</p>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Prices vary based on location, project scope, and professional experience.
           </p>
         </section>
