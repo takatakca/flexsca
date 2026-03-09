@@ -896,6 +896,47 @@ export type Database = {
           },
         ]
       }
+      provider_reviews_public: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          rating: number | null
+          review_text: string | null
+          reviewer_name: string | null
+          source: string | null
+          user_id: string | null
+          verified: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          rating?: number | null
+          review_text?: string | null
+          reviewer_name?: string | null
+          source?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          rating?: number | null
+          review_text?: string | null
+          reviewer_name?: string | null
+          source?: string | null
+          user_id?: string | null
+          verified?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_reviews_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       contact_lead: { Args: { p_lead_id: string }; Returns: Json }
@@ -918,6 +959,21 @@ export type Database = {
       set_lead_custom_status: {
         Args: { p_lead_id: string; p_status_id: string }
         Returns: undefined
+      }
+      submit_lead: {
+        Args: {
+          p_answers?: Json
+          p_category: string
+          p_city?: string
+          p_customer_email?: string
+          p_customer_name?: string
+          p_customer_phone?: string
+          p_details?: string
+          p_is_urgent?: boolean
+          p_location_text: string
+          p_postal_code?: string
+        }
+        Returns: string
       }
       unlock_lead: { Args: { p_lead_id: string }; Returns: number }
     }
