@@ -70,37 +70,25 @@ export default function JobContact() {
       (a) => a.includes("emergency") || a.includes("asap") || a.includes("as soon as possible")
     );
 
-    const { data, error } = await supabase
-      .from("leads")
-      .insert({
-        category: state.categoryName,
-        location_text: form.location,
-        city,
-        postal_code: postalCode,
-        customer_name: form.name.trim(),
-        customer_email: form.email.trim(),
-        customer_phone: form.phone.trim() || null,
-        details: form.details.trim() || null,
-        answers: state.answers,
-        is_urgent: isUrgent,
-        status: "new",
-      })
-      .select("id")
-      .single();
+    // Use secure server-side function to submit lead + message atomically
+    const { error } = await supabase.rpc("submit_lead", {
+      p_category: state.categoryName,
+      p_location_text: form.location,
+      p_city: city,
+      p_postal_code: postalCode,
+      p_customer_name: form.name.trim(),
+      p_customer_email: form.email.trim(),
+      p_customer_phone: form.phone.trim() || null,
+      p_details: form.details.trim() || null,
+      p_answers: state.answers,
+      p_is_urgent: isUrgent,
+    });
 
     if (error) {
+      console.error("Lead submission error:", error);
       toast.error("Failed to submit your request. Please try again.");
       setSubmitting(false);
       return;
-    }
-
-    // Create initial customer message
-    if (data) {
-      await supabase.from("lead_messages").insert({
-        lead_id: data.id,
-        sender_type: "customer",
-        message: form.details.trim() || `New ${state.categoryName} request from ${form.name}`,
-      });
     }
 
     navigate("/post-job/success", {
