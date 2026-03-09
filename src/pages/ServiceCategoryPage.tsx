@@ -94,7 +94,11 @@ export default function ServiceCategoryPage() {
 
   const handleStartRequest = () => {
     if (category) {
-      setShowFlow(true);
+      setShowLoading(true);
+      setTimeout(() => {
+        setShowLoading(false);
+        setShowFlow(true);
+      }, 1500);
     }
   };
 
