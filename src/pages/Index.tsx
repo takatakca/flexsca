@@ -107,7 +107,7 @@ export default function Index() {
           <nav className="hidden md:flex items-center gap-6">
             <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">Explore <ChevronRight className="h-4 w-4 rotate-90" /></button>
             <Link to="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">Login</Link>
-            <Link to="/auth/welcome" className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-full hover:bg-primary/90 flex items-center gap-2"><User className="h-4 w-4" /> Join as a Professional</Link>
+            <Link to="/pro" className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-full hover:bg-primary/90 flex items-center gap-2"><User className="h-4 w-4" /> Join as a Professional</Link>
           </nav>
           <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

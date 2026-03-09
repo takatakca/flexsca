@@ -31,6 +31,7 @@ import HelpCenter from "@/pages/HelpCenter";
 import CookiesPage from "@/pages/CookiesPage";
 import Index from "@/pages/Index";
 import PublicProfile from "@/pages/PublicProfile";
+import ProLanding from "@/pages/ProLanding";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,8 @@ const App = () => (
             <Route path="/auth/check-email" element={<CheckEmail />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/auth/login" element={<Login />} />
+            <Route path="/pro" element={<ProLanding />} />
+            <Route path="/open-in-app" element={<OpenInApp />} />
             <Route path="/open-in-app" element={<OpenInApp />} />
 
             {/* Onboarding */}
