@@ -35,7 +35,7 @@ const popularCities = [
 const reviews = [
   {
     rating: 5,
-    text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend FLEXS!",
+    text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend QMAPS!",
     author: "Sarah M.",
   },
   {
