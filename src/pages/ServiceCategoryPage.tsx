@@ -443,7 +443,7 @@ export default function ServiceCategoryPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-500">
-            <p>© {new Date().getFullYear()} FLEXS. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} QMAPS. All rights reserved.</p>
             <div className="flex justify-center gap-4 mt-4">
               <Link to="/" className="hover:text-gray-400">Terms & Conditions</Link>
               <Link to="/" className="hover:text-gray-400">Privacy Policy</Link>
