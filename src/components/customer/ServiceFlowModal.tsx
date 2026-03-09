@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { X, MapPin, Check, Plus, Loader2 } from "lucide-react";
+import { X, MapPin, Check, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -47,6 +47,7 @@ export default function ServiceFlowModal({
 }: ServiceFlowModalProps) {
   const navigate = useNavigate();
   const [step, setStep] = useState<FlowStep>("loading");
+  const [previousStep, setPreviousStep] = useState<FlowStep>("loading");
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [otherText, setOtherText] = useState<Record<string, string>>({});
@@ -62,9 +63,6 @@ export default function ServiceFlowModal({
   const [detailsText, setDetailsText] = useState("");
   const [contactAsap, setContactAsap] = useState(true);
   const [receiveRemotely, setReceiveRemotely] = useState(true);
-
-  // Quit confirm state
-  const [pendingQuit, setPendingQuit] = useState(false);
 
   // Initial loading
   useEffect(() => {
@@ -97,30 +95,29 @@ export default function ServiceFlowModal({
       onClose();
       return;
     }
-    setPendingQuit(true);
+    setPreviousStep(step);
     setStep("quit-confirm");
   };
 
   const handleQuit = () => {
-    setPendingQuit(false);
     onClose();
   };
 
   const handleContinueFromQuit = () => {
-    setPendingQuit(false);
-    // Go back to questionnaire or wherever they were
-    if (questions.length > 0 && currentQ < questions.length) {
-      setStep("questionnaire");
+    // Go back to previous step
+    if (previousStep === "quit-confirm") {
+      if (questions.length > 0 && currentQ < questions.length) {
+        setStep("questionnaire");
+      } else {
+        setStep("welcome-back");
+      }
     } else {
-      setStep("welcome-back");
+      setStep(previousStep);
     }
   };
 
   // Questionnaire logic
   const question = questions[currentQ] || null;
-  const questionnaireProgress = questions.length > 0
-    ? ((currentQ + 1) / (questions.length + 3)) * 100
-    : 50;
 
   const isAnswered = (): boolean => {
     if (!question) return true;
@@ -390,9 +387,13 @@ export default function ServiceFlowModal({
 
   // ── Loading spinner modal ──
   const renderLoading = () => (
-    <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 p-12 flex flex-col items-center">
-      <div className="h-16 w-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-6" />
-      <p className="text-xl font-semibold text-gray-800">Please wait...</p>
+    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-12 flex flex-col items-center">
+      {/* Animated spinner ring */}
+      <div className="relative h-16 w-16 mb-6">
+        <div className="absolute inset-0 border-4 border-gray-200 rounded-full" />
+        <div className="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+      <p className="text-xl font-semibold text-gray-900">Please Wait...</p>
     </div>
   );
 
@@ -440,10 +441,10 @@ export default function ServiceFlowModal({
   const renderWelcomeBack = () => {
     const progress = questions.length > 0
       ? ((questions.length) / (questions.length + 2)) * 100
-      : 80;
+      : 85;
     return (
       <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        {/* Progress */}
+        {/* Progress bar - fills most of the width */}
         <div className="h-1.5 bg-gray-200">
           <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
@@ -504,16 +505,17 @@ export default function ServiceFlowModal({
   // ── Describe your request in detail ──
   const renderDetails = () => (
     <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-      <div className="px-6 pt-6 pb-4">
-        <div className="flex items-center gap-2 mb-3">
+      <div className="px-6 pt-6 pb-6">
+        {/* Green success badge */}
+        <div className="flex items-center justify-center gap-2 mb-4">
           <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center">
             <Check className="h-3 w-3 text-white" />
           </div>
-          <span className="text-sm text-emerald-600 font-medium">We've posted your request</span>
+          <span className="text-sm text-gray-600">We've posted your request</span>
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Describe your request in detail</h2>
-        <p className="text-sm text-gray-500 mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Describe your request in detail</h2>
+        <p className="text-sm text-gray-500 text-center mb-6">
           Add more details to get faster and more accurate quotes
         </p>
 
@@ -522,10 +524,10 @@ export default function ServiceFlowModal({
           onChange={(e) => setDetailsText(e.target.value)}
           placeholder="Tell professionals exactly what you need..."
           rows={5}
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 outline-none resize-none placeholder:text-gray-400 focus:border-blue-500 mb-3"
+          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 outline-none resize-none placeholder:text-gray-400 focus:border-blue-500 mb-4"
         />
 
-        <button className="w-full flex items-center justify-center gap-2 py-3 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors mb-3">
+        <button className="w-full flex items-center justify-center gap-2 py-3 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors mb-2">
           <Plus className="h-4 w-4" />
           Add photos/files
         </button>
@@ -551,8 +553,8 @@ export default function ServiceFlowModal({
           )}
         </div>
 
-        {/* ASAP checkbox */}
-        <label className="flex items-center gap-3 bg-orange-400 text-white rounded-lg px-4 py-3 cursor-pointer mb-4">
+        {/* ASAP checkbox - orange gradient */}
+        <label className="flex items-center gap-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-lg px-4 py-3 cursor-pointer mb-6">
           <Checkbox
             checked={contactAsap}
             onCheckedChange={(c) => setContactAsap(c === true)}
@@ -564,7 +566,7 @@ export default function ServiceFlowModal({
         <div className="flex justify-end">
           <Button
             onClick={() => setStep("loading-submit")}
-            className="px-6 bg-emerald-500 hover:bg-emerald-600 text-white"
+            className="px-8 bg-emerald-500 hover:bg-emerald-600 text-white"
           >
             View matches
           </Button>
@@ -575,9 +577,10 @@ export default function ServiceFlowModal({
 
   // ── Success modal ──
   const renderSuccess = () => (
-    <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden text-center px-8 py-12">
-      <div className="h-28 w-28 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-6">
-        <Check className="h-14 w-14 text-white" />
+    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden text-center px-8 py-12">
+      {/* Large green checkmark circle */}
+      <div className="h-24 w-24 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-6">
+        <Check className="h-12 w-12 text-white stroke-[3]" />
       </div>
 
       <h2 className="text-2xl font-bold text-gray-900 mb-4">Your request has been posted</h2>
@@ -589,7 +592,7 @@ export default function ServiceFlowModal({
         Or, if you remember your password, log in to view your account.
       </p>
 
-      <div className="flex justify-end">
+      <div className="flex justify-center">
         <Button
           onClick={() => navigate("/auth/login")}
           className="px-8 bg-blue-600 hover:bg-blue-700 text-white"
@@ -603,10 +606,10 @@ export default function ServiceFlowModal({
   // ── Quit confirmation ──
   const renderQuitConfirm = () => (
     <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden px-8 py-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-3">
+      <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
         Are you sure that you want to leave?
       </h2>
-      <p className="text-gray-600 mb-6">
+      <p className="text-gray-600 text-center mb-6">
         We're asking a few questions so we can find you the right pros, and send you quotes fast and free!
       </p>
       <div className="flex items-center justify-between">
