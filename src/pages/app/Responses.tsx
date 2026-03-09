@@ -154,7 +154,7 @@ export default function Responses() {
 
   return (
     <div>
-      {/* ── Bark-style full-width status pill ── */}
+      {/* ── Full-width status pill ── */}
       <div className="px-4 pt-3 pb-1 relative" ref={dropdownRef}>
         <button
           onClick={() => setShowStatusPicker(!showStatusPicker)}
