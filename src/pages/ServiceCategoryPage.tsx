@@ -251,6 +251,9 @@ export default function ServiceCategoryPage() {
 
   // Breadcrumb
   const breadcrumbParts: { label: string; to?: string }[] = [{ label: "Business", to: "/" }];
+  if (grandparentCategory) {
+    breadcrumbParts.push({ label: grandparentCategory.name, to: `/services/${grandparentCategory.slug}` });
+  }
   if (parentCategory) {
     breadcrumbParts.push({ label: parentCategory.name, to: `/services/${parentCategory.slug}` });
   } else if (isChild && category.parent_slug) {
