@@ -193,36 +193,25 @@ export default function ServiceFlowModal({
       (a) => a.includes("emergency") || a.includes("asap")
     );
 
-    const { data, error } = await supabase
-      .from("leads")
-      .insert({
-        category: categoryName,
-        location_text: location || "Not specified",
-        city,
-        postal_code: postalCode,
-        customer_name: contactName.trim() || null,
-        customer_email: contactEmail.trim() || null,
-        customer_phone: contactPhone.trim() || null,
-        details: detailsText.trim() || null,
-        answers,
-        is_urgent: isUrgent,
-        status: "new",
-      })
-      .select("id")
-      .single();
+    // Use secure server-side function to submit lead + message atomically
+    const { data, error } = await supabase.rpc("submit_lead", {
+      p_category: categoryName,
+      p_location_text: location || "Not specified",
+      p_city: city,
+      p_postal_code: postalCode,
+      p_customer_name: contactName.trim() || null,
+      p_customer_email: contactEmail.trim() || null,
+      p_customer_phone: contactPhone.trim() || null,
+      p_details: detailsText.trim() || null,
+      p_answers: answers,
+      p_is_urgent: isUrgent,
+    });
 
     if (error) {
+      console.error("Lead submission error:", error);
       toast.error("Failed to submit your request. Please try again.");
       setStep("details");
       return;
-    }
-
-    if (data) {
-      await supabase.from("lead_messages").insert({
-        lead_id: data.id,
-        sender_type: "customer",
-        message: detailsText.trim() || `New ${categoryName} request`,
-      });
     }
 
     setStep("success");
