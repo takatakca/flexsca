@@ -110,7 +110,7 @@ export default function Reminders() {
     fetchReminders();
 
     supabase
-      .from("leads")
+      .from("leads_safe")
       .select("id, category, customer_name")
       .then(({ data }) => {
         if (data) setLeads(data);

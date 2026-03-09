@@ -71,7 +71,7 @@ export default function Responses() {
       const stateMap = new Map(stateData.map((s) => [s.lead_id, s]));
 
       const { data: leadsData } = await supabase
-        .from("leads")
+        .from("leads_safe")
         .select(
           "id, category, location_text, customer_name, details, created_at, credits_cost"
         )
