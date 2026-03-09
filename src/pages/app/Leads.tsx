@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, ClipboardList, SlidersHorizontal, LayoutList } from "lucide-react";
+import { Loader2, ClipboardList, SlidersHorizontal, LayoutList, Map } from "lucide-react";
 import { isAfter, subHours, subDays, subWeeks, startOfDay } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
