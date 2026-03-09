@@ -41,7 +41,7 @@ const Index = () => {
       </div>
 
       <footer className="py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} FLEXS. All rights reserved.
+        © {new Date().getFullYear()} QMAPS. All rights reserved.
       </footer>
     </div>
   );
