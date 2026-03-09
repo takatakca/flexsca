@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, MapPin, ChevronRight, Star, Menu, User, Loader2 } from "lucide-react";
+import { Search, MapPin, ChevronRight, Star, Menu, User, Loader2, FileText, CheckCircle, MessageSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
@@ -63,83 +63,133 @@ function PopularRegions() {
   );
 }
 
-const relatedServices = [
-  { title: "Web Design", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop" },
-  { title: "Social Media Marketing", image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=250&fit=crop" },
-  { title: "Email Marketing Services", image: "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=400&h=250&fit=crop" },
-];
-
-const relatedGuides = [
-  { title: "A complete social media marketing guide for all businesses", image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=250&fit=crop" },
-  { title: "How to get more followers on social media", image: "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=400&h=250&fit=crop" },
-];
-
-const relatedPriceGuides = [
-  { title: "How much does social media management cost?", image: "https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=400&h=250&fit=crop" },
-  { title: "How much does website design cost?", image: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=400&h=250&fit=crop" },
-  { title: "How much does logo design cost?", image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=250&fit=crop" },
-];
-
 const reviews = [
   { rating: 5, text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend QMAPS!", author: "Sarah M." },
   { rating: 5, text: "Finding a quality professional has never been easier. The platform made the whole process smooth and stress-free.", author: "Michael T." },
   { rating: 4, text: "Great experience overall. Got connected with multiple professionals quickly and found the perfect match for my project.", author: "Jennifer L." },
 ];
 
+// Category-specific related content images
+const categoryRelatedImages: Record<string, { services: string[]; guides: string[]; priceGuides: string[] }> = {
+  default: {
+    services: [
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=400&h=250&fit=crop",
+    ],
+    guides: [
+      "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=400&h=250&fit=crop",
+    ],
+    priceGuides: [
+      "https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=250&fit=crop",
+    ],
+  },
+  financial: {
+    services: [
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&h=250&fit=crop",
+    ],
+    guides: [
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop",
+    ],
+    priceGuides: [
+      "https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&h=250&fit=crop",
+    ],
+  },
+  event: {
+    services: [
+      "https://images.unsplash.com/photo-1555244162-803834f70033?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=250&fit=crop",
+    ],
+    guides: [
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop",
+    ],
+    priceGuides: [
+      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=250&fit=crop",
+    ],
+  },
+  legal: {
+    services: [
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=400&h=250&fit=crop",
+    ],
+    guides: [
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=250&fit=crop",
+    ],
+    priceGuides: [
+      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=400&h=250&fit=crop",
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=250&fit=crop",
+    ],
+  },
+};
+
+function getCategoryTheme(slug: string, parentSlug: string | null): string {
+  const s = parentSlug || slug;
+  if (s.includes("financial") || s.includes("tax") || s.includes("budget") || s.includes("valuation") || s.includes("pension") || s.includes("venture")) return "financial";
+  if (s.includes("event") || s.includes("catering") || s.includes("coach") || s.includes("venue") || s.includes("entertainment")) return "event";
+  if (s.includes("legal") || s.includes("lawyer") || s.includes("employment")) return "legal";
+  return "default";
+}
+
 export default function ServiceCategoryPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [category, setCategory] = useState<CategoryFull | null>(null);
+  const [parentCategory, setParentCategory] = useState<CategoryFull | null>(null);
   const [childCategories, setChildCategories] = useState<CategoryFull[]>([]);
+  const [siblingCategories, setSiblingCategories] = useState<CategoryFull[]>([]);
   const [allCategories, setAllCategories] = useState<CategoryFull[]>([]);
   const [loading, setLoading] = useState(true);
   const [serviceSearch, setServiceSearch] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
   const [showFlow, setShowFlow] = useState(false);
   const [showLoading, setShowLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    setParentCategory(null);
+    setSiblingCategories([]);
+
     Promise.all([
-      supabase
-        .from("service_categories")
-        .select("*")
-        .eq("slug", slug || "")
-        .eq("is_active", true)
-        .single(),
-      // Get child categories for this parent
-      supabase
-        .from("service_categories")
-        .select("*")
-        .eq("parent_slug", slug || "")
-        .eq("is_active", true)
-        .order("sort_order"),
-      // Get sibling categories (same parent) for "All services"
-      supabase
-        .from("service_categories")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order"),
-    ]).then(([categoryRes, childRes, allRes]) => {
+      supabase.from("service_categories").select("*").eq("slug", slug || "").eq("is_active", true).single(),
+      supabase.from("service_categories").select("*").eq("parent_slug", slug || "").eq("is_active", true).order("sort_order"),
+      supabase.from("service_categories").select("*").eq("is_active", true).order("sort_order"),
+    ]).then(async ([categoryRes, childRes, allRes]) => {
+      const mapCat = (c: any): CategoryFull => ({ ...c, questions: (c.questions as unknown as Question[]) || [] });
+
       if (categoryRes.data) {
-        const c = categoryRes.data as any;
-        setCategory({
-          ...c,
-          questions: (c.questions as unknown as Question[]) || [],
-        });
+        const cat = mapCat(categoryRes.data);
+        setCategory(cat);
+        setServiceSearch(cat.name);
+
+        // Fetch parent category if this is a child
+        if (cat.parent_slug) {
+          const { data: parentData } = await supabase.from("service_categories").select("*").eq("slug", cat.parent_slug).eq("is_active", true).single();
+          if (parentData) setParentCategory(mapCat(parentData));
+
+          // Fetch siblings
+          if (allRes.data) {
+            setSiblingCategories(allRes.data.filter((c: any) => c.parent_slug === cat.parent_slug).map(mapCat));
+          }
+        }
       }
-      if (childRes.data) {
-        setChildCategories(childRes.data.map((c: any) => ({
-          ...c,
-          questions: (c.questions as unknown as Question[]) || [],
-        })));
-      }
-      if (allRes.data) {
-        setAllCategories(allRes.data.map((c: any) => ({
-          ...c,
-          questions: (c.questions as unknown as Question[]) || [],
-        })));
-      }
+      if (childRes.data) setChildCategories(childRes.data.map(mapCat));
+      if (allRes.data) setAllCategories(allRes.data.map(mapCat));
       setLoading(false);
     });
   }, [slug]);
@@ -147,10 +197,7 @@ export default function ServiceCategoryPage() {
   const handleStartRequest = () => {
     if (category) {
       setShowLoading(true);
-      setTimeout(() => {
-        setShowLoading(false);
-        setShowFlow(true);
-      }, 1500);
+      setTimeout(() => { setShowLoading(false); setShowFlow(true); }, 1500);
     }
   };
 
@@ -172,13 +219,32 @@ export default function ServiceCategoryPage() {
   }
 
   const name = category.name;
+  const isParent = childCategories.length > 0;
+  const isChild = !!category.parent_slug;
+  const theme = getCategoryTheme(category.slug, category.parent_slug);
+  const images = categoryRelatedImages[theme] || categoryRelatedImages.default;
 
-  // Determine sibling categories for "All services" tags
-  const siblingCategories = category.parent_slug
-    ? allCategories.filter((c) => c.parent_slug === category.parent_slug)
-    : childCategories.length > 0
-    ? childCategories
-    : allCategories.filter((c) => !c.parent_slug).slice(0, 10);
+  // Build "All services" tags — for child categories show siblings, for parents show children
+  const tagCategories = isChild ? siblingCategories : isParent ? childCategories : allCategories.filter((c) => !c.parent_slug).slice(0, 12);
+
+  // Dynamic related services from siblings (excluding current)
+  const relatedFromSiblings = siblingCategories.filter((c) => c.slug !== slug).slice(0, 3);
+  const relatedServicesData = relatedFromSiblings.length > 0
+    ? relatedFromSiblings.map((c, i) => ({ title: c.name, image: c.hero_image || images.services[i] || fallbackImage, slug: c.slug }))
+    : [
+        { title: "Catering", image: images.services[0], slug: "catering" },
+        { title: "Wedding Catering", image: images.services[1], slug: "wedding-catering" },
+        { title: "Private Chef Services", image: images.services[2], slug: "private-chef-services" },
+      ];
+
+  // Breadcrumb
+  const breadcrumbParts: { label: string; to?: string }[] = [{ label: "Business", to: "/" }];
+  if (parentCategory) {
+    breadcrumbParts.push({ label: parentCategory.name, to: `/services/${parentCategory.slug}` });
+  } else if (isChild && category.parent_slug) {
+    breadcrumbParts.push({ label: category.parent_slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()), to: `/services/${category.parent_slug}` });
+  }
+  breadcrumbParts.push({ label: name });
 
   return (
     <div className="min-h-screen bg-background">
@@ -214,8 +280,18 @@ export default function ServiceCategoryPage() {
               <User className="h-4 w-4" /> Join as a Professional
             </Link>
           </nav>
-          <button className="md:hidden"><Menu className="h-6 w-6" /></button>
+          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t px-4 py-4 space-y-3 bg-background">
+            <Link to="/post-job" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Find a Pro</Link>
+            <Link to="/about" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>About</Link>
+            <Link to="/help" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Help</Link>
+            <Button size="sm" className="w-full" onClick={() => { setMobileMenuOpen(false); navigate("/auth/welcome"); }}>Join as a Pro</Button>
+          </div>
+        )}
       </header>
 
       {/* Hero */}
@@ -226,7 +302,7 @@ export default function ServiceCategoryPage() {
         />
         <div className="relative max-w-7xl mx-auto px-4 py-14 md:py-20">
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">
-            Find {name}<br className="sm:hidden" /> professionals near you
+            Find {name}<br className="sm:hidden" /> {isParent ? "professionals" : "experts"} near you
           </h1>
           <div className="max-w-xl mx-auto bg-card rounded-lg shadow-lg p-4 md:p-6 space-y-4">
             <div>
@@ -257,31 +333,40 @@ export default function ServiceCategoryPage() {
 
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-4">
-        <nav className="text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-foreground">Business</Link>
-          <span className="mx-1">/</span>
-          <Link to="/" className="hover:text-foreground">Services</Link>
-          <span className="mx-1">/</span>
-          <span className="text-primary font-medium">{name}</span>
+        <nav className="text-xs text-muted-foreground flex items-center flex-wrap gap-1">
+          {breadcrumbParts.map((part, i) => (
+            <span key={i} className="flex items-center gap-1">
+              {i > 0 && <span>/</span>}
+              {part.to ? (
+                <Link to={part.to} className="hover:text-foreground">{part.label}</Link>
+              ) : (
+                <span className="text-primary font-medium">{part.label}</span>
+              )}
+            </span>
+          ))}
         </nav>
       </div>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Description */}
         <section className="mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">Need help finding a {name} professional?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+            Need help finding {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional?
+          </h2>
           <p className="text-muted-foreground mb-4">
             You can find the best {name} professionals on QMAPS. Start your search and get free quotes now!
           </p>
           <p className="text-muted-foreground mb-4 text-sm">
-            First time looking for a {name} professional and not sure where to start? Tell us about your project and we'll send you a list of {name} professionals to review. There's no pressure to hire, so you can compare profiles, read previous reviews and ask for more information before you make your decision.
+            First time looking for {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional and not sure where to start? Tell us about your project and we'll send you a list of {name} professionals to review. There's no pressure to hire, so you can compare profiles, read previous reviews and ask for more information before you make your decision.
           </p>
           <p className="text-muted-foreground mb-6 text-sm">Best of all – it's completely free!</p>
-          <Button onClick={handleStartRequest} className="rounded-full px-6">Find a {name} professional today</Button>
+          <Button onClick={handleStartRequest} className="rounded-full px-6">
+            Find {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional today
+          </Button>
         </section>
 
-        {/* Popular Categories (child categories with images) */}
-        {childCategories.length > 0 && (
+        {/* Popular Categories (parent pages with children) */}
+        {isParent && childCategories.length > 0 && (
           <section className="mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-8">Popular Categories</h2>
             <div className="space-y-4">
@@ -312,112 +397,123 @@ export default function ServiceCategoryPage() {
           </section>
         )}
 
-        {/* 3-Step How It Works */}
-        <section className="mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-card border border-border rounded-xl p-6 text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><Search className="h-6 w-6 text-primary" /></div>
-              <h3 className="font-bold text-foreground mb-2">Tell us what you need</h3>
-              <p className="text-sm text-muted-foreground">Tell QMAPS what {name} service you need. We'll help you find professionals who can do the work for you.</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-6 text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><Star className="h-6 w-6 text-primary" /></div>
-              <h3 className="font-bold text-foreground mb-2">Receive Free Quotes</h3>
-              <p className="text-sm text-muted-foreground">You'll receive free quotes from the best professionals. Compare profiles, read reviews and ask for more information.</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-6 text-center">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><ChevronRight className="h-6 w-6 text-primary" /></div>
-              <h3 className="font-bold text-foreground mb-2">Choose your {name}</h3>
-              <p className="text-sm text-muted-foreground">Pick the professional that's right for your needs. With access to reviews, profiles and pricing, find the perfect match.</p>
-            </div>
-          </div>
-          <div className="text-center mt-6">
-            <Button onClick={handleStartRequest} className="rounded-full px-6">Find a {name} professional near you</Button>
-          </div>
-        </section>
-
-        {/* Popular Regions */}
-        <section className="mb-12"><PopularRegions /></section>
-
-        {/* Pick the best */}
-        <section className="mb-12 text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-3">Pick the best</h2>
-          <div className="flex items-center justify-center gap-1 mb-3">{[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-warning text-warning" />)}</div>
-          <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">
-            Compare quotes from top {name} professionals near you on QMAPS. Get responses from trusted pros, read real reviews, compare prices and choose the best one.
-          </p>
-          <Button onClick={handleStartRequest} className="rounded-full px-8">Get quotes from {name} near you</Button>
-        </section>
-
-        {/* Average Price */}
-        <section className="mb-12 bg-muted/50 rounded-xl p-6 md:p-8">
-          <h2 className="text-xl font-bold text-foreground mb-2">The average price of {name} is</h2>
-          <p className="text-3xl font-bold text-primary">C${category.base_credit_cost * 50}</p>
-          <p className="text-sm text-muted-foreground mt-2">Prices vary based on location, project scope, and professional experience.</p>
-        </section>
-
-        {/* Reviews */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Reviews</h2>
-          <div className="flex items-center gap-2 mb-6">
-            <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
-            <span className="text-sm text-muted-foreground">4.89/560</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {reviews.map((r, i) => (
-              <div key={i} className="bg-card border border-border rounded-xl p-6">
-                <div className="flex gap-0.5 mb-3">{[...Array(r.rating)].map((_, j) => <Star key={j} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                <p className="text-sm text-foreground mb-4">"{r.text}"</p>
-                <p className="text-xs font-semibold text-muted-foreground">— {r.author}</p>
+        {/* For leaf (child) categories, show all sections */}
+        {!isParent && (
+          <>
+            {/* 3-Step How It Works */}
+            <section className="mb-12">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-card border border-border rounded-xl p-6 text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><FileText className="h-6 w-6 text-primary" /></div>
+                  <h3 className="font-bold text-foreground mb-2">Tell us what you need</h3>
+                  <p className="text-sm text-muted-foreground">Tell QMAPS what {name} service you need. We'll help you find professionals who can do the work for you.</p>
+                </div>
+                <div className="bg-card border border-border rounded-xl p-6 text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><CheckCircle className="h-6 w-6 text-primary" /></div>
+                  <h3 className="font-bold text-foreground mb-2">Receive Free Quotes</h3>
+                  <p className="text-sm text-muted-foreground">You'll receive free quotes from the best professionals. Compare profiles, read reviews and ask for more information.</p>
+                </div>
+                <div className="bg-card border border-border rounded-xl p-6 text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><MessageSquare className="h-6 w-6 text-primary" /></div>
+                  <h3 className="font-bold text-foreground mb-2">Choose your {name}</h3>
+                  <p className="text-sm text-muted-foreground">Pick the professional that's right for your needs. With access to reviews, profiles and pricing, find the perfect match.</p>
+                </div>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Related Services */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related services</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {relatedServices.map((s) => (
-              <div key={s.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
-                <div className="aspect-[16/10] overflow-hidden"><img src={s.image} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div>
-                <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{s.title}</h3></div>
+              <div className="text-center mt-6">
+                <Button onClick={handleStartRequest} className="rounded-full px-6">Find {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional near you</Button>
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
 
-        {/* Related Service Guides */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related service guides</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {relatedGuides.map((g) => (
-              <div key={g.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
-                <div className="aspect-[16/9] overflow-hidden"><img src={g.image} alt={g.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div>
-                <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{g.title}</h3></div>
-              </div>
-            ))}
-          </div>
-        </section>
+            {/* Popular Regions */}
+            <section className="mb-12"><PopularRegions /></section>
 
-        {/* Related Price Guides */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related price guides</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {relatedPriceGuides.map((p) => (
-              <div key={p.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
-                <div className="aspect-[16/10] overflow-hidden"><img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div>
-                <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{p.title}</h3></div>
+            {/* Pick the best */}
+            <section className="mb-12 text-center">
+              <h2 className="text-2xl font-bold text-foreground mb-3">Pick the best</h2>
+              <div className="flex items-center justify-center gap-1 mb-3">{[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-warning text-warning" />)}</div>
+              <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">
+                Compare quotes from top {name} professionals near you on QMAPS. Get responses from trusted pros, read real reviews, compare prices and choose the best one.
+              </p>
+              <Button onClick={handleStartRequest} className="rounded-full px-8">Get quotes from {name} near you</Button>
+            </section>
+
+            {/* Reviews */}
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-foreground mb-2">Reviews</h2>
+              <div className="flex items-center gap-2 mb-6">
+                <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
+                <span className="text-sm text-muted-foreground">4.89/560</span>
               </div>
-            ))}
-          </div>
-        </section>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {reviews.map((r, i) => (
+                  <div key={i} className="bg-card border border-border rounded-xl p-6">
+                    <div className="flex gap-0.5 mb-3">{[...Array(r.rating)].map((_, j) => <Star key={j} className="h-4 w-4 fill-warning text-warning" />)}</div>
+                    <p className="text-sm text-foreground mb-4">"{r.text}"</p>
+                    <p className="text-xs font-semibold text-muted-foreground">— {r.author}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Related Services — dynamic from siblings */}
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related services</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {relatedServicesData.map((s) => (
+                  <div
+                    key={s.title}
+                    onClick={() => s.slug && navigate(`/services/${s.slug}`)}
+                    className="rounded-xl overflow-hidden border border-border group cursor-pointer"
+                  >
+                    <div className="aspect-[16/10] overflow-hidden">
+                      <img src={s.image} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    </div>
+                    <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{s.title}</h3></div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Related Service Guides */}
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related service guides</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[
+                  { title: `What to expect when hiring ${name.match(/^[aeiou]/i) ? "an" : "a"} ${name}`, image: images.guides[0] },
+                  { title: `How to find the best ${name} for your project`, image: images.guides[1] },
+                ].map((g) => (
+                  <div key={g.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
+                    <div className="aspect-[16/9] overflow-hidden"><img src={g.image} alt={g.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div>
+                    <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{g.title}</h3></div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Related Price Guides */}
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related price guides</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { title: `How much does ${name} cost?`, image: images.priceGuides[0] },
+                  { title: `${name} pricing guide for businesses`, image: images.priceGuides[1] },
+                  { title: `Average ${name} rates in Canada`, image: images.priceGuides[2] },
+                ].map((p) => (
+                  <div key={p.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
+                    <div className="aspect-[16/10] overflow-hidden"><img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div>
+                    <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{p.title}</h3></div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
 
         {/* All services tags */}
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-foreground mb-6">All services</h2>
           <div className="flex flex-wrap gap-2">
-            {siblingCategories.map((cat) => (
+            {tagCategories.map((cat) => (
               <Link key={cat.id} to={`/services/${cat.slug}`} className={`px-4 py-2 border rounded-full text-sm transition-colors ${cat.slug === slug ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}>
                 {cat.name}
               </Link>
@@ -425,27 +521,9 @@ export default function ServiceCategoryPage() {
           </div>
         </section>
 
-        {/* FAQ */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">QMAPS FAQs</h2>
-          <div className="space-y-4">
-            {[
-              { q: `How does QMAPS work for customers?`, a: `Simply tell us what service you need and where you're located. We'll match you with qualified professionals who will reach out with quotes.` },
-              { q: `How do I hire the best ${name}?`, a: `Compare profiles, read reviews from previous customers, and ask professionals any questions you have.` },
-              { q: `How much do ${name} services cost?`, a: `Prices vary based on project scope, location, and experience. Get quotes from multiple professionals to compare.` },
-              { q: `What services does QMAPS provide?`, a: `QMAPS connects customers with professionals across hundreds of service categories.` },
-            ].map((faq, i) => (
-              <details key={i} className="border border-border rounded-lg">
-                <summary className="px-4 py-3 cursor-pointer font-medium text-foreground hover:bg-muted/50">{faq.q}</summary>
-                <p className="px-4 py-3 text-muted-foreground text-sm border-t">{faq.a}</p>
-              </details>
-            ))}
-          </div>
-        </section>
-
         {/* CTA */}
         <section className="text-center py-12 border-t">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Get quotes from {name} professionals near you</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Get quotes from {name} near you</h2>
           <p className="text-muted-foreground mb-6">Tell us about your project and we'll connect you with trusted professionals.</p>
           <Button onClick={handleStartRequest} size="lg">Get Started</Button>
         </section>
