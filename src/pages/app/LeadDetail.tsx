@@ -80,7 +80,7 @@ export default function LeadDetail() {
 
     const fetchData = async () => {
       const [leadRes, messagesRes] = await Promise.all([
-        supabase.from("leads").select("*").eq("id", id).single(),
+        supabase.from("leads_safe").select("*").eq("id", id).single(),
         supabase
           .from("lead_messages")
           .select("*")

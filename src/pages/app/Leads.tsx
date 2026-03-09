@@ -56,7 +56,7 @@ export default function Leads() {
     const fetchData = async () => {
       const [leadsRes, statesRes] = await Promise.all([
         supabase
-          .from("leads")
+          .from("leads_safe")
           .select("id, category, location_text, customer_name, customer_phone, details, status, created_at, last_activity_at, credits_cost, is_urgent, has_additional_details, city, postal_code, answers")
           .order("last_activity_at", { ascending: false }),
         supabase
