@@ -105,9 +105,12 @@ export default function Index() {
         <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">
           <Link to="/" className="text-xl font-bold text-primary">QMAPS</Link>
           <nav className="hidden md:flex items-center gap-6">
-            <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">Explore <ChevronRight className="h-4 w-4 rotate-90" /></button>
-            <Link to="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">Login</Link>
-            <Link to="/pro" className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-full hover:bg-primary/90 flex items-center gap-2"><User className="h-4 w-4" /> Join as a Professional</Link>
+            <Link to="/post-job" className="text-sm text-muted-foreground hover:text-foreground">Find a Pro</Link>
+            <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
+            <Link to="/help" className="text-sm text-muted-foreground hover:text-foreground">Help</Link>
+            <Link to="/auth/login" className="text-sm font-medium text-foreground hover:text-primary border border-border px-4 py-2 rounded-full">Sign In</Link>
+            <Link to="/auth/welcome" className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-full hover:bg-primary/90">Sign Up</Link>
+            <Link to="/pro" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"><User className="h-4 w-4" /> For Pros</Link>
           </nav>
           <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -118,7 +121,11 @@ export default function Index() {
             <Link to="/post-job" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Find a Pro</Link>
             <Link to="/about" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>About</Link>
             <Link to="/help" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Help</Link>
-            <Button size="sm" className="w-full" onClick={() => { setMobileMenuOpen(false); navigate("/auth/welcome"); }}>Join as a Pro</Button>
+            <Link to="/pro" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>For Professionals</Link>
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" size="sm" className="flex-1" onClick={() => { setMobileMenuOpen(false); navigate("/auth/login"); }}>Sign In</Button>
+              <Button size="sm" className="flex-1" onClick={() => { setMobileMenuOpen(false); navigate("/auth/welcome"); }}>Sign Up</Button>
+            </div>
           </div>
         )}
       </header>
