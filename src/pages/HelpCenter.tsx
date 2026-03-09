@@ -348,12 +348,141 @@ const articleData: Record<string, { title: string; toc: string[]; Content: () =>
   },
 };
 
+function HelpLanding({ searchQuery, setSearchQuery }: { searchQuery: string; setSearchQuery: (v: string) => void }) {
+  const popularLinks = [
+    { label: "What is QMAPS and how does it work?", slug: "chat-guidelines" },
+    { label: "How does QMAPS screen leads I receive?", slug: "chat-guidelines" },
+    { label: "How do I refer a friend?", slug: "chat-guidelines" },
+    { label: "What is a credit and how much does it cost?", slug: "chat-guidelines" },
+    { label: "Where do I find my invoice?", slug: "contact-support" },
+    { label: "What are Credit Pack Subscriptions?", slug: "contact-support" },
+    { label: "What is the Get Hired Guarantee?", slug: "chat-guidelines" },
+    { label: "What is QMAPS Verified?", slug: "verified" },
+    { label: "What is Elite Pro?", slug: "elite-pro" },
+    { label: "What is Enquiries?", slug: "enquiries" },
+    { label: "How many responses can a customer receive?", slug: "customer-responses" },
+    { label: "How can I submit a general press enquiry?", slug: "press-enquiry" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="bg-background border-b border-border sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link to="/" className="text-xl font-bold text-primary">QMAPS</Link>
+            <span className="text-sm text-muted-foreground hidden md:block">Help Center</span>
+          </div>
+          <nav className="hidden md:flex items-center gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Tell us how we can help..." className="pl-10 w-64" />
+            </div>
+            <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">Categories <ChevronDown className="h-4 w-4" /></button>
+            <Link to="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">Login to QMAPS</Link>
+          </nav>
+          <button className="md:hidden"><Menu className="h-6 w-6" /></button>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <div className="bg-gradient-to-r from-primary/10 to-primary/5 py-10 px-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input placeholder="Tell us how we can help..." className="pl-12 h-12 text-base rounded-xl" />
+          </div>
+        </div>
+      </div>
+
+      {/* Categories */}
+      <section className="max-w-4xl mx-auto px-4 py-12">
+        <h2 className="text-2xl font-bold text-foreground text-center mb-8">Categories</h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          <Link to="/help/chat-guidelines" className="border border-border rounded-xl p-6 text-center hover:border-primary transition-colors">
+            <div className="text-4xl mb-3">✨</div>
+            <h3 className="font-bold text-foreground mb-1">New to QMAPS</h3>
+            <p className="text-sm text-muted-foreground">Discover everything you need to know to start your journey</p>
+          </Link>
+          <Link to="/help/contact-support" className="border border-border rounded-xl p-6 text-center hover:border-primary transition-colors">
+            <div className="text-4xl mb-3">🛠️</div>
+            <h3 className="font-bold text-foreground mb-1">Professional</h3>
+            <p className="text-sm text-muted-foreground">How QMAPS works for professionals</p>
+          </Link>
+          <Link to="/help/enquiries" className="border border-border rounded-xl p-6 text-center hover:border-primary transition-colors">
+            <div className="text-4xl mb-3">👥</div>
+            <h3 className="font-bold text-foreground mb-1">Customers</h3>
+            <p className="text-sm text-muted-foreground">Using QMAPS and getting quotes</p>
+          </Link>
+        </div>
+      </section>
+
+      {/* Popular */}
+      <section className="bg-gradient-to-b from-primary/5 to-background py-10 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Popular</h2>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
+            {popularLinks.map((link) => (
+              <Link key={link.label} to={`/help/${link.slug}`} className="text-sm text-primary hover:underline">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Get in Touch */}
+      <section className="py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Get in touch</h2>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="border border-border rounded-xl p-6 flex items-start gap-4">
+              <Mail className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="font-bold text-foreground">Contact us</h3>
+                <p className="text-sm text-muted-foreground">Submit a request</p>
+              </div>
+            </div>
+            <div className="border border-border rounded-xl p-6 flex items-start gap-4">
+              <Phone className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="font-bold text-foreground">Contact us</h3>
+                <p className="text-sm text-muted-foreground">Submit a request</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="bg-primary text-primary-foreground py-12 text-center px-4">
+        <h2 className="text-2xl font-bold mb-4">Can't find what you're looking for?</h2>
+        <Button variant="secondary" className="rounded-full px-8">Submit a Request</Button>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-background border-t border-border py-8 px-4 text-center">
+        <div className="flex flex-col md:flex-row justify-center gap-4 text-sm text-muted-foreground">
+          <Link to="/" className="hover:text-foreground">Back to QMAPS</Link>
+          <a href="#" className="hover:text-foreground">Terms & Conditions</a>
+          <a href="#" className="hover:text-foreground">Privacy policy</a>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
 export default function HelpCenter() {
   const { slug } = useParams();
   const [helpful, setHelpful] = useState<boolean | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const activeSlug = slug || "chat-guidelines";
+  // Show landing page when no slug
+  if (!slug) {
+    return <HelpLanding searchQuery={searchQuery} setSearchQuery={setSearchQuery} />;
+  }
+
+  const activeSlug = slug;
   const article = articleData[activeSlug];
   const related = relatedArticles[activeSlug] || relatedArticles["chat-guidelines"];
 
@@ -369,16 +498,9 @@ export default function HelpCenter() {
           <nav className="hidden md:flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tell us how we can help..."
-                className="pl-10 w-64"
-              />
+              <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Tell us how we can help..." className="pl-10 w-64" />
             </div>
-            <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
-              Categories <ChevronDown className="h-4 w-4" />
-            </button>
+            <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">Categories <ChevronDown className="h-4 w-4" /></button>
             <Link to="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">Login to QMAPS</Link>
           </nav>
           <button className="md:hidden"><Menu className="h-6 w-6" /></button>
@@ -390,10 +512,7 @@ export default function HelpCenter() {
         <div className="max-w-3xl mx-auto">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Tell us how we can help..."
-              className="pl-12 h-12 text-base rounded-xl"
-            />
+            <Input placeholder="Tell us how we can help..." className="pl-12 h-12 text-base rounded-xl" />
           </div>
         </div>
       </div>
@@ -441,20 +560,18 @@ export default function HelpCenter() {
 
             {article && (
               <>
-                {/* Table of Contents */}
-                <div className="mb-8">
-                  <h2 className="font-semibold text-foreground mb-3">In This Article</h2>
-                  <ul className="space-y-1">
-                    {article.toc.map((item) => (
-                      <li key={item}>
-                        <a href={`#${item.toLowerCase().replace(/\s+/g, '-')}`} className="text-sm text-primary hover:underline">
-                          {item}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
+                {article.toc.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="font-semibold text-foreground mb-3">In This Article</h2>
+                    <ul className="space-y-1">
+                      {article.toc.map((item) => (
+                        <li key={item}>
+                          <a href={`#${item.toLowerCase().replace(/\s+/g, '-')}`} className="text-sm text-primary hover:underline">{item}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <article.Content />
               </>
             )}
@@ -463,20 +580,8 @@ export default function HelpCenter() {
             <div className="text-center py-8 border-t border-border mt-8">
               <p className="text-sm text-foreground mb-3">Was this article helpful?</p>
               <div className="flex justify-center gap-3">
-                <Button
-                  variant={helpful === true ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setHelpful(true)}
-                >
-                  Yes
-                </Button>
-                <Button
-                  variant={helpful === false ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setHelpful(false)}
-                >
-                  No
-                </Button>
+                <Button variant={helpful === true ? "default" : "outline"} size="sm" onClick={() => setHelpful(true)}>Yes</Button>
+                <Button variant={helpful === false ? "default" : "outline"} size="sm" onClick={() => setHelpful(false)}>No</Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2">902 out of 2092 found this helpful</p>
               <p className="text-sm text-muted-foreground mt-4">
@@ -489,9 +594,7 @@ export default function HelpCenter() {
               <h3 className="font-bold text-foreground mb-3">Related articles</h3>
               <ul className="space-y-2">
                 {related.map((a) => (
-                  <li key={a}>
-                    <a href="#" className="text-sm text-primary hover:underline">{a}</a>
-                  </li>
+                  <li key={a}><a href="#" className="text-sm text-primary hover:underline">{a}</a></li>
                 ))}
               </ul>
             </div>
