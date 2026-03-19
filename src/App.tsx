@@ -108,6 +108,23 @@ const App = () => (
               <Route path="settings/profile" element={<ProfileSetup />} />
             </Route>
 
+            {/* Merchant dashboard */}
+            <Route
+              path="/merchant"
+              element={
+                <ProtectedRoute>
+                  <MerchantLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<MerchantHome />} />
+              <Route path="optimization" element={<MerchantOptimization />} />
+              <Route path="marketplace" element={<MerchantMarketplace />} />
+              <Route path="messages" element={<MerchantMessages />} />
+              <Route path="notifications" element={<MerchantNotifications />} />
+              <Route path="menu" element={<MerchantMenu />} />
+            </Route>
+
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
