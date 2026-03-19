@@ -32,6 +32,13 @@ import CookiesPage from "@/pages/CookiesPage";
 import Index from "@/pages/Index";
 import PublicProfile from "@/pages/PublicProfile";
 import ProLanding from "@/pages/ProLanding";
+import MerchantLayout from "@/components/MerchantLayout";
+import MerchantHome from "@/pages/merchant/MerchantHome";
+import MerchantOptimization from "@/pages/merchant/MerchantOptimization";
+import MerchantMarketplace from "@/pages/merchant/MerchantMarketplace";
+import MerchantMessages from "@/pages/merchant/MerchantMessages";
+import MerchantNotifications from "@/pages/merchant/MerchantNotifications";
+import MerchantMenu from "@/pages/merchant/MerchantMenu";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -99,6 +106,23 @@ const App = () => (
               <Route path="settings" element={<Settings />} />
               <Route path="settings/statuses" element={<StatusManagement />} />
               <Route path="settings/profile" element={<ProfileSetup />} />
+            </Route>
+
+            {/* Merchant dashboard */}
+            <Route
+              path="/merchant"
+              element={
+                <ProtectedRoute>
+                  <MerchantLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<MerchantHome />} />
+              <Route path="optimization" element={<MerchantOptimization />} />
+              <Route path="marketplace" element={<MerchantMarketplace />} />
+              <Route path="messages" element={<MerchantMessages />} />
+              <Route path="notifications" element={<MerchantNotifications />} />
+              <Route path="menu" element={<MerchantMenu />} />
             </Route>
 
             {/* Catch-all */}

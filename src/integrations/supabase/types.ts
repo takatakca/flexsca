@@ -447,6 +447,352 @@ export type Database = {
           },
         ]
       }
+      merchant_amenities: {
+        Row: {
+          enabled: boolean | null
+          icon: string | null
+          id: string
+          merchant_id: string
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          enabled?: boolean | null
+          icon?: string | null
+          id?: string
+          merchant_id: string
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          enabled?: boolean | null
+          icon?: string | null
+          id?: string
+          merchant_id?: string
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_amenities_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_categories: {
+        Row: {
+          category_name: string
+          created_at: string
+          id: string
+          merchant_id: string
+          sort_order: number | null
+        }
+        Insert: {
+          category_name: string
+          created_at?: string
+          id?: string
+          merchant_id: string
+          sort_order?: number | null
+        }
+        Update: {
+          category_name?: string
+          created_at?: string
+          id?: string
+          merchant_id?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_categories_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_ctas: {
+        Row: {
+          button_text: string | null
+          button_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          merchant_id: string
+          title: string
+        }
+        Insert: {
+          button_text?: string | null
+          button_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          merchant_id: string
+          title: string
+        }
+        Update: {
+          button_text?: string | null
+          button_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          merchant_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_ctas_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_highlights: {
+        Row: {
+          icon: string | null
+          id: string
+          merchant_id: string
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          icon?: string | null
+          id?: string
+          merchant_id: string
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          icon?: string | null
+          id?: string
+          merchant_id?: string
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_highlights_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_hours: {
+        Row: {
+          close_time: string | null
+          day_of_week: number
+          id: string
+          is_closed: boolean | null
+          merchant_id: string
+          open_time: string | null
+        }
+        Insert: {
+          close_time?: string | null
+          day_of_week: number
+          id?: string
+          is_closed?: boolean | null
+          merchant_id: string
+          open_time?: string | null
+        }
+        Update: {
+          close_time?: string | null
+          day_of_week?: number
+          id?: string
+          is_closed?: boolean | null
+          merchant_id?: string
+          open_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_hours_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_media: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          media_type: string
+          merchant_id: string
+          sort_order: number | null
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          media_type?: string
+          merchant_id: string
+          sort_order?: number | null
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          media_type?: string
+          merchant_id?: string
+          sort_order?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_media_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_profiles: {
+        Row: {
+          address: string | null
+          business_description: string | null
+          business_name: string | null
+          business_status: string | null
+          city: string | null
+          cover_image_url: string | null
+          created_at: string
+          history: string | null
+          id: string
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          menu_url: string | null
+          phone: string | null
+          postal_code: string | null
+          primary_category: string | null
+          province: string | null
+          rating: number | null
+          review_count: number | null
+          specialties: string | null
+          updated_at: string
+          user_id: string
+          verified: boolean | null
+          verified_at: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_description?: string | null
+          business_name?: string | null
+          business_status?: string | null
+          city?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          history?: string | null
+          id?: string
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          menu_url?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          primary_category?: string | null
+          province?: string | null
+          rating?: number | null
+          review_count?: number | null
+          specialties?: string | null
+          updated_at?: string
+          user_id: string
+          verified?: boolean | null
+          verified_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_description?: string | null
+          business_name?: string | null
+          business_status?: string | null
+          city?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          history?: string | null
+          id?: string
+          latitude?: number | null
+          logo_url?: string | null
+          longitude?: number | null
+          menu_url?: string | null
+          phone?: string | null
+          postal_code?: string | null
+          primary_category?: string | null
+          province?: string | null
+          rating?: number | null
+          review_count?: number | null
+          specialties?: string | null
+          updated_at?: string
+          user_id?: string
+          verified?: boolean | null
+          verified_at?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      merchant_special_hours: {
+        Row: {
+          close_time: string | null
+          created_at: string
+          date: string
+          id: string
+          is_closed: boolean | null
+          label: string | null
+          merchant_id: string
+          open_time: string | null
+        }
+        Insert: {
+          close_time?: string | null
+          created_at?: string
+          date: string
+          id?: string
+          is_closed?: boolean | null
+          label?: string | null
+          merchant_id: string
+          open_time?: string | null
+        }
+        Update: {
+          close_time?: string | null
+          created_at?: string
+          date?: string
+          id?: string
+          is_closed?: boolean | null
+          label?: string | null
+          merchant_id?: string
+          open_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merchant_special_hours_merchant_id_fkey"
+            columns: ["merchant_id"]
+            isOneToOne: false
+            referencedRelation: "merchant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1096,6 +1442,7 @@ export type Database = {
         Args: { lead_row_id: string }
         Returns: boolean
       }
+      is_merchant_owner: { Args: { p_merchant_id: string }; Returns: boolean }
       seed_default_statuses: { Args: { p_user_id: string }; Returns: undefined }
       set_lead_custom_status: {
         Args: { p_lead_id: string; p_status_id: string }
