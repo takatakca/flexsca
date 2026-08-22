@@ -8,7 +8,7 @@ export default function MerchantMessages() {
       </div>
       <h2 className="text-xl font-bold text-foreground mb-2">No messages yet</h2>
       <p className="text-sm text-muted-foreground text-center max-w-xs">
-        When customers contact you through your QMAPS listing, their messages will appear here.
+        When customers contact you through your FLEX'S listing, their messages will appear here.
       </p>
     </div>
   );

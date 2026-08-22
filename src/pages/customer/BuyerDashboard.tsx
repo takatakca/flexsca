@@ -98,7 +98,7 @@ export default function BuyerDashboard() {
       <header className="bg-background border-b border-border sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <button onClick={() => navigate("/")} className="text-xl font-bold text-foreground tracking-tight">
-            QMAPS
+            FLEX'S
           </button>
 
           {/* Desktop nav */}

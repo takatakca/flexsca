@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 const sidebarArticles = [
-  { title: "What is QMAPS Verified?", slug: "verified" },
+  { title: "What is FLEX'S Verified?", slug: "verified" },
   { title: "What is Elite Pro?", slug: "elite-pro" },
   { title: "What is Enquiries?", slug: "enquiries" },
   { title: "How many responses can a customer receive?", slug: "customer-responses" },
@@ -18,23 +18,23 @@ const sidebarArticles = [
   { title: "Safeguarding and Welfare", slug: "safeguarding" },
   { title: "Reporting fraud as a trusted flagger", slug: "reporting-fraud" },
   { title: "Illegal Content", slug: "illegal-content" },
-  { title: "Misuse of QMAPS - FAQ", slug: "misuse-faq" },
+  { title: "Misuse of FLEX'S - FAQ", slug: "misuse-faq" },
 ];
 
 const relatedArticles: Record<string, string[]> = {
   "chat-guidelines": [
-    "Safeguarding and Welfare at QMAPS",
-    "Contact QMAPS customer support",
+    "Safeguarding and Welfare at FLEX'S",
+    "Contact FLEX'S customer support",
     "I have had an issue with a professional, what should I do?",
     "How do I set up or claim my Google Business Profile?",
     "Banned Reviews Policy",
   ],
   "banned-reviews": [
-    "Contact QMAPS customer support",
+    "Contact FLEX'S customer support",
     "Chat Guidelines: Keeping Conversations Safe and Professional",
-    "Setting a chip and PIN on QMAPS",
-    "Reporting fraud as a trusted flagger on QMAPS",
-    "Are professional profiles verified on QMAPS?",
+    "Setting a chip and PIN on FLEX'S",
+    "Reporting fraud as a trusted flagger on FLEX'S",
+    "Are professional profiles verified on FLEX'S?",
   ],
 };
 
@@ -51,7 +51,7 @@ function BannedReviewsContent() {
     <div className="prose prose-sm max-w-none text-muted-foreground space-y-6">
       <h2 id="introduction" className="text-xl font-bold text-foreground">1. Introduction</h2>
       <p>
-        Every professional on QMAPS relies on reviews from genuine customers to build and maintain
+        Every professional on FLEX'S relies on reviews from genuine customers to build and maintain
         credible reputations on the platform. The integrity of our review system is fundamental to
         creating a trusted marketplace where users can make informed decisions. This policy is
         designed to ensure that reviews are authentic and that reviewer conduct aligns with our
@@ -62,7 +62,7 @@ function BannedReviewsContent() {
       <p>The purpose of this policy is to:</p>
       <ul className="list-disc pl-5 space-y-1">
         <li>Protect users from false, fraudulent, or misleading reviews</li>
-        <li>Define what constitutes a "banned review" on QMAPS</li>
+        <li>Define what constitutes a "banned review" on FLEX'S</li>
         <li>Clarify the proactive and reactive measures we take to detect and remove bad reviews</li>
         <li>Detail the investigation process and penalties for those who violate this policy</li>
         <li>Ensure our processes are transparent, fair, and legally compliant</li>
@@ -74,7 +74,7 @@ function BannedReviewsContent() {
 
       <h2 id="definition" className="text-xl font-bold text-foreground">3. A Definition of a Banned Review</h2>
       <p>
-        Bans prohibit the reviewer or the author of the review from ever using QMAPS. A review will be classified as a "Banned Review" if
+        Bans prohibit the reviewer or the author of the review from ever using FLEX'S. A review will be classified as a "Banned Review" if
         it fulfils any of the following criteria:
       </p>
       <ul className="list-disc pl-5 space-y-1">
@@ -95,12 +95,12 @@ function BannedReviewsContent() {
       <p>
         Attempting to offer gifts, coupons, or rewards to get positive reviews, or requesting that a customer
         only leave positive feedback, is strictly prohibited. All reviews should be genuine and reflect honest experience. Using
-        fake, duplicate accounts to write false reviews is also a violation. QMAPS also monitors all "no review" and "un-verified"
+        fake, duplicate accounts to write false reviews is also a violation. FLEX'S also monitors all "no review" and "un-verified"
         reviews and these have been cross-checked.
       </p>
 
       <h2 id="proactive" className="text-xl font-bold text-foreground">5. Proactive Detection & Prevention</h2>
-      <p>QMAPS employs proactive tools to prevent false reviews from reaching its platform. These measures include:</p>
+      <p>FLEX'S employs proactive tools to prevent false reviews from reaching its platform. These measures include:</p>
       <ul className="list-disc pl-5 space-y-1">
         <li>Automated Detection Systems: Automated moderation tools check reviews for patterns that indicate false or inaccurate
           recommendations. This includes cross-referencing reviewers against known fake accounts.</li>
@@ -120,7 +120,7 @@ function BannedReviewsContent() {
         review policy.
       </p>
       <ul className="list-disc pl-5 space-y-1">
-        <li>Reporting Mechanisms: A user may report a review directly from the relevant profile on QMAPS. At the
+        <li>Reporting Mechanisms: A user may report a review directly from the relevant profile on FLEX'S. At the
           time of writing, the review can only be reported using the flag feature or via Contact Support.</li>
         <li>A Review Report will include a reason for the submission, which is then assessed by our Customer
           Experience teams. The review report is risk assessed immediately. The risk and impact report is
@@ -140,7 +140,7 @@ function BannedReviewsContent() {
           the reporter.</li>
         <li>Contextual Review: Our teams will evaluate the full conversation history, the nature of the claim, timing,
           and a profile analysis to determine any suspicious activity.</li>
-        <li>Decision: Based on the investigation, QMAPS will either uphold the review (or confirm its authenticity), remove
+        <li>Decision: Based on the investigation, FLEX'S will either uphold the review (or confirm its authenticity), remove
           it (if it violates the policy), or escalate it (to legal or another team) in a situation where a platform ban is
           deemed the most suitable option.</li>
       </ul>
@@ -151,7 +151,7 @@ function BannedReviewsContent() {
         warning, suspension, or a permanent ban from the website.
       </p>
       <p>
-        QMAPS reserves the right to take legal proceedings and take enforcement action on its users in line with
+        FLEX'S reserves the right to take legal proceedings and take enforcement action on its users in line with
         the review or systematic violations, and to seek recovery of any losses incurred by us or our clients.
       </p>
 
@@ -173,14 +173,14 @@ function BannedReviewsContent() {
       <p>
         It is important to state that reviews from complete company blackouts are not treated as violations, nor
         are genuine negative reviews of a service experience. However, if you're not happy with your
-        company's review, QMAPS will be happy to explain our process and clarify the difference between
+        company's review, FLEX'S will be happy to explain our process and clarify the difference between
         our complaints process and a banned review. Individuals who believe their account has been unfairly affected or have
         concerns about their review should contact our Customer Support team.
       </p>
 
       <h2 id="transparency" className="text-xl font-bold text-foreground">11. Transparency & Policy Review</h2>
       <p>
-        This policy will be made publicly available to all users of the QMAPS platform (and shall
+        This policy will be made publicly available to all users of the FLEX'S platform (and shall
         be available under "Trust and Terms" or "Website/Safety" sections). We welcome input from users on any new or
         continued updates on the platform, including feedback about content quality and the effectiveness of review processes.
         Updates to the policy are published with clear versioning dates and details.
@@ -212,14 +212,14 @@ function ChatGuidelinesContent() {
   return (
     <div className="prose prose-sm max-w-none text-muted-foreground space-y-6">
       <p>
-        At QMAPS, we are committed to creating a safe and respectful environment where users can
+        At FLEX'S, we are committed to creating a safe and respectful environment where users can
         connect for genuine service enquiries. To help ensure this, we actively moderate in-app chats to
         prevent misuse, abusive behaviour, and fraud.
       </p>
 
       <h2 id="using-chat-the-right-way" className="text-xl font-bold text-foreground">Using Chat the Right Way</h2>
       <p>
-        To get the most out of QMAPS and avoid any issues, users should only use the chat to discuss real
+        To get the most out of FLEX'S and avoid any issues, users should only use the chat to discuss real
         job enquiries. All communication should remain polite, honest, and professional.
       </p>
 
@@ -227,7 +227,7 @@ function ChatGuidelinesContent() {
       <p>
         We moderate messages to protect users from harmful or misleading content, to keep
         conversations focused on legitimate service discussions, and to prevent the platform from being
-        misused for scams. This helps maintain trust and safety for both buyers & professionals using QMAPS.
+        misused for scams. This helps maintain trust and safety for both buyers & professionals using FLEX'S.
       </p>
 
       <h2 id="how-chat-moderation-works" className="text-xl font-bold text-foreground">How Chat Moderation Works</h2>
@@ -271,7 +271,7 @@ function ChatGuidelinesContent() {
       </p>
 
       <div className="border-t border-border pt-4 mt-8">
-        <p className="text-sm text-muted-foreground">The QMAPS Team</p>
+        <p className="text-sm text-muted-foreground">The FLEX'S Team</p>
         <p className="text-xs text-muted-foreground">Updated 3 months ago</p>
       </div>
 
@@ -282,7 +282,7 @@ function ChatGuidelinesContent() {
         </div>
         <div className="text-right">
           <p className="text-xs text-muted-foreground">Next article</p>
-          <Link to="/help/safeguarding" className="text-sm text-primary hover:underline">Safeguarding and Welfare at QMAPS</Link>
+          <Link to="/help/safeguarding" className="text-sm text-primary hover:underline">Safeguarding and Welfare at FLEX'S</Link>
         </div>
       </div>
     </div>
@@ -350,14 +350,14 @@ const articleData: Record<string, { title: string; toc: string[]; Content: () =>
 
 function HelpLanding({ searchQuery, setSearchQuery }: { searchQuery: string; setSearchQuery: (v: string) => void }) {
   const popularLinks = [
-    { label: "What is QMAPS and how does it work?", slug: "chat-guidelines" },
-    { label: "How does QMAPS screen leads I receive?", slug: "chat-guidelines" },
+    { label: "What is FLEX'S and how does it work?", slug: "chat-guidelines" },
+    { label: "How does FLEX'S screen leads I receive?", slug: "chat-guidelines" },
     { label: "How do I refer a friend?", slug: "chat-guidelines" },
     { label: "What is a credit and how much does it cost?", slug: "chat-guidelines" },
     { label: "Where do I find my invoice?", slug: "contact-support" },
     { label: "What are Credit Pack Subscriptions?", slug: "contact-support" },
     { label: "What is the Get Hired Guarantee?", slug: "chat-guidelines" },
-    { label: "What is QMAPS Verified?", slug: "verified" },
+    { label: "What is FLEX'S Verified?", slug: "verified" },
     { label: "What is Elite Pro?", slug: "elite-pro" },
     { label: "What is Enquiries?", slug: "enquiries" },
     { label: "How many responses can a customer receive?", slug: "customer-responses" },
@@ -370,7 +370,7 @@ function HelpLanding({ searchQuery, setSearchQuery }: { searchQuery: string; set
       <header className="bg-background border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link to="/" className="text-xl font-bold text-primary">QMAPS</Link>
+            <Link to="/" className="text-xl font-bold text-primary">FLEX'S</Link>
             <span className="text-sm text-muted-foreground hidden md:block">Help Center</span>
           </div>
           <nav className="hidden md:flex items-center gap-4">
@@ -379,7 +379,7 @@ function HelpLanding({ searchQuery, setSearchQuery }: { searchQuery: string; set
               <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Tell us how we can help..." className="pl-10 w-64" />
             </div>
             <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">Categories <ChevronDown className="h-4 w-4" /></button>
-            <Link to="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">Login to QMAPS</Link>
+            <Link to="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">Login to FLEX'S</Link>
           </nav>
           <button className="md:hidden"><Menu className="h-6 w-6" /></button>
         </div>
@@ -401,18 +401,18 @@ function HelpLanding({ searchQuery, setSearchQuery }: { searchQuery: string; set
         <div className="grid md:grid-cols-3 gap-6">
           <Link to="/help/chat-guidelines" className="border border-border rounded-xl p-6 text-center hover:border-primary transition-colors">
             <div className="text-4xl mb-3">✨</div>
-            <h3 className="font-bold text-foreground mb-1">New to QMAPS</h3>
+            <h3 className="font-bold text-foreground mb-1">New to FLEX'S</h3>
             <p className="text-sm text-muted-foreground">Discover everything you need to know to start your journey</p>
           </Link>
           <Link to="/help/contact-support" className="border border-border rounded-xl p-6 text-center hover:border-primary transition-colors">
             <div className="text-4xl mb-3">🛠️</div>
             <h3 className="font-bold text-foreground mb-1">Professional</h3>
-            <p className="text-sm text-muted-foreground">How QMAPS works for professionals</p>
+            <p className="text-sm text-muted-foreground">How FLEX'S works for professionals</p>
           </Link>
           <Link to="/help/enquiries" className="border border-border rounded-xl p-6 text-center hover:border-primary transition-colors">
             <div className="text-4xl mb-3">👥</div>
             <h3 className="font-bold text-foreground mb-1">Customers</h3>
-            <p className="text-sm text-muted-foreground">Using QMAPS and getting quotes</p>
+            <p className="text-sm text-muted-foreground">Using FLEX'S and getting quotes</p>
           </Link>
         </div>
       </section>
@@ -463,7 +463,7 @@ function HelpLanding({ searchQuery, setSearchQuery }: { searchQuery: string; set
       {/* Footer */}
       <footer className="bg-background border-t border-border py-8 px-4 text-center">
         <div className="flex flex-col md:flex-row justify-center gap-4 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-foreground">Back to QMAPS</Link>
+          <Link to="/" className="hover:text-foreground">Back to FLEX'S</Link>
           <a href="#" className="hover:text-foreground">Terms & Conditions</a>
           <a href="#" className="hover:text-foreground">Privacy policy</a>
         </div>
@@ -492,7 +492,7 @@ export default function HelpCenter() {
       <header className="bg-background border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link to="/" className="text-xl font-bold text-primary">QMAPS</Link>
+            <Link to="/" className="text-xl font-bold text-primary">FLEX'S</Link>
             <span className="text-sm text-muted-foreground hidden md:block">Help Center</span>
           </div>
           <nav className="hidden md:flex items-center gap-4">
@@ -501,7 +501,7 @@ export default function HelpCenter() {
               <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Tell us how we can help..." className="pl-10 w-64" />
             </div>
             <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">Categories <ChevronDown className="h-4 w-4" /></button>
-            <Link to="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">Login to QMAPS</Link>
+            <Link to="/auth/login" className="text-sm text-muted-foreground hover:text-foreground">Login to FLEX'S</Link>
           </nav>
           <button className="md:hidden"><Menu className="h-6 w-6" /></button>
         </div>
@@ -634,7 +634,7 @@ export default function HelpCenter() {
       {/* Footer */}
       <footer className="bg-background border-t border-border py-8 px-4 text-center">
         <div className="flex justify-center gap-4 text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-foreground">Back to QMAPS</Link>
+          <Link to="/" className="hover:text-foreground">Back to FLEX'S</Link>
           <span>·</span>
           <a href="#" className="hover:text-foreground">Terms & Conditions</a>
           <span>·</span>

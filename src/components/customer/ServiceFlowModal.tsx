@@ -449,10 +449,10 @@ export default function ServiceFlowModal({
 
         <div className="px-6 pb-6">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
-            Welcome back, QMAPS
+            Welcome back, FLEX'S
           </h2>
           <p className="text-gray-600 text-center mb-6">
-            It looks like you've used QMAPS before. Submit your request now and we'll help you log in to view your matches.
+            It looks like you've used FLEX'S before. Submit your request now and we'll help you log in to view your matches.
           </p>
 
           <label className="flex items-center gap-3 mb-6">

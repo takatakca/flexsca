@@ -15,7 +15,7 @@ export default function MerchantOptimization() {
     <div className="px-4 py-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Optimization</h1>
-        <p className="text-sm text-muted-foreground mt-1">Grow your visibility on QMAPS</p>
+        <p className="text-sm text-muted-foreground mt-1">Grow your visibility on FLEX'S</p>
       </div>
 
       {/* Analytics preview */}
