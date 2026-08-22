@@ -4,13 +4,13 @@ import { ChevronDown, ChevronRight, User, Menu, DollarSign, Users, TrendingUp, C
 import { Button } from "@/components/ui/button";
 
 const faqs = [
-  { q: "Who is QMAPS?", a: "QMAPS is an online platform that connects customers who are looking for a wide variety of services with local professionals and businesses that can provide them — from cleaners to financial advisors." },
-  { q: "What is the QMAPS Affiliates programme?", a: "The QMAPS Affiliates programme allows you to earn commissions by referring customers or professionals to QMAPS. You earn for every verified lead or professional sign-up." },
-  { q: "How do I sign up for the QMAPS Affiliate programme?", a: "Simply click the 'Join QMAPS Affiliate via AWin' button above and complete the registration process through our affiliate network." },
-  { q: "How do I promote QMAPS?", a: "You can promote QMAPS through your website, blog, social media, email newsletters, or any other digital marketing channel using your unique affiliate links." },
+  { q: "Who is FLEX'S?", a: "FLEX'S is an online platform that connects customers who are looking for a wide variety of services with local professionals and businesses that can provide them — from cleaners to financial advisors." },
+  { q: "What is the FLEX'S Affiliates programme?", a: "The FLEX'S Affiliates programme allows you to earn commissions by referring customers or professionals to FLEX'S. You earn for every verified lead or professional sign-up." },
+  { q: "How do I sign up for the FLEX'S Affiliate programme?", a: "Simply click the 'Join FLEX'S Affiliate via AWin' button above and complete the registration process through our affiliate network." },
+  { q: "How do I promote FLEX'S?", a: "You can promote FLEX'S through your website, blog, social media, email newsletters, or any other digital marketing channel using your unique affiliate links." },
   { q: "Do I need to reach a minimum threshold before getting paid?", a: "Yes, you need to reach a minimum of $50 in commissions before a payment is processed." },
   { q: "How often are commissions paid?", a: "Commissions are paid monthly, typically within 30 days of the end of each month." },
-  { q: "What does a verified lead look like?", a: "A verified lead is when a customer submits a genuine service request through QMAPS that is confirmed by our system." },
+  { q: "What does a verified lead look like?", a: "A verified lead is when a customer submits a genuine service request through FLEX'S that is confirmed by our system." },
   { q: "How are leads attributed?", a: "Leads are attributed via cookies with a 30-day window from the last click on your affiliate link." },
 ];
 
@@ -22,7 +22,7 @@ export default function AffiliatePage() {
       {/* Header */}
       <header className="bg-background border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-primary">QMAPS</Link>
+          <Link to="/" className="text-xl font-bold text-primary">FLEX'S</Link>
           <nav className="hidden md:flex items-center gap-6">
             <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
               Explore <ChevronDown className="h-4 w-4" />
@@ -38,12 +38,12 @@ export default function AffiliatePage() {
 
       {/* Hero */}
       <section className="bg-background py-16 md:py-24 text-center px-4">
-        <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">QMAPS Affiliate Programme</h1>
+        <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">FLEX'S Affiliate Programme</h1>
         <p className="text-muted-foreground max-w-xl mx-auto mb-8">
           Start earning by referring people who need service providers to do their everyday jobs
         </p>
         <Button className="bg-primary hover:bg-primary/90 rounded-full px-8">
-          Join QMAPS Affiliate via AWin
+          Join FLEX'S Affiliate via AWin
         </Button>
       </section>
 
@@ -73,8 +73,8 @@ export default function AffiliatePage() {
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-12">Getting started is simple</h2>
           <div className="space-y-10">
             {[
-              { step: 1, title: "Join the QMAPS Affiliate program on AWin", desc: "Activate the QMAPS programme via our affiliate platform. If you're new to AWin, sign up — it's free and takes minutes." },
-              { step: 2, title: "Promote relevant services to your audience", desc: "Configure your marketing to direct traffic to QMAPS. Use your own website or blog or social media. Tell your audience about the services they can find." },
+              { step: 1, title: "Join the FLEX'S Affiliate program on AWin", desc: "Activate the FLEX'S programme via our affiliate platform. If you're new to AWin, sign up — it's free and takes minutes." },
+              { step: 2, title: "Promote relevant services to your audience", desc: "Configure your marketing to direct traffic to FLEX'S. Use your own website or blog or social media. Tell your audience about the services they can find." },
               { step: 3, title: "Earn commission 💰", desc: "" },
             ].map((item) => (
               <div key={item.step} className="flex gap-4 text-left">
@@ -89,19 +89,19 @@ export default function AffiliatePage() {
             ))}
           </div>
           <Button className="mt-8 bg-primary hover:bg-primary/90 rounded-full px-8">
-            Join QMAPS Affiliate via AWin
+            Join FLEX'S Affiliate via AWin
           </Button>
         </div>
       </section>
 
-      {/* How QMAPS Works */}
+      {/* How FLEX'S Works */}
       <section className="max-w-3xl mx-auto px-4 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-6">How QMAPS works</h2>
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-6">How FLEX'S works</h2>
         <div className="space-y-4 text-muted-foreground text-sm leading-relaxed">
-          <p>QMAPS helps people find great local professionals or businesses for basically anything they're looking for.</p>
+          <p>FLEX'S helps people find great local professionals or businesses for basically anything they're looking for.</p>
           <p>With over 1,500 service categories, customers submit projects and professionals compete to win their business. It's free for customers.</p>
-          <p>On our side, service providers buy packs of credits on QMAPS and use a specific fee when a customer's matching request pops up. Providers can view the project and decide whether they want to purchase that lead and contact the customer directly.</p>
-          <p>These service providers buy packs of credits on QMAPS that they use for reaching out to their prospective clients, giving them full control to build their own pipeline of new business.</p>
+          <p>On our side, service providers buy packs of credits on FLEX'S and use a specific fee when a customer's matching request pops up. Providers can view the project and decide whether they want to purchase that lead and contact the customer directly.</p>
+          <p>These service providers buy packs of credits on FLEX'S that they use for reaching out to their prospective clients, giving them full control to build their own pipeline of new business.</p>
         </div>
       </section>
 
@@ -110,7 +110,7 @@ export default function AffiliatePage() {
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center mb-6">How affiliates get paid</h2>
           <div className="space-y-4 text-muted-foreground text-sm leading-relaxed">
-            <p>We pay our affiliates for every lead or project that meets our criteria for attribution based on benefit to QMAPS, including:</p>
+            <p>We pay our affiliates for every lead or project that meets our criteria for attribution based on benefit to FLEX'S, including:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li>all leads created/submitted via your tracking link are verified as genuine</li>
               <li>the lead gets at least one response from a professional within 30 days</li>
@@ -124,7 +124,7 @@ export default function AffiliatePage() {
       {/* Benefits */}
       <section className="max-w-3xl mx-auto px-4 py-16 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
-          What are the benefits of being a QMAPS Affiliate?
+          What are the benefits of being a FLEX'S Affiliate?
         </h2>
         <ul className="text-sm text-muted-foreground space-y-3 text-left max-w-lg mx-auto">
           <li className="flex gap-2"><span>•</span> Earn up to $100/£80 per verified project request</li>
@@ -139,7 +139,7 @@ export default function AffiliatePage() {
       <section className="bg-muted/30 py-16 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-8">
-            Are you the right fit as a QMAPS Affiliate?
+            Are you the right fit as a FLEX'S Affiliate?
           </h2>
           <div className="space-y-6 text-left max-w-lg mx-auto">
             {[
@@ -155,7 +155,7 @@ export default function AffiliatePage() {
             ))}
           </div>
           <Button className="mt-8 bg-primary hover:bg-primary/90 rounded-full px-8">
-            Join QMAPS Affiliate via AWin
+            Join FLEX'S Affiliate via AWin
           </Button>
         </div>
       </section>
@@ -204,7 +204,7 @@ export default function AffiliatePage() {
             <div>
               <h4 className="font-semibold mb-4">About</h4>
               <ul className="space-y-2 text-sm opacity-60">
-                <li><Link to="/about" className="hover:opacity-100">About QMAPS</Link></li>
+                <li><Link to="/about" className="hover:opacity-100">About FLEX'S</Link></li>
                 <li><Link to="/affiliates" className="hover:opacity-100">Affiliates</Link></li>
                 <li><Link to="/" className="hover:opacity-100">Blog</Link></li>
               </ul>
@@ -215,7 +215,7 @@ export default function AffiliatePage() {
             </div>
           </div>
           <div className="border-t border-background/20 pt-8 text-center text-sm opacity-50">
-            © {new Date().getFullYear()} QMAPS. All rights reserved.
+            © {new Date().getFullYear()} FLEX'S. All rights reserved.
           </div>
         </div>
       </footer>

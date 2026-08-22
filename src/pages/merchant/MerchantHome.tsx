@@ -19,7 +19,7 @@ export default function MerchantHome() {
       {/* Welcome */}
       <div>
         <h1 className="text-2xl font-bold text-foreground">Welcome back!</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage your business on QMAPS</p>
+        <p className="text-sm text-muted-foreground mt-1">Manage your business on FLEX'S</p>
       </div>
 
       {/* Stats Cards */}

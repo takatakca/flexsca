@@ -26,7 +26,7 @@ const regionsList: Record<string, string[]> = {
 };
 
 const reviews = [
-  { rating: 5, text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend QMAPS!", author: "Sarah M." },
+  { rating: 5, text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend FLEX'S!", author: "Sarah M." },
   { rating: 5, text: "Finding a quality professional has never been easier. The platform made the whole process smooth and stress-free.", author: "Michael T." },
   { rating: 4, text: "Great experience overall. Got connected with multiple professionals quickly and found the perfect match for my project.", author: "Jennifer L." },
 ];
@@ -103,7 +103,7 @@ export default function Index() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">
-          <Link to="/" className="text-xl font-bold text-primary">QMAPS</Link>
+          <Link to="/" className="text-xl font-bold text-primary">FLEX'S</Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/post-job" className="text-sm text-muted-foreground hover:text-foreground">Find a Pro</Link>
             <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
@@ -168,7 +168,7 @@ export default function Index() {
       <section className="max-w-7xl mx-auto px-4 py-10 sm:py-14">
         <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">Need help finding a professional?</h2>
         <p className="text-muted-foreground mb-4 max-w-3xl">
-          You can find the best professionals on QMAPS. Start your search and get free quotes now!
+          You can find the best professionals on FLEX'S. Start your search and get free quotes now!
         </p>
         <p className="text-muted-foreground mb-4 max-w-3xl text-sm">
           First time looking for a professional and not sure where to start? Tell us about your project and we'll send you a list of professionals to review. There's no pressure to hire, so you can compare profiles, read previous reviews and ask for more information before you make your decision.
@@ -248,7 +248,7 @@ export default function Index() {
       <section className="max-w-7xl mx-auto px-4 pb-10 sm:pb-14 text-center">
         <h2 className="text-2xl font-bold text-foreground mb-3">Pick the best</h2>
         <div className="flex items-center justify-center gap-1 mb-3">{[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-warning text-warning" />)}</div>
-        <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">Compare quotes from top professionals near you on QMAPS.</p>
+        <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">Compare quotes from top professionals near you on FLEX'S.</p>
         <Button onClick={() => navigate("/post-job")} className="rounded-full px-8">Get quotes from professionals near you</Button>
       </section>
 
@@ -345,7 +345,7 @@ export default function Index() {
             <div>
               <h4 className="font-semibold mb-4">About</h4>
               <ul className="space-y-2 text-sm opacity-70">
-                <li><Link to="/about" className="hover:opacity-100">About QMAPS</Link></li>
+                <li><Link to="/about" className="hover:opacity-100">About FLEX'S</Link></li>
                 <li><Link to="/" className="hover:opacity-100">Careers</Link></li>
                 <li><Link to="/affiliates" className="hover:opacity-100">Affiliates</Link></li>
                 <li><Link to="/" className="hover:opacity-100">Blog</Link></li>
@@ -366,7 +366,7 @@ export default function Index() {
             <span>🇨🇦</span><span>Canada</span><ChevronRight className="h-3 w-3" />
           </div>
           <div className="border-t border-background/20 pt-6 text-center text-xs opacity-50">
-            <p>© {new Date().getFullYear()} QMAPS. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} FLEX'S. All rights reserved.</p>
             <div className="flex justify-center gap-4 mt-2">
               <Link to="/">Terms & Conditions</Link>
               <Link to="/cookies">Cookie Policy</Link>
