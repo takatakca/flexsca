@@ -14,7 +14,7 @@ FLEXS operates independently at flexs.ca, with its own marketplace data and acco
 | Credits | Wallet, ledger, Stripe checkout, signature validation, exactly-once fulfillment/refunds | Test-mode end-to-end Stripe check and webhook configuration pending |
 | Workflow | Reminders, due notices, preferences, unread updates, quote estimates | Due reminders currently collect while the app is open; external delivery not built |
 | Support and operations | Private tickets, authorized staff replies, audited moderation/refunds | Administrator bootstrap and real support ownership pending |
-| TakaTak attribution | Opaque click attribution, durable leased outbox, bounded worker retries | Live credentials, scheduler, endpoint acceptance/deduplication pending |
+| TakaTak attribution | Opaque click attribution, durable leased outbox, bounded worker retries, administrator health/replay console | Live credentials, scheduler, endpoint acceptance/deduplication pending |
 
 Automated database checks apply every migration and exercise actual roles/RLS. Browser scenarios use intercepted API fixtures. Neither establishes a deployed system by itself. Consult FLEXS_RELEASE.md for the promotion order and current validation counts.
 

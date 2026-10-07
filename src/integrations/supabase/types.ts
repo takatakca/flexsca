@@ -1468,6 +1468,8 @@ export type Database = {
       }
     }
     Functions: {
+      admin_attribution_health: { Args: Record<string,never>; Returns:Json }
+      admin_retry_attribution: { Args: {p_id:string}; Returns:boolean }
       create_support_ticket: { Args: { p_subject:string; p_category:string; p_message:string; p_request_id:string }; Returns:string }
       reply_support_ticket: { Args: { p_ticket_id:string; p_message:string; p_request_id:string }; Returns:string }
       set_support_ticket_status: { Args: { p_ticket_id:string; p_status:string }; Returns:undefined }

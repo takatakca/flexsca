@@ -13,7 +13,8 @@ let submitted, sentQuote, publishedReview, recoveryRequest, updatedPassword;
 const followUps=[], notices=[], supportTickets=[], supportMessages=[];
 const supportId="12121212-1212-4212-8212-121212121212";
 let preference={messages:true,reminders:true}, accountName="Fixture Customer", emailChange, checkoutRequest;
-let isAdmin=false;
+let isAdmin=false, replayedEvent=false;
+const integrationEventId="abababab-abab-4bab-8bab-abababababab";
 let unlocked = false, quoteStatus = "sent";
 let searches = [], failSearch = false;
 const errors = [];
@@ -96,6 +97,8 @@ await page.route('**/rest/v1/**', async route => {
   if (path === 'support_messages') { body=[...supportMessages].reverse();total=supportMessages.length; }
   if (path === 'reply_support_ticket') { const input=route.request().postDataJSON();supportMessages.push({id:crypto.randomUUID(),message:input.p_message,is_staff:isAdmin,created_at:new Date().toISOString()});body=supportMessages.at(-1).id; }
   if (path === 'set_support_ticket_status') { supportTickets[0].status=route.request().postDataJSON().p_status;body=null; }
+  if (path === 'admin_attribution_health') body={pending:replayedEvent ? 1 : 0,delivered:0,exhausted:replayedEvent ? 0 : 1,leased:0,lastDeliveredAt:null,oldestPendingAt:new Date().toISOString(),recent:[{id:integrationEventId,occurred_at:new Date().toISOString(),attempts:replayedEvent ? 0 : 12,last_status:503,delivered_at:null,next_attempt_at:new Date().toISOString(),leased:false}]};
+  if (path === 'admin_retry_attribution') { assert.equal(route.request().postDataJSON().p_id,integrationEventId);replayedEvent=true;body=true; }
   if (path === 'is_platform_admin') body = isAdmin;
   if (path === 'claim_customer_leads') body = 1;
   if (path === 'leads') body = url.searchParams.has('id') ? {id:leadId,category:category.name,location_text:'Toronto',status:'new',details:'Customer request details',created_at:new Date().toISOString(),archived:false} : [{id:leadId,category:category.name,location_text:'Toronto',status:'new',created_at:new Date().toISOString(),archived:false}];
@@ -292,6 +295,13 @@ try {
   assert.equal(await page.getByRole('heading',{name:'Support requests',exact:true}).count(),0);
   isAdmin=true;
   await page.reload();
+  await page.getByRole('heading',{name:'TakaTak event delivery',exact:true}).waitFor();
+  await page.getByText('No successful event delivery has been recorded. Configuration and live connectivity remain unverified.',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'Retry event',exact:true}).click();
+  await page.getByRole('cell',{name:'Queued',exact:true}).waitFor();
+  assert.equal(replayedEvent,true);
+  assert.equal(await page.getByRole('button',{name:'Retry event',exact:true}).count(),0);
+  console.log('PASS administrator integration console shows unverified delivery and queues exhausted events without claiming connectivity');
   await page.getByRole('heading',{name:'Support requests',exact:true}).waitFor();
   await page.getByRole('link',{name:/Credit purchase question/}).click();
   await page.getByLabel('Your reply',{exact:true}).fill('Your credit purchase is recorded in your account history.');

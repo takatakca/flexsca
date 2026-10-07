@@ -1,0 +1,41 @@
+name: Deploy FLEXS backend
+on:
+  workflow_dispatch:
+concurrency:
+  group: flexs-production-backend
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Validate deployment credentials without displaying them
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN" || { echo 'Missing production SUPABASE_ACCESS_TOKEN'; exit 1; }
+          test -n "$SUPABASE_DB_PASSWORD" || { echo 'Missing production SUPABASE_DB_PASSWORD'; exit 1; }
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: python3 scripts/test-backend-readiness.py
+      - run: npm run build
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.5.6
+      - run: deno check --node-modules-dir=none --no-lock supabase/functions/create-checkout-session/index.ts supabase/functions/stripe-webhook/index.ts supabase/functions/takatak-attribution-worker/index.ts
+      - run: deno test --node-modules-dir=none --no-lock supabase/functions/_shared/stripe-runtime.test.ts
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.75.0
+      - name: Deploy and verify only the independent FLEXS backend
+        run: bash scripts/deploy-backend.sh

@@ -464,3 +464,47 @@ describe('private support tickets', () => {
     await expect(db.query(`SELECT create_support_ticket('Another issue','general','Another private support request',gen_random_uuid())`)).rejects.toThrow('Too many support requests');
   });
 });
+
+describe('administrator integration operations',()=>{
+  let event:string;
+  it('denies delivery evidence and replay to ordinary accounts and anonymous callers',async()=>{
+    await asRole('anon');
+    await expect(db.query('SELECT admin_attribution_health()')).rejects.toThrow();
+    await asRole('authenticated',pro);
+    await expect(db.query('SELECT admin_attribution_health()')).rejects.toThrow('Administrator access required');
+    await expect(db.query(`SELECT admin_retry_attribution('${lead}')`)).rejects.toThrow('Administrator access required');
+    await expect(db.query('SELECT * FROM takatak_attribution_outbox')).rejects.toThrow();
+  });
+  it('shows actual delivery evidence without customer contact or document fields',async()=>{
+    await asRole('authenticated',other);
+    const health=await scalar('SELECT admin_attribution_health()') as {delivered:number;recent:{id:string}[]};
+    expect(health.delivered).toBe(1);event=health.recent[0].id;
+    for(const privateField of ['customer_email','customer_phone','customer_name','lead_id','attribution_id','document'])expect(JSON.stringify(health)).not.toContain(privateField);
+    await expect(db.query(`SELECT admin_retry_attribution('${event}')`)).rejects.toThrow('Event already delivered');
+  });
+  it('refuses replay while a worker holds the event lease',async()=>{
+    await asRole('service_role');
+    await db.query(`UPDATE takatak_attribution_outbox SET delivered_at=NULL,attempts=12,leased_until=now()+interval '1 minute',lease_id=gen_random_uuid() WHERE id='${event}'`);
+    await asRole('authenticated',other);
+    await expect(db.query(`SELECT admin_retry_attribution('${event}')`)).rejects.toThrow('Event is being delivered');
+    const health=await scalar('SELECT admin_attribution_health()');expect(health).toMatchObject({exhausted:1,leased:1,delivered:0});
+  });
+  it('releases exhausted work once, keeps its external identifier, and audits the actor',async()=>{
+    await asRole('service_role');await db.query(`UPDATE takatak_attribution_outbox SET leased_until=now()-interval '1 minute' WHERE id='${event}'`);
+    await asRole('authenticated',other);
+    expect(await scalar(`SELECT admin_retry_attribution('${event}')`)).toBe(true);
+    expect(await scalar(`SELECT admin_retry_attribution('${event}')`)).toBe(false);
+    await asRole('postgres');
+    expect(await scalar(`SELECT count(*) FROM operation_audit WHERE action='attribution_retry' AND target_id='${event}' AND actor_id='${other}'`)).toBe(1);
+    await asRole('authenticated',other);
+    const health=await scalar('SELECT admin_attribution_health()') as {pending:number;exhausted:number;recent:{id:string;attempts:number;leased:boolean|null}[]};
+    expect(health).toMatchObject({pending:1,exhausted:0});expect(health.recent[0]).toMatchObject({id:event,attempts:0,leased:null});
+  });
+  it('allows the service worker to reclaim replayed work and protects missing events',async()=>{
+    await asRole('service_role');
+    const {rows}=await db.query<{id:string;lease_id:string}>('SELECT * FROM claim_attribution_batch(5)');expect(rows).toHaveLength(1);expect(rows[0].id).toBe(event);
+    expect(await scalar(`SELECT complete_attribution('${event}','${rows[0].lease_id}',200,true)`)).toBe(true);
+    await asRole('authenticated',other);
+    await expect(db.query(`SELECT admin_retry_attribution('00000000-0000-4000-8000-000000000000')`)).rejects.toThrow('Event not found');
+  });
+});
