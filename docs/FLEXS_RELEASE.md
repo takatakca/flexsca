@@ -82,6 +82,10 @@ The new frontend requires the new backend RPCs. **Apply the backend release befo
 
 ## Remaining product work and live release gates
 
+### Customer workspace and ecosystem checkpoint
+
+The customer dashboard now uses stable 12-row server pagination, open/resolved filters, real request counts, and explicit retry after a load failure. Existing requests continue to open their detail page. Local validation passed: 55 Vitest tests, 27 browser scenarios, typecheck, lint (nine existing warnings), and production build. Browser fixtures do not prove production connectivity. See [FLEXS ecosystem integration evidence](FLEXS_ECOSYSTEM_INTEGRATION.md) for the requested Figma, TAKATAK Auth, AI, document, and merchant analytics scope. Figma has not been inspected and the referenced TAKATAK OTP API is scoped to 1LV, not FLEXS.
+
 The current repository does not provide all Bark capabilities. Service-radius/geospatial matching, independent certification of completed work, phone verification, email/SMS/push delivery, CAPTCHA-backed anonymous intake, provider verification operations, subscriptions, marketing analytics instrumentation, self-service account deletion, and enterprise support/dispute tooling require further product implementation and deployment testing. High-volume search indexing and query-plan measurements also remain deployment work. Existing provider-imported reviews remain unverified. Mailbox limits do not provide complete anonymous bot protection. Requests become attribution-verified only after confirmed-email ownership, not simply because a visitor posted a form.
 
 No production migration, function deployment, Stripe payment, Auth email, DNS change, or live TAKATAK event was performed by this release without the required access and server secrets. Neither other ChatGPT projects nor a deadline promise were used as a substitute for implementation evidence.

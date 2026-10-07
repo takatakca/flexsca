@@ -16,7 +16,7 @@ let preference={messages:true,reminders:true}, accountName="Fixture Customer", e
 let isAdmin=false, replayedEvent=false;
 const integrationEventId="abababab-abab-4bab-8bab-abababababab";
 let unlocked = false, quoteStatus = "sent";
-let searches = [], failSearch = false;
+let searches = [], failSearch = false, customerMany=false, failCustomerRequest=false;
 const errors = [];
 const page = await browser.newPage();
 page.on('pageerror', e => errors.push(e.message));
@@ -101,7 +101,17 @@ await page.route('**/rest/v1/**', async route => {
   if (path === 'admin_retry_attribution') { assert.equal(route.request().postDataJSON().p_id,integrationEventId);replayedEvent=true;body=true; }
   if (path === 'is_platform_admin') body = isAdmin;
   if (path === 'claim_customer_leads') body = 1;
-  if (path === 'leads') body = url.searchParams.has('id') ? {id:leadId,category:category.name,location_text:'Toronto',status:'new',details:'Customer request details',created_at:new Date().toISOString(),archived:false} : [{id:leadId,category:category.name,location_text:'Toronto',status:'new',created_at:new Date().toISOString(),archived:false}];
+  if (path === 'leads') {
+    const record={id:leadId,category:category.name,location_text:'Toronto',status:'new',details:'Customer request details',created_at:new Date().toISOString(),archived:false};
+    if(url.searchParams.has('id'))body=record;
+    else {
+      if(failCustomerRequest && route.request().method()==='GET' && url.searchParams.has('customer_user_id')) { failCustomerRequest=false;await route.fulfill({status:503,json:{message:'Temporary request outage'}});return; }
+      let records=customerMany ? Array.from({length:14},(_,i)=>({...record,id:i===0 ? leadId : `00000000-0000-4000-8000-${String(i).padStart(12,'0')}`,status:i===13 ? 'won' : 'new',archived:i===12,created_at:new Date(Date.now()-i*60000).toISOString()})) : [record];
+      if(url.searchParams.has('or'))records=records.filter(item=>item.archived || ['won','lost'].includes(item.status));
+      else if(url.searchParams.get('archived')==='eq.false')records=records.filter(item=>!item.archived && ['new','contacted'].includes(item.status));
+      total=records.length;const offset=Number(url.searchParams.get('offset') ?? 0),limit=Number(url.searchParams.get('limit') ?? total);body=records.slice(offset,offset+limit);
+    }
+  }
   if (path === 'customer_request_providers') body = [];
   await route.fulfill({ status:200, json:body, headers:{'access-control-allow-origin':'*', 'access-control-expose-headers':'content-range', ...(total !== undefined ? {'content-range':`0-0/${total}`} : {})} });
 });
@@ -254,7 +264,33 @@ try {
   await page.goto('http://127.0.0.1:4173/app/responses');
   await page.getByRole('heading',{name:'House Cleaning',exact:true}).waitFor();
   console.log('PASS newly unlocked conversations remain visible without a custom status');
+  customerMany=true;
   await page.goto('http://127.0.0.1:4173/my-requests');
+  await page.getByText('Page 1 of 2',{exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'View request',exact:true}).count(),12);
+  await page.getByRole('button',{name:'Next requests',exact:true}).click();
+  await page.getByText('Page 2 of 2',{exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'View request',exact:true}).count(),2);
+  await page.getByRole('group',{name:'Filter customer requests',exact:true}).getByRole('button',{name:'Open',exact:true}).click();
+  await page.getByRole('button',{name:'Next requests',exact:true}).waitFor({state:'hidden'});
+  await page.getByRole('button',{name:'View request',exact:true}).first().waitFor();
+  assert.equal(await page.getByRole('button',{name:'View request',exact:true}).count(),12);
+  await page.getByRole('group',{name:'Filter customer requests',exact:true}).getByRole('button',{name:'Resolved',exact:true}).click();
+  await page.getByText('Professional chosen',{exact:true}).waitFor();
+  await page.getByText('Closed request',{exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'View request',exact:true}).count(),2);
+  await page.setViewportSize({width:390,height:844});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),'Mobile customer workspace must not overflow');
+  await page.screenshot({path:'/tmp/flexsca-customer-mobile.png',fullPage:true});
+  await page.setViewportSize({width:1440,height:1000});
+  await page.screenshot({path:'/tmp/flexsca-customer-desktop.png',fullPage:true});
+  console.log('PASS customer workspace uses server pagination, open/resolved filters, and mobile navigation');
+  customerMany=false;failCustomerRequest=true;
+  await page.reload();
+  await page.getByRole('alert').filter({hasText:'Unable to load your requests.'}).waitFor();
+  await page.getByRole('button',{name:'Retry requests',exact:true}).click();
+  await page.getByRole('button',{name:'View request',exact:true}).waitFor();
+  console.log('PASS customer request failures offer retry without blocking service navigation');
   await page.getByRole('button',{name:'View request',exact:true}).click();
   await page.waitForURL(`**/my-requests/${leadId}`);
   await page.getByRole('heading',{name:'House Cleaning',exact:true}).waitFor();
