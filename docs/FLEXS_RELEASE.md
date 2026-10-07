@@ -14,6 +14,7 @@ FLEXS is an independent product at **flexs.ca**, designed to connect to TAKATAK 
 - Checkout redirects use configured HTTPS origins. Webhooks require a paid, matching package and an existing purchase record. Fulfillment is service-only and serialized by checkout session.
 - Public profiles respect private-location settings. Public reviews exclude reviewer emails; providers cannot mark imported reviews verified or edit merchant reputation/verification.
 - Opaque `ttclid` capture and a durable TAKATAK attribution outbox. Only requests tied to a verified email owner enqueue a lead event. Delivery uses leases, stable event IDs, and bounded exponential retries. Personal lead information is never sent to TAKATAK attribution.
+- Paginated marketplace search with server-side full-text filters, stable ordering, per-professional archive views, timezone-aware dates, retryable errors, and privacy-safe result counts.
 - Lazy-loaded routes, separated framework/backend bundles, repaired npm lockfile, and automated checks.
 
 ## Local verification
@@ -45,14 +46,14 @@ In this cloud environment, `DENO_TLS_CA_STORE=system` is needed to trust the pla
 
 ## Current validation evidence
 
-21 Vitest tests passed (20 functional/security checks plus the existing example), seven browser smoke checks passed with API fixtures, TypeScript and the production build passed, and ESLint passed with nine existing fast-refresh export warnings. The largest emitted JavaScript chunk is approximately 204 KB instead of the previous 1 MB bundle. All three Edge Functions passed Deno typechecks; the Stripe SDK signature runtime test passed with local fixtures. A read-only request to the hosted Supabase category API returned HTTP 200. GitHub Actions itself has not been observed running in this task.
+26 Vitest tests passed (25 functional/security checks plus the existing example), nine browser smoke checks passed with API fixtures, TypeScript and the production build passed, and ESLint passed with nine existing fast-refresh export warnings. The largest emitted JavaScript chunk is approximately 204 KB instead of the previous 1 MB bundle. All three Edge Functions passed Deno typechecks; the Stripe SDK signature runtime test passed with local fixtures. A read-only request to the hosted Supabase category API returned HTTP 200. GitHub Actions itself has not been observed running in this task.
 
 ## Promotion order
 
 The new frontend requires the new backend RPCs. **Apply the backend release before promoting the frontend.** Keep this branch separate from `main` until deployment is verified; the README says main commits synchronize to Lovable.
 
 1. Provide Supabase management access securely in environment settings. `python scripts/release-preflight.py` verifies access and lists missing migration history without mutation. Inspect any schema drift and capture a database backup before applying migrations.
-2. Apply the four `20261007*` migrations in filename order through the existing Supabase migration/deployment workflow. Do not replay historical category seeds on a live database merely to reconcile history. The automated database suite proves the complete migration sequence on a fresh local schema; the live project's history was not verified without management access.
+2. Apply the five `20261007*` migrations in filename order through the existing Supabase migration/deployment workflow. Do not replay historical category seeds on a live database merely to reconcile history. The automated database suite proves the complete migration sequence on a fresh local schema; the live project's history was not verified without management access.
 3. Deploy `create-checkout-session`, `stripe-webhook`, and `takatak-attribution-worker` using the authenticated Supabase deployment workflow for project `vcaphsvudlseemkalawz`. The config disables platform JWT verification because checkout validates user claims, the Stripe webhook verifies its signature, and the worker verifies its scheduler token internally.
 4. Set these **server-side Supabase function secrets** securely: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ADS_FLEXS_SERVICE_TOKEN` (the same value as TAKATAK V1, at least 32 characters), and `FLEXS_WORKER_TOKEN` (a separate random token of at least 32 characters). Supabase supplies its URL, anon key, and service-role key. Never expose these secrets in Vite variables or commit them.
 5. Configure `TAKATAK_BASE_URL` as the confirmed HTTPS origin (default `https://takatak.ca`). Set `FLEXS_ALLOWED_ORIGINS` to the deployed frontend HTTPS origins, comma separated (default `https://flexs.ca,https://www.flexs.ca`). Add any genuine staging origin explicitly.
@@ -65,6 +66,6 @@ The new frontend requires the new backend RPCs. **Apply the backend release befo
 
 ## Remaining product work and live release gates
 
-The current repository does not provide all Bark capabilities. Service-radius/geospatial matching, independently verified customer reviews, phone verification, email/SMS/push delivery, full-text/paginated marketplace search, CAPTCHA-backed anonymous intake, provider verification operations, subscriptions, analytics instrumentation, and enterprise support/dispute tooling require further product implementation and deployment testing. Existing provider-imported reviews remain unverified. Mailbox limits do not provide complete anonymous bot protection. Requests become attribution-verified only after confirmed-email ownership, not simply because a visitor posted a form.
+The current repository does not provide all Bark capabilities. Service-radius/geospatial matching, independently verified customer reviews, phone verification, email/SMS/push delivery, CAPTCHA-backed anonymous intake, provider verification operations, subscriptions, analytics instrumentation, and enterprise support/dispute tooling require further product implementation and deployment testing. High-volume search indexing and query-plan measurements also remain deployment work. Existing provider-imported reviews remain unverified. Mailbox limits do not provide complete anonymous bot protection. Requests become attribution-verified only after confirmed-email ownership, not simply because a visitor posted a form.
 
 No production migration, function deployment, Stripe payment, Auth email, DNS change, or live TAKATAK event was performed by this release without the required access and server secrets. Neither other ChatGPT projects nor a deadline promise were used as a substitute for implementation evidence.

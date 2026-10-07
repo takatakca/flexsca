@@ -191,3 +191,55 @@ describe('marketplace database release integrity', () => {
     expect(rows[0]).not.toHaveProperty('reviewer_email');
   });
 });
+
+
+describe('paginated marketplace search', () => {
+  let searchLead: string;
+  let secondLead: string;
+  beforeAll(async () => {
+    await asRole('service_role');
+    const { rows } = await db.query<{id:string}>(`INSERT INTO leads(category,location_text,city,customer_name,customer_email,details,created_at,is_urgent)
+      VALUES ('Search Fixture','Secret street','Ottawa','Privatecustomer','secretsearch@example.test','Secretphrase hidden description',now(),true),
+      ('Search Fixture','Another secret street','Ottawa','Anotherprivate','othersearch@example.test','Other confidential description',now(),false)
+      RETURNING id`);
+    [searchLead,secondLead]=rows.map(r=>r.id);
+  });
+  it('requires authenticated access and bounds page sizes', async () => {
+    await asRole('anon');
+    await expect(db.query('SELECT search_marketplace_leads()')).rejects.toThrow();
+    await asRole('authenticated',pro);
+    await expect(db.query(`SELECT search_marketplace_leads('{}',0,51)`)).rejects.toThrow('Invalid search parameters');
+    await expect(db.query(`SELECT search_marketplace_leads('{}',-1,20)`)).rejects.toThrow('Invalid search parameters');
+  });
+  it('returns stable nonoverlapping pages and a complete result count', async () => {
+    await asRole('authenticated',pro);
+    const first=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"]}',0,1)`) as {total:number;leads:{id:string}[];services:string[]};
+    const second=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"]}',1,1)`) as typeof first;
+    expect(first.total).toBe(2); expect(first.leads).toHaveLength(1); expect(second.leads).toHaveLength(1);
+    expect(first.leads[0].id).not.toBe(second.leads[0].id);
+    expect(first.services).toContain('Search Fixture');
+  });
+  it('does not disclose private details through search results or counts', async () => {
+    await asRole('authenticated',pro);
+    for(const keyword of ['Secretphrase','Privatecustomer','secretsearch']) {
+      const {rows}=await db.query<{result:{total:number}}>('SELECT search_marketplace_leads($1::jsonb) AS result',[JSON.stringify({keyword})]);
+      expect(rows[0].result.total).toBe(0);
+    }
+  });
+  it('applies urgent and yesterday filters before pagination', async () => {
+    await asRole('authenticated',pro);
+    const urgent=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"],"urgentOnly":true}')`) as {total:number;leads:{id:string}[]};
+    expect(urgent.total).toBe(1); expect(urgent.leads[0].id).toBe(searchLead);
+    const yesterday=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"],"timeRange":"yesterday"}')`) as {total:number};
+    expect(yesterday.total).toBe(0);
+  });
+  it('isolates archive filters to the current professional', async () => {
+    await asRole('authenticated',pro);
+    await db.exec(`INSERT INTO lead_agent_state(lead_id,agent_id) VALUES('${secondLead}','${pro}'); UPDATE lead_agent_state SET is_archived=true WHERE lead_id='${secondLead}'`);
+    const archived=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"],"archived":true}')`) as {total:number;leads:{id:string}[]};
+    expect(archived.total).toBe(1); expect(archived.leads[0].id).toBe(secondLead);
+    await asRole('authenticated',other);
+    const otherArchive=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"],"archived":true}')`) as {total:number};
+    expect(otherArchive.total).toBe(0);
+  });
+});

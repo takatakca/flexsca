@@ -11,6 +11,7 @@ const userId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const category = { id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', name: 'House Cleaning', slug: 'house-cleaning', icon: '🧹', parent_slug: null, is_active: true, base_credit_cost: 6, questions: [{ id: 'rooms', label: 'Which rooms need cleaning?', type: 'checkbox', options: ['Kitchen','Bathroom'], required: true }] };
 let submitted, sentQuote;
 let unlocked = false, quoteStatus = "sent";
+let searches = [], failSearch = false;
 const errors = [];
 const page = await browser.newPage();
 page.on('pageerror', e => errors.push(e.message));
@@ -29,6 +30,12 @@ await page.route('**/rest/v1/**', async route => {
   if (path === 'lead_agent_state') {
     const state = {lead_id:leadId,agent_id:userId,contacted:unlocked,is_archived:false,is_unread:false,first_to_respond:true,custom_status_id:null};
     body = route.request().headers().accept?.includes('object') ? state : [state]; total = 2;
+  }
+  if (path === 'search_marketplace_leads') {
+    const query=route.request().postDataJSON(); searches.push(query);
+    if(failSearch) { failSearch=false; await route.fulfill({status:503,json:{message:'Temporary search outage'}}); return; }
+    const filtered=Boolean(query.p_filters.keyword) || query.p_filters.archived;
+    body={leads:[{id:leadId,category:category.name,location_text:'Toronto',city:'Toronto',postal_code:null,customer_name:'C***',customer_phone:null,details:null,status:'new',created_at:new Date().toISOString(),last_activity_at:new Date().toISOString(),credits_cost:6,is_urgent:false,has_additional_details:true,answers:{},is_unread:true,is_archived:query.p_filters.archived,contacted:false,first_to_respond:false,custom_status_id:null}],total:filtered ? 1 : 21,services:[category.name],credits:[6]};
   }
   if (path === 'contact_lead') { unlocked=true; body={already_contacted:false,credits_spent:6,customer_name:'Customer',customer_email:'customer@example.test',customer_phone:null}; }
   if (path === 'send_quote') { sentQuote=route.request().postDataJSON(); body='eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'; }
@@ -80,6 +87,31 @@ try {
   console.log('PASS service-page intake collects required customer details, including categories without questions');
   const claims = Buffer.from(JSON.stringify({sub:userId,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url');
   await page.evaluate(({userId,claims})=>localStorage.setItem('sb-vcaphsvudlseemkalawz-auth-token',JSON.stringify({access_token:`header.${claims}.signature`,refresh_token:'ui-fixture',token_type:'bearer',expires_at:Math.floor(Date.now()/1000)+3600,expires_in:3600,user:{id:userId,email:'customer@example.test',app_metadata:{},user_metadata:{},aud:'authenticated',created_at:new Date().toISOString()}})),{userId,claims});
+  await page.goto('http://127.0.0.1:4173/app/leads');
+  await page.getByText('21 Matching leads',{exact:true}).waitFor();
+  const nextSearch=page.waitForResponse(r=>r.url().endsWith('/rpc/search_marketplace_leads') && r.request().postDataJSON().p_page===1);
+  await page.getByRole('button',{name:'Next',exact:true}).click();
+  await nextSearch;
+  await page.getByText('Page 2 of 2',{exact:true}).waitFor();
+  assert.equal(searches.at(-1).p_page,1);
+  await page.getByRole('button',{name:'Filter requests',exact:true}).click();
+  await page.getByRole('textbox',{name:'Search keywords'}).fill('Toronto');
+  await page.getByRole('button',{name:'Apply filter',exact:true}).click();
+  await page.getByText('1 Matching lead',{exact:true}).waitFor();
+  assert.equal(searches.at(-1).p_page,0);
+  assert.equal(searches.at(-1).p_filters.keyword,'Toronto');
+  const archiveSearch=page.waitForResponse(r=>r.url().endsWith('/rpc/search_marketplace_leads') && r.request().postDataJSON().p_filters.archived===true);
+  await page.getByRole('button',{name:'Archived',exact:true}).click();
+  await archiveSearch;
+  await page.getByText('Your archived requests',{exact:true}).waitFor();
+  assert.equal(searches.at(-1).p_filters.archived,true);
+  console.log('PASS marketplace pagination, server filters, and archive views');
+  failSearch=true;
+  await page.reload();
+  await page.getByRole('alert').filter({hasText:'Unable to load requests'}).waitFor();
+  await page.getByRole('button',{name:'Try again',exact:true}).click();
+  await page.getByText('21 Matching leads',{exact:true}).waitFor();
+  console.log('PASS marketplace errors remain visible and retry recovers');
   await page.goto('http://127.0.0.1:4173/app/dashboard');
   await page.getByRole('heading',{name:'Your next opportunity starts here.'}).waitFor();
   await page.getByText('20',{exact:true}).waitFor();
