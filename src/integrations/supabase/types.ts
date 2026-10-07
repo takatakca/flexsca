@@ -14,6 +14,19 @@ export type Database = {
   }
   public: {
     Tables: {
+      support_tickets: {
+        Row: { id:string; user_id:string; subject:string; category:string; status:string; request_id:string; created_at:string; updated_at:string }
+        Insert: { user_id:string; subject:string; category:string; request_id:string }
+        Update: { status?:string }
+        Relationships: []
+      }
+      support_messages: {
+        Row: { id:string; ticket_id:string; author_id:string; is_staff:boolean; message:string; request_id:string; created_at:string }
+        Insert: { ticket_id:string; author_id:string; message:string; request_id:string }
+        Update: Record<string,never>
+        Relationships: []
+      }
+
       notification_preferences: {
         Row: { user_id: string; messages: boolean; reminders: boolean }
         Insert: { user_id: string; messages?: boolean; reminders?: boolean }
@@ -21,7 +34,7 @@ export type Database = {
         Relationships: []
       }
       notifications: {
-        Row: { id: string; user_id: string; lead_id: string | null; title: string; read_at: string | null; created_at: string }
+        Row: { id: string; user_id: string; lead_id: string | null; support_ticket_id: string | null; title: string; read_at: string | null; created_at: string }
         Insert: { user_id: string; lead_id?: string | null; title: string }
         Update: { read_at?: string | null }
         Relationships: []
@@ -1455,6 +1468,10 @@ export type Database = {
       }
     }
     Functions: {
+      create_support_ticket: { Args: { p_subject:string; p_category:string; p_message:string; p_request_id:string }; Returns:string }
+      reply_support_ticket: { Args: { p_ticket_id:string; p_message:string; p_request_id:string }; Returns:string }
+      set_support_ticket_status: { Args: { p_ticket_id:string; p_status:string }; Returns:undefined }
+
       set_notification_preferences: { Args: { p_messages: boolean; p_reminders: boolean }; Returns: undefined }
       provider_sales_summary: { Args: { p_since?: string | null }; Returns: Json }
       create_follow_up: { Args: { p_lead_id: string; p_remind_at: string; p_note?: string | null; p_request_id?: string }; Returns: string }

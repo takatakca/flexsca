@@ -35,6 +35,7 @@ const JobSuccess = lazy(() => import("@/pages/customer/JobSuccess"));
 const ServiceCategoryPage = lazy(() => import("@/pages/ServiceCategoryPage"));
 const AboutPage = lazy(() => import("@/pages/AboutPage"));
 const AffiliatePage = lazy(() => import("@/pages/AffiliatePage"));
+const Support = lazy(() => import("@/pages/Support"));
 const HelpCenter = lazy(() => import("@/pages/HelpCenter"));
 const CookiesPage = lazy(() => import("@/pages/CookiesPage"));
 const Credits = lazy(() => import("@/pages/app/Credits"));
@@ -83,6 +84,8 @@ const App = () => (
             <Route path="/about" element={<AboutPage />} />
             <Route path="/affiliates" element={<AffiliatePage />} />
             <Route path="/cookies" element={<CookiesPage />} />
+            <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
+            <Route path="/support/:id" element={<ProtectedRoute><Support /></ProtectedRoute>} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/help/:slug" element={<HelpCenter />} />
 

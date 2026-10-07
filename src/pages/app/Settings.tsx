@@ -173,12 +173,12 @@ export default function Settings() {
       <SettingsRow
         title="Support"
         description="Contact us if you need anything"
-        onClick={() => navigate("/help")}
+        onClick={() => navigate("/support")}
       />
 
       <Separator className="mx-4" />
 
-      <div className="px-4 py-4"><p className="text-sm text-muted-foreground">For account deletion or a data request, contact support. Account deletion is handled separately from signing out.</p></div>
+      <div className="px-4 py-4"><p className="text-sm text-muted-foreground">For account deletion or a data request, create a private support ticket. The team will review it before any account or data changes.</p></div>
 
       {/* ── Logout ── */}
       <div className="bg-muted py-2" />

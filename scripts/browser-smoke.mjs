@@ -10,8 +10,10 @@ const leadId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const userId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const category = { id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', name: 'House Cleaning', slug: 'house-cleaning', icon: '🧹', parent_slug: null, is_active: true, base_credit_cost: 6, questions: [{ id: 'rooms', label: 'Which rooms need cleaning?', type: 'checkbox', options: ['Kitchen','Bathroom'], required: true }] };
 let submitted, sentQuote, publishedReview, recoveryRequest, updatedPassword;
-const followUps=[], notices=[];
+const followUps=[], notices=[], supportTickets=[], supportMessages=[];
+const supportId="12121212-1212-4212-8212-121212121212";
 let preference={messages:true,reminders:true}, accountName="Fixture Customer", emailChange, checkoutRequest;
+let isAdmin=false;
 let unlocked = false, quoteStatus = "sent";
 let searches = [], failSearch = false;
 const errors = [];
@@ -85,7 +87,16 @@ await page.route('**/rest/v1/**', async route => {
     else body={display_name:accountName,onboarding_completed:true};
   }
   if (path === 'credit_transactions') body=[{id:'77777777-7777-4777-8777-777777777777',delta:-6,reason:'spend_lead',lead_id:leadId,created_at:new Date().toISOString()}];
-  if (path === 'is_platform_admin') body = false;
+  if (path === 'create_support_ticket') {
+    const input=route.request().postDataJSON();
+    supportTickets.push({id:supportId,subject:input.p_subject,category:input.p_category,status:'open',created_at:new Date().toISOString(),updated_at:new Date().toISOString()});
+    supportMessages.push({id:crypto.randomUUID(),message:input.p_message,is_staff:false,created_at:new Date().toISOString()});body=supportId;
+  }
+  if (path === 'support_tickets') { body=route.request().headers().accept?.includes('object') ? supportTickets[0] : supportTickets;total=supportTickets.length; }
+  if (path === 'support_messages') { body=[...supportMessages].reverse();total=supportMessages.length; }
+  if (path === 'reply_support_ticket') { const input=route.request().postDataJSON();supportMessages.push({id:crypto.randomUUID(),message:input.p_message,is_staff:isAdmin,created_at:new Date().toISOString()});body=supportMessages.at(-1).id; }
+  if (path === 'set_support_ticket_status') { supportTickets[0].status=route.request().postDataJSON().p_status;body=null; }
+  if (path === 'is_platform_admin') body = isAdmin;
   if (path === 'claim_customer_leads') body = 1;
   if (path === 'leads') body = url.searchParams.has('id') ? {id:leadId,category:category.name,location_text:'Toronto',status:'new',details:'Customer request details',created_at:new Date().toISOString(),archived:false} : [{id:leadId,category:category.name,location_text:'Toronto',status:'new',created_at:new Date().toISOString(),archived:false}];
   if (path === 'customer_request_providers') body = [];
@@ -231,6 +242,43 @@ try {
   await page.getByText('4 / 5 · Verified FLEXS customer',{exact:true}).waitFor();
   console.log('PASS accepted quote enables a verified customer review and refreshes published feedback');
   console.log('PASS customer dashboard opens the existing request instead of creating a new one');
+  await page.goto('http://127.0.0.1:4173/support');
+  await page.getByLabel('Subject',{exact:true}).fill('Credit purchase question');
+  await page.getByLabel('Topic',{exact:true}).selectOption('credits');
+  await page.getByLabel('Describe your issue',{exact:true}).fill('Please help me understand my credit balance.');
+  await page.getByRole('button',{name:'Submit support ticket',exact:true}).click();
+  await page.getByRole('heading',{name:'Credit purchase question',exact:true}).waitFor();
+  await page.getByText('Please help me understand my credit balance.',{exact:true}).waitFor();
+  await page.getByLabel('Your reply',{exact:true}).fill('Here is another detail about my credit purchase.');
+  await page.getByRole('button',{name:'Send support reply',exact:true}).click();
+  await page.getByText('Here is another detail about my credit purchase.',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'Close ticket',exact:true}).click();
+  await page.getByRole('button',{name:'Reopen ticket',exact:true}).waitFor();
+  assert.equal(await page.getByLabel('Your reply',{exact:true}).count(),0);
+  await page.getByRole('button',{name:'Reopen ticket',exact:true}).click();
+  await page.getByLabel('Your reply',{exact:true}).waitFor();
+  await page.getByRole('link',{name:'My support tickets',exact:true}).click();
+  await page.getByRole('link',{name:/Credit purchase question/}).waitFor();
+  assert.equal(supportTickets.length,1);assert.equal(supportMessages.length,2);
+  console.log('PASS private support ticket creation, replies, close/reopen, and account ticket history');
+  await page.goto('http://127.0.0.1:4173/app/admin');
+  await page.getByRole('alert').filter({hasText:'Administrator access required.'}).waitFor();
+  assert.equal(await page.getByRole('heading',{name:'Support requests',exact:true}).count(),0);
+  isAdmin=true;
+  await page.reload();
+  await page.getByRole('heading',{name:'Support requests',exact:true}).waitFor();
+  await page.getByRole('link',{name:/Credit purchase question/}).click();
+  await page.getByLabel('Your reply',{exact:true}).fill('Your credit purchase is recorded in your account history.');
+  await page.getByRole('button',{name:'Send support reply',exact:true}).click();
+  await page.getByText('FLEXS support',{exact:true}).waitFor();
+  await page.getByText('Your credit purchase is recorded in your account history.',{exact:true}).waitFor();
+  assert.equal(supportMessages.at(-1).is_staff,true);
+  isAdmin=false;
+  console.log('PASS operations rejects ordinary accounts and authorized support replies display a staff label');
+  await page.goto('http://127.0.0.1:4173/help/contact-support');
+  await page.getByRole('link',{name:'Open support',exact:true}).waitFor();
+  assert.equal(await page.locator('a[href="#"]').count(),0);
+  console.log('PASS help centre offers the working private support route without fabricated contact links');
   await page.setViewportSize({width:390,height:844});
   await page.goto('http://127.0.0.1:4173/app/dashboard');
   await page.getByRole('heading',{name:'Your next opportunity starts here.'}).waitFor();

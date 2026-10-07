@@ -413,3 +413,54 @@ describe('saved in-app notification preferences', () => {
     expect(await scalar('SELECT collect_due_follow_ups()')).toBe(0);
   });
 });
+
+describe('private support tickets', () => {
+  let ticket: string;
+  const key='12121212-1212-4212-8212-121212121212';
+  it('validates requests and creates one private conversation per submission', async () => {
+    await asRole('anon');
+    await expect(db.query(`SELECT create_support_ticket('Help','general','A private support request','${key}')`)).rejects.toThrow();
+    await asRole('authenticated',buyer);
+    await expect(db.query(`SELECT create_support_ticket('x','general','A private support request','${key}')`)).rejects.toThrow('Invalid support request');
+    ticket=String(await scalar(`SELECT create_support_ticket('Account help','account','A private support request','${key}')`));
+    expect(await scalar(`SELECT create_support_ticket('Account help','account','A private support request','${key}')`)).toBe(ticket);
+    expect(await scalar('SELECT count(*) FROM support_tickets')).toBe(1);
+    expect(await scalar('SELECT count(*) FROM support_messages')).toBe(1);
+    await expect(db.query(`SELECT create_support_ticket('Account help','account','Changed private support request','${key}')`)).rejects.toThrow('Support request already used');
+  });
+  it('prevents unrelated users reading, replying, changing status, or forging staff messages', async () => {
+    await asRole('authenticated',pro);
+    expect(await scalar('SELECT count(*) FROM support_tickets')).toBe(0);
+    expect(await scalar('SELECT count(*) FROM support_messages')).toBe(0);
+    await expect(db.query(`SELECT reply_support_ticket('${ticket}','An unauthorized reply',gen_random_uuid())`)).rejects.toThrow('Ticket not found');
+    await expect(db.query(`SELECT set_support_ticket_status('${ticket}','closed')`)).rejects.toThrow('Ticket not found');
+    await expect(db.exec(`INSERT INTO support_messages(ticket_id,author_id,is_staff,message,request_id) VALUES('${ticket}','${pro}',true,'Forged staff message',gen_random_uuid())`)).rejects.toThrow();
+  });
+  it('deduplicates staff replies, audits them, and privately links a notice to the owner ticket', async () => {
+    await asRole('authenticated',other); // Membership was bootstrapped by the admin test.
+    expect(await scalar('SELECT count(*) FROM support_tickets')).toBe(1);
+    const id=String(await scalar(`SELECT reply_support_ticket('${ticket}','A helpful support reply','34343434-3434-4343-8343-343434343434')`));
+    expect(await scalar(`SELECT reply_support_ticket('${ticket}','A helpful support reply','34343434-3434-4343-8343-343434343434')`)).toBe(id);
+    expect(await scalar(`SELECT is_staff FROM support_messages WHERE id='${id}'`)).toBe(true);
+    await asRole('service_role');
+    expect(await scalar(`SELECT count(*) FROM operation_audit WHERE action='support_reply' AND target_id='${ticket}'`)).toBe(1);
+    await asRole('authenticated',buyer);
+    expect(await scalar(`SELECT count(*) FROM notifications WHERE support_ticket_id='${ticket}'`)).toBe(1);
+  });
+  it('supports owner replies and close/reopen without exposing other conversations', async () => {
+    await asRole('authenticated',buyer);
+    const id=String(await scalar(`SELECT reply_support_ticket('${ticket}','Thank you for the help',gen_random_uuid())`));
+    expect(await scalar(`SELECT is_staff FROM support_messages WHERE id='${id}'`)).toBe(false);
+    await db.query(`SELECT set_support_ticket_status('${ticket}','closed')`);
+    await expect(db.query(`SELECT reply_support_ticket('${ticket}','A reply to a closed ticket',gen_random_uuid())`)).rejects.toThrow('Ticket is closed');
+    await db.query(`SELECT set_support_ticket_status('${ticket}','open')`);
+    expect(await scalar(`SELECT status FROM support_tickets WHERE id='${ticket}'`)).toBe('open');
+    await asRole('authenticated',pro);
+    expect(await scalar(`SELECT count(*) FROM notifications WHERE support_ticket_id='${ticket}'`)).toBe(0);
+  });
+  it('caps repeated support submissions per account', async () => {
+    await asRole('authenticated',buyer);
+    for(let n=0;n<4;n++)await db.query(`SELECT create_support_ticket('Another issue','general','Another private support request',gen_random_uuid())`);
+    await expect(db.query(`SELECT create_support_ticket('Another issue','general','Another private support request',gen_random_uuid())`)).rejects.toThrow('Too many support requests');
+  });
+});
