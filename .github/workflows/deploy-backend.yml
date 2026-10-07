@@ -1,5 +1,12 @@
 name: Deploy FLEXS backend
 on:
+  push:
+    branches: [codex/flexs-marketplace-release]
+    paths:
+      - 'supabase/**'
+      - 'scripts/backend-readiness.py'
+      - 'scripts/deploy-backend.sh'
+      - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 concurrency:
   group: flexs-production-backend

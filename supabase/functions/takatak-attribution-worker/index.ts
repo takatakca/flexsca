@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.95.3';
-import { attributionEndpoint, attributionPayload, sameToken, type AttributionJob } from '../_shared/attribution.ts';
+import { acceptedAttributionResponse, attributionCompletionOutcome, attributionEndpoint, attributionPayload, sameToken, type AttributionJob } from '../_shared/attribution.ts';
 
 Deno.serve(async (req: Request) => {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 });
@@ -13,10 +13,14 @@ Deno.serve(async (req: Request) => {
   if (token.length < 32) return new Response('Attribution not configured', { status: 503 });
   try {
     const endpoint = attributionEndpoint(Deno.env.get('TAKATAK_BASE_URL') ?? 'https://takatak.ca');
-    const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
+      global: { fetch: (input, init) => fetch(input, { ...init,
+        signal: init?.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(10_000)]) : AbortSignal.timeout(10_000),
+      }) },
+    });
     const { data, error } = await db.rpc('claim_attribution_batch', { p_limit: 5 });
     if (error) throw error;
-    let delivered = 0, failed = 0;
+    let delivered = 0, failed = 0, stale = 0;
     for (const job of (data ?? []) as AttributionJob[]) {
       let status = 0, success = false;
       try {
@@ -26,15 +30,16 @@ Deno.serve(async (req: Request) => {
         });
         status = response.status;
         // HTTP 200 alone is insufficient: the documented contract returns ok.
-        success = response.ok && (await response.json()).ok === true;
+        success = await acceptedAttributionResponse(response);
       } catch { /* Persist retry state; never log tokens or remote bodies. */ }
-      const { error: completionError } = await db.rpc('complete_attribution', {
+      const { data: persisted, error: completionError } = await db.rpc('complete_attribution', {
         p_id: job.id, p_lease_id: job.lease_id, p_status: status, p_success: success,
       });
       if (completionError) throw completionError;
-      if (success) delivered++; else failed++;
+      const outcome = attributionCompletionOutcome(persisted === true, success);
+      if (outcome === 'stale') stale++; else if (outcome === 'delivered') delivered++; else failed++;
     }
-    return Response.json({ delivered, failed });
+    return Response.json({ delivered, failed, stale });
   } catch {
     return Response.json({ error: 'Attribution batch failed' }, { status: 500 });
   }
