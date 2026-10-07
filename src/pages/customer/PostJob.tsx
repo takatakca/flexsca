@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Seo } from "@/seo/Seo";
 
 interface Category {
   id: string;
@@ -35,6 +36,11 @@ export default function PostJob() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="What do you need help with? | FLEX'S"
+        description="Tell us what you need and we'll connect you with top professionals"
+        path="/post-job"
+      />
       {/* Header */}
       <div className="sticky top-0 z-10 bg-primary text-primary-foreground px-4 py-4 pb-6">
         <button onClick={() => navigate("/")} className="mb-4">

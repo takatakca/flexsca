@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Seo } from "@/seo/Seo";
 
 interface ProfileData {
   company_name: string | null;
@@ -97,6 +98,7 @@ export default function PublicProfile() {
   if (notFound || !profile) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
+        <Seo title="Profile not found | FLEX'S" noindex />
         <div className="text-center">
           <h1 className="text-xl font-semibold text-foreground">Profile not found</h1>
           <p className="text-sm text-muted-foreground mt-2">This professional hasn't set up their profile yet.</p>
@@ -113,6 +115,11 @@ export default function PublicProfile() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
+      <Seo
+        title={`${profile.company_name || profile.personal_name || "Professional"} | FLEX'S`}
+        description={profile.company_description?.trim().slice(0, 160) || undefined}
+        path={`/profile/${userId}`}
+      />
       {/* Header bar */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="text-lg font-bold text-foreground">FLEX'S</h1>

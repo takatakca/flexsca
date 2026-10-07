@@ -1,11 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Seo } from "@/seo/Seo";
+import { ManageCookiesLink } from "@/consent/ManageCookiesLink";
 
 export default function CookiesPage() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Cookies | FLEX'S"
+        description="This cookie policy explains how and why FLEX'S uses technology to collect information about the use of our website."
+        path="/cookies"
+      />
       {/* Header */}
       <header className="border-b border-border sticky top-0 z-50 bg-background">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -189,6 +196,7 @@ export default function CookiesPage() {
           </div>
           <div className="border-t border-border mt-8 pt-6 text-xs text-muted-foreground">
             <p>© 2025 FLEX'S Global Limited. <button onClick={() => navigate("/cookies")} className="hover:underline">Cookie policy</button> / Privacy policy</p>
+            <ManageCookiesLink className="mt-2 hover:underline" />
           </div>
         </div>
       </footer>

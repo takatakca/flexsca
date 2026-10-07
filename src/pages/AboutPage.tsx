@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Seo } from "@/seo/Seo";
+import { ManageCookiesLink } from "@/consent/ManageCookiesLink";
 import {
   Users,
   Puzzle,
@@ -120,6 +122,7 @@ const faqs = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white">
+      <Seo title="A platform for growth | FLEX'S" description="Connecting people with the right professionals" path="/about" />
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -394,6 +397,7 @@ export default function AboutPage() {
       <footer className="bg-gray-900 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
           <p>© {new Date().getFullYear()} FLEX'S. All rights reserved.</p>
+          <ManageCookiesLink className="mt-2 hover:underline" />
         </div>
       </footer>
     </div>

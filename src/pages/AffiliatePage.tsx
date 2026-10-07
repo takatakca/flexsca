@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronRight, User, Menu, DollarSign, Users, TrendingUp, Clock, Award, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Seo } from "@/seo/Seo";
+import { ManageCookiesLink } from "@/consent/ManageCookiesLink";
 
 const faqs = [
   { q: "Who is FLEX'S?", a: "FLEX'S is an online platform that connects customers who are looking for a wide variety of services with local professionals and businesses that can provide them — from cleaners to financial advisors." },
@@ -19,6 +21,11 @@ export default function AffiliatePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="FLEX'S Affiliate Programme"
+        description="Start earning by referring people who need service providers to do their everyday jobs"
+        path="/affiliates"
+      />
       {/* Header */}
       <header className="bg-background border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -216,6 +223,7 @@ export default function AffiliatePage() {
           </div>
           <div className="border-t border-background/20 pt-8 text-center text-sm opacity-50">
             © {new Date().getFullYear()} FLEX'S. All rights reserved.
+            <ManageCookiesLink className="ml-4 hover:underline" />
           </div>
         </div>
       </footer>

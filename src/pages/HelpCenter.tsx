@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { Search, ChevronDown, ChevronRight, ThumbsUp, ThumbsDown, Mail, Phone, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Seo } from "@/seo/Seo";
+import { ManageCookiesLink } from "@/consent/ManageCookiesLink";
 
 const sidebarArticles = [
   { title: "What is FLEX'S Verified?", slug: "verified" },
@@ -306,13 +308,7 @@ function ContactSupportContent() {
           <p className="text-sm text-muted-foreground">Processed within 48 hours</p>
         </div>
       </div>
-      <div className="flex items-start gap-4 py-4 border-b border-border">
-        <Phone className="h-8 w-8 text-primary flex-shrink-0 mt-1" />
-        <div>
-          <a href="tel:+15551234567" className="text-primary font-semibold hover:underline">1-555-123-4567</a>
-          <p className="text-sm text-muted-foreground">24 hrs (Mon-Fri) / 8am-8pm (Weekends)</p>
-        </div>
-      </div>
+      {/* Phone line hidden: 1-555-123-4567 was a placeholder. TODO(owner): add the real support phone and hours. */}
 
       <p className="text-xs text-muted-foreground">Updated 3 months ago</p>
 
@@ -366,6 +362,11 @@ function HelpLanding({ searchQuery, setSearchQuery }: { searchQuery: string; set
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title="Help Center | FLEX'S"
+        description="How FLEX'S works for professionals. Using FLEX'S and getting quotes."
+        path="/help"
+      />
       {/* Header */}
       <header className="bg-background border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -466,6 +467,7 @@ function HelpLanding({ searchQuery, setSearchQuery }: { searchQuery: string; set
           <Link to="/" className="hover:text-foreground">Back to FLEX'S</Link>
           <a href="#" className="hover:text-foreground">Terms & Conditions</a>
           <a href="#" className="hover:text-foreground">Privacy policy</a>
+          <ManageCookiesLink className="hover:text-foreground" />
         </div>
       </footer>
     </div>
@@ -488,6 +490,11 @@ export default function HelpCenter() {
 
   return (
     <div className="min-h-screen bg-background">
+      {article ? (
+        <Seo title={`${article.title} | FLEX'S Help Center`} path={`/help/${activeSlug}`} />
+      ) : (
+        <Seo title="Article not found | FLEX'S Help Center" noindex />
+      )}
       {/* Header */}
       <header className="bg-background border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -639,6 +646,7 @@ export default function HelpCenter() {
           <a href="#" className="hover:text-foreground">Terms & Conditions</a>
           <span>·</span>
           <a href="#" className="hover:text-foreground">Privacy policy</a>
+          <ManageCookiesLink className="hover:text-foreground" />
         </div>
       </footer>
     </div>

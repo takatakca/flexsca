@@ -4,6 +4,9 @@ import { Search, MapPin, ChevronRight, Star, Menu, User, X, CheckCircle, Message
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { Seo } from "@/seo/Seo";
+import { ManageCookiesLink } from "@/consent/ManageCookiesLink";
+import { SITE } from "@/site.config";
 
 interface Category {
   id: string;
@@ -24,12 +27,6 @@ const regionsList: Record<string, string[]> = {
   Alberta: ["Calgary", "Edmonton", "Red Deer", "Lethbridge", "St. Albert", "Medicine Hat", "Grande Prairie", "Airdrie"],
   Atlantic: ["Halifax", "Moncton", "Saint John", "Fredericton", "Charlottetown", "St. John's", "Sydney", "Dartmouth"],
 };
-
-const reviews = [
-  { rating: 5, text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend FLEX'S!", author: "Sarah M." },
-  { rating: 5, text: "Finding a quality professional has never been easier. The platform made the whole process smooth and stress-free.", author: "Michael T." },
-  { rating: 4, text: "Great experience overall. Got connected with multiple professionals quickly and found the perfect match for my project.", author: "Jennifer L." },
-];
 
 const relatedServices = [
   { title: "Web Design", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop" },
@@ -100,6 +97,7 @@ export default function Index() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo title={SITE.defaultTitle} description={SITE.defaultDescription} path="/" />
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">
@@ -252,25 +250,7 @@ export default function Index() {
         <Button onClick={() => navigate("/post-job")} className="rounded-full px-8">Get quotes from professionals near you</Button>
       </section>
 
-      {/* Reviews */}
-      <section className="bg-secondary">
-        <div className="max-w-7xl mx-auto px-4 py-12 sm:py-16">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Reviews</h2>
-          <div className="flex items-center gap-2 mb-6">
-            <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
-            <span className="text-sm text-muted-foreground">4.89/560</span>
-          </div>
-          <div className="grid sm:grid-cols-3 gap-6">
-            {reviews.map((r, i) => (
-              <div key={i} className="bg-card border border-border rounded-xl p-6">
-                <div className="flex gap-0.5 mb-3">{[...Array(r.rating)].map((_, j) => <Star key={j} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                <p className="text-sm text-foreground mb-3">"{r.text}"</p>
-                <p className="text-xs font-semibold text-muted-foreground">— {r.author}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Reviews section removed: the reviews and the 4.89/560 rating were invented. TODO(owner): show real reviews only. */}
 
       {/* Related services */}
       <section className="max-w-7xl mx-auto px-4 py-10 sm:py-14">
@@ -371,6 +351,7 @@ export default function Index() {
               <Link to="/">Terms & Conditions</Link>
               <Link to="/cookies">Cookie Policy</Link>
               <Link to="/">Privacy Policy</Link>
+              <ManageCookiesLink />
             </div>
           </div>
         </div>

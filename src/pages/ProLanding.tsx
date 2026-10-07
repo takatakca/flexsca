@@ -4,6 +4,7 @@ import { Search, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { Seo } from "@/seo/Seo";
 
 interface Category {
   name: string;
@@ -41,6 +42,11 @@ export default function ProLanding() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <Seo
+        title="Secure jobs and grow your business | FLEX'S"
+        description="FLEX'S connects professionals with customers. Manage leads, respond to jobs, and grow your business."
+        path="/pro"
+      />
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">

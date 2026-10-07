@@ -5,6 +5,8 @@ import { Search, MapPin, ChevronRight, Star, Menu, User, Loader2, FileText, Chec
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
+import { Seo } from "@/seo/Seo";
+import { ManageCookiesLink } from "@/consent/ManageCookiesLink";
 
 interface Question {
   id: string;
@@ -62,12 +64,6 @@ function PopularRegions() {
     </div>
   );
 }
-
-const reviews = [
-  { rating: 5, text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend FLEX'S!", author: "Sarah M." },
-  { rating: 5, text: "Finding a quality professional has never been easier. The platform made the whole process smooth and stress-free.", author: "Michael T." },
-  { rating: 4, text: "Great experience overall. Got connected with multiple professionals quickly and found the perfect match for my project.", author: "Jennifer L." },
-];
 
 // Category-specific related content images
 const categoryRelatedImages: Record<string, { services: string[]; guides: string[]; priceGuides: string[] }> = {
@@ -224,6 +220,7 @@ export default function ServiceCategoryPage() {
   if (!category) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <Seo title="Service category not found | FLEX'S" noindex />
         <p className="text-muted-foreground mb-4">Service category not found</p>
         <Button onClick={() => navigate("/")}>Back to Home</Button>
       </div>
@@ -263,6 +260,11 @@ export default function ServiceCategoryPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo
+        title={`Find ${name} ${isParent ? "professionals" : "experts"} near you | FLEX'S`}
+        description={`You can find the best ${name} professionals on FLEX'S. Start your search and get free quotes now!`}
+        path={`/services/${category.slug}`}
+      />
       {/* Loading Modal */}
       {showLoading && (
         <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center">
@@ -457,23 +459,7 @@ export default function ServiceCategoryPage() {
               <Button onClick={handleStartRequest} className="rounded-full px-8">Get quotes from {name} near you</Button>
             </section>
 
-            {/* Reviews */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Reviews</h2>
-              <div className="flex items-center gap-2 mb-6">
-                <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                <span className="text-sm text-muted-foreground">4.89/560</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {reviews.map((r, i) => (
-                  <div key={i} className="bg-card border border-border rounded-xl p-6">
-                    <div className="flex gap-0.5 mb-3">{[...Array(r.rating)].map((_, j) => <Star key={j} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                    <p className="text-sm text-foreground mb-4">"{r.text}"</p>
-                    <p className="text-xs font-semibold text-muted-foreground">— {r.author}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
+            {/* Reviews section removed: the reviews and the 4.89/560 rating were invented. TODO(owner): show real reviews only. */}
 
             {/* Related Services — dynamic from siblings */}
             <section className="mb-12">
@@ -600,6 +586,7 @@ export default function ServiceCategoryPage() {
               <Link to="/">Terms & Conditions</Link>
               <Link to="/cookies">Cookie Policy</Link>
               <Link to="/">Privacy Policy</Link>
+              <ManageCookiesLink />
             </div>
           </div>
         </div>

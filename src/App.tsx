@@ -40,8 +40,18 @@ import MerchantMessages from "@/pages/merchant/MerchantMessages";
 import MerchantNotifications from "@/pages/merchant/MerchantNotifications";
 import MerchantMenu from "@/pages/merchant/MerchantMenu";
 import NotFound from "@/pages/NotFound";
+import { Seo, SiteJsonLd } from "@/seo/Seo";
+import { CookieBanner } from "@/consent/CookieBanner";
 
 const queryClient = new QueryClient();
+
+/** Private, account and form-step pages: kept out of search results (SEO kit). */
+const NoIndex = ({ children }: { children: React.ReactNode }) => (
+  <>
+    <Seo noindex />
+    {children}
+  </>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -50,6 +60,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <SiteJsonLd />
+          <CookieBanner />
           <Routes>
             {/* Public landing */}
             <Route path="/" element={<Index />} />
@@ -57,10 +69,10 @@ const App = () => (
 
             {/* Customer lead posting flow (no auth required) */}
             <Route path="/post-job" element={<PostJob />} />
-            <Route path="/post-job/contact" element={<JobContact />} />
-            <Route path="/post-job/success" element={<JobSuccess />} />
-            <Route path="/post-job/:slug" element={<JobQuestionnaire />} />
-            <Route path="/my-requests" element={<BuyerDashboard />} />
+            <Route path="/post-job/contact" element={<NoIndex><JobContact /></NoIndex>} />
+            <Route path="/post-job/success" element={<NoIndex><JobSuccess /></NoIndex>} />
+            <Route path="/post-job/:slug" element={<NoIndex><JobQuestionnaire /></NoIndex>} />
+            <Route path="/my-requests" element={<NoIndex><BuyerDashboard /></NoIndex>} />
 
             {/* Public marketing pages */}
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
@@ -71,21 +83,23 @@ const App = () => (
             <Route path="/help/:slug" element={<HelpCenter />} />
 
             {/* Auth routes */}
-            <Route path="/auth/welcome" element={<Welcome />} />
-            <Route path="/auth/check-email" element={<CheckEmail />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/welcome" element={<NoIndex><Welcome /></NoIndex>} />
+            <Route path="/auth/check-email" element={<NoIndex><CheckEmail /></NoIndex>} />
+            <Route path="/auth/callback" element={<NoIndex><AuthCallback /></NoIndex>} />
+            <Route path="/auth/login" element={<NoIndex><Login /></NoIndex>} />
             <Route path="/pro" element={<ProLanding />} />
-            <Route path="/open-in-app" element={<OpenInApp />} />
-            <Route path="/open-in-app" element={<OpenInApp />} />
+            <Route path="/open-in-app" element={<NoIndex><OpenInApp /></NoIndex>} />
+            <Route path="/open-in-app" element={<NoIndex><OpenInApp /></NoIndex>} />
 
             {/* Onboarding */}
             <Route
               path="/onboarding"
               element={
-                <ProtectedRoute>
-                  <Onboarding />
-                </ProtectedRoute>
+                <NoIndex>
+                  <ProtectedRoute>
+                    <Onboarding />
+                  </ProtectedRoute>
+                </NoIndex>
               }
             />
 
@@ -93,9 +107,11 @@ const App = () => (
             <Route
               path="/app"
               element={
-                <ProtectedRoute>
-                  <AppLayout />
-                </ProtectedRoute>
+                <NoIndex>
+                  <ProtectedRoute>
+                    <AppLayout />
+                  </ProtectedRoute>
+                </NoIndex>
               }
             >
               <Route index element={<Navigate to="/app/leads" replace />} />
@@ -112,9 +128,11 @@ const App = () => (
             <Route
               path="/merchant"
               element={
-                <ProtectedRoute>
-                  <MerchantLayout />
-                </ProtectedRoute>
+                <NoIndex>
+                  <ProtectedRoute>
+                    <MerchantLayout />
+                  </ProtectedRoute>
+                </NoIndex>
               }
             >
               <Route index element={<MerchantHome />} />
@@ -126,7 +144,7 @@ const App = () => (
             </Route>
 
             {/* Catch-all */}
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<NoIndex><NotFound /></NoIndex>} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
