@@ -9,7 +9,7 @@ const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PAT
 const leadId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const userId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const category = { id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', name: 'House Cleaning', slug: 'house-cleaning', icon: '🧹', parent_slug: null, is_active: true, base_credit_cost: 6, questions: [{ id: 'rooms', label: 'Which rooms need cleaning?', type: 'checkbox', options: ['Kitchen','Bathroom'], required: true }] };
-let submitted, sentQuote;
+let submitted, sentQuote, publishedReview;
 let unlocked = false, quoteStatus = "sent";
 let searches = [], failSearch = false;
 const errors = [];
@@ -39,6 +39,8 @@ await page.route('**/rest/v1/**', async route => {
   }
   if (path === 'contact_lead') { unlocked=true; body={already_contacted:false,credits_spent:6,customer_name:'Customer',customer_email:'customer@example.test',customer_phone:null}; }
   if (path === 'send_quote') { sentQuote=route.request().postDataJSON(); body='eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'; }
+  if (path === 'customer_review_status') body=quoteStatus==='accepted' ? {providerId:userId,companyName:'Fixture Cleaning',review:publishedReview ? {id:'ffffffff-ffff-4fff-8fff-ffffffffffff',rating:publishedReview.p_rating,text:publishedReview.p_text} : null} : null;
+  if (path === 'submit_customer_review') { publishedReview=route.request().postDataJSON(); body='ffffffff-ffff-4fff-8fff-ffffffffffff'; }
   if (path === 'responses') body=sentQuote ? [{id:'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',lead_id:leadId,pro_id:userId,message:sentQuote.p_message,price_min:sentQuote.p_price_min,price_max:sentQuote.p_price_max,availability:null,status:quoteStatus,created_at:new Date().toISOString()}] : [];
   if (path === 'decide_quote') { quoteStatus=route.request().postDataJSON().p_decision; body=true; }
   if (path === 'reminders') total = 1;
@@ -138,6 +140,9 @@ try {
   assert.equal(sentQuote.p_price_min,100);
   assert.equal(sentQuote.p_price_max,150);
   console.log('PASS provider contact unlock refreshes revealed details and sends a structured quote');
+  await page.goto('http://127.0.0.1:4173/app/responses');
+  await page.getByRole('heading',{name:'House Cleaning',exact:true}).waitFor();
+  console.log('PASS newly unlocked conversations remain visible without a custom status');
   await page.goto('http://127.0.0.1:4173/my-requests');
   await page.getByRole('button',{name:'View request',exact:true}).click();
   await page.waitForURL(`**/my-requests/${leadId}`);
@@ -145,6 +150,15 @@ try {
   await page.getByRole('button',{name:'Accept quote',exact:true}).click();
   await page.getByText('accepted',{exact:true}).waitFor();
   console.log('PASS customer quote acceptance refreshes status');
+  await page.getByRole('heading',{name:'Review Fixture Cleaning',exact:true}).waitFor();
+  await page.getByLabel('Rating',{exact:true}).selectOption('4');
+  await page.getByLabel('Your experience',{exact:true}).fill('A clear and helpful professional experience.');
+  await page.getByRole('button',{name:'Publish review',exact:true}).click();
+  await page.getByRole('heading',{name:'Your published review',exact:true}).waitFor();
+  assert.equal(publishedReview.p_rating,4);
+  assert.equal(publishedReview.p_lead_id,leadId);
+  await page.getByText('4 / 5 · Verified FLEXS customer',{exact:true}).waitFor();
+  console.log('PASS accepted quote enables a verified customer review and refreshes published feedback');
   console.log('PASS customer dashboard opens the existing request instead of creating a new one');
   await page.setViewportSize({width:390,height:844});
   await page.goto('http://127.0.0.1:4173/app/dashboard');

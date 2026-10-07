@@ -1449,6 +1449,8 @@ export type Database = {
       }
     }
     Functions: {
+      customer_review_status: { Args: { p_lead_id: string }; Returns: Json }
+      submit_customer_review: { Args: { p_lead_id: string; p_rating: number; p_text: string }; Returns: string }
       search_marketplace_leads: { Args: { p_filters?: Json; p_page?: number; p_page_size?: number }; Returns: Json }
       send_quote: { Args: { p_lead_id: string; p_message: string; p_price_min?: number | null; p_price_max?: number | null; p_availability?: string | null }; Returns: string }
       decide_quote: { Args: { p_quote_id: string; p_decision: string }; Returns: boolean }

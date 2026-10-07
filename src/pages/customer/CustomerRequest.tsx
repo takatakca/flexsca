@@ -1,3 +1,5 @@
+import CustomerReview from "@/components/customer/CustomerReview";
+import { useQueryClient } from "@tanstack/react-query";
 import QuoteList from "@/components/lead-detail/QuoteList";
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -14,6 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 export default function CustomerRequest() {
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const [selectedPro, setSelectedPro] = useState<string | null>(null);
   const [text, setText] = useState('');
@@ -60,7 +63,8 @@ export default function CustomerRequest() {
         {!data.request.archived && <AlertDialog><AlertDialogTrigger asChild><Button variant="outline">Close request</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Close this request?</AlertDialogTitle><AlertDialogDescription>New professionals will no longer be able to unlock this request. Your existing conversations will remain available.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Keep open</AlertDialogCancel><AlertDialogAction onClick={() => void closeRequest()}>Close request</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}
       </div>
       {data.request.details && <div className="p-5 border rounded-xl mb-6"><h2 className="font-semibold mb-2">Your request details</h2><p className="whitespace-pre-wrap text-sm">{data.request.details}</p></div>}
-      <div className="mb-6"><QuoteList leadId={id!} customer onDecision={() => void refetch()} /></div>
+      <div className="mb-6"><QuoteList leadId={id!} customer onDecision={() => { void refetch(); void queryClient.invalidateQueries({ queryKey: ["customer-review", id] }); }} /></div>
+      <CustomerReview leadId={id!} />
       <div className="grid md:grid-cols-[280px_1fr] border rounded-xl overflow-hidden bg-card">
         <aside className="border-b md:border-b-0 md:border-r p-4"><h2 className="font-semibold mb-4">Interested professionals</h2>{data.providers.length ? <div className="space-y-2">{data.providers.map(pro => <button key={pro.user_id} onClick={() => setSelectedPro(pro.user_id)} aria-pressed={selectedPro === pro.user_id} className={`w-full text-left rounded-lg p-3 ${selectedPro === pro.user_id ? 'bg-primary/10 text-primary' : 'hover:bg-muted'}`}><p className="font-medium">{pro.company_name}</p><p className="text-xs text-muted-foreground mt-1">Contact unlocked {formatDistanceToNow(new Date(pro.contacted_at), { addSuffix: true })}</p></button>)}</div> : <p className="text-sm text-muted-foreground">No professionals have unlocked your request yet. Conversations will appear here when they respond.</p>}</aside>
         <section className="p-4 md:p-6"><h2 className="font-semibold mb-5">Conversation</h2>{selectedPro ? <><Link to={`/profile/${selectedPro}`} className="text-primary text-sm">View professional profile</Link><div aria-live="polite" className="space-y-3 my-5 max-h-[480px] overflow-y-auto">{thread.map(message => <div key={message.id} className={`p-4 rounded-xl max-w-[90%] ${message.sender_type === 'customer' ? 'ml-auto bg-primary/10' : 'bg-muted'}`}><p className="text-xs font-medium mb-1">{message.sender_type === 'customer' ? 'You' : message.sender_type === 'system' ? 'FLEXS' : 'Professional'}</p><p className="text-sm whitespace-pre-wrap">{message.message}</p><time className="block text-xs text-muted-foreground mt-2" dateTime={message.created_at}>{formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}</time></div>)}</div><form onSubmit={send} className="space-y-3"><label htmlFor="customer-message" className="text-sm font-medium">Your message</label><Textarea id="customer-message" maxLength={4000} value={text} onChange={e => setText(e.target.value)} placeholder="Discuss your needs or ask about a quote…" /><Button disabled={sending || !text.trim()} type="submit"><Send className="h-4 w-4 mr-2" />{sending ? 'Sending…' : 'Send message'}</Button></form></> : <div className="py-12 text-center text-muted-foreground"><MessageSquare className="h-8 w-8 mx-auto mb-3" /><p>Select a professional to start a conversation.</p></div>}</section>

@@ -243,3 +243,53 @@ describe('paginated marketplace search', () => {
     expect(otherArchive.total).toBe(0);
   });
 });
+
+describe('verified customer reviews', () => {
+  let request: string;
+  let review: string;
+  beforeAll(async () => {
+    await asRole('service_role');
+    request=String(await scalar(`INSERT INTO leads(category,location_text,customer_name,customer_user_id) VALUES('Review Fixture','Toronto','Customer PrivateSurname','${buyer}') RETURNING id`));
+  });
+  it('rejects anonymous, unrelated, and premature reviews', async () => {
+    await asRole('anon');
+    await expect(db.query(`SELECT submit_customer_review('${request}',5,'Great professional experience')`)).rejects.toThrow();
+    await asRole('authenticated',other);
+    await expect(db.query(`SELECT customer_review_status('${request}')`)).rejects.toThrow('Request not found');
+    await expect(db.query(`SELECT submit_customer_review('${request}',5,'Great professional experience')`)).rejects.toThrow('Request not found');
+    await asRole('authenticated',buyer);
+    expect(await scalar(`SELECT customer_review_status('${request}')`)).toBeNull();
+    await expect(db.query(`SELECT submit_customer_review('${request}',5,'Great professional experience')`)).rejects.toThrow('Accept a professional quote');
+  });
+  it('records one immutable review for a confirmed customer and accepted quote', async () => {
+    await asRole('service_role');
+    await db.exec(`INSERT INTO responses(lead_id,pro_id,message,status) VALUES('${request}','${pro}','Accepted quote','accepted')`);
+    await asRole('authenticated',buyer);
+    await expect(db.query(`SELECT submit_customer_review('${request}',6,'Great professional experience')`)).rejects.toThrow('Invalid review');
+    await expect(db.query(`SELECT submit_customer_review('${request}',5,'Short')`)).rejects.toThrow('Invalid review');
+    review=String(await scalar(`SELECT submit_customer_review('${request}',4,'A thoughtful professional experience')`));
+    expect(await scalar(`SELECT submit_customer_review('${request}',1,'Duplicate submission with different text')`)).toBe(review);
+    const status=await scalar(`SELECT customer_review_status('${request}')`) as {providerId:string;review:{rating:number}};
+    expect(status.providerId).toBe(pro); expect(status.review.rating).toBe(4);
+    await asRole('authenticated',pro);
+    expect(await scalar(`SELECT count(*) FROM notifications WHERE lead_id='${request}'`)).toBe(1);
+  });
+  it('requires a currently confirmed email even for a request owner', async () => {
+    await asRole('service_role');
+    await db.exec(`RESET ROLE; UPDATE auth.users SET email_confirmed_at=NULL WHERE id='${buyer}'`);
+    await asRole('authenticated',buyer);
+    await expect(db.query(`SELECT submit_customer_review('${request}',4,'A thoughtful professional experience')`)).rejects.toThrow('Request not found');
+    await expect(db.query(`SELECT customer_review_status('${request}')`)).rejects.toThrow('Request not found');
+    await asRole('service_role');
+    await db.exec(`RESET ROLE; UPDATE auth.users SET email_confirmed_at=now() WHERE id='${buyer}'`);
+  });
+  it('prevents the professional deleting verified reviews and hides customer identifiers publicly', async () => {
+    await asRole('authenticated',pro);
+    await db.exec(`DELETE FROM provider_reviews WHERE id='${review}'`);
+    expect(await scalar(`SELECT count(*) FROM provider_reviews WHERE id='${review}'`)).toBe(1);
+    await asRole('anon');
+    const {rows}=await db.query(`SELECT * FROM provider_reviews_public WHERE id='${review}'`);
+    expect(rows[0]).toMatchObject({verified:true,source:'flexs',reviewer_name:'Customer'});
+    expect(rows[0]).not.toHaveProperty('lead_id'); expect(rows[0]).not.toHaveProperty('reviewer_email');
+  });
+});
