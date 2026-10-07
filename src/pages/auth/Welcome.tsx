@@ -1,11 +1,14 @@
+import { errorMessage } from "@/lib/errors";
+import { callbackUrl, customerReturnPath } from "@/lib/auth-navigation";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export default function Welcome() {
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,15 +24,15 @@ export default function Welcome() {
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: callbackUrl(location.search),
         },
       });
 
       if (error) throw error;
 
-      navigate("/auth/check-email", { state: { email: email.trim() } });
-    } catch (err: any) {
-      const msg = err.message || "We failed to verify your request. If the problem persists, please contact support.";
+      navigate(`/auth/check-email${location.search}`, { state: { email: email.trim() } });
+    } catch (err: unknown) {
+      const msg = errorMessage(err, "We failed to verify your request. If the problem persists, please contact support.");
       setError(msg);
       toast.error(msg);
     } finally {

@@ -14,6 +14,19 @@ export type Database = {
   }
   public: {
     Tables: {
+      notifications: {
+        Row: { id: string; user_id: string; lead_id: string | null; title: string; read_at: string | null; created_at: string }
+        Insert: { user_id: string; lead_id?: string | null; title: string }
+        Update: { read_at?: string | null }
+        Relationships: []
+      }
+      lead_refund_requests: {
+        Row: { id: string; purchase_id: string; user_id: string; reason: string; status: string; created_at: string; resolved_at: string | null }
+        Insert: { purchase_id: string; user_id: string; reason: string }
+        Update: { status?: string }
+        Relationships: []
+      }
+
       credit_purchases: {
         Row: {
           amount_cents: number
@@ -367,6 +380,8 @@ export type Database = {
           archived: boolean
           archived_at: string | null
           assigned_to: string | null
+          customer_user_id: string | null
+          attribution_id: string | null
           category: string
           city: string | null
           created_at: string
@@ -388,6 +403,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          customer_user_id?: string | null
+          attribution_id?: string | null
           answers?: Json
           archived?: boolean
           archived_at?: string | null
@@ -413,6 +430,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          customer_user_id?: string | null
+          attribution_id?: string | null
           answers?: Json
           archived?: boolean
           archived_at?: string | null
@@ -1273,6 +1292,10 @@ export type Database = {
       }
     }
     Views: {
+      provider_profiles_public: {
+        Row: { user_id: string; company_name: string | null; company_description: string | null; company_size: string | null; years_in_business: number | null; city: string | null; province: string | null; profile_photo_url: string | null; personal_name: string | null; company_email: string | null; company_phone: string | null; website_links: string | null }
+        Relationships: []
+      }
       lead_last_message: {
         Row: {
           created_at: string | null
@@ -1426,6 +1449,16 @@ export type Database = {
       }
     }
     Functions: {
+      send_quote: { Args: { p_lead_id: string; p_message: string; p_price_min?: number | null; p_price_max?: number | null; p_availability?: string | null }; Returns: string }
+      decide_quote: { Args: { p_quote_id: string; p_decision: string }; Returns: boolean }
+      is_platform_admin: { Args: Record<string, never>; Returns: boolean }
+      admin_lead_queue: { Args: Record<string, never>; Returns: { id: string; category: string; city: string | null; status: string; archived: boolean; created_at: string; purchases: number }[] }
+      admin_archive_lead: { Args: { p_lead_id: string; p_archived: boolean }; Returns: undefined }
+      request_lead_refund: { Args: { p_lead_id: string; p_reason: string }; Returns: string }
+      admin_decide_refund: { Args: { p_request_id: string; p_approve: boolean }; Returns: boolean }
+      customer_request_providers: { Args: { p_lead_id: string }; Returns: { user_id: string; company_name: string; profile_photo_url: string | null; contacted_at: string }[] }
+      close_customer_request: { Args: { p_lead_id: string }; Returns: boolean }
+      claim_customer_leads: { Args: Record<string, never>; Returns: number }
       contact_lead: { Args: { p_lead_id: string }; Returns: Json }
       fulfill_credit_purchase: {
         Args: {
@@ -1450,6 +1483,7 @@ export type Database = {
       }
       submit_lead: {
         Args: {
+          p_attribution_id?: string | null
           p_answers?: Json
           p_category: string
           p_city?: string

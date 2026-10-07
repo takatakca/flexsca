@@ -25,11 +25,7 @@ const regionsList: Record<string, string[]> = {
   Atlantic: ["Halifax", "Moncton", "Saint John", "Fredericton", "Charlottetown", "St. John's", "Sydney", "Dartmouth"],
 };
 
-const reviews = [
-  { rating: 5, text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend FLEX'S!", author: "Sarah M." },
-  { rating: 5, text: "Finding a quality professional has never been easier. The platform made the whole process smooth and stress-free.", author: "Michael T." },
-  { rating: 4, text: "Great experience overall. Got connected with multiple professionals quickly and found the perfect match for my project.", author: "Jennifer L." },
-];
+
 
 const relatedServices = [
   { title: "Web Design", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop" },
@@ -74,6 +70,7 @@ function PopularRegions() {
 
 export default function Index() {
   const navigate = useNavigate();
+  const [reviews, setReviews] = useState<{ rating: number; review_text: string | null; reviewer_name: string | null }[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [serviceSearch, setServiceSearch] = useState("");
   const [locationSearch, setLocationSearch] = useState("");
@@ -88,6 +85,9 @@ export default function Index() {
       .then(({ data }) => {
         if (data) setCategories(data as Category[]);
       });
+    supabase.from("provider_reviews_public").select("rating, review_text, reviewer_name")
+      .eq("verified", true).order("created_at", { ascending: false }).limit(3)
+      .then(({ data }) => { if (data) setReviews(data); });
   }, []);
 
   // Only show top-level categories (no parent) on homepage
@@ -253,24 +253,20 @@ export default function Index() {
       </section>
 
       {/* Reviews */}
-      <section className="bg-secondary">
+      {reviews.length > 0 && <section className="bg-secondary">
         <div className="max-w-7xl mx-auto px-4 py-12 sm:py-16">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Reviews</h2>
-          <div className="flex items-center gap-2 mb-6">
-            <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
-            <span className="text-sm text-muted-foreground">4.89/560</span>
-          </div>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Latest verified reviews</h2>
           <div className="grid sm:grid-cols-3 gap-6">
             {reviews.map((r, i) => (
               <div key={i} className="bg-card border border-border rounded-xl p-6">
                 <div className="flex gap-0.5 mb-3">{[...Array(r.rating)].map((_, j) => <Star key={j} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                <p className="text-sm text-foreground mb-3">"{r.text}"</p>
-                <p className="text-xs font-semibold text-muted-foreground">— {r.author}</p>
+                <p className="text-sm text-foreground mb-3">"{r.review_text}"</p>
+                <p className="text-xs font-semibold text-muted-foreground">— {r.reviewer_name || "Customer"}</p>
               </div>
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Related services */}
       <section className="max-w-7xl mx-auto px-4 py-10 sm:py-14">

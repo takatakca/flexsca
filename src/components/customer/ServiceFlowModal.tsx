@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { X, MapPin, Check, Plus } from "lucide-react";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { contactSchema, submitLead } from "@/lib/lead-intake";
 
 interface Question {
   id: string;
@@ -49,6 +50,8 @@ export default function ServiceFlowModal({
   onClose,
 }: ServiceFlowModalProps) {
   const navigate = useNavigate();
+  const submitting = useRef(false);
+  const submitRef = useRef<() => Promise<void>>();
   const [step, setStep] = useState<FlowStep>("loading");
   const [previousStep, setPreviousStep] = useState<FlowStep>("loading");
   const [currentQ, setCurrentQ] = useState(0);
@@ -74,7 +77,7 @@ export default function ServiceFlowModal({
         if (questions.length > 0) {
           setStep("questionnaire");
         } else {
-          setStep("welcome-back");
+          setStep("email-step");
         }
       }, 1500);
       return () => clearTimeout(timer);
@@ -88,7 +91,7 @@ export default function ServiceFlowModal({
       return () => clearTimeout(timer);
     }
     if (step === "loading-submit") {
-      const timer = setTimeout(() => handleSubmit(), 500);
+      const timer = setTimeout(() => void submitRef.current?.(), 500);
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -160,7 +163,7 @@ export default function ServiceFlowModal({
 
   const handleQuestionNext = () => {
     if (!question) return;
-    let finalAnswers = { ...answers };
+    const finalAnswers = { ...answers };
     if (otherChecked[question.id] && otherText[question.id]?.trim()) {
       if (question.type === "checkbox") {
         const current = (answers[question.id] as string[]) || [];
@@ -185,40 +188,26 @@ export default function ServiceFlowModal({
   };
 
   const handleSubmit = async () => {
-    const locationParts = location.split(",").map((s) => s.trim());
-    const city = locationParts[0] || null;
-    const postalCode = locationParts[1] || null;
-
-    const urgencyAnswers = Object.values(answers).flatMap((v) =>
-      Array.isArray(v) ? v : [v]
-    ).map((v) => v.toLowerCase());
-    const isUrgent = contactAsap || urgencyAnswers.some(
-      (a) => a.includes("emergency") || a.includes("asap")
-    );
-
-    // Use secure server-side function to submit lead + message atomically
-    const { data, error } = await supabase.rpc("submit_lead", {
-      p_category: categoryName,
-      p_location_text: location || "Not specified",
-      p_city: city,
-      p_postal_code: postalCode,
-      p_customer_name: contactName.trim() || null,
-      p_customer_email: contactEmail.trim() || null,
-      p_customer_phone: contactPhone.trim() || null,
-      p_details: detailsText.trim() || null,
-      p_answers: answers,
-      p_is_urgent: isUrgent,
-    });
-
-    if (error) {
-      console.error("Lead submission error:", error);
-      toast.error("Failed to submit your request. Please try again.");
-      setStep("details");
+    if (submitting.current) return;
+    const result = contactSchema.safeParse({ name: contactName, email: contactEmail, phone: contactPhone, location, details: detailsText });
+    if (!result.success) {
+      toast.error(result.error.issues[0].message);
+      setStep("email-step");
       return;
     }
-
-    setStep("success");
+    submitting.current = true;
+    try {
+      const requestId = await submitLead(categoryName, result.data, answers, contactAsap);
+      navigate("/post-job/success", { state: { categoryName, requestId, email: result.data.email } });
+      onClose();
+    } catch {
+      toast.error("Unable to submit your request. Please try again.");
+      setStep("details");
+    } finally {
+      submitting.current = false;
+    }
   };
+  submitRef.current = handleSubmit;
 
   // Quality score based on details length
   const qualityScore = Math.min(100, Math.round((detailsText.length / 200) * 100));
@@ -449,10 +438,10 @@ export default function ServiceFlowModal({
 
         <div className="px-6 pb-6">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
-            Welcome back, FLEX'S
+            Review your request
           </h2>
           <p className="text-gray-600 text-center mb-6">
-            It looks like you've used FLEX'S before. Submit your request now and we'll help you log in to view your matches.
+            Confirm your preferences, then add the details professionals need to prepare a quote.
           </p>
 
           <label className="flex items-center gap-3 mb-6">
@@ -476,7 +465,7 @@ export default function ServiceFlowModal({
               onClick={() => setStep("details")}
               className="px-6 bg-emerald-500 hover:bg-emerald-600 text-white"
             >
-              Submit request
+              Continue
             </Button>
           </div>
 
@@ -498,7 +487,7 @@ export default function ServiceFlowModal({
           <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center">
             <Check className="h-3 w-3 text-white" />
           </div>
-          <span className="text-sm text-gray-600">We've posted your request</span>
+          <span className="text-sm text-gray-600">Complete your request</span>
         </div>
 
         <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Describe your request in detail</h2>
@@ -514,10 +503,7 @@ export default function ServiceFlowModal({
           className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 outline-none resize-none placeholder:text-gray-400 focus:border-blue-500 mb-4"
         />
 
-        <button className="w-full flex items-center justify-center gap-2 py-3 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors mb-2">
-          <Plus className="h-4 w-4" />
-          Add photos/files
-        </button>
+
 
         <p className="text-xs text-gray-400 mb-4">
           Protected under our <a href="#" className="text-blue-500 hover:underline">privacy policy</a>
@@ -555,7 +541,7 @@ export default function ServiceFlowModal({
             onClick={() => setStep("loading-submit")}
             className="px-8 bg-emerald-500 hover:bg-emerald-600 text-white"
           >
-            View matches
+            Submit request
           </Button>
         </div>
       </div>
@@ -573,7 +559,7 @@ export default function ServiceFlowModal({
       <h2 className="text-2xl font-bold text-gray-900 mb-4">Your request has been posted</h2>
 
       <p className="text-gray-600 mb-2">
-        We've sent you an email with a link so you can access your account.
+        Sign in with the email used for this request to manage it.
       </p>
       <p className="text-gray-600 mb-8">
         Or, if you remember your password, log in to view your account.
@@ -627,7 +613,7 @@ export default function ServiceFlowModal({
           <div className="h-16 w-16 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-4">
             <Check className="h-8 w-8 text-white stroke-[3]" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Great! We've found you the perfect matches.</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Your request is nearly ready.</h2>
           <p className="text-sm text-gray-500 mb-6">Lastly, we need your details to attach to your request.</p>
           <div className="flex items-center justify-between">
             <Button variant="outline" onClick={() => {
@@ -654,17 +640,23 @@ export default function ServiceFlowModal({
           <button onClick={handleClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
         </div>
         <div className="px-6 pb-6">
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-6">What email address would you like quotes sent to?</h2>
+          <h2 className="text-xl font-bold text-gray-900 text-center mb-6">How can professionals contact you?</h2>
+          <label htmlFor="modal-contact-name" className="block text-sm font-medium mb-1">Your name</label>
+          <input id="modal-contact-name" value={contactName} onChange={e => setContactName(e.target.value)} placeholder="Full name" maxLength={100} className="w-full border rounded-lg px-4 py-3 text-sm mb-4" />
+          <label htmlFor="modal-contact-email" className="block text-sm font-medium mb-1">Email address</label>
           <input
+            id="modal-contact-email"
             type="email"
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
             placeholder="Email address"
             className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-blue-500 mb-6"
           />
+          <label htmlFor="modal-contact-phone" className="block text-sm font-medium mb-1">Phone (optional)</label>
+          <input id="modal-contact-phone" type="tel" value={contactPhone} onChange={e => setContactPhone(e.target.value)} maxLength={40} className="w-full border rounded-lg px-4 py-3 text-sm mb-4" />
           <div className="flex items-center justify-between">
             <Button variant="outline" onClick={() => setStep("matches-found")} className="px-6">Back</Button>
-            <Button onClick={() => setStep("location-step")} disabled={!contactEmail.trim()} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">Continue</Button>
+            <Button onClick={() => setStep("location-step")} disabled={!contactName.trim() || !contactEmail.trim()} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">Continue</Button>
           </div>
         </div>
       </div>
@@ -734,7 +726,7 @@ export default function ServiceFlowModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-8 md:pt-16">
+    <div role="dialog" aria-modal="true" aria-label="Post a service request" className="fixed inset-0 z-[60] flex items-start justify-center pt-8 md:pt-16">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
       {/* Modal content */}

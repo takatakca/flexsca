@@ -1,3 +1,5 @@
+import { errorMessage } from "@/lib/errors";
+import { callbackUrl, customerReturnPath } from "@/lib/auth-navigation";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,7 +12,7 @@ import { User, Lock, Link2 } from "lucide-react";
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const initialEmail = (location.state as any)?.email || "";
+  const initialEmail = (location.state as { email?: string } | null)?.email || "";
   const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
   const [keepSignedIn, setKeepSignedIn] = useState(false);
@@ -26,9 +28,9 @@ export default function Login() {
         password,
       });
       if (error) throw error;
-      navigate("/app/leads");
-    } catch (err: any) {
-      toast.error(err.message || "Invalid credentials. Please try again.");
+      navigate(customerReturnPath(new URLSearchParams(location.search).get("next")) ?? "/app/dashboard");
+    } catch (err: unknown) {
+      toast.error(errorMessage(err, "Invalid credentials. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -44,13 +46,13 @@ export default function Login() {
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: callbackUrl(location.search),
         },
       });
       if (error) throw error;
-      navigate("/auth/check-email", { state: { email: email.trim() } });
-    } catch (err: any) {
-      toast.error(err.message || "Failed to send magic link.");
+      navigate(`/auth/check-email${location.search}`, { state: { email: email.trim() } });
+    } catch (err: unknown) {
+      toast.error(errorMessage(err, "Failed to send magic link."));
     } finally {
       setLoading(false);
     }

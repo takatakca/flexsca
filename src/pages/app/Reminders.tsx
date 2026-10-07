@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Loader2,
@@ -94,16 +94,16 @@ export default function Reminders() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const fetchReminders = async () => {
+  const fetchReminders = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
       .from("reminders")
       .select("*, leads(category, location_text, customer_name)")
       .order("remind_at", { ascending: true });
 
-    if (data) setReminders(data as any);
+    if (data) setReminders(data as Reminder[]);
     setLoading(false);
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -115,7 +115,7 @@ export default function Reminders() {
       .then(({ data }) => {
         if (data) setLeads(data);
       });
-  }, [user]);
+  }, [user, fetchReminders]);
 
   const handleMarkDone = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -345,7 +345,7 @@ function ReminderCard({
 }) {
   const isDone = reminder.status === "done";
   const dueInfo = !isDone ? getDueLabel(reminder.remind_at) : null;
-  const leadData = (reminder as any).leads;
+  const leadData = reminder.leads;
 
   return (
     <Card

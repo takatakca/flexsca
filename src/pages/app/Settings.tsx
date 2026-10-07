@@ -42,7 +42,7 @@ export default function Settings() {
   useEffect(() => {
     const purchase = searchParams.get("purchase");
     if (purchase === "success") {
-      toast.success("Payment successful! Credits added to your account.");
+      toast.info("Checkout completed. Credits appear after payment is confirmed.");
       setSearchParams({}, { replace: true });
     } else if (purchase === "cancel") {
       toast.info("Purchase cancelled.");

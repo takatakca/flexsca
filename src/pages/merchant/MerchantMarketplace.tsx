@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useMerchantProfile } from "@/hooks/useMerchantProfile";
-import { Camera, Pencil, Plus, Image, BarChart3, HelpCircle, MapPin, Phone, Globe, Link2, ChevronRight, Clock, Star, CheckCircle, X, Trash2, Lock, ExternalLink } from "lucide-react";
+import { type LucideIcon, Camera, Pencil, Plus, Image, BarChart3, HelpCircle, MapPin, Phone, Globe, Link2, ChevronRight, Clock, Star, CheckCircle, X, Trash2, Lock, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,14 +46,14 @@ export default function MerchantMarketplace() {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = await uploadImage(file);
-    if (url) await saveProfile({ cover_image_url: url } as any);
+    if (url) await saveProfile({ cover_image_url: url });
   };
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = await uploadImage(file);
-    if (url) await saveProfile({ logo_url: url } as any);
+    if (url) await saveProfile({ logo_url: url });
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -411,7 +411,7 @@ export default function MerchantMarketplace() {
 
       {/* Edit Business Info */}
       <EditDialog open={editSection === "businessInfo"} onClose={() => setEditSection(null)} title="Edit Business Info"
-        onSave={() => { saveProfile({ address: editValue || null, phone: editValue2 || null, website: editValue3 || null, menu_url: editValue4 || null } as any); setEditSection(null); }}
+        onSave={() => { saveProfile({ address: editValue || null, phone: editValue2 || null, website: editValue3 || null, menu_url: editValue4 || null }); setEditSection(null); }}
         onOpen={() => { setEditValue(profile.address || ""); setEditValue2(profile.phone || ""); setEditValue3(profile.website || ""); setEditValue4(profile.menu_url || ""); }}>
         <div className="space-y-3">
           <div><label className="text-sm font-medium text-foreground">Address</label><Input value={editValue} onChange={(e) => setEditValue(e.target.value)} placeholder="123 Main St, Toronto, ON" /></div>
@@ -423,7 +423,7 @@ export default function MerchantMarketplace() {
 
       {/* Edit Summary / Profile */}
       <EditDialog open={editSection === "summary"} onClose={() => setEditSection(null)} title="Business Summary"
-        onSave={() => { saveProfile({ business_name: editValue || null, primary_category: editValue2 || null, business_description: editValue3 || null } as any); setEditSection(null); }}
+        onSave={() => { saveProfile({ business_name: editValue || null, primary_category: editValue2 || null, business_description: editValue3 || null }); setEditSection(null); }}
         onOpen={() => { setEditValue(profile.business_name || ""); setEditValue2(profile.primary_category || ""); setEditValue3(profile.business_description || ""); }}>
         <div className="space-y-3">
           <div><label className="text-sm font-medium text-foreground">Business Name</label><Input value={editValue} onChange={(e) => setEditValue(e.target.value)} /></div>
@@ -434,7 +434,7 @@ export default function MerchantMarketplace() {
 
       {/* Edit From Business */}
       <EditDialog open={editSection === "fromBusiness"} onClose={() => setEditSection(null)} title="From the Business"
-        onSave={() => { saveProfile({ specialties: editValue || null, history: editValue2 || null } as any); setEditSection(null); }}
+        onSave={() => { saveProfile({ specialties: editValue || null, history: editValue2 || null }); setEditSection(null); }}
         onOpen={() => { setEditValue(profile.specialties || ""); setEditValue2(profile.history || ""); }}>
         <div className="space-y-3">
           <div><label className="text-sm font-medium text-foreground">Specialties</label><Textarea value={editValue} onChange={(e) => setEditValue(e.target.value)} rows={3} placeholder="What is your business known for?" /></div>
@@ -444,7 +444,7 @@ export default function MerchantMarketplace() {
 
       {/* Edit Status */}
       <EditDialog open={editSection === "status"} onClose={() => setEditSection(null)} title="Business Status"
-        onSave={() => { saveProfile({ business_status: editValue } as any); setEditSection(null); }}
+        onSave={() => { saveProfile({ business_status: editValue }); setEditSection(null); }}
         onOpen={() => setEditValue(profile.business_status)}>
         <Select value={editValue} onValueChange={setEditValue}>
           <SelectTrigger><SelectValue /></SelectTrigger>
@@ -531,7 +531,7 @@ function SectionCard({ title, children, onEdit, onAdd, extra }: {
   );
 }
 
-function InfoRow({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+function InfoRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3">
       <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />

@@ -1,5 +1,6 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@17.7.0?target=deno";
+import { verifiedCreditPayment } from "../_shared/payment-policy.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.95.3";
+import Stripe from "npm:stripe@17.7.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,8 +13,9 @@ Deno.serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
   const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-    apiVersion: "2024-12-18.acacia",
+    apiVersion: "2025-02-24.acacia",
   });
 
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
@@ -33,16 +35,14 @@ Deno.serve(async (req: Request) => {
     // Verify webhook signature
     const event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
 
-    if (event.type === "checkout.session.completed") {
+    if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      const userId = session.metadata?.user_id;
-      const credits = parseInt(session.metadata?.credits || "0", 10);
-
-      if (!userId || !credits) {
-        console.error("Missing metadata in checkout session:", session.id);
-        return new Response("Missing metadata", { status: 400 });
-      }
+      // Delayed payment methods may complete checkout before money settles.
+      if (session.payment_status !== "paid") return new Response(JSON.stringify({ received: true }), { headers: { "Content-Type": "application/json" } });
+      const payment = verifiedCreditPayment(session);
+      if (!payment) return new Response("Invalid credit payment", { status: 400 });
+      const { userId, credits, amountCents, currency } = payment;
 
       // Use service role client
       const supabase = createClient(
@@ -58,23 +58,23 @@ Deno.serve(async (req: Request) => {
           ? session.payment_intent
           : session.payment_intent?.id || null,
         p_credits: credits,
-        p_amount_cents: session.amount_total || 0,
-        p_currency: session.currency || "cad",
+        p_amount_cents: amountCents,
+        p_currency: currency,
       });
 
       if (error) {
-        console.error("fulfill_credit_purchase error:", error);
-        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+        console.error("Credit fulfillment failed");
+        return new Response(JSON.stringify({ error: "Credit fulfillment failed" }), { status: 500 });
       }
 
-      console.log(`Checkout ${session.id} fulfilled=${fulfilled} for user=${userId} credits=${credits}`);
+      console.log(`Credit fulfillment completed: ${fulfilled}`);
     }
 
     return new Response(JSON.stringify({ received: true }), {
       headers: { "Content-Type": "application/json" },
     });
-  } catch (err: any) {
-    console.error("Webhook error:", err.message);
-    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+  } catch (err: unknown) {
+    console.error("Webhook verification failed");
+    return new Response("Invalid webhook", { status: 400 });
   }
 });

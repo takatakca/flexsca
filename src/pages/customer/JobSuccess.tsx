@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export default function JobSuccess() {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as { categoryName: string } | null;
+  const state = location.state as { categoryName: string; requestId?: string; email?: string } | null;
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
@@ -26,7 +26,7 @@ export default function JobSuccess() {
       </p>
 
       <p className="text-sm text-muted-foreground mb-8 max-w-sm">
-        You'll hear from professionals shortly via email and phone. It's completely free — no obligation.
+        Your request is free. Sign in with the same email to track it and manage conversations with professionals.
       </p>
 
       <div className="space-y-3 w-full max-w-xs">
@@ -42,9 +42,9 @@ export default function JobSuccess() {
           variant="outline"
           size="lg"
           className="w-full h-12 rounded-xl text-base"
-          onClick={() => navigate("/auth/welcome")}
+          onClick={() => navigate(`/my-requests${state?.requestId ? `/${state.requestId}` : ""}`)}
         >
-          I'm a professional — sign in
+          Track my request
         </Button>
       </div>
 

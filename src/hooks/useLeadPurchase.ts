@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -14,7 +14,7 @@ export function useLeadPurchase(leadId: string | undefined, category?: string): 
   const [cost, setCost] = useState(5);
   const [loading, setLoading] = useState(true);
 
-  const fetch = async () => {
+  const fetch = useCallback(async () => {
     if (!user || !leadId) {
       setLoading(false);
       return;
@@ -45,13 +45,14 @@ export function useLeadPurchase(leadId: string | undefined, category?: string): 
     }
 
     setLoading(false);
-  };
+  }, [user, leadId, category]);
 
   useEffect(() => {
     setLoading(true);
     setPurchased(false);
+    setCost(5);
     fetch();
-  }, [user, leadId, category]);
+  }, [fetch]);
 
   const refetch = () => {
     setLoading(true);

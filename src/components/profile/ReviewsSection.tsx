@@ -89,7 +89,7 @@ export default function ReviewsSection() {
 
     const { error } = await supabase
       .from("review_invitations")
-      .insert(rows as any);
+      .insert(rows);
 
     if (error) {
       toast.error("Failed to send invitations");

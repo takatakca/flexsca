@@ -143,7 +143,7 @@ export function useProviderProfile() {
 
     const { error } = await supabase
       .from("provider_profiles")
-      .upsert(newProfile as any, { onConflict: "user_id" });
+      .upsert(newProfile, { onConflict: "user_id" });
 
     if (error) {
       toast.error("Failed to save profile");
@@ -159,7 +159,7 @@ export function useProviderProfile() {
     if (!user) return;
     const { data, error } = await supabase
       .from("provider_services")
-      .insert({ user_id: user.id, title, description, sort_order: services.length } as any)
+      .insert({ user_id: user.id, title, description, sort_order: services.length })
       .select()
       .single();
 
@@ -184,7 +184,7 @@ export function useProviderProfile() {
     if (!user) return;
     const { data, error } = await supabase
       .from("provider_photos")
-      .insert({ user_id: user.id, url, caption: caption || null, sort_order: photos.length } as any)
+      .insert({ user_id: user.id, url, caption: caption || null, sort_order: photos.length })
       .select()
       .single();
 
@@ -226,7 +226,7 @@ export function useProviderProfile() {
     if (rows.length > 0) {
       const { data, error } = await supabase
         .from("provider_qas")
-        .insert(rows as any)
+        .insert(rows)
         .select();
 
       if (error) {
@@ -244,7 +244,7 @@ export function useProviderProfile() {
     if (!user) return;
     const { data, error } = await supabase
       .from("provider_qas")
-      .insert({ user_id: user.id, question, answer, sort_order: qas.length } as any)
+      .insert({ user_id: user.id, question, answer, sort_order: qas.length })
       .select()
       .single();
 
@@ -290,7 +290,7 @@ export function useProviderProfile() {
         issuer: issuer || null,
         year_obtained: year || null,
         sort_order: accreditations.length,
-      } as any)
+      })
       .select()
       .single();
 

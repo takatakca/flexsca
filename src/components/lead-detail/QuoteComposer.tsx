@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, Loader2, PoundSterling, CalendarDays } from "lucide-react";
+import { Send, Loader2, DollarSign, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ interface QuoteComposerProps {
     priceMin: number | null;
     priceMax: number | null;
     availability: string | null;
-  }) => Promise<void>;
+  }) => Promise<boolean>;
   sending: boolean;
   disabled?: boolean;
 }
@@ -54,13 +54,14 @@ export default function QuoteComposer({ onSend, sending, disabled }: QuoteCompos
   const handleSend = async () => {
     if (!message.trim()) return;
 
-    await onSend({
+    const sent = await onSend({
       message: message.trim(),
       priceMin: priceMin ? parseFloat(priceMin) : null,
       priceMax: priceMax ? parseFloat(priceMax) : null,
       availability,
     });
 
+    if (!sent) return;
     resetForm();
     setOpen(false);
   };
@@ -116,11 +117,11 @@ export default function QuoteComposer({ onSend, sending, disabled }: QuoteCompos
             />
           </div>
 
-          {/* Price range */}
+          {/* Price range (CAD) */}
           <div className="space-y-2">
             <Label className="flex items-center gap-1.5">
-              <PoundSterling className="h-4 w-4" />
-              Price estimate (optional)
+              <DollarSign className="h-4 w-4" />
+              Price estimate in CAD (optional)
             </Label>
             <div className="flex items-center gap-2">
               <Input

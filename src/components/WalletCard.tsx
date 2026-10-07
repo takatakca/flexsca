@@ -1,3 +1,4 @@
+import { errorMessage } from "@/lib/errors";
 import { Coins, TrendingUp, TrendingDown, Gift, ArrowLeftRight, Loader2, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,7 +46,7 @@ export default function WalletCard() {
       });
 
       if (response.error) {
-        throw new Error(response.error.message || "Failed to create checkout");
+        throw new Error(errorMessage(response.error, "Failed to create checkout"));
       }
 
       const { url } = response.data;
@@ -54,9 +55,9 @@ export default function WalletCard() {
       } else {
         throw new Error("No checkout URL returned");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Buy credits error:", err);
-      toast.error(err.message || "Failed to start checkout");
+      toast.error(errorMessage(err, "Failed to start checkout"));
       setBuyingPackage(null);
     }
   };

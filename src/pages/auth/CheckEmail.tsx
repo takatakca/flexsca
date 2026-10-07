@@ -1,5 +1,7 @@
+import { errorMessage } from "@/lib/errors";
+import { callbackUrl, customerReturnPath } from "@/lib/auth-navigation";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import { ArrowLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +11,7 @@ import { toast } from "sonner";
 export default function CheckEmail() {
   const location = useLocation();
   const navigate = useNavigate();
-  const email = (location.state as any)?.email || "";
+  const email = (location.state as { email?: string } | null)?.email || "";
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,13 +24,13 @@ export default function CheckEmail() {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: callbackUrl(location.search),
         },
       });
       if (error) throw error;
       toast.success("Magic link sent! Check your email.");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to resend link");
+    } catch (error: unknown) {
+      toast.error(errorMessage(error, "Failed to resend link"));
     } finally {
       setResending(false);
     }
@@ -49,7 +51,7 @@ export default function CheckEmail() {
             email,
             password,
             options: {
-              emailRedirectTo: `${window.location.origin}/auth/callback`,
+              emailRedirectTo: callbackUrl(location.search),
             },
           });
           if (signUpError) throw signUpError;
@@ -58,18 +60,17 @@ export default function CheckEmail() {
           throw error;
         }
       } else {
-        navigate("/app/leads");
+        navigate(customerReturnPath(new URLSearchParams(location.search).get("next")) ?? "/app/dashboard");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Login failed");
+    } catch (error: unknown) {
+      toast.error(errorMessage(error, "Login failed"));
     } finally {
       setLoading(false);
     }
   };
 
   if (!email) {
-    navigate("/auth/welcome");
-    return null;
+    return <Navigate to={`/auth/welcome${location.search}`} replace />;
   }
 
   return (

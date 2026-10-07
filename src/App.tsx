@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,41 +6,49 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Welcome from "@/pages/auth/Welcome";
-import CheckEmail from "@/pages/auth/CheckEmail";
-import AuthCallback from "@/pages/auth/AuthCallback";
-import Login from "@/pages/auth/Login";
-import Onboarding from "@/pages/onboarding/Onboarding";
 import AppLayout from "@/components/AppLayout";
-import Leads from "@/pages/app/Leads";
-import LeadDetail from "@/pages/app/LeadDetail";
-import Responses from "@/pages/app/Responses";
-import Reminders from "@/pages/app/Reminders";
-import Settings from "@/pages/app/Settings";
-import StatusManagement from "@/pages/app/StatusManagement";
-import ProfileSetup from "@/pages/app/ProfileSetup";
-import OpenInApp from "@/pages/app/OpenInApp";
-import PostJob from "@/pages/customer/PostJob";
-import JobQuestionnaire from "@/pages/customer/JobQuestionnaire";
-import JobContact from "@/pages/customer/JobContact";
-import BuyerDashboard from "@/pages/customer/BuyerDashboard";
-import JobSuccess from "@/pages/customer/JobSuccess";
-import ServiceCategoryPage from "@/pages/ServiceCategoryPage";
-import AboutPage from "@/pages/AboutPage";
-import AffiliatePage from "@/pages/AffiliatePage";
-import HelpCenter from "@/pages/HelpCenter";
-import CookiesPage from "@/pages/CookiesPage";
-import Index from "@/pages/Index";
-import PublicProfile from "@/pages/PublicProfile";
-import ProLanding from "@/pages/ProLanding";
+import { captureAttribution } from "@/lib/lead-intake";
 import MerchantLayout from "@/components/MerchantLayout";
-import MerchantHome from "@/pages/merchant/MerchantHome";
-import MerchantOptimization from "@/pages/merchant/MerchantOptimization";
-import MerchantMarketplace from "@/pages/merchant/MerchantMarketplace";
-import MerchantMessages from "@/pages/merchant/MerchantMessages";
-import MerchantNotifications from "@/pages/merchant/MerchantNotifications";
-import MerchantMenu from "@/pages/merchant/MerchantMenu";
-import NotFound from "@/pages/NotFound";
+
+const Admin = lazy(() => import("@/pages/app/Admin"));
+const Notifications = lazy(() => import("@/pages/app/Notifications"));
+const Welcome = lazy(() => import("@/pages/auth/Welcome"));
+const CheckEmail = lazy(() => import("@/pages/auth/CheckEmail"));
+const AuthCallback = lazy(() => import("@/pages/auth/AuthCallback"));
+const Login = lazy(() => import("@/pages/auth/Login"));
+const Onboarding = lazy(() => import("@/pages/onboarding/Onboarding"));
+const Leads = lazy(() => import("@/pages/app/Leads"));
+const LeadDetail = lazy(() => import("@/pages/app/LeadDetail"));
+const Responses = lazy(() => import("@/pages/app/Responses"));
+const Reminders = lazy(() => import("@/pages/app/Reminders"));
+const Settings = lazy(() => import("@/pages/app/Settings"));
+const StatusManagement = lazy(() => import("@/pages/app/StatusManagement"));
+const ProfileSetup = lazy(() => import("@/pages/app/ProfileSetup"));
+const OpenInApp = lazy(() => import("@/pages/app/OpenInApp"));
+const PostJob = lazy(() => import("@/pages/customer/PostJob"));
+const JobQuestionnaire = lazy(() => import("@/pages/customer/JobQuestionnaire"));
+const JobContact = lazy(() => import("@/pages/customer/JobContact"));
+const BuyerDashboard = lazy(() => import("@/pages/customer/BuyerDashboard"));
+const JobSuccess = lazy(() => import("@/pages/customer/JobSuccess"));
+const ServiceCategoryPage = lazy(() => import("@/pages/ServiceCategoryPage"));
+const AboutPage = lazy(() => import("@/pages/AboutPage"));
+const AffiliatePage = lazy(() => import("@/pages/AffiliatePage"));
+const HelpCenter = lazy(() => import("@/pages/HelpCenter"));
+const CookiesPage = lazy(() => import("@/pages/CookiesPage"));
+const Dashboard = lazy(() => import("@/pages/app/Dashboard"));
+const CustomerRequest = lazy(() => import("@/pages/customer/CustomerRequest"));
+const Index = lazy(() => import("@/pages/Index"));
+const PublicProfile = lazy(() => import("@/pages/PublicProfile"));
+const ProLanding = lazy(() => import("@/pages/ProLanding"));
+const MerchantHome = lazy(() => import("@/pages/merchant/MerchantHome"));
+const MerchantOptimization = lazy(() => import("@/pages/merchant/MerchantOptimization"));
+const MerchantMarketplace = lazy(() => import("@/pages/merchant/MerchantMarketplace"));
+const MerchantMessages = lazy(() => import("@/pages/merchant/MerchantMessages"));
+const MerchantNotifications = lazy(() => import("@/pages/merchant/MerchantNotifications"));
+const MerchantMenu = lazy(() => import("@/pages/merchant/MerchantMenu"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
+captureAttribution(window.location.search);
 
 const queryClient = new QueryClient();
 
@@ -50,6 +59,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <Suspense fallback={<div role="status" className="p-8 text-center text-muted-foreground">Loading…</div>}>
           <Routes>
             {/* Public landing */}
             <Route path="/" element={<Index />} />
@@ -60,7 +70,9 @@ const App = () => (
             <Route path="/post-job/contact" element={<JobContact />} />
             <Route path="/post-job/success" element={<JobSuccess />} />
             <Route path="/post-job/:slug" element={<JobQuestionnaire />} />
-            <Route path="/my-requests" element={<BuyerDashboard />} />
+            <Route path="/my-requests" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
+            <Route path="/customer-notifications" element={<ProtectedRoute><Notifications customer /></ProtectedRoute>} />
+            <Route path="/my-requests/:id" element={<ProtectedRoute><CustomerRequest /></ProtectedRoute>} />
 
             {/* Public marketing pages */}
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
@@ -76,7 +88,6 @@ const App = () => (
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/auth/login" element={<Login />} />
             <Route path="/pro" element={<ProLanding />} />
-            <Route path="/open-in-app" element={<OpenInApp />} />
             <Route path="/open-in-app" element={<OpenInApp />} />
 
             {/* Onboarding */}
@@ -98,7 +109,10 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route index element={<Navigate to="/app/leads" replace />} />
+              <Route index element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="admin" element={<Admin />} />
               <Route path="leads" element={<Leads />} />
               <Route path="leads/:id" element={<LeadDetail />} />
               <Route path="responses" element={<Responses />} />
@@ -128,6 +142,7 @@ const App = () => (
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

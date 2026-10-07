@@ -124,7 +124,7 @@ export default function JobQuestionnaire() {
 
   const handleNext = () => {
     // Merge "Other" text into answer if checked
-    let finalAnswers = { ...answers };
+    const finalAnswers = { ...answers };
     if (otherChecked[question.id] && otherText[question.id]?.trim()) {
       if (question.type === "checkbox") {
         const current = (answers[question.id] as string[]) || [];

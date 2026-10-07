@@ -9,6 +9,7 @@ interface CustomerLead {
   id: string;
   category: string;
   status: string;
+  archived: boolean;
   created_at: string;
   location_text: string;
 }
@@ -24,6 +25,7 @@ export default function BuyerDashboard() {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<CustomerLead[]>([]);
   const [suggestions, setSuggestions] = useState<SuggestedCategory[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollIndex, setScrollIndex] = useState(0);
@@ -36,22 +38,13 @@ export default function BuyerDashboard() {
         return;
       }
 
-      // Fetch customer's leads by email
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("email")
-        .eq("id", user.id)
-        .single();
-
-      if (profile?.email) {
-        const { data: customerLeads } = await supabase
-          .from("leads")
-          .select("id, category, status, created_at, location_text")
-          .eq("customer_email", profile.email)
-          .order("created_at", { ascending: false });
-
-        if (customerLeads) setLeads(customerLeads);
-      }
+      const { error: claimError } = await supabase.rpc("claim_customer_leads");
+      if (claimError) { setError("Verify your email to view your requests."); setLoading(false); return; }
+      const { data: customerLeads, error: requestError } = await supabase.from("leads")
+        .select("id, category, status, archived, created_at, location_text")
+        .eq("customer_user_id", user.id).order("created_at", { ascending: false });
+      if (requestError) setError("Unable to load your requests. Please try again.");
+      else setLeads(customerLeads ?? []);
 
       // Fetch suggested categories
       const { data: cats } = await supabase
@@ -71,18 +64,18 @@ export default function BuyerDashboard() {
   const getStatusMessage = (status: string) => {
     switch (status) {
       case "new":
-        return { text: "Your request is being reviewed. We'll match you with professionals shortly.", color: "bg-blue-50 text-blue-700" };
+        return { text: "Your request is open for professionals to respond.", color: "bg-blue-50 text-blue-700" };
       case "contacted":
-        return { text: "Professionals have been notified. You should hear back soon!", color: "bg-green-50 text-green-700" };
+        return { text: "A professional has contacted your request.", color: "bg-green-50 text-green-700" };
       case "won":
-        return { text: "You've been matched! Check your email for professional details.", color: "bg-green-50 text-green-700" };
+        return { text: "Your request has been marked as won.", color: "bg-green-50 text-green-700" };
       default:
-        return { text: `Your request has been rejected. Please email team@flexs.ca for more information.`, color: "bg-red-50 text-red-600" };
+        return { text: "This request is no longer open.", color: "bg-red-50 text-red-600" };
     }
   };
 
   const handleScrollLeft = () => setScrollIndex((p) => Math.max(0, p - 1));
-  const handleScrollRight = () => setScrollIndex((p) => Math.min(suggestions.length - 4, p + 1));
+  const handleScrollRight = () => setScrollIndex((p) => Math.min(Math.max(0, suggestions.length - 4), p + 1));
 
   if (loading) {
     return (
@@ -110,7 +103,7 @@ export default function BuyerDashboard() {
               <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold text-sm">
                 C
               </div>
-              <span className="text-sm font-medium text-foreground">Customer</span>
+              <button onClick={() => navigate("/customer-notifications")} className="text-sm font-medium text-primary">Notifications</button>
             </div>
           </div>
 
@@ -138,7 +131,7 @@ export default function BuyerDashboard() {
         </div>
 
         {/* Request cards */}
-        {leads.length === 0 ? (
+        {error ? <div role="alert" className="text-destructive p-6 border rounded-xl">{error}</div> : leads.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-muted-foreground mb-4">You haven't placed any requests yet.</p>
             <Button onClick={() => navigate("/post-job")}>Place your first request</Button>
@@ -146,7 +139,7 @@ export default function BuyerDashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
             {leads.map((lead) => {
-              const statusInfo = getStatusMessage(lead.status);
+              const statusInfo = lead.archived ? { text: "This request is closed. Your conversations remain available.", color: "bg-gray-50 text-gray-700" } : getStatusMessage(lead.status);
               return (
                 <div
                   key={lead.id}
@@ -161,7 +154,7 @@ export default function BuyerDashboard() {
                   </div>
                   <Button
                     size="sm"
-                    onClick={() => navigate(`/post-job`)}
+                    onClick={() => navigate(`/my-requests/${lead.id}`)}
                   >
                     View request
                   </Button>
