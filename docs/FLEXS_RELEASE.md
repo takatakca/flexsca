@@ -2,8 +2,11 @@
 
 FLEXS is an independent product at **flexs.ca**, designed to connect to TAKATAK V1. The TAKATAK repository at `8adfa23ca50f52f6a49e0eaec68e933c68dd1c78` defines `/services/lead-generation` as the service destination and `/api/integrations/ads/flexs/events` as the attribution contract. This change implements a marketplace release; it does not establish complete Bark feature parity.
 
+See [product roadmap](FLEXS_PRODUCT_ROADMAP.md) for the delivery scope and integration boundaries.
+
 ## Delivered behavior
 
+- Redesigned public homepage, professional landing, workspace navigation, opportunity cards, and mobile layouts using the FLEXS ink-blue/warm-canvas palette. Branded favicon and social card replace the generic project artwork. Homepage service/location inputs carry into the request; supplied phone numbers are not labelled verified. Keyboard navigation, focus indicators, skip links, and reduced-motion preferences are supported.
 - Provider overview with database-backed opportunities, unlocked contacts, due follow-ups, wallet balance, reviews, and latest requests; desktop sidebar and mobile navigation.
 - Customer questionnaire with string and checkbox answers, shared validation, server-side category/input checks, and mailbox submission limits.
 - Customer sign-in returns to the requested page; verified email ownership claims matching guest requests. Customers can view existing requests, compare quotes, reply privately, and close requests.
@@ -54,7 +57,7 @@ In this cloud environment, `DENO_TLS_CA_STORE=system` is needed to trust the pla
 
 ## Current validation evidence
 
-45 Vitest tests passed (44 functional/security checks plus the existing example), twenty-two browser smoke checks passed with API fixtures, TypeScript and the production build passed, and ESLint passed with nine existing fast-refresh export warnings. The largest emitted JavaScript chunk is approximately 216 KB instead of the previous 1 MB bundle. All three Edge Functions passed Deno typechecks; the Stripe SDK signature runtime test passed with local fixtures. A read-only request to the hosted Supabase category API returned HTTP 200. GitHub Actions itself has not been observed running in this task.
+45 Vitest tests passed (44 functional/security checks plus the existing example), twenty-four browser smoke checks passed with API fixtures, TypeScript and the production build passed, and ESLint passed with nine existing fast-refresh export warnings. The largest emitted JavaScript chunk is approximately 220 KB instead of the previous 1 MB bundle. All three Edge Functions passed Deno typechecks; the Stripe SDK signature runtime test passed with local fixtures. A read-only request to the hosted Supabase category API returned HTTP 200. GitHub Actions itself has not been observed running in this task.
 
 ## Promotion order
 

@@ -122,9 +122,9 @@ export default function Leads() {
   }, [filters]);
 
   return (
-    <div className="pb-4">
+    <div className="max-w-7xl mx-auto pb-8 md:p-4 lg:p-6">
       {/* ── Header bar ── */}
-      <div className="mx-4 mt-4 rounded-2xl bg-accent/60 border border-border px-4 py-3 flex items-center gap-3">
+      <div className="mx-4 mt-4 rounded-2xl bg-white border border-border px-4 py-3 flex items-center gap-3">
         {/* Count */}
         <div className="flex-1 min-w-0">
           <p className="text-base font-bold text-foreground">
@@ -159,7 +159,7 @@ export default function Leads() {
       </div>
 
       {/* ── Lead cards ── */}
-      <div className="px-4 mt-4 space-y-3">
+      <div className="px-4 mt-4 grid lg:grid-cols-2 gap-4">
         {loading ? (
           <div role="status" className="flex justify-center gap-2 py-8"><Loader2 className="h-5 w-5 animate-spin" /> Loading requests…</div>
         ) : error ? (

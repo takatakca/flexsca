@@ -1,7 +1,7 @@
 import { useLongPress } from "@/hooks/useLongPress";
 import { formatDistanceToNow } from "date-fns";
 import {
-  CheckCircle2,
+  Phone,
   ListChecks,
   Coins,
   Archive,
@@ -75,7 +75,7 @@ export default function LeadCard({
   const isUnread = state?.is_unread ?? true;
   const isContacted = state?.contacted ?? false;
   const firstToRespond = state?.first_to_respond ?? false;
-  const hasVerifiedPhone = !!lead.customer_phone;
+  const hasPhone = !!lead.customer_phone;
   const hasAdditionalDetails = lead.has_additional_details;
 
   const timeAgo = formatDistanceToNow(new Date(lead.created_at), {
@@ -93,6 +93,10 @@ export default function LeadCard({
     <div
       className="bg-card rounded-2xl border border-border shadow-sm cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] transition-transform select-none overflow-hidden"
       {...longPressHandlers}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${lead.category} request`}
+      onKeyDown={e=>{ if(e.target===e.currentTarget && (e.key==="Enter" || e.key===" ")) { e.preventDefault();onNavigate(); } }}
     >
       <div className="p-4">
         {/* Row 1: Avatar + Name + Time */}
@@ -129,13 +133,13 @@ export default function LeadCard({
         <div className="flex flex-wrap gap-2 mt-3">
           {lead.is_urgent && (
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[hsl(75,60%,90%)] px-2.5 py-1 text-xs font-semibold text-foreground">
-              ⚡ High hiring intent
+              ⚡ Urgent request
             </span>
           )}
-          {hasVerifiedPhone && (
+          {hasPhone && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground">
-              <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(var(--success))]" />
-              Verified phone
+              <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+              Phone provided
             </span>
           )}
           {hasAdditionalDetails && (

@@ -108,13 +108,35 @@ try {
     await new Promise(resolve=>setTimeout(resolve,100));
   }
   await page.goto('http://127.0.0.1:4173/?ttclid=dddddddd-dddd-4ddd-8ddd-dddddddddddd');
-  await page.getByRole('link',{name:'Find a Pro',exact:true}).first().click();
+  await page.getByRole('heading',{name:/Big ideas/}).waitFor();
+  await page.screenshot({path:'/tmp/flexsca-home-desktop.png',fullPage:true});
+  await page.setViewportSize({width:390,height:844});
+  await page.getByRole('button',{name:'Open navigation',exact:true}).click();
+  await page.getByRole('navigation',{name:'Mobile navigation',exact:true}).getByRole('link',{name:'Find a Pro',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Close navigation',exact:true}).click();
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),'Mobile homepage must not overflow');
+  await page.screenshot({path:'/tmp/flexsca-home-mobile.png',fullPage:true});
+  await page.setViewportSize({width:1440,height:1000});
+  await page.goto('http://127.0.0.1:4173/pro');
+  await page.getByRole('heading',{name:/Great work deserves/}).waitFor();
+  assert.equal(await page.getByRole('link',{name:'Create your professional account',exact:true}).getAttribute('href'),'/auth/welcome');
+  await page.getByRole('link',{name:'How lead credits work',exact:true}).click();
+  await page.getByRole('heading',{name:'How do professional credits work?',exact:true}).waitFor();
+  console.log('PASS professional landing has working signup, workspace, credit guidance, and independent TakaTak links');
+  await page.goto('http://127.0.0.1:4173/?ttclid=dddddddd-dddd-4ddd-8ddd-dddddddddddd');
+  await page.getByLabel('What do you need?',{exact:true}).fill('House Cleaning');
+  await page.getByLabel('Where is your project?',{exact:true}).fill('Toronto, M1A1A1');
+  await page.getByRole('button',{name:'Find my professional',exact:true}).click();
+  await page.getByPlaceholder('Search for a service...').waitFor();
+  assert.equal(await page.getByPlaceholder('Search for a service...').inputValue(),'House Cleaning');
+
   await page.getByRole('button',{name:/House Cleaning/}).click();
   await page.getByRole('button',{name:'Kitchen',exact:true}).click();
   await page.getByRole('button',{name:'Continue',exact:true}).click();
   await page.getByPlaceholder('Full name').fill('Test Customer');
   await page.getByPlaceholder('your@email.com').fill('customer@example.test');
-  await page.getByPlaceholder('City, Postal Code').fill('Toronto, M1A1A1');
+  assert.equal(await page.getByPlaceholder('City, Postal Code').inputValue(),'Toronto, M1A1A1');
+  console.log('PASS responsive homepage navigation and service/location preserved through the questionnaire');
   await page.getByRole('button',{name:'Get free quotes'}).click();
   await page.getByRole('heading',{name:/Request submitted/}).waitFor();
   assert.deepEqual(submitted.p_answers,{rooms:['Kitchen']});
@@ -164,6 +186,9 @@ try {
   await page.getByRole('button',{name:'Try again',exact:true}).click();
   await page.getByText('21 Matching leads',{exact:true}).waitFor();
   console.log('PASS marketplace errors remain visible and retry recovers');
+  await page.getByRole('button',{name:'View House Cleaning request',exact:true}).focus();
+  await page.keyboard.press('Enter');
+  await page.getByRole('button',{name:'Contact C***',exact:true}).waitFor();
   await page.goto('http://127.0.0.1:4173/app/dashboard');
   await page.getByRole('heading',{name:'Your next opportunity starts here.'}).waitFor();
   await page.getByText('20',{exact:true}).waitFor();
@@ -171,6 +196,7 @@ try {
   await page.getByRole('link',{name:/Contacts unlocked/}).getByText('2',{exact:true}).waitFor();
   await page.getByRole('link',{name:/Follow-ups due/}).getByText('1',{exact:true}).waitFor();
   assert.equal(await page.getByText('Marketplace opportunities',{exact:true}).count(),1);
+  await page.screenshot({path:'/tmp/flexsca-dashboard-desktop.png',fullPage:true});
   console.log('PASS provider overview displays API-driven credits and marketplace metrics');
   await page.getByText('33%',{exact:true}).waitFor();
   await page.getByLabel('Quote activity period',{exact:true}).selectOption('all');

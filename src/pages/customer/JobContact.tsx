@@ -16,6 +16,7 @@ export default function JobContact() {
     categoryId: string;
     categoryName: string;
     categorySlug: string;
+    projectLocation?: string;
     answers: Record<string, AnswerValue>;
   } | null;
 
@@ -23,7 +24,7 @@ export default function JobContact() {
     name: "",
     email: "",
     phone: "",
-    location: "",
+    location: state?.projectLocation ?? "",
     details: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});

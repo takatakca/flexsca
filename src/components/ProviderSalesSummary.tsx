@@ -20,7 +20,7 @@ export default function ProviderSalesSummary() {
     },
   });
   const rate=data?.quotedRequests ? Math.round(data.acceptedRequests/data.quotedRequests*100) : 0;
-  return <Card><CardContent className="p-5 md:p-6 space-y-5">
+  return <Card className="rounded-2xl shadow-none"><CardContent className="p-5 md:p-6 space-y-5">
     <div className="flex flex-wrap gap-4 justify-between items-center"><h3 className="text-lg font-semibold">Your quote activity</h3>
       <label className="flex items-center gap-2 text-sm">Period<select aria-label="Quote activity period" className="bg-background border rounded-lg px-3 py-2" value={period} onChange={e=>setPeriod(e.target.value)}><option value="30">Last 30 days</option><option value="all">All time</option></select></label>
     </div>

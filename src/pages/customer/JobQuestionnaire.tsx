@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { X, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ interface Category {
 export default function JobQuestionnaire() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const [params]=useSearchParams();
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentQ, setCurrentQ] = useState(0);
@@ -56,6 +57,13 @@ export default function JobQuestionnaire() {
       });
   }, [slug]);
 
+  useEffect(()=>{
+    if(category && category.questions.length===0)navigate("/post-job/contact",{replace:true,state:{
+      categoryId:category.id,categoryName:category.name,categorySlug:category.slug,
+      projectLocation:(params.get("location") ?? "").slice(0,120),answers:{},
+    }});
+  },[category,navigate,params]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -75,17 +83,7 @@ export default function JobQuestionnaire() {
 
   const questions = category.questions;
 
-  if (questions.length === 0) {
-    navigate("/post-job/contact", {
-      state: {
-        categoryId: category.id,
-        categoryName: category.name,
-        categorySlug: category.slug,
-        answers: {},
-      },
-    });
-    return null;
-  }
+  if (questions.length === 0) return <p role="status" className="p-8">Preparing your request…</p>;
 
   const question = questions[currentQ];
   const progress = ((currentQ + 1) / questions.length) * 100;
@@ -143,6 +141,7 @@ export default function JobQuestionnaire() {
           categoryId: category.id,
           categoryName: category.name,
           categorySlug: category.slug,
+        projectLocation: (params.get("location") ?? "").slice(0,120),
           answers: finalAnswers,
         },
       });

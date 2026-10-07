@@ -1,109 +1,16 @@
-import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Search, Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
+import { Link } from 'react-router-dom';
+import { ArrowRight, ArrowUpRight, CalendarClock, ClipboardList, Coins, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-interface Category {
-  name: string;
-  slug: string;
-  icon: string | null;
-}
-
-export default function ProLanding() {
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    supabase
-      .from("service_categories")
-      .select("name, slug, icon")
-      .eq("is_active", true)
-      .order("sort_order")
-      .limit(20)
-      .then(({ data }) => {
-        if (data) setCategories(data);
-      });
-  }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    navigate("/auth/welcome");
-  };
-
-  // Split categories into two columns
-  const half = Math.ceil(categories.length / 2);
-  const col1 = categories.slice(0, half);
-  const col2 = categories.slice(half);
-
-  return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-        <div className="max-w-7xl mx-auto flex h-14 items-center justify-between px-4">
-          <Link to="/" className="text-xl font-bold text-primary italic">FLEXS</Link>
-          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-      </header>
-
-      {/* Hero */}
-      <section className="px-6 pt-16 pb-10 max-w-lg mx-auto w-full">
-        <h1 className="text-3xl font-bold text-foreground leading-tight mb-3">
-          Secure jobs and grow your business
-        </h1>
-        <p className="text-sm text-muted-foreground mb-8">
-          1000's of local and remote clients are already looking for your services
-        </p>
-
-        {/* Search bar */}
-        <form onSubmit={handleSearch} className="flex gap-2 mb-8">
-          <Input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="What Service do you provide?"
-            className="flex-1 h-11 rounded-lg"
-          />
-          <Button type="submit" className="h-11 px-4 rounded-lg">
-            <Search className="h-4 w-4" />
-          </Button>
-        </form>
-
-        {/* Popular services */}
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3">Popular services</h3>
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-            <div className="space-y-2">
-              {col1.map((cat) => (
-                <button
-                  key={cat.slug}
-                  onClick={() => navigate("/auth/welcome")}
-                  className="flex items-center gap-2 text-sm text-primary hover:underline w-full text-left"
-                >
-                  <span>{cat.icon || "🔧"}</span>
-                  <span>{cat.name}</span>
-                </button>
-              ))}
-            </div>
-            <div className="space-y-2">
-              {col2.map((cat) => (
-                <button
-                  key={cat.slug}
-                  onClick={() => navigate("/auth/welcome")}
-                  className="flex items-center gap-2 text-sm text-primary hover:underline w-full text-left"
-                >
-                  <span>{cat.icon || "🔧"}</span>
-                  <span>{cat.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+export default function ProLanding(){
+  return <div className="min-h-screen bg-background">
+    <header className="border-b"><nav aria-label="Professional site navigation" className="max-w-7xl mx-auto px-5 lg:px-8 h-20 flex justify-between items-center gap-4"><Link to="/" className="text-2xl font-extrabold tracking-tight">FLEXS<span className="text-orange-600">.</span></Link><div className="flex gap-5 items-center text-sm"><Link to="/help">Help centre</Link><Link to="/auth/login" className="font-semibold">Sign in</Link></div></nav></header>
+    <main>
+      <section className="bg-[#f6f4ef]"><div className="max-w-7xl mx-auto px-5 lg:px-8 py-16 lg:py-24 grid lg:grid-cols-2 items-center gap-12 lg:gap-20"><div><p className="text-xs font-semibold text-orange-700 uppercase tracking-[0.18em]">FLEXS for independent professionals</p><h1 className="text-5xl lg:text-6xl font-semibold leading-[1.08] tracking-[-0.05em] mt-6">Great work deserves<br /><span className="text-orange-700">a next opportunity.</span></h1><p className="text-lg text-muted-foreground leading-relaxed mt-6">Find customer projects, choose the requests that fit, and keep every quote and conversation organized in your professional workspace.</p><div className="flex flex-wrap gap-3 mt-8"><Button asChild className="h-12 rounded-xl px-6"><Link to="/auth/welcome">Create your professional account <ArrowRight className="size-4 ml-2" /></Link></Button><Button asChild variant="outline" className="h-12 rounded-xl bg-white"><Link to="/app/dashboard">Open workspace <ArrowUpRight className="size-4 ml-2" /></Link></Button></div><p className="text-xs text-muted-foreground mt-4">Contact access uses credits. A customer request does not guarantee a job.</p></div>
+        <div className="bg-primary rounded-[2rem] text-white p-8 sm:p-10"><div className="flex justify-between items-center"><p className="text-xs uppercase tracking-[0.15em] text-white/70">Your working day, simplified</p><ShieldCheck className="size-5 text-orange-300" /></div><h2 className="text-3xl font-semibold tracking-tight mt-8 mb-6">One workspace.<br />A clearer next step.</h2>{[{icon:ClipboardList,title:'Choose your opportunities',text:'Review the service, location, timing, and credit cost.'},{icon:MessageSquare,title:'Start the conversation',text:'Unlock a contact and send a structured CAD quote.'},{icon:CalendarClock,title:'Keep things moving',text:'Set follow-ups and see customer replies in your account.'}].map(({icon:Icon,title,text})=><div key={title} className="border-t border-white/15 py-5 flex gap-4"><div className="size-10 shrink-0 rounded-xl bg-white/10 grid place-items-center"><Icon className="size-5 text-orange-300" /></div><div><h3 className="text-sm font-semibold">{title}</h3><p className="text-xs leading-relaxed mt-2 text-white/70">{text}</p></div></div>)}</div>
+      </div></section>
+      <section className="max-w-7xl mx-auto px-5 lg:px-8 py-16"><p className="text-xs uppercase tracking-[0.18em] font-semibold text-orange-700">Know what you’re paying for</p><h2 className="text-3xl sm:text-4xl font-semibold tracking-tight mt-4">Choose contacts, not commitments.</h2><div className="grid md:grid-cols-3 gap-5 mt-8">{[['Browse first','See available requests and their credit cost before unlocking contact details.'],['Unlock with credits','Buy a credit pack when you need it. Your wallet records purchases, spending, and approved credit refunds.'],['Build your reputation','Complete your profile, show your work, and receive reviews from customers with an accepted quote.']].map(([title,text])=><article key={title} className="border rounded-2xl p-6"><h3 className="font-semibold">{title}</h3><p className="mt-3 text-sm text-muted-foreground leading-relaxed">{text}</p></article>)}</div><Link to="/help/credits" className="inline-flex items-center gap-2 mt-7 text-sm font-semibold">How lead credits work <Coins className="size-4" /></Link></section>
+      <section className="max-w-7xl mx-auto px-5 lg:px-8 pb-16"><div className="bg-primary/5 border rounded-2xl p-7 flex flex-wrap justify-between items-center gap-6"><div><h2 className="text-xl font-semibold">Looking beyond your next lead?</h2><p className="text-sm text-muted-foreground mt-2">FLEXS remains independent. Explore TakaTak’s services for your wider growth plans.</p></div><Button asChild variant="outline" className="bg-white"><a href="https://takatak.ca/services/lead-generation" target="_blank" rel="noopener noreferrer">Explore TakaTak <ArrowUpRight className="size-4 ml-2" /></a></Button></div></section>
+    </main><footer className="border-t px-5 py-6 text-xs text-muted-foreground"><div className="max-w-7xl mx-auto flex flex-wrap justify-between gap-4"><p>© {new Date().getFullYear()} FLEXS. An independent marketplace.</p><Link to="/support">Contact support</Link></div></footer>
+  </div>;
 }
