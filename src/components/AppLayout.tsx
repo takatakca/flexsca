@@ -1,3 +1,4 @@
+import { useUnreadNotifications } from "@/hooks/useUnreadNotifications";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ClipboardList, MessageSquare, Bell, LayoutDashboard, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,6 +27,7 @@ export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { data: unread = 0 } = useUnreadNotifications();
 
   const title = getPageTitle(location.pathname);
   const initial = user?.email?.charAt(0).toUpperCase() || "U";
@@ -35,6 +37,7 @@ export default function AppLayout() {
       {/* Top bar */}
       <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background/95 backdrop-blur px-4">
         <button
+          aria-label="Account settings"
           onClick={() => navigate("/app/settings")}
           className="flex items-center"
         >
@@ -67,6 +70,7 @@ export default function AppLayout() {
                 key={path}
                 onClick={() => navigate(path)}
                 aria-current={isActive ? "page" : undefined}
+                aria-label={path === "/app/notifications" && unread > 0 ? `${label}, ${unread} unread` : label}
                 className={`flex flex-1 flex-col items-center justify-center gap-1 transition-colors md:flex-row md:justify-start md:p-3 md:gap-3 md:rounded-lg ${
                   isActive
                     ? "text-primary md:bg-primary/10"
@@ -74,7 +78,7 @@ export default function AppLayout() {
                 }`}
               >
                 <Icon className="h-5 w-5" />
-                <span className="text-xs font-medium">{label}</span>
+                <span className="text-xs font-medium">{label}{path === "/app/notifications" && unread > 0 && <span aria-hidden="true" className="ml-1 rounded-full bg-primary px-1.5 text-[10px] text-primary-foreground">{unread > 99 ? "99+" : unread}</span>}</span>
               </button>
             );
           })}

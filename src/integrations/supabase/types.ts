@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      notification_preferences: {
+        Row: { user_id: string; messages: boolean; reminders: boolean }
+        Insert: { user_id: string; messages?: boolean; reminders?: boolean }
+        Update: { messages?: boolean; reminders?: boolean }
+        Relationships: []
+      }
       notifications: {
         Row: { id: string; user_id: string; lead_id: string | null; title: string; read_at: string | null; created_at: string }
         Insert: { user_id: string; lead_id?: string | null; title: string }
@@ -1449,6 +1455,10 @@ export type Database = {
       }
     }
     Functions: {
+      set_notification_preferences: { Args: { p_messages: boolean; p_reminders: boolean }; Returns: undefined }
+      provider_sales_summary: { Args: { p_since?: string | null }; Returns: Json }
+      create_follow_up: { Args: { p_lead_id: string; p_remind_at: string; p_note?: string | null; p_request_id?: string }; Returns: string }
+      collect_due_follow_ups: { Args: Record<string, never>; Returns: number }
       customer_review_status: { Args: { p_lead_id: string }; Returns: Json }
       submit_customer_review: { Args: { p_lead_id: string; p_rating: number; p_text: string }; Returns: string }
       search_marketplace_leads: { Args: { p_filters?: Json; p_page?: number; p_page_size?: number }; Returns: Json }

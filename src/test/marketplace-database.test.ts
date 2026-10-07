@@ -293,3 +293,123 @@ describe('verified customer reviews', () => {
     expect(rows[0]).not.toHaveProperty('lead_id'); expect(rows[0]).not.toHaveProperty('reviewer_email');
   });
 });
+
+describe('follow-up workflow and due notifications', () => {
+  let reminder: string;
+  const requestKey='99999999-9999-4999-8999-999999999999';
+  let when: string;
+  it('validates dates and notes, and disallows raw browser inserts', async () => {
+    await asRole('anon');
+    await expect(db.query('SELECT collect_due_follow_ups()')).rejects.toThrow();
+    await asRole('authenticated',pro);
+    await expect(db.query(`SELECT create_follow_up('${lead}',now()-interval '1 hour')`)).rejects.toThrow('Invalid reminder');
+    await expect(db.query(`SELECT create_follow_up('${lead}',now()+interval '400 days')`)).rejects.toThrow('Invalid reminder');
+    await expect(db.query(`SELECT create_follow_up('${lead}',now()+interval '1 hour',repeat('x',2001))`)).rejects.toThrow('Invalid reminder');
+    await expect(db.exec(`INSERT INTO reminders(user_id,lead_id,remind_at) VALUES('${pro}','${lead}',now())`)).rejects.toThrow();
+  });
+  it('creates a reminder for an unlocked, unassigned request exactly once', async () => {
+    await asRole('authenticated',pro);
+    when=new Date(Date.now()+3600000).toISOString();
+    const args=[lead,when,'Follow up privately',requestKey];
+    const first=await db.query<{id:string}>('SELECT create_follow_up($1,$2,$3,$4) AS id',args);
+    reminder=first.rows[0].id;
+    const repeated=await db.query<{id:string}>('SELECT create_follow_up($1,$2,$3,$4) AS id',args);
+    expect(repeated.rows[0].id).toBe(reminder);
+    expect(await scalar(`SELECT count(*) FROM reminders WHERE request_id='${requestKey}'`)).toBe(1);
+    await expect(db.query('SELECT create_follow_up($1,$2,$3,$4)',[lead,when,'Changed request',requestKey])).rejects.toThrow('Reminder request already used');
+    await expect(db.exec(`UPDATE reminders SET user_id='${other}' WHERE id='${reminder}'`)).rejects.toThrow();
+  });
+  it('collects only owned due reminders and never duplicates a notification', async () => {
+    await asRole('service_role');
+    await db.exec(`UPDATE reminders SET remind_at=now()-interval '1 minute' WHERE id='${reminder}';
+      INSERT INTO reminders(user_id,lead_id,remind_at,note) VALUES('${other}','${lead}',now()-interval '1 minute','Other private note');`);
+    await asRole('authenticated',pro);
+    expect(await scalar('SELECT collect_due_follow_ups()')).toBe(1);
+    expect(await scalar('SELECT collect_due_follow_ups()')).toBe(0);
+    expect(await scalar(`SELECT count(*) FROM notifications WHERE title='A follow-up reminder is due'`)).toBe(1);
+    expect(await scalar(`SELECT count(*) FROM reminders WHERE user_id='${other}'`)).toBe(0);
+    await asRole('authenticated',other);
+    expect(await scalar('SELECT collect_due_follow_ups()')).toBe(1);
+  });
+  it('skips completed reminders and protects notification delivery fields', async () => {
+    await asRole('service_role');
+    const id=String(await scalar(`INSERT INTO reminders(user_id,lead_id,remind_at,status) VALUES('${pro}','${lead}',now()-interval '1 hour','done') RETURNING id`));
+    await asRole('authenticated',pro);
+    expect(await scalar('SELECT collect_due_follow_ups()')).toBe(0);
+    await expect(db.exec(`UPDATE reminders SET notified_at=now() WHERE id='${id}'`)).rejects.toThrow();
+    await db.exec(`UPDATE reminders SET status='done' WHERE id='${reminder}'`);
+    expect(await scalar(`SELECT status FROM reminders WHERE id='${reminder}'`)).toBe('done');
+  });
+});
+
+describe('provider quote and credit reporting', () => {
+  let request: string;
+  it('requires authentication and validates reporting dates', async () => {
+    await asRole('anon');
+    await expect(db.query('SELECT provider_sales_summary()')).rejects.toThrow();
+    await asRole('authenticated',pro);
+    await expect(db.query(`SELECT provider_sales_summary(now()+interval '1 day')`)).rejects.toThrow('Invalid reporting period');
+  });
+  it('counts quoted requests once and isolates estimates between providers', async () => {
+    await asRole('service_role');
+    request=String(await scalar(`INSERT INTO leads(category,location_text) VALUES('Reporting Fixture','Toronto') RETURNING id`));
+    await db.exec(`INSERT INTO responses(lead_id,pro_id,message,price_min,status) VALUES
+      ('${request}','${pro}','First pending quote',200,'sent'),('${request}','${pro}','Second pending quote',300,'sent'),
+      ('${request}','${other}','Other private quote',91000,'accepted');`);
+    await asRole('authenticated',pro);
+    const summary=await scalar('SELECT provider_sales_summary()') as {quotedRequests:number;acceptedRequests:number;pendingQuotes:number;pricedAccepted:number;estimatedMin:number;estimatedMax:number};
+    expect(summary).toMatchObject({quotedRequests:3,acceptedRequests:2,pendingQuotes:2,pricedAccepted:1,estimatedMin:100,estimatedMax:150});
+    await asRole('authenticated',other);
+    const otherSummary=await scalar('SELECT provider_sales_summary()') as typeof summary;
+    expect(otherSummary).toMatchObject({quotedRequests:1,acceptedRequests:1,estimatedMin:91000,estimatedMax:91000});
+  });
+  it('reports actual owned credit movements and excludes older quote cohorts', async () => {
+    await asRole('authenticated',pro);
+    const summary=await scalar('SELECT provider_sales_summary()') as {creditsSpent:number;creditsRefunded:number};
+    expect(summary.creditsSpent).toBe(Number(await scalar(`SELECT COALESCE(sum(-delta),0) FROM credit_transactions WHERE reason='spend_lead' AND delta<0`)));
+    expect(summary.creditsRefunded).toBe(Number(await scalar(`SELECT COALESCE(sum(delta),0) FROM credit_transactions WHERE reason='refund' AND delta>0`)));
+    await asRole('service_role');
+    await db.exec(`UPDATE responses SET created_at=now()-interval '40 days' WHERE pro_id='${pro}' AND lead_id='${request}'`);
+    await asRole('authenticated',pro);
+    const recent=await scalar(`SELECT provider_sales_summary(now()-interval '30 days')`) as {quotedRequests:number;pendingQuotes:number};
+    expect(recent).toMatchObject({quotedRequests:2,pendingQuotes:0});
+  });
+});
+
+describe('saved in-app notification preferences', () => {
+  it('persists only the current account preferences', async () => {
+    await asRole('authenticated',pro);
+    await db.query('SELECT set_notification_preferences(false,false)');
+    expect(await scalar(`SELECT messages FROM notification_preferences WHERE user_id='${pro}'`)).toBe(false);
+    await expect(db.exec(`INSERT INTO notification_preferences(user_id) VALUES('${other}')`)).rejects.toThrow();
+    await asRole('authenticated',other);
+    expect(await scalar(`SELECT count(*) FROM notification_preferences WHERE user_id='${pro}'`)).toBe(0);
+    await asRole('anon');
+    await expect(db.query('SELECT set_notification_preferences(true,true)')).rejects.toThrow();
+  });
+  it('mutes future recipient message notices without suppressing the private conversation', async () => {
+    await asRole('authenticated',pro);
+    const before=Number(await scalar(`SELECT count(*) FROM notifications`));
+    expect(await scalar(`SELECT can_customer_message_lead('${lead}','${pro}')`)).toBe(false);
+    await asRole('authenticated',buyer);
+    await expect(db.exec(`INSERT INTO lead_messages(lead_id,agent_id,sender_type,message) VALUES('${lead}','${buyer}','customer','An unpaid fabricated conversation')`)).rejects.toThrow();
+    await db.exec(`INSERT INTO lead_messages(lead_id,agent_id,sender_type,message) VALUES('${lead}','${pro}','customer','A message with notifications muted')`);
+    await asRole('authenticated',pro);
+    expect(Number(await scalar('SELECT count(*) FROM notifications'))).toBe(before);
+    expect(await scalar(`SELECT count(*) FROM lead_messages WHERE message='A message with notifications muted'`)).toBe(1);
+    await db.query('SELECT set_notification_preferences(true,false)');
+    await asRole('authenticated',buyer);
+    await db.exec(`INSERT INTO lead_messages(lead_id,agent_id,sender_type,message) VALUES('${lead}','${pro}','customer','An unmuted message')`);
+    await asRole('authenticated',pro);
+    expect(Number(await scalar('SELECT count(*) FROM notifications'))).toBe(before+1);
+  });
+  it('retains due reminders while muted and delivers once after re-enabling', async () => {
+    await asRole('service_role');
+    await db.exec(`INSERT INTO reminders(user_id,lead_id,remind_at) VALUES('${pro}','${lead}',now()-interval '1 minute')`);
+    await asRole('authenticated',pro);
+    expect(await scalar('SELECT collect_due_follow_ups()')).toBe(0);
+    await db.query('SELECT set_notification_preferences(true,true)');
+    expect(await scalar('SELECT collect_due_follow_ups()')).toBe(1);
+    expect(await scalar('SELECT collect_due_follow_ups()')).toBe(0);
+  });
+});

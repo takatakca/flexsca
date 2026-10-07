@@ -78,16 +78,9 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
           Will this affect my service area?
         </p>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          No, this location will not affect where you provide a service. Service
-          areas can be edited or updated in your{" "}
-          <button
-            type="button"
-            className="text-primary font-medium hover:underline"
-            onClick={() => {}}
-          >
-            lead settings
-          </button>
-          .
+          Your public business location is separate from where you travel to provide a service.
+          You can filter available requests by city in the marketplace.
+
         </p>
       </div>
 

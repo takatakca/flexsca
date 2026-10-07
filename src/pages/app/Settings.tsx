@@ -1,28 +1,17 @@
+import NotificationPreferences from "@/components/NotificationPreferences";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   ChevronRight,
   Loader2,
-  Trash2,
   Star,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -32,11 +21,6 @@ export default function Settings() {
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [reviewCount, setReviewCount] = useState(0);
   const [avgRating, setAvgRating] = useState(0);
-  const [notifications, setNotifications] = useState({
-    newLeads: true,
-    messages: true,
-    reminders: true,
-  });
 
   // Handle purchase return
   useEffect(() => {
@@ -76,8 +60,8 @@ export default function Settings() {
   }, [user]);
 
   const handleLogout = async () => {
-    await signOut();
-    navigate("/auth/welcome", { replace: true });
+    try { await signOut(); navigate("/auth/welcome", { replace: true }); }
+    catch { toast.error("Unable to sign out. Please try again."); }
   };
 
   if (loading) {
@@ -142,7 +126,7 @@ export default function Settings() {
 
       <SettingsRow
         title="Account details"
-        description="Your email address and password you use to log in, and the phone numbers we use to contact you privately"
+        description="Manage your account name, sign-in email, and password"
         onClick={() => navigate("/app/settings/account")}
       />
 
@@ -151,14 +135,14 @@ export default function Settings() {
 
       <SettingsRow
         title="My services"
-        description="Tell us what services you provide so we can send you the most relevant leads"
+        description="Describe the services shown on your public profile"
         onClick={() => navigate("/app/settings/profile", { state: { section: "services" } })}
       />
       <Separator className="mx-4" />
 
       <SettingsRow
         title="My locations"
-        description="Tell us what locations you provide your services in"
+        description="Manage your public business location and its visibility"
         onClick={() => navigate("/app/settings/profile", { state: { section: "location" } })}
       />
       <Separator className="mx-4" />
@@ -181,47 +165,7 @@ export default function Settings() {
       {/* ── My notifications ── */}
       <SectionHeader label="My notifications" />
 
-      <div className="bg-background px-4 py-4 space-y-0">
-        <p className="text-sm font-semibold text-foreground mb-1">
-          Notifications
-        </p>
-        <p className="text-sm text-muted-foreground mb-4">
-          Decide how you want to communicate across FLEXS and how you want us
-          to contact you
-        </p>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-foreground">New leads</span>
-            <Switch
-              checked={notifications.newLeads}
-              onCheckedChange={(v) =>
-                setNotifications((p) => ({ ...p, newLeads: v }))
-              }
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-foreground">Messages</span>
-            <Switch
-              checked={notifications.messages}
-              onCheckedChange={(v) =>
-                setNotifications((p) => ({ ...p, messages: v }))
-              }
-            />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-foreground">Reminders</span>
-            <Switch
-              checked={notifications.reminders}
-              onCheckedChange={(v) =>
-                setNotifications((p) => ({ ...p, reminders: v }))
-              }
-            />
-          </div>
-        </div>
-      </div>
+      <NotificationPreferences />
 
       {/* ── Support ── */}
       <SectionHeader label="Support" />
@@ -229,40 +173,12 @@ export default function Settings() {
       <SettingsRow
         title="Support"
         description="Contact us if you need anything"
-        onClick={() => {}}
+        onClick={() => navigate("/help")}
       />
 
       <Separator className="mx-4" />
 
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <button className="w-full text-left px-4 py-4 hover:bg-muted/30 transition-colors bg-background">
-            <p className="text-sm font-semibold text-destructive">
-              Delete Account
-            </p>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              This action will delete both your buyer and seller accounts.
-            </p>
-          </button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete your account?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action is permanent and cannot be undone. All your data,
-              leads, credits, and profile information will be permanently
-              deleted.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete Account
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <div className="px-4 py-4"><p className="text-sm text-muted-foreground">For account deletion or a data request, contact support. Account deletion is handled separately from signing out.</p></div>
 
       {/* ── Logout ── */}
       <div className="bg-muted py-2" />

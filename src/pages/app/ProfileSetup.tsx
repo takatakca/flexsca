@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, ChevronRight, CheckCircle2, Loader2 } from "lucide-react";
 import ProfileCompletionMeter from "@/components/profile/ProfileCompletionMeter";
@@ -18,7 +18,11 @@ type SectionKey = "about" | "reviews" | "services" | "photos" | "social" | "accr
 export default function ProfileSetup() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState<SectionKey>(null);
+  const location = useLocation();
+  const [activeSection, setActiveSection] = useState<SectionKey>(() => {
+    const requested = (location.state as {section?:unknown} | null)?.section;
+    return typeof requested === "string" && ["about","reviews","services","photos","social","accreditations","qa","location"].includes(requested) ? requested as SectionKey : null;
+  });
   const {
     profile,
     services,

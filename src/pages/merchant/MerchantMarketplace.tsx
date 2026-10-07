@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { useMerchantProfile } from "@/hooks/useMerchantProfile";
 import { type LucideIcon, Camera, Pencil, Plus, Image, BarChart3, HelpCircle, MapPin, Phone, Globe, Link2, ChevronRight, Clock, Star, CheckCircle, X, Trash2, Lock, ExternalLink } from "lucide-react";
@@ -14,6 +15,7 @@ import { toast } from "sonner";
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export default function MerchantMarketplace() {
+  const navigate = useNavigate();
   const {
     profile, categories, amenities, hours, media, ctas, highlights,
     loading, saving,
@@ -147,10 +149,10 @@ export default function MerchantMarketplace() {
         <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={() => photoRef.current?.click()}>
           <Image className="h-4 w-4" /> Add Photo
         </Button>
-        <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={() => {}}>
+        <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={() => navigate("/app/dashboard")}>
           <BarChart3 className="h-4 w-4" /> Insights
         </Button>
-        <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={() => {}}>
+        <Button variant="outline" size="sm" className="flex-1 gap-1.5" onClick={() => navigate("/help")}>
           <HelpCircle className="h-4 w-4" /> Help
         </Button>
       </div>

@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Store, Settings, CreditCard, HelpCircle, LogOut, ChevronRight, User } from "lucide-react";
@@ -10,8 +11,8 @@ export default function MerchantMenu() {
   const initial = user?.email?.charAt(0).toUpperCase() || "M";
 
   const handleLogout = async () => {
-    await signOut();
-    navigate("/", { replace: true });
+    try { await signOut(); navigate("/", { replace: true }); }
+    catch { toast.error("Unable to sign out. Please try again."); }
   };
 
   const sections = [
@@ -19,8 +20,8 @@ export default function MerchantMenu() {
       title: "Business",
       items: [
         { label: "Marketplace Profile", icon: Store, path: "/merchant/marketplace" },
-        { label: "Account Settings", icon: Settings, path: "/merchant/menu" },
-        { label: "Billing & Payments", icon: CreditCard, path: "/merchant/menu" },
+        { label: "Account Settings", icon: Settings, path: "/app/settings/account" },
+        { label: "Billing & Payments", icon: CreditCard, path: "/app/settings/credits" },
       ],
     },
     {

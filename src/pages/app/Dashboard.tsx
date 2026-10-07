@@ -1,3 +1,4 @@
+import ProviderSalesSummary from "@/components/ProviderSalesSummary";
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Bell, Coins, ClipboardList, MessageSquare, RefreshCw, Star } from 'lucide-react';
@@ -38,7 +39,7 @@ export default function Dashboard() {
     { label: 'Marketplace opportunities', value: data?.available, icon: ClipboardList, to: '/app/leads' },
     { label: 'Contacts unlocked', value: data?.contacted, icon: MessageSquare, to: '/app/responses' },
     { label: 'Follow-ups due', value: data?.due, icon: Bell, to: '/app/reminders' },
-    { label: 'Available credits', value: data?.balance, icon: Coins, to: '/app/settings' },
+    { label: 'Available credits', value: data?.balance, icon: Coins, to: '/app/settings/credits' },
   ];
   return <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
     <div className="flex flex-wrap items-start justify-between gap-4">
@@ -46,6 +47,7 @@ export default function Dashboard() {
       <Button variant="outline" onClick={() => void refetch()} aria-label="Refresh dashboard"><RefreshCw className="h-4 w-4 mr-2" />Refresh</Button>
     </div>
     <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">{stats.map(({ label, value, icon: Icon, to }) => <Link to={to} key={label}><Card className="h-full hover:border-primary transition-colors"><CardContent className="p-5"><Icon className="h-5 w-5 text-primary mb-4" /><p className="text-3xl font-bold">{isLoading ? '…' : value}</p><p className="text-sm text-muted-foreground mt-1">{label}</p></CardContent></Card></Link>)}</div>
+    <ProviderSalesSummary />
     <div className="grid lg:grid-cols-[1fr_300px] gap-6">
       <Card><CardContent className="p-5 md:p-6"><div className="flex items-center justify-between gap-4 mb-5"><h3 className="text-lg font-semibold">Latest opportunities</h3><Link to="/app/leads" className="text-sm text-primary flex items-center gap-1">View all <ArrowRight className="h-4 w-4" /></Link></div>
         {isLoading ? <p role="status" className="text-muted-foreground py-8">Loading opportunities…</p> : data?.recent.length ? <div className="divide-y">{data.recent.map(lead => <Link key={lead.id} to={`/app/leads/${lead.id}`} className="flex items-center justify-between gap-4 py-4 hover:text-primary"><div><p className="font-semibold">{lead.category} {lead.is_urgent && <span className="text-xs text-amber-700 ml-2">Urgent</span>}</p><p className="text-sm text-muted-foreground mt-1">{lead.city || 'Location provided'} · {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}</p></div><span className="text-sm whitespace-nowrap">{lead.credits_cost} credits</span></Link>)}</div> : <div className="py-10 text-center"><ClipboardList className="h-8 w-8 text-muted-foreground mx-auto mb-3" /><p>No open opportunities right now.</p><p className="text-sm text-muted-foreground mt-1">Check back for new customer requests.</p></div>}

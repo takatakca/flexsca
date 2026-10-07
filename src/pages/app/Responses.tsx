@@ -257,7 +257,7 @@ export default function Responses() {
               {/* Create / Manage link */}
               <div className="border-t border-border pt-3">
                 <button
-                  onClick={() => navigate("/app/status-management")}
+                  onClick={() => navigate("/app/settings/statuses")}
                   className="flex items-center justify-center gap-2 w-full text-primary font-semibold text-sm hover:underline"
                 >
                   <Pencil className="h-4 w-4" />
