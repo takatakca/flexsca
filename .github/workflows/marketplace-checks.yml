@@ -20,6 +20,17 @@ jobs:
       - run: npm run build
       - run: npx playwright-core install --with-deps chromium
       - run: npm run test:browser
+      - name: Prepare image and text review evidence
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-eng
+          python3 scripts/visual-audit.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flexsca-visual-audit
+          path: /tmp/flexsca-visual-audit/
+          if-no-files-found: error
+          retention-days: 14
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.5.6

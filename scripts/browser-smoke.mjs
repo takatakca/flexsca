@@ -1,4 +1,5 @@
-import { existsSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
+import { createHash } from 'node:crypto';
 import { chromium } from 'playwright-core';
 import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
@@ -19,6 +20,15 @@ let unlocked = false, quoteStatus = "sent";
 let searches = [], failSearch = false, customerMany=false, failCustomerRequest=false;
 const errors = [];
 const page = await browser.newPage();
+const visualCaptures=[];
+// Retain exact fixture text alongside pixels; OCR alone cannot verify copy.
+writeFileSync('/tmp/flexsca-visual-manifest.json',JSON.stringify({completed:false,captures:[]}));
+async function captureVisual(path){
+  await page.evaluate(()=>document.fonts.ready);
+  await page.evaluate(()=>new Promise(resolve=>{window.scrollTo({top:0,left:0,behavior:'instant'});requestAnimationFrame(()=>requestAnimationFrame(resolve));}));
+  const pixels=await page.screenshot({path,fullPage:true});
+  visualCaptures.push({path,route:new URL(page.url()).pathname,viewport:page.viewportSize(),capturedAt:new Date().toISOString(),sha256:createHash('sha256').update(pixels).digest('hex'),text:await page.locator('body').innerText()});
+}
 page.on('pageerror', e => errors.push(e.message));
 await page.route('https://images.unsplash.com/**', route => route.abort());
 await page.route('**/auth/v1/**',route=>{ errors.push(`Unexpected auth fixture route: ${new URL(route.request().url()).pathname}`); return route.fulfill({status:500,json:{message:'Unmocked auth request'}}); });
@@ -122,13 +132,13 @@ try {
   }
   await page.goto('http://127.0.0.1:4173/?ttclid=dddddddd-dddd-4ddd-8ddd-dddddddddddd');
   await page.getByRole('heading',{name:/Big ideas/}).waitFor();
-  await page.screenshot({path:'/tmp/flexsca-home-desktop.png',fullPage:true});
+  await captureVisual('/tmp/flexsca-home-desktop.png');
   await page.setViewportSize({width:390,height:844});
   await page.getByRole('button',{name:'Open navigation',exact:true}).click();
   await page.getByRole('navigation',{name:'Mobile navigation',exact:true}).getByRole('link',{name:'Find a Pro',exact:true}).waitFor();
   await page.getByRole('button',{name:'Close navigation',exact:true}).click();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),'Mobile homepage must not overflow');
-  await page.screenshot({path:'/tmp/flexsca-home-mobile.png',fullPage:true});
+  await captureVisual('/tmp/flexsca-home-mobile.png');
   await page.setViewportSize({width:1440,height:1000});
   await page.goto('http://127.0.0.1:4173/pro');
   await page.getByRole('heading',{name:/Great work deserves/}).waitFor();
@@ -209,7 +219,7 @@ try {
   await page.getByRole('link',{name:/Contacts unlocked/}).getByText('2',{exact:true}).waitFor();
   await page.getByRole('link',{name:/Follow-ups due/}).getByText('1',{exact:true}).waitFor();
   assert.equal(await page.getByText('Marketplace opportunities',{exact:true}).count(),1);
-  await page.screenshot({path:'/tmp/flexsca-dashboard-desktop.png',fullPage:true});
+  await captureVisual('/tmp/flexsca-dashboard-desktop.png');
   console.log('PASS provider overview displays API-driven credits and marketplace metrics');
   await page.getByText('33%',{exact:true}).waitFor();
   await page.getByLabel('Quote activity period',{exact:true}).selectOption('all');
@@ -281,9 +291,9 @@ try {
   assert.equal(await page.getByRole('button',{name:'View request',exact:true}).count(),2);
   await page.setViewportSize({width:390,height:844});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),'Mobile customer workspace must not overflow');
-  await page.screenshot({path:'/tmp/flexsca-customer-mobile.png',fullPage:true});
+  await captureVisual('/tmp/flexsca-customer-mobile.png');
   await page.setViewportSize({width:1440,height:1000});
-  await page.screenshot({path:'/tmp/flexsca-customer-desktop.png',fullPage:true});
+  await captureVisual('/tmp/flexsca-customer-desktop.png');
   console.log('PASS customer workspace uses server pagination, open/resolved filters, and mobile navigation');
   customerMany=false;failCustomerRequest=true;
   await page.reload();
@@ -355,7 +365,7 @@ try {
   await page.goto('http://127.0.0.1:4173/app/dashboard');
   await page.getByRole('heading',{name:'Your next opportunity starts here.'}).waitFor();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),'Mobile dashboard must not overflow');
-  await page.screenshot({path:'/tmp/flexsca-dashboard-mobile.png',fullPage:true});
+  await captureVisual('/tmp/flexsca-dashboard-mobile.png');
   await page.goto('http://127.0.0.1:4173/app/settings');
   await page.getByRole('switch',{name:'Message notifications',exact:true}).click();
   await page.getByRole('switch',{name:'Message notifications',exact:true}).waitFor();
@@ -418,6 +428,7 @@ try {
   await page.getByRole('link',{name:'Request a new reset link',exact:true}).waitFor();
   console.log('PASS password recovery request, confirmation validation, password update, logout, and expired-link fallback');
   assert.deepEqual(errors,[]);
+  writeFileSync('/tmp/flexsca-visual-manifest.json',JSON.stringify({completed:true,fixtureData:true,captures:visualCaptures},null,2));
   console.log('PASS mobile layout and no uncaught browser errors');
 } finally {
   await browser.close();

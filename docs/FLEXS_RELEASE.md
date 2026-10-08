@@ -82,6 +82,12 @@ The new frontend requires the new backend RPCs. **Apply the backend release befo
 
 ## Remaining product work and live release gates
 
+### Visual review evidence
+
+`npm run test:browser` records six desktop/mobile screenshots for the homepage, provider dashboard and customer workspace, plus a manifest containing the exact DOM text, route, viewport, capture time and PNG SHA-256. After a successful run, `python3 scripts/visual-audit.py` checks capture integrity and uses Tesseract with English language data to produce image/DOM/OCR sets in `/tmp/flexsca-visual-audit/` and a ZIP beside that directory. CI publishes these sets as `flexsca-visual-audit`. These use synthetic API fixtures; OCR is imperfect, and no Figma baseline or pixel parity is established. Review images and exact text together. Fixed/sticky elements in full-page screenshots appear at their viewport position.
+
+The owner's latest `main` instructions and brand reference have been merged into this release branch. TAKATAK visuals must follow `BRAND.md`; FLEXS remains independent. Local revalidation passed 55 Vitest tests, six Python readiness tests, typecheck, lint and build; browser completion is recorded separately. The [customer workspace CI run](https://github.com/takatakca/flexsca/actions/runs/37584613046) passed. Local deployment still stops before mutation because both required Supabase credentials are absent. Figma HTTPS reads still fail at the proxy CONNECT stage with 403 despite the user reporting a connected app; no callable Figma connector is exposed to this session.
+
 ### Customer workspace and ecosystem checkpoint
 
 The customer dashboard now uses stable 12-row server pagination, open/resolved filters, real request counts, and explicit retry after a load failure. Existing requests continue to open their detail page. Local validation passed: 55 Vitest tests, 27 browser scenarios, typecheck, lint (nine existing warnings), and production build. Browser fixtures do not prove production connectivity. See [FLEXS ecosystem integration evidence](FLEXS_ECOSYSTEM_INTEGRATION.md) for the requested Figma, TAKATAK Auth, AI, document, and merchant analytics scope. Figma has not been inspected and the referenced TAKATAK OTP API is scoped to 1LV, not FLEXS.
