@@ -30,3 +30,100 @@ For private merchant analytics, agree an immutable merchant-to-FLEXS-provider bi
 AI is requested but no live AI provider has been configured or validated. Before enabling assistance, define the actual provider, server credential, permitted data, usage limits, audit trail, and user-visible failure behaviour. Suggested replies and request summaries must remain drafts requiring user action. The model must not grant account access, spend credits, accept quotes, or certify a merchant from generated text. Private tenant data requires the same authorization as ordinary application queries.
 
 Document integration likewise requires a real counterpart contract and private storage: authorized upload/download, type and size validation, malware handling, retention/deletion, and auditable tenant access. No document connector or synchronization is currently claimed.
+
+
+## TAKATAK opportunity projection for R2F
+
+Status: **CODE COMPLETE on stacked feature branch; not deployed or production verified**.
+
+This work is stacked on the existing FLEXS marketplace release PR and does not replace its marketplace, credits, RLS, response, or attribution work.
+
+TAKATAK may project an eligible R2F lead into FLEXS through the Edge Function:
+
+`takatak-opportunity-intake`
+
+R2F never writes directly to FLEXS and FLEXS never reads the TAKATAK database.
+
+### Authorization boundary
+
+The request is server-to-server only and uses a dedicated HMAC credential:
+
+- `TAKATAK_FLEXS_INTEGRATION_ID`
+- `TAKATAK_FLEXS_OPPORTUNITY_SECRET`
+
+Canonical signature input:
+
+```text
+<timestamp>.<opportunityId>.<rawBody>
+```
+
+Required headers:
+
+```text
+X-Integration-Id
+X-Event-Id
+X-Timestamp
+X-Signature: sha256=<hex>
+```
+
+Timestamp tolerance is five minutes.
+
+### Distribution consent gate
+
+A projected lead is rejected unless:
+
+```json
+{
+  "contactDisclosureAuthorized": true,
+  "authorizationBasis": "customer_requested_provider_matching"
+}
+```
+
+This prevents a professional from spending FLEXS credits on a TAKATAK opportunity whose contact information is not authorized for provider matching.
+
+TAKATAK must decide eligibility before calling FLEXS. FLEXS does not infer consent from an email address, phone number, R2F account, or shared TAKATAK identity.
+
+### Provenance and idempotency
+
+External FLEXS leads record:
+
+- `source_application = 'takatak'`
+- `source_product = 'r2f'`
+- TAKATAK master lead/opportunity id
+- public TAKATAK reference
+- SHA-256 payload hash
+- contact-disclosure authorization basis
+
+A partial unique index enforces one FLEXS lead per TAKATAK external lead ID.
+
+Same external ID + same body returns the existing FLEXS lead as a duplicate.
+Same external ID + different payload returns conflict and does not overwrite the existing opportunity.
+
+Native FLEXS leads remain unchanged.
+
+### Category and pricing
+
+The incoming contract uses a FLEXS `service_categories.slug`.
+
+The Edge Function resolves the active category on the FLEXS server and uses its configured name and base credit cost. TAKATAK cannot set an arbitrary FLEXS credit price in the request.
+
+### Data handling
+
+Only opportunities already authorized for provider matching may include the contact fields needed by the existing FLEXS unlock/contact workflow.
+
+The adapter does not create a TAKATAK identity, FLEXS user, or business membership from those contact fields.
+
+### Production gates
+
+Before enabling this integration:
+
+1. merge and deploy the prerequisite FLEXS marketplace release;
+2. apply the provenance migration;
+3. deploy `takatak-opportunity-intake`;
+4. set the dedicated server secret through the approved Supabase secret manager;
+5. implement the TAKATAK outbound client with the same contract;
+6. verify one signed request in staging;
+7. prove duplicate replay and conflict rejection;
+8. verify a professional cannot see contact details until the existing FLEXS entitlement/contact flow permits it.
+
+Until those gates pass, status is **Not configured**.
