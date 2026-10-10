@@ -1,3 +1,4 @@
+import type { Tables } from "@/integrations/supabase/types";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -174,7 +175,7 @@ export default function ServiceCategoryPage() {
       supabase.from("service_categories").select("*").eq("parent_slug", slug || "").eq("is_active", true).order("sort_order"),
       supabase.from("service_categories").select("*").eq("is_active", true).order("sort_order"),
     ]).then(async ([categoryRes, childRes, allRes]) => {
-      const mapCat = (c: any): CategoryFull => ({ ...c, questions: (c.questions as unknown as Question[]) || [] });
+      const mapCat = (c: Tables<"service_categories">): CategoryFull => ({ ...c, questions: (c.questions as unknown as Question[]) || [] });
 
       if (categoryRes.data) {
         const cat = mapCat(categoryRes.data);
@@ -196,7 +197,7 @@ export default function ServiceCategoryPage() {
 
           // Fetch siblings
           if (allRes.data) {
-            setSiblingCategories(allRes.data.filter((c: any) => c.parent_slug === cat.parent_slug).map(mapCat));
+            setSiblingCategories(allRes.data.filter((c) => c.parent_slug === cat.parent_slug).map(mapCat));
           }
         }
       }

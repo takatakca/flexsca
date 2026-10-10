@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Loader2,
@@ -10,6 +10,8 @@ import {
   X,
   BellRing,
 } from "lucide-react";
+import { createFollowUp } from "@/lib/follow-ups";
+import { errorMessage } from "@/lib/errors";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -85,29 +87,39 @@ export default function Reminders() {
   const [leads, setLeads] = useState<LeadOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
   const [showTip, setShowTip] = useState(true);
-  const [newReminder, setNewReminder] = useState({
+  const [newReminder, setNewReminder] = useState(() => ({
+    request_id: crypto.randomUUID(),
     lead_id: "",
     remind_at: "",
     note: "",
-  });
+  }));
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const fetchReminders = async () => {
+  const fetchReminders = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("reminders")
-      .select("*, leads(category, location_text, customer_name)")
-      .order("remind_at", { ascending: true });
-
-    if (data) setReminders(data as any);
-    setLoading(false);
-  };
+    try {
+      setError(false);
+      const collection = await supabase.rpc("collect_due_follow_ups");
+      if (collection.error) throw collection.error;
+      const { data, error } = await supabase.from("reminders").select("id,lead_id,remind_at,note,status,created_at").eq("user_id",user.id).order("remind_at", { ascending: true });
+      if (error) throw error;
+      const ids = [...new Set((data ?? []).map(r => r.lead_id))];
+      const visible = ids.length ? await supabase.from("leads_safe").select("id,category,location_text,customer_name").in("id",ids) : {data:[],error:null};
+      if (visible.error) throw visible.error;
+      const byId = new Map((visible.data ?? []).map(l => [l.id,l]));
+      setReminders((data ?? []).map(r => ({...r,leads:byId.get(r.lead_id)})));
+    } catch { setError(true); }
+    finally { setLoading(false); }
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
-    fetchReminders();
+    void fetchReminders();
+    const interval = window.setInterval(() => void fetchReminders(),30000);
 
     supabase
       .from("leads_safe")
@@ -115,7 +127,8 @@ export default function Reminders() {
       .then(({ data }) => {
         if (data) setLeads(data);
       });
-  }, [user]);
+    return () => window.clearInterval(interval);
+  }, [user, fetchReminders]);
 
   const handleMarkDone = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -129,27 +142,20 @@ export default function Reminders() {
         prev.map((r) => (r.id === id ? { ...r, status: "done" } : r))
       );
       toast.success("Reminder marked as done");
-    }
+    } else toast.error("Unable to complete this reminder.");
   };
 
   const handleCreate = async () => {
-    if (!user || !newReminder.lead_id || !newReminder.remind_at) return;
-
-    const { error } = await supabase.from("reminders").insert({
-      lead_id: newReminder.lead_id,
-      user_id: user.id,
-      remind_at: new Date(newReminder.remind_at).toISOString(),
-      note: newReminder.note || null,
-    });
-
-    if (!error) {
+    if (!user || !newReminder.lead_id || !newReminder.remind_at || saving) return;
+    setSaving(true);
+    try {
+      await createFollowUp({leadId:newReminder.lead_id,remindAt:newReminder.remind_at,note:newReminder.note,requestId:newReminder.request_id});
       toast.success("Reminder created");
       setDialogOpen(false);
-      setNewReminder({ lead_id: "", remind_at: "", note: "" });
-      fetchReminders();
-    } else {
-      toast.error("Failed to create reminder");
-    }
+      setNewReminder({lead_id:"",remind_at:"",note:"",request_id:crypto.randomUUID()});
+      await fetchReminders();
+    } catch (e) { toast.error(errorMessage(e,"Unable to create your reminder.")); }
+    finally { setSaving(false); }
   };
 
   const handleReminderClick = (leadId: string) => {
@@ -164,6 +170,8 @@ export default function Reminders() {
       </div>
     );
   }
+
+  if (error) return <div role="alert" className="p-6 space-y-4"><p>Unable to load your reminders. Please try again.</p><Button onClick={() => void fetchReminders()}>Retry reminders</Button></div>;
 
   const openReminders = reminders.filter((r) => r.status === "open");
   const overdueReminders = openReminders.filter((r) => isPast(new Date(r.remind_at)));
@@ -189,8 +197,7 @@ export default function Reminders() {
                 Set a reminder
               </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Hold down on a lead card anywhere in the app to set a custom
-                reminder and start receiving notifications.
+                Use the reminder action on a request or choose New reminder below. Due follow-ups appear in Notifications when you open or refresh the app.
               </p>
             </div>
           </div>
@@ -213,7 +220,6 @@ export default function Reminders() {
       )}
 
       {/* Reminder list */}
-      {!isEmpty && (
         <div className="p-4 space-y-4">
           {/* Create button */}
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -230,7 +236,7 @@ export default function Reminders() {
                 <Select
                   value={newReminder.lead_id}
                   onValueChange={(v) =>
-                    setNewReminder((prev) => ({ ...prev, lead_id: v }))
+                    setNewReminder((prev) => ({ ...prev, lead_id: v, request_id:crypto.randomUUID() }))
                   }
                 >
                   <SelectTrigger>
@@ -247,31 +253,34 @@ export default function Reminders() {
                 </Select>
 
                 <Input
+                  aria-label="Reminder date and time"
                   type="datetime-local"
                   value={newReminder.remind_at}
                   onChange={(e) =>
                     setNewReminder((prev) => ({
                       ...prev,
+                      request_id: crypto.randomUUID(),
                       remind_at: e.target.value,
                     }))
                   }
                 />
 
                 <Textarea
+                  maxLength={2000}
                   placeholder="Add a note (optional)"
                   value={newReminder.note}
                   onChange={(e) =>
-                    setNewReminder((prev) => ({ ...prev, note: e.target.value }))
+                    setNewReminder((prev) => ({ ...prev, note: e.target.value, request_id:crypto.randomUUID() }))
                   }
                   rows={3}
                 />
 
                 <Button
                   onClick={handleCreate}
-                  disabled={!newReminder.lead_id || !newReminder.remind_at}
+                  disabled={saving || !newReminder.lead_id || !newReminder.remind_at}
                   className="w-full rounded-xl"
                 >
-                  Create reminder
+                  {saving ? "Saving…" : "Create reminder"}
                 </Button>
               </div>
             </DialogContent>
@@ -329,7 +338,6 @@ export default function Reminders() {
             </div>
           )}
         </div>
-      )}
     </div>
   );
 }
@@ -345,7 +353,7 @@ function ReminderCard({
 }) {
   const isDone = reminder.status === "done";
   const dueInfo = !isDone ? getDueLabel(reminder.remind_at) : null;
-  const leadData = (reminder as any).leads;
+  const leadData = reminder.leads;
 
   return (
     <Card
@@ -406,6 +414,7 @@ function ReminderCard({
 
         {!isDone && (
           <Button
+            aria-label="Mark reminder done"
             size="icon"
             variant="outline"
             className="shrink-0 h-9 w-9 rounded-full ml-2"

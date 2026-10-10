@@ -6,15 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { z } from "zod";
-
-const contactSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100),
-  email: z.string().trim().email("Valid email required").max(255),
-  phone: z.string().trim().optional(),
-  location: z.string().trim().min(1, "Location is required").max(200),
-  details: z.string().trim().max(2000).optional(),
-});
+import { contactSchema, submitLead, type AnswerValue } from "@/lib/lead-intake";
+import { Navigate } from "react-router-dom";
 
 export default function JobContact() {
   const location = useLocation();
@@ -23,22 +16,22 @@ export default function JobContact() {
     categoryId: string;
     categoryName: string;
     categorySlug: string;
-    answers: Record<string, string>;
+    projectLocation?: string;
+    answers: Record<string, AnswerValue>;
   } | null;
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
-    location: "",
+    location: state?.projectLocation ?? "",
     details: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
   if (!state) {
-    navigate("/post-job");
-    return null;
+    return <Navigate to="/post-job" replace />;
   }
 
   const handleChange = (field: string, value: string) => {
@@ -59,41 +52,14 @@ export default function JobContact() {
 
     setSubmitting(true);
 
-    // Parse location into city/postal
-    const locationParts = form.location.split(",").map((s) => s.trim());
-    const city = locationParts[0] || null;
-    const postalCode = locationParts[1] || null;
-
-    // Determine urgency from answers
-    const urgencyAnswers = Object.values(state.answers).map((v) => v.toLowerCase());
-    const isUrgent = urgencyAnswers.some(
-      (a) => a.includes("emergency") || a.includes("asap") || a.includes("as soon as possible")
-    );
-
-    // Use secure server-side function to submit lead + message atomically
-    const { error } = await supabase.rpc("submit_lead", {
-      p_category: state.categoryName,
-      p_location_text: form.location,
-      p_city: city,
-      p_postal_code: postalCode,
-      p_customer_name: form.name.trim(),
-      p_customer_email: form.email.trim(),
-      p_customer_phone: form.phone.trim() || null,
-      p_details: form.details.trim() || null,
-      p_answers: state.answers,
-      p_is_urgent: isUrgent,
-    });
-
-    if (error) {
-      console.error("Lead submission error:", error);
-      toast.error("Failed to submit your request. Please try again.");
+    try {
+      const requestId = await submitLead(state.categoryName, result.data, state.answers);
+      navigate("/post-job/success", { state: { categoryName: state.categoryName, requestId, email: result.data.email } });
+    } catch {
+      toast.error("Unable to submit your request. Please try again.");
+    } finally {
       setSubmitting(false);
-      return;
     }
-
-    navigate("/post-job/success", {
-      state: { categoryName: state.categoryName },
-    });
   };
 
   return (

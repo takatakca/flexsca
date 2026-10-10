@@ -1,3 +1,4 @@
+import { errorMessage } from "@/lib/errors";
 import { Coins, TrendingUp, TrendingDown, Gift, ArrowLeftRight, Loader2, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,10 +24,11 @@ const reasonLabels: Record<string, { label: string; icon: typeof TrendingUp }> =
 };
 
 export default function WalletCard() {
-  const { balance, transactions, loading, refetch } = useCredits();
+  const { balance, transactions, loading, error, refetch } = useCredits();
   const [buyingPackage, setBuyingPackage] = useState<string | null>(null);
 
   const handleBuyCredits = async (packageId: string) => {
+    if (buyingPackage) return;
     setBuyingPackage(packageId);
 
     try {
@@ -45,18 +47,20 @@ export default function WalletCard() {
       });
 
       if (response.error) {
-        throw new Error(response.error.message || "Failed to create checkout");
+        throw new Error(errorMessage(response.error, "Failed to create checkout"));
       }
 
       const { url } = response.data;
       if (url) {
-        window.location.href = url;
+        const checkout = new URL(url);
+        if (checkout.protocol !== "https:" || checkout.hostname !== "checkout.stripe.com" || checkout.username || checkout.password) throw new Error("Invalid checkout URL returned");
+        window.location.assign(checkout.toString());
       } else {
         throw new Error("No checkout URL returned");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Buy credits error:", err);
-      toast.error(err.message || "Failed to start checkout");
+      toast.error(errorMessage(err, "Failed to start checkout"));
       setBuyingPackage(null);
     }
   };
@@ -71,12 +75,14 @@ export default function WalletCard() {
     );
   }
 
+  if (error) return <Card><CardContent role="alert" className="p-6 space-y-4"><p>{error.message}</p><Button onClick={() => void refetch()}>Retry credit history</Button></CardContent></Card>;
+
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
+        <div className="flex justify-between items-center gap-3"><CardTitle className="flex items-center gap-2 text-base">
           <Coins className="h-4 w-4" /> Credits
-        </CardTitle>
+        </CardTitle><Button variant="ghost" size="sm" onClick={() => void refetch()}>Refresh credits</Button></div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Balance display */}
@@ -92,7 +98,7 @@ export default function WalletCard() {
 
         {/* Credit packages */}
         <div>
-          <p className="text-sm font-medium text-foreground mb-3">Buy credits</p>
+          <p className="text-sm font-medium text-foreground mb-3">Buy credits · CAD</p>
           <div className="grid grid-cols-3 gap-2">
             {PACKAGES.map((pkg) => (
               <button

@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
@@ -7,6 +7,7 @@ export default function ProtectedRoute({
 }: {
   children: React.ReactNode;
 }) {
+  const location = useLocation();
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -18,7 +19,7 @@ export default function ProtectedRoute({
   }
 
   if (!user) {
-    return <Navigate to="/auth/welcome" replace />;
+    return <Navigate to={`/auth/welcome?next=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
   return <>{children}</>;

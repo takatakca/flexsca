@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Python readiness checks
+__pycache__/
+*.pyc
+
+# Supabase CLI project-link metadata
+supabase/.temp/

@@ -1,16 +1,11 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import Stripe from "https://esm.sh/stripe@17.7.0?target=deno";
+import { CREDIT_PACKAGES, allowedCheckoutOrigin } from "../_shared/payment-policy.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.95.3";
+import Stripe from "npm:stripe@17.7.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
-
-const PACKAGES: Record<string, { credits: number; amountCents: number; label: string }> = {
-  pack_20: { credits: 20, amountCents: 1900, label: "20 Credits" },
-  pack_50: { credits: 50, amountCents: 3900, label: "50 Credits" },
-  pack_120: { credits: 120, amountCents: 7900, label: "120 Credits" },
 };
 
 Deno.serve(async (req: Request) => {
@@ -19,6 +14,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
     // Authenticate user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
@@ -46,9 +42,11 @@ Deno.serve(async (req: Request) => {
     const userId = claimsData.claims.sub as string;
 
     // Parse request
-    const { packageId, origin } = await req.json();
+    const { packageId, origin: requestedOrigin } = await req.json();
+    const origin = allowedCheckoutOrigin(requestedOrigin, Deno.env.get("FLEXS_ALLOWED_ORIGINS") ?? "https://flexs.ca,https://www.flexs.ca");
+    if (!origin) return new Response(JSON.stringify({ error: "Invalid checkout origin" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const pkg = PACKAGES[packageId];
+    const pkg = CREDIT_PACKAGES[packageId];
     if (!pkg) {
       return new Response(JSON.stringify({ error: "Invalid package" }), {
         status: 400,
@@ -58,7 +56,7 @@ Deno.serve(async (req: Request) => {
 
     // Create Stripe checkout session
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-      apiVersion: "2024-12-18.acacia",
+      apiVersion: "2025-02-24.acacia",
     });
 
     const session = await stripe.checkout.sessions.create({
@@ -88,7 +86,7 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    await serviceClient.from("credit_purchases").insert({
+    const { error: purchaseError } = await serviceClient.from("credit_purchases").insert({
       user_id: userId,
       stripe_checkout_session_id: session.id,
       credits: pkg.credits,
@@ -97,12 +95,16 @@ Deno.serve(async (req: Request) => {
       status: "created",
     });
 
+    if (purchaseError) {
+      await stripe.checkout.sessions.expire(session.id);
+      throw new Error("Unable to record checkout");
+    }
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (err: any) {
-    console.error("create-checkout-session error:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    console.error("create-checkout-session failed");
+    return new Response(JSON.stringify({ error: "Unable to create checkout. Please try again." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

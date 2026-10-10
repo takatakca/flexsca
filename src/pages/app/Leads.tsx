@@ -1,7 +1,9 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, ClipboardList, SlidersHorizontal, LayoutList, MapPin as MapIcon } from "lucide-react";
-import { isAfter, subHours, subDays, subWeeks, startOfDay } from "date-fns";
+import { Loader2, SlidersHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { Json } from "@/integrations/supabase/types";
+import { errorMessage } from "@/lib/errors";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useCustomStatuses } from "@/hooks/useCustomStatuses";
@@ -42,7 +44,11 @@ export default function Leads() {
   const [agentStates, setAgentStates] = useState<Map<string, AgentState>>(new Map());
   const [loading, setLoading] = useState(true);
   const [showArchived, setShowArchived] = useState(false);
-  const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [refresh, setRefresh] = useState(0);
+  const [options, setOptions] = useState({ services: [] as string[], credits: [] as number[] });
   const [filters, setFilters] = useState<LeadsFilters>(defaultFilters);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [reminderLead, setReminderLead] = useState<Lead | null>(null);
@@ -52,35 +58,38 @@ export default function Leads() {
 
   useEffect(() => {
     if (!user) return;
-
+    let active = true;
+    setLoading(true);
+    setError(null);
     const fetchData = async () => {
-      const [leadsRes, statesRes] = await Promise.all([
-        supabase
-          .from("leads_safe")
-          .select("id, category, location_text, customer_name, customer_phone, details, status, created_at, last_activity_at, credits_cost, is_urgent, has_additional_details, city, postal_code, answers")
-          .order("last_activity_at", { ascending: false }),
-        supabase
-          .from("lead_agent_state")
-          .select("lead_id, is_unread, is_archived, contacted, first_to_respond, custom_status_id")
-          .eq("agent_id", user.id),
-      ]);
-
-      if (leadsRes.data) {
-        setLeads(
-          leadsRes.data.map((l) => ({
-            ...l,
-            answers: (l.answers as Record<string, unknown>) ?? {},
-          }))
-        );
+      try {
+        const { data, error: requestError } = await supabase.rpc("search_marketplace_leads", {
+          p_filters: { ...filters, archived: showArchived, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone } as unknown as Json,
+          p_page: page,
+          p_page_size: 20,
+        });
+        if (requestError) throw requestError;
+        const result = data as unknown as {
+          leads: (Lead & AgentState)[]; total: number; services: string[]; credits: number[];
+        };
+        if (!result || !Array.isArray(result.leads) || !Number.isInteger(result.total)) {
+          throw new Error("Invalid search response");
+        }
+        if (!active) return;
+        setLeads(result.leads.map(l => ({ ...l, answers: l.answers ?? {} })));
+        setAgentStates(new Map(result.leads.map(l => [l.id, { ...l, lead_id: l.id }])));
+        setTotal(result.total);
+        if (page > 0 && page * 20 >= result.total) setPage(Math.max(0, Math.ceil(result.total / 20) - 1));
+        setOptions({ services: result.services, credits: result.credits });
+      } catch (e) {
+        if (active) setError(errorMessage(e, "Unable to load requests. Please try again."));
+      } finally {
+        if (active) setLoading(false);
       }
-      if (statesRes.data) {
-        setAgentStates(new Map(statesRes.data.map((s) => [s.lead_id, s])));
-      }
-      setLoading(false);
     };
-
-    fetchData();
-  }, [user]);
+    void fetchData();
+    return () => { active = false; };
+  }, [user, filters, showArchived, page, refresh]);
 
   const handleRestore = async (e: React.MouseEvent, leadId: string) => {
     e.stopPropagation();
@@ -91,114 +100,12 @@ export default function Leads() {
       .eq("agent_id", user!.id);
 
     if (!error) {
-      setAgentStates((prev) => {
-        const next = new Map(prev);
-        const existing = next.get(leadId);
-        if (existing) next.set(leadId, { ...existing, is_archived: false });
-        return next;
-      });
+      setRefresh(v => v + 1);
       toast.success("Lead restored");
     } else {
       toast.error("Failed to restore lead");
     }
   };
-
-  const filteredLeads = useMemo(() => {
-    let result = leads;
-
-    // Archive filter
-    result = result.filter((l) => {
-      const state = agentStates.get(l.id);
-      const isArchived = state?.is_archived ?? false;
-      return showArchived ? isArchived : !isArchived;
-    });
-
-    // Keyword
-    if (filters.keyword.trim()) {
-      const q = filters.keyword.toLowerCase();
-      result = result.filter(
-        (l) =>
-          l.category.toLowerCase().includes(q) ||
-          l.location_text.toLowerCase().includes(q) ||
-          (l.customer_name && l.customer_name.toLowerCase().includes(q)) ||
-          (l.details && l.details.toLowerCase().includes(q))
-      );
-    }
-
-    // Services
-    if (filters.services.length > 0) {
-      result = result.filter((l) => filters.services.includes(l.category));
-    }
-
-    // Credits
-    if (filters.credits.length > 0) {
-      result = result.filter((l) => filters.credits.includes(l.credits_cost));
-    }
-
-    // Urgent
-    if (filters.urgentOnly) {
-      result = result.filter((l) => l.is_urgent);
-    }
-
-    // Has additional details
-    if (filters.hasAdditionalDetails) {
-      result = result.filter((l) => l.has_additional_details);
-    }
-
-    // Unread only
-    if (filters.unreadOnly) {
-      result = result.filter((l) => {
-        const state = agentStates.get(l.id);
-        return state?.is_unread ?? true;
-      });
-    }
-
-    // First to respond
-    if (filters.firstToRespondOnly) {
-      result = result.filter((l) => {
-        const state = agentStates.get(l.id);
-        return state?.first_to_respond ?? false;
-      });
-    }
-
-    // Status filter
-    if (filters.statusIds.length > 0) {
-      result = result.filter((l) => {
-        const state = agentStates.get(l.id);
-        return state?.custom_status_id ? filters.statusIds.includes(state.custom_status_id) : false;
-      });
-    }
-
-    // Time range filter
-    if (filters.timeRange && filters.timeRange !== "any") {
-      const now = new Date();
-      let cutoff: Date | null = null;
-      switch (filters.timeRange) {
-        case "last_hour": cutoff = subHours(now, 1); break;
-        case "today": cutoff = startOfDay(now); break;
-        case "yesterday": cutoff = subDays(startOfDay(now), 1); break;
-        case "3_days": cutoff = subDays(now, 3); break;
-        case "7_days": cutoff = subDays(now, 7); break;
-        case "2_weeks": cutoff = subWeeks(now, 2); break;
-      }
-      if (cutoff) {
-        result = result.filter((l) => isAfter(new Date(l.created_at), cutoff));
-      }
-    }
-
-    return result;
-  }, [leads, agentStates, showArchived, filters]);
-
-  // Compute summary stats for the header
-  const serviceCount = useMemo(() => {
-    const services = new Set(filteredLeads.map((l) => l.category));
-    return services.size;
-  }, [filteredLeads]);
-
-  const locationCount = useMemo(() => {
-    const locations = new Set(filteredLeads.map((l) => l.city || l.location_text));
-    return locations.size;
-  }, [filteredLeads]);
 
   const activeFilterCount = useMemo(() => {
     return [
@@ -210,48 +117,27 @@ export default function Leads() {
       filters.credits.length > 0,
       filters.statusIds.length > 0,
       filters.keyword.trim().length > 0,
+      filters.timeRange !== "any",
     ].filter(Boolean).length;
   }, [filters]);
 
-  if (loading) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-primary mb-3" />
-        <p className="text-muted-foreground font-medium">Loading leads…</p>
-      </div>
-    );
-  }
-
-  if (leads.length === 0) {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center py-20 px-6 text-center">
-        <div className="h-16 w-16 rounded-full bg-accent flex items-center justify-center mb-4">
-          <ClipboardList className="h-8 w-8 text-primary" />
-        </div>
-        <h2 className="text-xl font-bold text-foreground mb-2">No leads yet</h2>
-        <p className="text-muted-foreground max-w-xs">
-          When customers request your services, their leads will appear here.
-        </p>
-      </div>
-    );
-  }
-
   return (
-    <div className="pb-4">
+    <div className="max-w-7xl mx-auto pb-8 md:p-4 lg:p-6">
       {/* ── Header bar ── */}
-      <div className="mx-4 mt-4 rounded-2xl bg-accent/60 border border-border px-4 py-3 flex items-center gap-3">
+      <div className="mx-4 mt-4 rounded-2xl bg-white border border-border px-4 py-3 flex items-center gap-3">
         {/* Count */}
         <div className="flex-1 min-w-0">
           <p className="text-base font-bold text-foreground">
-            {filteredLeads.length} Matching lead{filteredLeads.length !== 1 ? "s" : ""}
+            {total} Matching lead{total !== 1 ? "s" : ""}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {serviceCount} service{serviceCount !== 1 ? "s" : ""} • {locationCount} location{locationCount !== 1 ? "s" : ""}
+            {showArchived ? "Your archived requests" : "Available requests"}
           </p>
         </div>
 
         {/* Filter button */}
         <button
+          aria-label="Filter requests"
           onClick={() => setFiltersOpen(true)}
           className={`relative flex items-center justify-center h-10 w-10 rounded-full border transition-colors ${
             activeFilterCount > 0
@@ -267,33 +153,25 @@ export default function Leads() {
           )}
         </button>
 
-        {/* List/Map toggle */}
-        <button
-          onClick={() => setViewMode((v) => v === "list" ? "map" : "list")}
-          className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted transition-colors"
-        >
-          {viewMode === "list" ? (
-            <>
-              <MapIcon className="h-4 w-4" />
-              Map
-            </>
-          ) : (
-            <>
-              <LayoutList className="h-4 w-4" />
-              List
-            </>
-          )}
-        </button>
+        <Button variant="outline" onClick={() => { setShowArchived(v => !v); setPage(0); }}>
+          {showArchived ? "Available" : "Archived"}
+        </Button>
       </div>
 
       {/* ── Lead cards ── */}
-      <div className="px-4 mt-4 space-y-3">
-        {filteredLeads.length === 0 ? (
+      <div className="px-4 mt-4 grid lg:grid-cols-2 gap-4">
+        {loading ? (
+          <div role="status" className="flex justify-center gap-2 py-8"><Loader2 className="h-5 w-5 animate-spin" /> Loading requests…</div>
+        ) : error ? (
+          <div role="alert" className="rounded-xl border p-5 text-center space-y-3">
+            <p>{error}</p><Button onClick={() => setRefresh(v => v + 1)}>Try again</Button>
+          </div>
+        ) : leads.length === 0 ? (
           <p className="text-center text-muted-foreground text-sm py-8">
             No leads match your filters.
           </p>
         ) : (
-          filteredLeads.map((lead) => {
+          leads.map((lead) => {
             const state = agentStates.get(lead.id);
             return (
               <LeadCard
@@ -310,11 +188,20 @@ export default function Leads() {
         )}
       </div>
 
+      {!loading && !error && total > 0 && (
+        <nav aria-label="Request pages" className="flex items-center justify-center gap-4 px-4 mt-6">
+          <Button variant="outline" disabled={page === 0} onClick={() => setPage(v => v - 1)}>Previous</Button>
+          <span aria-live="polite" className="text-sm">Page {page + 1} of {Math.ceil(total / 20)}</span>
+          <Button variant="outline" disabled={(page + 1) * 20 >= total} onClick={() => setPage(v => v + 1)}>Next</Button>
+        </nav>
+      )}
+
       <FiltersSheet
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
         value={filters}
-        onChange={setFilters}
+        onChange={(next) => { setFilters(next); setPage(0); }}
+        remoteOptions={options}
         customStatuses={statuses}
         leads={leads}
       />

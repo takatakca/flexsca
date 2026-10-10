@@ -1,8 +1,9 @@
+import { errorMessage } from "@/lib/errors";
+import { callbackUrl, customerReturnPath } from "@/lib/auth-navigation";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { User, Lock, Link2 } from "lucide-react";
@@ -10,10 +11,9 @@ import { User, Lock, Link2 } from "lucide-react";
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const initialEmail = (location.state as any)?.email || "";
+  const initialEmail = (location.state as { email?: string } | null)?.email || "";
   const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState("");
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -26,9 +26,9 @@ export default function Login() {
         password,
       });
       if (error) throw error;
-      navigate("/app/leads");
-    } catch (err: any) {
-      toast.error(err.message || "Invalid credentials. Please try again.");
+      navigate(customerReturnPath(new URLSearchParams(location.search).get("next")) ?? "/app/dashboard");
+    } catch (err: unknown) {
+      toast.error(errorMessage(err, "Invalid credentials. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -44,20 +44,26 @@ export default function Login() {
       const { error } = await supabase.auth.signInWithOtp({
         email: email.trim(),
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: callbackUrl(location.search),
         },
       });
       if (error) throw error;
-      navigate("/auth/check-email", { state: { email: email.trim() } });
-    } catch (err: any) {
-      toast.error(err.message || "Failed to send magic link.");
+      navigate(`/auth/check-email${location.search}`, { state: { email: email.trim() } });
+    } catch (err: unknown) {
+      toast.error(errorMessage(err, "Failed to send magic link."));
     } finally {
       setLoading(false);
     }
   };
 
   const handleSocialLogin = async (provider: "google" | "apple") => {
-    toast.info(`${provider === "google" ? "Google" : "Apple"} sign-in coming soon.`);
+    if (loading) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({ provider, options: { redirectTo: callbackUrl(location.search) } });
+      if (error) throw error;
+    } catch { toast.error("This sign-in provider is unavailable. Use your password or a magic link."); }
+    finally { setLoading(false); }
   };
 
   return (
@@ -110,16 +116,6 @@ export default function Login() {
                 />
               </div>
 
-              {/* Keep signed in */}
-              <label className="flex items-center gap-2.5 cursor-pointer">
-                <Checkbox
-                  checked={keepSignedIn}
-                  onCheckedChange={(v) => setKeepSignedIn(v === true)}
-                  className="h-5 w-5 rounded border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                />
-                <span className="text-sm text-foreground">Keep me signed in</span>
-              </label>
-
               {/* Login button */}
               <Button
                 type="submit"
@@ -133,7 +129,7 @@ export default function Login() {
 
             {/* Forgot password */}
             <button
-              onClick={() => toast.info("Password reset coming soon.")}
+              onClick={() => navigate(`/auth/forgot-password${location.search}`, { state: { email: email.trim() } })}
               className="text-sm text-primary hover:underline transition-colors"
             >
               Forgot your password?
@@ -157,8 +153,9 @@ export default function Login() {
               Login with a magic link
             </Button>
 
-            {/* Apple */}
-            <Button
+            {/* Show only providers explicitly enabled for this deployment. */}
+            {import.meta.env.VITE_AUTH_APPLE === "true" && <Button
+              disabled={loading}
               onClick={() => handleSocialLogin("apple")}
               className="w-full h-12 text-base font-semibold rounded-xl bg-black hover:bg-gray-900 text-white gap-2"
             >
@@ -166,10 +163,11 @@ export default function Login() {
                 <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
               </svg>
               Sign in with Apple
-            </Button>
+            </Button>}
 
             {/* Google */}
-            <Button
+            {import.meta.env.VITE_AUTH_GOOGLE === "true" && <Button
+              disabled={loading}
               onClick={() => handleSocialLogin("google")}
               className="w-full h-12 text-base font-semibold rounded-xl bg-[hsl(211,100%,50%)] hover:bg-[hsl(211,100%,45%)] text-white gap-2"
             >
@@ -180,7 +178,7 @@ export default function Login() {
                 <path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
               Login with Google
-            </Button>
+            </Button>}
           </div>
         </div>
       </div>

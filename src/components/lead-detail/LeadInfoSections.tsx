@@ -49,15 +49,15 @@ export function SetReminderButton({ onSetReminder }: SetReminderButtonProps) {
 
 /* ─── Highlights section ─── */
 interface HighlightsProps {
-  hasVerifiedPhone: boolean;
+  hasPhone: boolean;
   hasAdditionalDetails: boolean;
 }
 
 export function Highlights({
-  hasVerifiedPhone,
+  hasPhone,
   hasAdditionalDetails,
 }: HighlightsProps) {
-  if (!hasVerifiedPhone && !hasAdditionalDetails) return null;
+  if (!hasPhone && !hasAdditionalDetails) return null;
 
   return (
     <div className="px-4 mt-4">
@@ -66,10 +66,10 @@ export function Highlights({
         <Info className="h-4 w-4 text-muted-foreground" />
       </div>
       <div className="flex flex-wrap gap-2">
-        {hasVerifiedPhone && (
+        {hasPhone && (
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground">
             <CheckCircle2 className="h-4 w-4 text-[hsl(160,60%,40%)]" />
-            Verified phone
+            Phone provided
           </span>
         )}
         {hasAdditionalDetails && (

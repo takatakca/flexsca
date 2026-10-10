@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Clock, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,7 +8,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { createFollowUp } from "@/lib/follow-ups";
+import { errorMessage } from "@/lib/errors";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
@@ -38,29 +39,23 @@ export default function ReminderModal({
   const { user } = useAuth();
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
+  const request = useRef<{key:string;id:string;remindAt?:string}>({key:"",id:""});
+  useEffect(() => { if (open) { setNote(""); request.current={key:"",id:""}; } }, [open,leadId]);
 
   const handleQuickSet = async (hours: number) => {
-    if (!user) return;
+    if (!user || saving) return;
     setSaving(true);
-
-    const remindAt = new Date();
-    remindAt.setHours(remindAt.getHours() + hours);
-
-    const { error } = await supabase.from("reminders").insert({
-      lead_id: leadId,
-      user_id: user.id,
-      remind_at: remindAt.toISOString(),
-      note: note.trim() || null,
-    });
-
-    if (!error) {
+    const key = JSON.stringify({leadId,hours,note:note.trim()});
+    if (request.current.key !== key) request.current={key,id:crypto.randomUUID()};
+    // Preserve the same timestamp and idempotency key when retrying a failed request.
+    const previous = request.current;
+    previous.remindAt ??= new Date(Date.now()+hours*3600000).toISOString();
+    try {
+      await createFollowUp({leadId,remindAt:previous.remindAt,note,requestId:previous.id});
       toast.success("Reminder set!");
-      setNote("");
       onClose();
-    } else {
-      toast.error("Failed to set reminder");
-    }
-    setSaving(false);
+    } catch (error) { toast.error(errorMessage(error,"Unable to save your reminder.")); }
+    finally { setSaving(false); }
   };
 
   return (
@@ -82,6 +77,7 @@ export default function ReminderModal({
           </div>
 
           <Textarea
+            maxLength={2000}
             placeholder="Add a note (optional)…"
             value={note}
             onChange={(e) => setNote(e.target.value)}

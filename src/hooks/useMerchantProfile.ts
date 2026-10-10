@@ -107,7 +107,7 @@ export function useMerchantProfile() {
     if (!prof) {
       const { data: newProf } = await supabase
         .from("merchant_profiles")
-        .insert({ user_id: user.id } as any)
+        .insert({ user_id: user.id })
         .select()
         .single();
       prof = newProf;
@@ -115,7 +115,7 @@ export function useMerchantProfile() {
 
     if (prof) {
       setProfile(prof as unknown as MerchantProfile);
-      const mid = (prof as any).id;
+      const mid = prof.id;
 
       const [catRes, amenRes, hoursRes, mediaRes, ctaRes, hlRes] = await Promise.all([
         supabase.from("merchant_categories").select("*").eq("merchant_id", mid).order("sort_order"),
@@ -143,7 +143,7 @@ export function useMerchantProfile() {
     setSaving(true);
     const { error } = await supabase
       .from("merchant_profiles")
-      .update(updates as any)
+      .update(updates)
       .eq("id", profile.id);
     if (error) {
       toast.error("Failed to save");
@@ -158,7 +158,7 @@ export function useMerchantProfile() {
     if (!profile) return;
     const { data, error } = await supabase
       .from("merchant_categories")
-      .insert({ merchant_id: profile.id, category_name: name, sort_order: categories.length } as any)
+      .insert({ merchant_id: profile.id, category_name: name, sort_order: categories.length })
       .select()
       .single();
     if (error) toast.error("Failed to add category");
@@ -174,7 +174,7 @@ export function useMerchantProfile() {
     if (!profile) return;
     const { data, error } = await supabase
       .from("merchant_amenities")
-      .insert({ merchant_id: profile.id, name, icon: icon || null, sort_order: amenities.length } as any)
+      .insert({ merchant_id: profile.id, name, icon: icon || null, sort_order: amenities.length })
       .select()
       .single();
     if (error) toast.error("Failed to add amenity");
@@ -192,7 +192,7 @@ export function useMerchantProfile() {
     await supabase.from("merchant_hours").delete().eq("merchant_id", profile.id);
     const rows = hoursData.map(h => ({ merchant_id: profile.id, ...h }));
     if (rows.length > 0) {
-      const { error } = await supabase.from("merchant_hours").insert(rows as any);
+      const { error } = await supabase.from("merchant_hours").insert(rows);
       if (error) toast.error("Failed to save hours");
       else { await fetchAll(); toast.success("Hours saved"); }
     }
@@ -202,7 +202,7 @@ export function useMerchantProfile() {
     if (!profile) return;
     const { data, error } = await supabase
       .from("merchant_media")
-      .insert({ merchant_id: profile.id, url, media_type: mediaType, caption: caption || null, sort_order: media.length } as any)
+      .insert({ merchant_id: profile.id, url, media_type: mediaType, caption: caption || null, sort_order: media.length })
       .select()
       .single();
     if (error) toast.error("Failed to add media");
@@ -218,7 +218,7 @@ export function useMerchantProfile() {
     if (!profile) return;
     const { data, error } = await supabase
       .from("merchant_ctas")
-      .insert({ merchant_id: profile.id, title, description: description || null, button_text: buttonText || "Learn More", button_url: buttonUrl || null } as any)
+      .insert({ merchant_id: profile.id, title, description: description || null, button_text: buttonText || "Learn More", button_url: buttonUrl || null })
       .select()
       .single();
     if (error) toast.error("Failed to add CTA");
@@ -234,7 +234,7 @@ export function useMerchantProfile() {
     if (!profile) return;
     const { data, error } = await supabase
       .from("merchant_highlights")
-      .insert({ merchant_id: profile.id, name, icon: icon || null, sort_order: highlights.length } as any)
+      .insert({ merchant_id: profile.id, name, icon: icon || null, sort_order: highlights.length })
       .select()
       .single();
     if (error) toast.error("Failed to add highlight");

@@ -1,3 +1,7 @@
+import QuoteComposer from "@/components/lead-detail/QuoteComposer";
+import QuoteList from "@/components/lead-detail/QuoteList";
+import RefundRequest from "@/components/lead-detail/RefundRequest";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
@@ -49,6 +53,7 @@ interface Message {
 }
 
 export default function LeadDetail() {
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -118,9 +123,27 @@ export default function LeadDetail() {
     if (!id) return;
     const result = await contactLead(id);
     if (result) {
+      setLead(prev => prev ? { ...prev, customer_name: result.customer_name, customer_email: result.customer_email, customer_phone: result.customer_phone } : prev);
+      const { data } = await supabase.from("leads_safe").select("*").eq("id", id).single();
+      if (data) setLead(data as Lead);
+      const { data: thread } = await supabase.from("lead_messages").select("*").eq("lead_id", id).order("created_at");
+      if (thread) setMessages(thread);
       refetchState();
       refetchCredits();
     }
+  };
+
+  const sendQuote = async (quote: { message: string; priceMin: number | null; priceMax: number | null; availability: string | null }) => {
+    if (!id || sending) return false;
+    setSending(true);
+    try {
+      const { error } = await supabase.rpc("send_quote", { p_lead_id: id, p_message: quote.message, p_price_min: quote.priceMin, p_price_max: quote.priceMax, p_availability: quote.availability });
+      if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ["quotes", id] });
+      toast.success("Quote sent.");
+      return true;
+    } catch { toast.error("Unable to send quote. Check your price range and try again."); return false; }
+    finally { setSending(false); }
   };
 
   // Send message
@@ -139,9 +162,9 @@ export default function LeadDetail() {
       .single();
 
     if (!error && data) {
-      setMessages((prev) => [...prev, data as Message]);
+      setMessages((prev) => prev.some(m => m.id === data.id) ? prev : [...prev, data as Message]);
       setNewMessage("");
-    }
+    } else { toast.error("Unable to send message. Please try again."); }
     setSending(false);
   };
 
@@ -204,7 +227,7 @@ export default function LeadDetail() {
             <SetReminderButton onSetReminder={() => setReminderOpen(true)} />
 
             <Highlights
-              hasVerifiedPhone={!!lead.customer_phone}
+              hasPhone={!!lead.customer_phone}
               hasAdditionalDetails={lead.has_additional_details || !!lead.details}
             />
 
@@ -244,7 +267,10 @@ export default function LeadDetail() {
         {/* Messages (only visible when contacted) */}
         {isContacted && (
           <div className="p-4 space-y-3">
+            <QuoteComposer onSend={sendQuote} sending={sending} disabled={lead.status === "won" || lead.status === "lost"} />
+            <QuoteList leadId={id!} />
             <MessageThread messages={messages} />
+            <RefundRequest leadId={id!} />
           </div>
         )}
       </div>

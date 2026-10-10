@@ -9,6 +9,7 @@ import {
   Pencil,
   ChevronDown,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +34,8 @@ interface ContactedLead {
 export default function Responses() {
   const [leads, setLeads] = useState<ContactedLead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [refresh, setRefresh] = useState(0);
   const [activeStatusId, setActiveStatusId] = useState<string | null>(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>("pending");
   const [showStatusPicker, setShowStatusPicker] = useState(false);
@@ -55,33 +58,39 @@ export default function Responses() {
   useEffect(() => {
     if (!user) return;
 
+    let active = true;
+    setLoading(true);
+    setError(false);
     const fetchContactedLeads = async () => {
-      const { data: stateData } = await supabase
+      try {
+      const { data: stateData, error: stateError } = await supabase
         .from("lead_agent_state")
         .select("lead_id, contacted_at, custom_status_id")
         .eq("agent_id", user.id)
         .eq("contacted", true);
 
+      if (stateError) throw stateError;
       if (!stateData || stateData.length === 0) {
-        setLoading(false);
+        if (active) setLeads([]);
         return;
       }
 
       const leadIds = stateData.map((s) => s.lead_id);
       const stateMap = new Map(stateData.map((s) => [s.lead_id, s]));
 
-      const { data: leadsData } = await supabase
+      const { data: leadsData, error: leadsError } = await supabase
         .from("leads_safe")
         .select(
           "id, category, location_text, customer_name, details, created_at, credits_cost"
         )
         .in("id", leadIds);
 
-      const { data: lastMessages } = await supabase
+      const { data: lastMessages, error: messagesError } = await supabase
         .from("lead_last_message")
         .select("lead_id, message, created_at")
         .in("lead_id", leadIds);
 
+      if (leadsError || messagesError) throw leadsError || messagesError;
       const messageMap = new Map(
         (lastMessages || []).map((m) => [m.lead_id, m])
       );
@@ -104,12 +113,14 @@ export default function Responses() {
         return tb - ta;
       });
 
-      setLeads(rows);
-      setLoading(false);
+      if (active) setLeads(rows);
+      } catch { if (active) setError(true); }
+      finally { if (active) setLoading(false); }
     };
 
-    fetchContactedLeads();
-  }, [user]);
+    void fetchContactedLeads();
+    return () => { active = false; };
+  }, [user, refresh]);
 
   const statusMap = useMemo(
     () => new Map(statuses.map((s) => [s.id, s])),
@@ -135,7 +146,7 @@ export default function Responses() {
     // Filter by category
     return leads.filter((l) => {
       const status = l.custom_status_id ? statusMap.get(l.custom_status_id) : null;
-      return status?.category === activeCategoryFilter;
+      return (status?.category ?? "pending") === activeCategoryFilter;
     });
   }, [leads, activeStatusId, activeCategoryFilter, statusMap]);
 
@@ -151,6 +162,8 @@ export default function Responses() {
       </div>
     );
   }
+
+  if (error) return <div role="alert" className="p-6 space-y-4 text-center"><p>Unable to load your conversations. Please try again.</p><Button onClick={() => setRefresh(v => v + 1)}>Retry conversations</Button></div>;
 
   return (
     <div>
@@ -244,7 +257,7 @@ export default function Responses() {
               {/* Create / Manage link */}
               <div className="border-t border-border pt-3">
                 <button
-                  onClick={() => navigate("/app/status-management")}
+                  onClick={() => navigate("/app/settings/statuses")}
                   className="flex items-center justify-center gap-2 w-full text-primary font-semibold text-sm hover:underline"
                 >
                   <Pencil className="h-4 w-4" />

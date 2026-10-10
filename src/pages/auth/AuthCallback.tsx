@@ -1,9 +1,11 @@
+import { customerReturnPath } from "@/lib/auth-navigation";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
 
 export default function AuthCallback() {
+  const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,6 +16,8 @@ export default function AuthCallback() {
         if (error) throw error;
 
         if (session) {
+          const next = customerReturnPath(new URLSearchParams(location.search).get("next"));
+          if (next) { navigate(next, { replace: true }); return; }
           // Check if user has completed onboarding
           const { data: profile } = await supabase
             .from("profiles")
@@ -22,7 +26,7 @@ export default function AuthCallback() {
             .single();
 
           if (profile?.onboarding_completed) {
-            navigate("/app/leads", { replace: true });
+            navigate("/app/dashboard", { replace: true });
           } else {
             navigate("/onboarding", { replace: true });
           }
@@ -36,7 +40,7 @@ export default function AuthCallback() {
     };
 
     handleCallback();
-  }, [navigate]);
+  }, [navigate, location.search]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">

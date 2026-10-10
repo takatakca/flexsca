@@ -6,6 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import type { CustomStatus } from "@/hooks/useCustomStatuses";
 import { isAfter, subHours, subDays, subWeeks, startOfDay, subBusinessDays } from "date-fns";
@@ -52,6 +54,7 @@ interface FiltersSheetProps {
   onChange: (v: LeadsFilters) => void;
   customStatuses: CustomStatus[];
   leads: LeadForCounts[];
+  remoteOptions?: { services: string[]; credits: number[] };
 }
 
 const TIME_RANGES = [
@@ -84,6 +87,7 @@ export default function FiltersSheet({
   onChange,
   customStatuses,
   leads,
+  remoteOptions,
 }: FiltersSheetProps) {
   const [draft, setDraft] = useState<LeadsFilters>(value);
 
@@ -129,12 +133,12 @@ export default function FiltersSheet({
   );
 
   const uniqueServices = useMemo(() => {
-    return Array.from(serviceCounts.keys()).sort();
-  }, [serviceCounts]);
+    return remoteOptions?.services ?? Array.from(serviceCounts.keys()).sort();
+  }, [serviceCounts, remoteOptions]);
 
   const uniqueCredits = useMemo(() => {
-    return Array.from(creditCounts.keys()).sort((a, b) => a - b);
-  }, [creditCounts]);
+    return remoteOptions?.credits ?? Array.from(creditCounts.keys()).sort((a, b) => a - b);
+  }, [creditCounts, remoteOptions]);
 
   // Count filtered results
   const filteredCount = useMemo(() => {
@@ -168,6 +172,8 @@ export default function FiltersSheet({
         side="bottom"
         className="rounded-t-none h-full max-h-full p-0 flex flex-col [&>button]:hidden"
       >
+        <SheetTitle className="sr-only">Filter requests</SheetTitle>
+        <SheetDescription className="sr-only">Choose services, dates, credits, and keywords for your search.</SheetDescription>
         {/* ── Header ── */}
         <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center justify-between shrink-0">
           <button onClick={onClose} className="text-foreground">
@@ -187,10 +193,10 @@ export default function FiltersSheet({
           {/* Filtered results count */}
           <div className="pt-5 pb-4">
             <h3 className="text-xl font-bold text-foreground">
-              Filtered results: {filteredCount}
+              {remoteOptions ? "Find the right opportunities" : `Filtered results: ${filteredCount}`}
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              {leads.length} leads matching your Lead Settings
+              {remoteOptions ? "Apply filters to search all available requests." : `${leads.length} leads matching your Lead Settings`}
             </p>
           </div>
 
@@ -203,7 +209,9 @@ export default function FiltersSheet({
               type="text"
               value={draft.keyword}
               onChange={(e) => setDraft((d) => ({ ...d, keyword: e.target.value }))}
-              placeholder=""
+              placeholder="Service, city, or available request details"
+              aria-label="Search keywords"
+              maxLength={200}
               className="w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
@@ -215,7 +223,7 @@ export default function FiltersSheet({
             <h4 className="text-base font-bold text-foreground mb-3">Sort by</h4>
             <div className="space-y-3">
               <RadioRow
-                label="Recommended"
+                label="Urgent first"
                 selected={draft.sort === "recommended"}
                 onChange={() => setDraft((d) => ({ ...d, sort: "recommended" }))}
               />
@@ -298,7 +306,7 @@ export default function FiltersSheet({
                 <RadioRow
                   key={range}
                   label={label}
-                  count={timeRangeCounts[range]}
+                  count={remoteOptions ? undefined : timeRangeCounts[range]}
                   selected={draft.timeRange === range}
                   onChange={() => setDraft((d) => ({ ...d, timeRange: range }))}
                 />
@@ -318,7 +326,7 @@ export default function FiltersSheet({
                     <CheckboxRow
                       key={s}
                       label={s}
-                      count={serviceCounts.get(s)}
+                      count={remoteOptions ? undefined : serviceCounts.get(s)}
                       checked={draft.services.includes(s)}
                       onChange={() =>
                         setDraft((d) => ({
@@ -344,7 +352,7 @@ export default function FiltersSheet({
                     <CheckboxRow
                       key={c}
                       label={`${c} Credit${c !== 1 ? "s" : ""}`}
-                      count={creditCounts.get(c)}
+                      count={remoteOptions ? undefined : creditCounts.get(c)}
                       checked={draft.credits.includes(c)}
                       onChange={() =>
                         setDraft((d) => ({

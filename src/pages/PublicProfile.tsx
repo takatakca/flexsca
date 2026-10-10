@@ -34,6 +34,8 @@ interface Photo {
 }
 
 interface Review {
+  verified: boolean;
+  source: string;
   id: string;
   rating: number;
   review_text: string | null;
@@ -62,10 +64,10 @@ export default function PublicProfile() {
 
     const fetchProfile = async () => {
       const [profileRes, servicesRes, photosRes, reviewsRes, qasRes] = await Promise.all([
-        supabase.from("provider_profiles").select("company_name, company_description, company_size, years_in_business, city, province, profile_photo_url, personal_name, company_email, company_phone, website_links").eq("user_id", userId).maybeSingle(),
+        supabase.from("provider_profiles_public").select("company_name, company_description, company_size, years_in_business, city, province, profile_photo_url, personal_name, company_email, company_phone, website_links").eq("user_id", userId).maybeSingle(),
         supabase.from("provider_services").select("id, title, description").eq("user_id", userId).order("sort_order"),
         supabase.from("provider_photos").select("id, url, caption").eq("user_id", userId).order("sort_order"),
-        supabase.from("provider_reviews").select("id, rating, review_text, reviewer_name, created_at").eq("user_id", userId).order("created_at", { ascending: false }),
+        supabase.from("provider_reviews_public").select("id, rating, review_text, reviewer_name, created_at, verified, source").eq("user_id", userId).order("created_at", { ascending: false }),
         supabase.from("provider_qas").select("id, question, answer").eq("user_id", userId).order("sort_order"),
       ]);
 
@@ -276,6 +278,7 @@ export default function PublicProfile() {
                           {new Date(r.created_at).toLocaleDateString()}
                         </span>
                       </div>
+                      {r.verified && <p className="text-xs text-primary mb-2">{r.source === "flexs" ? "Verified FLEXS customer" : "Verified review"}</p>}
                       {r.reviewer_name && (
                         <p className="text-sm font-medium text-foreground">{r.reviewer_name}</p>
                       )}
