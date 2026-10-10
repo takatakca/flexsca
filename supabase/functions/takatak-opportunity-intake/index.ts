@@ -229,12 +229,6 @@ Deno.serve(async (req: Request) => {
     return json({ accepted: false, error: "storage_unavailable" }, 503);
   }
 
-  await db.from("lead_messages").insert({
-    lead_id: lead.id,
-    sender_type: "system",
-    message: "New service opportunity distributed through TAKATAK.",
-  });
-
   return json({
     accepted: true,
     opportunityId: opportunity.opportunityId,
