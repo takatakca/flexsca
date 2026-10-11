@@ -1,68 +1,22 @@
-import { TrendingUp, Zap, Eye, BarChart3, ArrowRight, Lock } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Link } from 'react-router-dom';
+import { ArrowUpRight, ClipboardList, MessageSquare, UserRound } from 'lucide-react';
+import ProviderSalesSummary from '@/components/ProviderSalesSummary';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
+const actions = [
+  { title: 'Complete your professional profile', description: 'Keep your services, work examples, and business information current.', href: '/app/settings/profile', label: 'Edit professional profile', icon: UserRound },
+  { title: 'Find your next opportunity', description: 'Review customer requests and choose which contacts to unlock.', href: '/merchant/marketplace', label: 'Explore customer requests', icon: ClipboardList },
+  { title: 'Follow up on your conversations', description: 'Answer customer questions and manage quotes you have already sent.', href: '/merchant/messages', label: 'Open merchant conversations', icon: MessageSquare },
+];
 
 export default function MerchantOptimization() {
-  const features = [
-    { title: "Boost Your Listing", desc: "Appear at the top of search results for your category", icon: TrendingUp, locked: true },
-    { title: "Featured Placement", desc: "Get featured on category pages and homepage", icon: Zap, locked: true },
-    { title: "Enhanced Profile", desc: "Stand out with a premium profile badge and priority support", icon: Eye, locked: true },
-    { title: "Analytics Dashboard", desc: "Track views, clicks, and customer engagement", icon: BarChart3, locked: false },
-  ];
-
-  return (
-    <div className="px-4 py-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">Optimization</h1>
-        <p className="text-sm text-muted-foreground mt-1">Grow your visibility on FLEX'S</p>
-      </div>
-
-      {/* Analytics preview */}
-      <Card>
-        <CardContent className="p-4">
-          <h3 className="font-semibold text-foreground mb-3">Performance Overview</h3>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-xl font-bold text-primary">0</p>
-              <p className="text-xs text-muted-foreground">Views</p>
-            </div>
-            <div>
-              <p className="text-xl font-bold text-primary">0</p>
-              <p className="text-xs text-muted-foreground">Clicks</p>
-            </div>
-            <div>
-              <p className="text-xl font-bold text-primary">0%</p>
-              <p className="text-xs text-muted-foreground">CTR</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Upgrade features */}
-      <div className="space-y-3">
-        {features.map((f) => (
-          <Card key={f.title}>
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <f.icon className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-foreground">{f.title}</h3>
-                    {f.locked && <Badge variant="secondary" className="text-xs"><Lock className="h-3 w-3 mr-1" />Upgrade</Badge>}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">{f.desc}</p>
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Button className="w-full" size="lg">Upgrade Now</Button>
-    </div>
-  );
+  return <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6">
+    <header><p className="text-xs uppercase tracking-widest text-muted-foreground">Your business workspace</p><h1 className="text-3xl font-semibold tracking-tight mt-2">Business performance</h1><p className="text-sm text-muted-foreground mt-3">Review your quote activity and keep your next customer conversation moving.</p></header>
+    <ProviderSalesSummary />
+    <section aria-label="Business actions" className="grid gap-4 md:grid-cols-3">
+      {actions.map(({title,description,href,label,icon:Icon})=><Card key={href} className="rounded-2xl shadow-none"><CardContent className="p-5 flex flex-col h-full gap-4"><Icon className="size-5 text-primary" /><h2 className="text-base font-semibold">{title}</h2><p className="text-sm text-muted-foreground flex-1">{description}</p><Button asChild variant="outline" className="w-full"><Link to={href}>{label}<ArrowUpRight className="size-4 ml-2 shrink-0" /></Link></Button></CardContent></Card>)}
+    </section>
+    <section aria-label="Analytics availability" className="rounded-2xl border bg-muted/30 p-5 text-sm"><h2 className="font-semibold">Profile traffic analytics</h2><p className="text-muted-foreground mt-2">Profile views, clicks, and click-through rates are not currently measured. Quote activity above comes from your FLEXS account.</p><Link to="/help/takatak" className="inline-flex items-center gap-2 mt-4 text-primary underline underline-offset-4">About the TAKATAK connection<ArrowUpRight className="size-4" /></Link></section>
+  </div>;
 }

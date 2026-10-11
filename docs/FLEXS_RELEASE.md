@@ -82,6 +82,10 @@ The new frontend requires the new backend RPCs. **Apply the backend release befo
 
 ## Remaining product work and live release gates
 
+### October 11 continuation from GitHub
+
+Re-read GitHub `main` at `64e4117`, which merged the previous release through PR #1, and fast-forwarded the existing working branch. `/merchant/optimization` now displays the account's actual quote activity through the existing authorized reporting RPC. Removed fixed zero views/clicks/CTR and the inert upgrade button; traffic measurement is explicitly unavailable. Profile, opportunity and conversation actions use working application routes. Typecheck, lint (nine existing warnings), production build and all 28 browser scenarios passed. No backend contract or migration changed. The two deployment credentials remain absent locally; this checkpoint does not establish production rollout or shared TAKATAK authentication.
+
 ### Visual review evidence
 
 `npm run test:browser` records six desktop/mobile screenshots for the homepage, provider dashboard and customer workspace, plus a manifest containing the exact DOM text, route, viewport, capture time and PNG SHA-256. After a successful run, `python3 scripts/visual-audit.py` checks capture integrity and uses Tesseract with English language data to produce image/DOM/OCR sets in `/tmp/flexsca-visual-audit/` and a ZIP beside that directory. CI publishes these sets as `flexsca-visual-audit`. These use synthetic API fixtures; OCR is imperfect, and no Figma baseline or pixel parity is established. Review images and exact text together. Fixed/sticky elements in full-page screenshots appear at their viewport position.

@@ -225,6 +225,16 @@ try {
   await page.getByLabel('Quote activity period',{exact:true}).selectOption('all');
   await page.getByText('$100 – $150',{exact:true}).waitFor();
   console.log('PASS provider quote reporting displays request acceptance and CAD estimates');
+  await page.goto('http://127.0.0.1:4173/merchant/optimization');
+  await page.getByRole('heading',{name:'Business performance',exact:true}).waitFor();
+  await page.getByText('33%',{exact:true}).waitFor();
+  await page.getByText('Profile views, clicks, and click-through rates are not currently measured. Quote activity above comes from your FLEXS account.',{exact:true}).waitFor();
+  assert.equal(await page.getByRole('button',{name:'Upgrade Now',exact:true}).count(),0);
+  assert.equal(await page.getByRole('link',{name:'Edit professional profile',exact:false}).getAttribute('href'),'/app/settings/profile');
+  await page.getByRole('link',{name:'Open merchant conversations',exact:false}).click();
+  await page.waitForURL('**/merchant/messages');
+  await page.getByRole('heading',{name:'House Cleaning',exact:true}).waitFor();
+  console.log('PASS merchant performance shows real quote metrics and working business actions without fake traffic or upgrades');
   await page.goto(`http://127.0.0.1:4173/app/leads/${leadId}`);
   await page.getByRole('button',{name:'Contact C***',exact:true}).waitFor();
   assert.equal(await page.getByRole('link',{name:'customer@example.test',exact:true}).count(),0);
