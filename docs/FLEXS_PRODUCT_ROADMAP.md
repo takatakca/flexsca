@@ -7,7 +7,7 @@ FLEXS operates independently at flexs.ca, with its own marketplace data and acco
 | Area | Implemented in this branch | Production verification |
 | --- | --- | --- |
 | Brand and navigation | New homepage, professional landing, workspace, mobile navigation, favicon/social card | Hosting rollout and deployed responsive review pending |
-| Request intake | Category questions, contact validation, service/location handoff, confirmed-email ownership | Real Auth emails and abuse controls need staging validation |
+| Request intake | Database-enforced category questionnaire, contact validation, service/location handoff, confirmed-email ownership; signup creates no fictional leads | Real Auth emails, current-template intake and abuse controls need staging validation |
 | Marketplace | Paginated safe search, private contact previews, credit unlock, independent archives | Concurrent unlocks and realistic query-plan measurements pending |
 | Customer decisions | Private replies, CAD quotes, single accepted quote, request closure | Real multi-account staging checks pending |
 | Reputation | Verified customer relationship reviews, protected verified feedback, public privacy | Verification does not certify completed work or professional licensing |

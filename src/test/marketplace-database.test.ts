@@ -38,14 +38,30 @@ beforeAll(async () => {
   }
   await db.exec(`INSERT INTO auth.users(id,email,email_confirmed_at) VALUES
     ('${buyer}','buyer@example.test',now()),('${pro}','pro@example.test',now()),('${other}','other@example.test',now());`);
+  await db.exec(`INSERT INTO service_categories(name,slug,questions) VALUES
+    ('Fixture Service','fixture-service','[]'),('Search Fixture','search-fixture','[]'),
+    ('Review Fixture','review-fixture','[]'),('Reporting Fixture','reporting-fixture','[]');`);
   await asRole('anon');
-  const category = await scalar('SELECT name FROM service_categories WHERE is_active LIMIT 1');
+  const category = 'Fixture Service';
   const result = await db.query<{ id: string }>(`SELECT submit_lead($1,'Toronto, M1A1A1','Toronto','M1A1A1','Buyer','buyer@example.test','4165550123','Private details','{}',false,'44444444-4444-4444-8444-444444444444') AS id`, [category]);
   lead = result.rows[0].id;
 }, 60_000);
 afterAll(async () => { await db.close(); });
 
 describe('marketplace database release integrity', () => {
+  it('creates signup records and bonus credits without fictional leads or messages',async()=>{
+    await asRole('postgres');
+    const counts=await db.query('SELECT (SELECT count(*) FROM leads) AS leads,(SELECT count(*) FROM lead_messages) AS messages');
+    const signup='98989898-9898-4898-8898-989898989898';
+    await db.query(`INSERT INTO auth.users(id,email,raw_user_meta_data,email_confirmed_at) VALUES($1,'signup@example.test','{"display_name":"New Merchant"}',now())`,[signup]);
+    const after=await db.query('SELECT (SELECT count(*) FROM leads) AS leads,(SELECT count(*) FROM lead_messages) AS messages');
+    expect(after.rows).toEqual(counts.rows);
+    expect(await scalar(`SELECT display_name FROM profiles WHERE id='${signup}'`)).toBe('New Merchant');
+    expect(await scalar(`SELECT balance FROM credit_wallets WHERE user_id='${signup}'`)).toBe(20);
+    expect(await scalar(`SELECT count(*) FROM credit_transactions WHERE user_id='${signup}' AND reason='signup_bonus' AND delta=20`)).toBe(1);
+    expect(Number(await scalar(`SELECT count(*) FROM custom_statuses WHERE agent_id='${signup}'`))).toBeGreaterThan(0);
+    expect(await scalar(`SELECT count(*) FROM lead_agent_state WHERE agent_id='${signup}'`)).toBe(0);
+  });
   it('requires authentication for marketplace browsing', async () => {
     await asRole('anon');
     await expect(db.query('SELECT * FROM leads_safe')).rejects.toThrow();
@@ -174,7 +190,7 @@ describe('marketplace database release integrity', () => {
   });
   it('limits intake abuse by mailbox and rejects oversized personal data', async () => {
     await asRole('anon');
-    const category = await scalar('SELECT name FROM service_categories WHERE is_active LIMIT 1');
+    const category = 'Fixture Service';
     for (let n=0;n<3;n++) await db.query(`SELECT submit_lead($1,'Toronto',null,null,'Customer','limited@example.test')`,[category]);
     await expect(db.query(`SELECT submit_lead($1,'Toronto',null,null,'Customer','LIMITED@example.test')`,[category])).rejects.toThrow('Too many requests');
     await expect(db.query(`SELECT submit_lead($1,'Toronto',null,null,$2,'another@example.test')`,[category,'x'.repeat(101)])).rejects.toThrow('Invalid request details');
@@ -506,5 +522,80 @@ describe('administrator integration operations',()=>{
     expect(await scalar(`SELECT complete_attribution('${event}','${rows[0].lease_id}',200,true)`)).toBe(true);
     await asRole('authenticated',other);
     await expect(db.query(`SELECT admin_retry_attribution('00000000-0000-4000-8000-000000000000')`)).rejects.toThrow('Event not found');
+  });
+});
+
+// Exercise intake as a real anonymous caller, not a mocked RPC response.
+describe('server questionnaire validation', () => {
+  const valid = { scope: ['Kitchen'], schedule: 'Weekly' };
+  let serial = 0;
+  const submit = (answers: unknown) => db.query<{id:string}>(
+    `SELECT submit_lead('Questionnaire Fixture','Toronto',null,null,'Customer',$1,null,null,$2::jsonb) AS id`,
+    [`questionnaire-${serial++}@example.test`, JSON.stringify(answers)],
+  );
+  beforeAll(async()=>{
+    await asRole('postgres');
+    await db.query(`INSERT INTO service_categories(name,slug,questions) VALUES ('Questionnaire Fixture','questionnaire-fixture',$1::jsonb)`, [JSON.stringify([
+      {id:'scope',type:'checkbox',required:true,options:['Kitchen','Bathroom'],hasOther:true},
+      {id:'schedule',type:'radio',required:true,options:['Weekly','Monthly'],hasOther:false},
+      {id:'notes',type:'textarea',required:false,options:[]},
+      {id:'time',type:'select',required:false,options:['Morning','Evening'],hasOther:true},
+    ])]);
+    await asRole('anon');
+  });
+  it('rejects missing, blank and null required answers without creating a lead',async()=>{
+    for(const answers of [{}, {scope:[],schedule:'Weekly'}, {scope:['Kitchen'],schedule:'   '}, {scope:null,schedule:'Weekly'}]){
+      await expect(submit(answers)).rejects.toThrow();
+    }
+    await asRole('postgres');
+    expect(await scalar(`SELECT count(*) FROM leads WHERE category='Questionnaire Fixture'`)).toBe(0);
+    await asRole('anon');
+  });
+  it('rejects invented question IDs and unsupported option values',async()=>{
+    await expect(submit({...valid,hidden:'Injected'})).rejects.toThrow('Unknown questionnaire answer');
+    await expect(submit({...valid,schedule:'Never'})).rejects.toThrow('Invalid questionnaire option');
+    await expect(submit({...valid,scope:['Garage']})).rejects.toThrow('Invalid questionnaire option');
+  });
+  it('rejects checkbox scalars, duplicate choices, objects and non-string selections',async()=>{
+    for(const scope of ['Kitchen',['Kitchen','Kitchen'],[{secret:'data'}],[42]]){
+      await expect(submit({...valid,scope})).rejects.toThrow();
+    }
+    await expect(submit({...valid,schedule:['Weekly']})).rejects.toThrow('Invalid questionnaire answer type');
+    await expect(submit({...valid,notes:{nested:true}})).rejects.toThrow('Invalid questionnaire answer type');
+  });
+  it('accepts explicit Other text only on questions that allow it',async()=>{
+    const {rows}=await submit({...valid,scope:['Kitchen','Other: Hallway'],time:'Other: Afternoon'});
+    expect(rows[0].id).toMatch(/^[0-9a-f-]{36}$/);
+    await expect(submit({...valid,schedule:'Other: Daily'})).rejects.toThrow('Invalid questionnaire option');
+    await expect(submit({...valid,scope:['Other:    ']})).rejects.toThrow('Invalid questionnaire option');
+  });
+  it('bounds free text and checkbox selection volume',async()=>{
+    await expect(submit({...valid,notes:'x'.repeat(2001)})).rejects.toThrow('Invalid questionnaire answer length');
+    await expect(submit({...valid,scope:Array.from({length:51},(_,i)=>`Other: Room ${i}`)})).rejects.toThrow('Invalid checkbox selections');
+  });
+  it('preserves optional empty answers and enforces validation on internal updates',async()=>{
+    const {rows}=await submit({...valid,notes:'',time:''});
+    await asRole('service_role');
+    await expect(db.query(`UPDATE leads SET answers='{}' WHERE id=$1`,[rows[0].id])).rejects.toThrow('Required questionnaire answer missing');
+    const stored=await db.query<{answers:unknown}>(`SELECT answers FROM leads WHERE id=$1`,[rows[0].id]);
+    expect(stored.rows[0].answers).toMatchObject(valid);
+    await asRole('anon');
+  });
+  it('keeps all currently published category templates usable',async()=>{
+    const {rows}=await db.query<{name:string;questions:{id:string;type:string;required?:boolean;options?:string[];hasOther?:boolean}[]}>(`SELECT name,questions FROM service_categories WHERE is_active ORDER BY slug`);
+    expect(rows.length).toBeGreaterThan(10);
+    for(const [index,category] of rows.entries()){
+      const answers:Record<string,string|string[]>={};
+      for(const question of category.questions){
+        if(!question.required)continue;
+        if(['radio','select','checkbox'].includes(question.type)){
+          const value=question.options?.[0] ?? (question.hasOther ? 'Other: Fixture choice' : '');
+          expect(value,`${category.name}: ${question.id} needs a configured option`).not.toBe('');
+          answers[question.id]=question.type==='checkbox' ? [value] : value;
+        }else answers[question.id]='Fixture answer';
+      }
+      const result=await db.query<{id:string}>(`SELECT submit_lead($1,'Toronto',null,null,'Customer',$2,null,null,$3::jsonb) AS id`,[category.name,`catalog-${index}@example.test`,JSON.stringify(answers)]);
+      expect(result.rows[0].id,category.name).toMatch(/^[0-9a-f-]{36}$/);
+    }
   });
 });

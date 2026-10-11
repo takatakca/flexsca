@@ -4,11 +4,13 @@ FLEXS remains an independent product. The requested experience combines the FLEX
 
 ## Design source
 
-The FLEX Figma file has not been inspected: this session exposes no Figma connector and no file URL has been supplied. Existing interface improvements are provisional. They do not establish that the Figma questions, branching, text, validation, or screens have been reproduced. Once accessible, inventory each frame and prototype branch against the existing intake, customer, professional, and administration routes before changing their behaviour. Record missing states, mobile layouts, accessibility, and copy as explicit implementation gaps.
+The supplied design is [TakaTak Marketplace](https://www.figma.com/design/ekbtl69iPNWi8C9UF6h23b/TakaTak-Marketplace?node-id=0-1), file key `ekbtl69iPNWi8C9UF6h23b`, with prototype start `288:5157`; the user identifies the relevant scope as FLEXSCA. It has not been inspected: this session exposes no Figma connector and direct reads are blocked at the platform proxy with CONNECT 403. Connecting Figma in another project does not establish access in this session. Existing interface improvements are provisional. They do not establish that the Figma questions, branching, text, validation, or screens have been reproduced. Once accessible, inventory each frame and prototype branch against the existing intake, customer, professional, and administration routes before changing their behaviour. Record missing states, mobile layouts, accessibility, and copy as explicit implementation gaps.
 
 ## Auth contracts actually inspected
 
 Reference: TAKATAK-V1 commit `8adfa23ca50f52f6a49e0eaec68e933c68dd1c78`.
+
+Rechecked GitHub `main` on October 11 at `fa1ed172b71166ea2b6e7650ff1fd0930857017a`: the FLEXS adapter README still explicitly says placeholder/not connected, and master API credentials remain scoped to 1LV. New TAKATAK website-lead capture and attachment scanning are documented in `docs/WEBSITE_LEAD_CAPTURE.md`; these are TAKATAK's own website endpoints, not an authorized FLEXS shared-account or merchant synchronization contract.
 
 | Source | Observed contract | Consequence for FLEXS |
 | --- | --- | --- |

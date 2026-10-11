@@ -40,7 +40,7 @@ def check_history(rows, versions, deployed=False):
     if unknown:
         raise ReadinessError('Remote migration versions are absent from this checkout. Reconcile remote changes before deployment.')
     pending = [version for version in versions if version not in applied]
-    if any(not version.startswith('20261007') for version in pending):
+    if any(not version.startswith('20261007') and version not in ('20261011120000','20261011120100') for version in pending):
         raise ReadinessError('Historical migrations are missing. Reconcile history before applying release migrations.')
     if deployed and pending:
         raise ReadinessError('Release migrations remain unapplied after deployment.')

@@ -33,5 +33,5 @@ print(f'Supabase management access verified for {project}.')
 print(f'Applied versions: {len(applied)}; pending repository migrations: {len(pending)}')
 for file in pending:
     print(file.name)
-if any(not file.name.startswith('20261007') for file in pending):
+if any(not file.name.startswith('20261007') and file.name.split('_',1)[0] not in ('20261011120000','20261011120100') for file in pending):
     sys.exit('Historical migrations are missing from remote history. Reconcile schema before promotion; do not replay seeds blindly.')

@@ -12,6 +12,9 @@ class DeploymentGates(unittest.TestCase):
         for rows,versions in [([{'version':'unknown'}],['20261007040000']),([],['20250901']),([{'version':None}],[])]:
             with self.assertRaises(r.ReadinessError):r.check_history(rows,versions)
         self.assertEqual(r.check_history([{'version':'old'}],['old','20261007040000']),['20261007040000'])
+        self.assertEqual(r.check_history([{'version':'old'}],['old','20261011120000']),['20261011120000'])
+        self.assertEqual(r.check_history([{'version':'old'}],['old','20261011120100']),['20261011120100'])
+        with self.assertRaises(r.ReadinessError):r.check_history([],['20261011999999'])
         with self.assertRaises(r.ReadinessError):r.check_history([],['20261007040000'],True)
     def test_backups_must_be_completed_recent_and_timezone_aware(self):
         now=datetime(2026,10,7,tzinfo=timezone.utc)
