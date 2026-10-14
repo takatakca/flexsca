@@ -7,3 +7,6 @@ verify_jwt = false
 verify_jwt = false
 [functions.takatak-attribution-worker]
 verify_jwt = false
+
+[functions.takatak-opportunity-intake]
+verify_jwt = false

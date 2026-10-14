@@ -1,7 +1,7 @@
 name: Deploy FLEXS backend
 on:
   push:
-    branches: [codex/flexs-marketplace-release]
+    branches: [main]
     paths:
       - 'supabase/**'
       - 'scripts/backend-readiness.py'
@@ -39,7 +39,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.5.6
-      - run: deno check --node-modules-dir=none --no-lock supabase/functions/create-checkout-session/index.ts supabase/functions/stripe-webhook/index.ts supabase/functions/takatak-attribution-worker/index.ts
+      - run: deno check --node-modules-dir=none --no-lock supabase/functions/create-checkout-session/index.ts supabase/functions/stripe-webhook/index.ts supabase/functions/takatak-attribution-worker/index.ts supabase/functions/takatak-opportunity-intake/index.ts
       - run: deno test --node-modules-dir=none --no-lock supabase/functions/_shared/stripe-runtime.test.ts
       - uses: supabase/setup-cli@v1
         with:
