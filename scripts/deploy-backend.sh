@@ -21,7 +21,7 @@ python3 scripts/backend-readiness.py
 "$flexs_cli" link --project-ref vcaphsvudlseemkalawz --yes
 "$flexs_cli" db push --linked --dry-run
 "$flexs_cli" db push --linked --yes
-for flexs_function in create-checkout-session stripe-webhook takatak-attribution-worker; do
+for flexs_function in create-checkout-session stripe-webhook takatak-attribution-worker takatak-opportunity-intake; do
   "$flexs_cli" functions deploy "$flexs_function" --project-ref vcaphsvudlseemkalawz --use-api
  done
 python3 scripts/backend-readiness.py --verify-deployed
