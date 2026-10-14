@@ -1,10 +1,10 @@
 import { createClient } from "npm:@supabase/supabase-js@2.95.3";
 import { parseTakatakOpportunity } from "../_shared/takatak-opportunity.ts";
 import { readBoundedUtf8Body } from "../_shared/bounded-body.ts";
+import { verifyTakatakSignature } from "../_shared/takatak-signature.ts";
 
 const encoder = new TextEncoder();
 const MAX_BODY_BYTES = 18_000;
-const MAX_AGE_MS = 5 * 60 * 1000;
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -16,17 +16,6 @@ function json(body: unknown, status = 200) {
   });
 }
 
-function hexToBytes(value: string): ArrayBuffer | null {
-  if (!/^[a-f0-9]{64}$/i.test(value)) return null;
-  // Use an owned ArrayBuffer: Web Crypto BufferSource excludes SharedArrayBuffer.
-  const buffer = new ArrayBuffer(32);
-  const bytes = new Uint8Array(buffer);
-  for (let i = 0; i < value.length; i += 2) {
-    bytes[i / 2] = Number.parseInt(value.slice(i, i + 2), 16);
-  }
-  return buffer;
-}
-
 async function sha256(value: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", encoder.encode(value));
   return [...new Uint8Array(digest)]
@@ -34,54 +23,6 @@ async function sha256(value: string): Promise<string> {
     .join("");
 }
 
-async function verify(
-  req: Request,
-  rawBody: string,
-  integrationId: string,
-  secret: string,
-): Promise<{ ok: true; eventId: string } | { ok: false }> {
-  const suppliedIntegration = req.headers.get("x-integration-id")?.trim();
-  const eventId = req.headers.get("x-event-id")?.trim() ?? "";
-  const timestamp = req.headers.get("x-timestamp")?.trim() ?? "";
-  const signature = (
-    req.headers.get("x-signature")?.trim().replace(/^sha256=/i, "") ?? ""
-  );
-  const signatureBytes = hexToBytes(signature);
-
-  if (
-    suppliedIntegration !== integrationId ||
-    !eventId ||
-    eventId.length > 160 ||
-    !/^\d{10}$/.test(timestamp) ||
-    !signatureBytes
-  ) {
-    return { ok: false };
-  }
-
-  const timestampMs = Number(timestamp) * 1000;
-  if (
-    !Number.isFinite(timestampMs) ||
-    Math.abs(Date.now() - timestampMs) > MAX_AGE_MS
-  ) {
-    return { ok: false };
-  }
-
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["verify"],
-  );
-  const valid = await crypto.subtle.verify(
-    "HMAC",
-    key,
-    signatureBytes,
-    encoder.encode(`${timestamp}.${eventId}.${rawBody}`),
-  );
-
-  return valid ? { ok: true, eventId } : { ok: false };
-}
 
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") {
@@ -112,7 +53,7 @@ Deno.serve(async (req: Request) => {
   }
   const rawBody = incoming.body;
 
-  const auth = await verify(req, rawBody, integrationId, secret);
+  const auth = await verifyTakatakSignature(req.headers, rawBody, integrationId, secret);
   if (!auth.ok) {
     return json({ accepted: false, error: "unauthorized" }, 401);
   }

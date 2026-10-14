@@ -81,8 +81,13 @@ describe("TAKATAK -> FLEXS opportunity contract", () => {
       "utf8",
     );
 
-    expect(source).toContain('req.headers.get("x-integration-id")');
-    expect(source).toContain('req.headers.get("x-signature")');
+    const verifier = readFileSync(
+      resolve(process.cwd(), "supabase/functions/_shared/takatak-signature.ts"),
+      "utf8",
+    );
+    expect(source).toContain("verifyTakatakSignature(req.headers");
+    expect(verifier).toContain('headers.get("x-integration-id")');
+    expect(verifier).toContain('headers.get("x-signature")');
     expect(source).toContain("TAKATAK_FLEXS_OPPORTUNITY_SECRET");
     expect(source).toContain("external_payload_hash");
     expect(source).toContain("event_conflict");
