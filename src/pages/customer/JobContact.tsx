@@ -83,7 +83,7 @@ export default function JobContact() {
         </div>
       </div>
 
-      <form className="flex flex-1 flex-col" onSubmit={(event) => { void handleSubmit(event); }}>
+      <form noValidate className="flex flex-1 flex-col" onSubmit={(event) => { void handleSubmit(event); }}>
       {/* Form */}
       <div className="flex-1 px-4 py-6 space-y-5">
         <div>

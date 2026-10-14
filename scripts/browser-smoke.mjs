@@ -160,11 +160,12 @@ try {
   await page.getByPlaceholder('your@email.com').fill('customer@example.test');
   assert.equal(await page.getByPlaceholder('City, Postal Code').inputValue(),'Toronto, M1A1A1');
   console.log('PASS responsive homepage navigation and service/location preserved through the questionnaire');
-  await page.getByRole('button',{name:'Get free quotes'}).click();
+  assert.equal(await page.getByRole('textbox',{name:/Your name/}).inputValue(),'Test Customer');
+  await page.getByRole('textbox',{name:/Email address/}).press('Enter');
   await page.getByRole('heading',{name:/Request submitted/}).waitFor();
   assert.deepEqual(submitted.p_answers,{rooms:['Kitchen']});
   assert.equal(submitted.p_attribution_id,'dddddddd-dddd-4ddd-8ddd-dddddddddddd');
-  console.log('PASS customer questionnaire → validated intake → success; checkbox answers and opaque attribution preserved');
+  console.log('PASS keyboard-submitted contact form → validated intake → success; checkbox answers and opaque attribution preserved');
   category.questions = [];
   await page.goto('http://127.0.0.1:4173/services/house-cleaning');
   await page.getByRole('button',{name:'Get Started',exact:true}).click();
