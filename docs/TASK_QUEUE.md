@@ -11,11 +11,12 @@ Updated 2026-10-14. The order can change only with a documented reason. Track ea
 | P0 | blocked: hosting identification | Identify the actual frontend host, configure build delivery after backend readiness, SPA fallback, DNS and TLS | Live `flexs.ca` and deep routes serve the correct verified revision |
 | P1 | code pushed; current CI verification required | Bound TAKATAK signed-intake body size and test real HMAC authentication | 18 KB cap, UTF-8 rejection, eight signature and seven streaming tests pass on committed SHA and Deno typecheck is green |
 | P1 | queued | Complete GitHub issue #2: counterpart TAKATAK outbound sender and FLEXS professional lifecycle events (view/contact/respond/win/loss) | Agreed event contract; authenticated, tenant-scoped, idempotent callback outbox, retry tests and staging acceptance |
-| P1 | partial: code pushed, CI verification pending | CAPTCHA, throttling, duplicate/spam detection and phone verification | Existing 3-per-15-minute mailbox limit plus 10-minute identical-request rejection; remaining CAPTCHA, independent abuse signals, phone verification and live staging validation |
+| P1 | code complete for duplicate guard; CI green; live deploy blocked | Exact anonymous-request duplicate prevention and mailbox limit | 10-minute exact duplicate rejection and 3-per-15-minute quota passed PGlite CI #38624276910; requires real production rollout verification |
+| P1 | queued | CAPTCHA, independent spam signals and genuine phone verification | Safe server-side challenge verification, abuse controls and consent-aware phone OTP tests in staging |
 | P1 | queued | Professional service-area matching and privacy controls | Provider-managed preferences, server-filtered matches, RLS and location tests |
 | P1 | queued | Private customer attachments | Private bucket, per-request authorization, bounds, malware strategy, retention and audit |
 | P2 | queued | External notification delivery, professional verification/disputes, data deletion/retention, subscriptions | Specific product requirements, migrations, permissions and integration tests |
-| P2 | partial: contact form enhanced; CI pending | Remaining mobile/a11y review, conversion metrics, worker alarms and representative load tests | Contact step now supports keyboard Enter submission and accessible error labels; check CI #38624925575, then audit other screens and add monitors/load baselines |
+| P2 | partial: contact form CI green | Remaining mobile/a11y review, conversion metrics, worker alarms and representative load tests | Keyboard Enter submission, associated errors and Playwright smoke verified in CI #38624925575; other screens and monitoring remain |
 
 ## Execution rules
 
