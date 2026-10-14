@@ -34,9 +34,9 @@ Document integration likewise requires a real counterpart contract and private s
 
 ## TAKATAK opportunity projection for R2F
 
-Status: **CODE COMPLETE on stacked feature branch; not deployed or production verified**.
+Status: **Implementation on PR #3; automated checks and production deployment must still be verified**.
 
-This work is stacked on the existing FLEXS marketplace release PR and does not replace its marketplace, credits, RLS, response, or attribution work.
+The prerequisite marketplace PR #1 is already merged into `main`. PR #3 retains the existing FLEXS marketplace, credits, RLS, responses, and attribution behavior.
 
 TAKATAK may project an eligible R2F lead into FLEXS through the Edge Function:
 
@@ -117,7 +117,7 @@ The adapter does not create a TAKATAK identity, FLEXS user, or business membersh
 
 Before enabling this integration:
 
-1. merge and deploy the prerequisite FLEXS marketplace release;
+1. verify the already-merged marketplace release backend has been deployed and its required RPCs are active;
 2. apply the provenance migration;
 3. deploy `takatak-opportunity-intake`;
 4. set the dedicated server secret through the approved Supabase secret manager;
