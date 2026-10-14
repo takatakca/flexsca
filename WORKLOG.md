@@ -5,6 +5,6 @@
 Newest first, one line per piece of work. Rule: `AGENTS.md` › Work log rule.
 Format: `YYYY-MM-DD | agent | branch → PR | status | what | next step`
 
-- 2026-10-10 | ChatGPT | feat/takatak-r2f-opportunity-intake → PR pending | active | Issue #2: signed TAKATAK opportunity projection into FLEXS with provenance/idempotency and authorized contact disclosure | implement migration + Edge Function + tests/docs; keep stacked on marketplace PR #1
+- 2026-10-14 | ChatGPT | feat/takatak-r2f-opportunity-intake → PR #3 | PR #3 | Implement signed TAKATAK/R2F intake, fix Deno HMAC buffer type, deny unapproved contact disclosure by default, wire main-branch backend deploy and readiness gates | await green CI, merge to main; configure secure Supabase production credentials and test live signed intake
 
 - 2026-10-08 | claude (owner setup) | default branch | done | Added the work log rule, this log and the stop reminder | every agent follows AGENTS.md › Work log rule
