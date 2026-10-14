@@ -32,6 +32,16 @@ export async function submitLead(category: string, form: z.infer<typeof contactS
     p_customer_name: clean.name, p_customer_email: clean.email, p_customer_phone: clean.phone || null,
     p_details: clean.details || null, p_answers: answers, p_is_urgent: isUrgent, p_attribution_id: currentAttribution(),
   });
-  if (error || !data) throw new Error('Unable to submit your request. Please try again.');
+  if (error) {
+    // Only allowlisted messages from server checks appear to end users.
+    if (error.message?.includes('DUPLICATE_REQUEST')) {
+      throw new Error('You already sent this request. Please wait 10 minutes before trying again.');
+    }
+    if (error.message?.includes('Too many requests')) {
+      throw new Error('Too many requests from this email. Please try again later.');
+    }
+    throw new Error('Unable to submit your request. Please try again.');
+  }
+  if (!data) throw new Error('Unable to submit your request. Please try again.');
   return data;
 }

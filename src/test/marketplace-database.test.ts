@@ -175,10 +175,24 @@ describe('marketplace database release integrity', () => {
   it('limits intake abuse by mailbox and rejects oversized personal data', async () => {
     await asRole('anon');
     const category = await scalar('SELECT name FROM service_categories WHERE is_active LIMIT 1');
-    for (let n=0;n<3;n++) await db.query(`SELECT submit_lead($1,'Toronto',null,null,'Customer','limited@example.test')`,[category]);
+    for (let n=0;n<3;n++) await db.query(`SELECT submit_lead($1,$2,null,null,'Customer','limited@example.test')`,[category,`Toronto ${n}`]);
     await expect(db.query(`SELECT submit_lead($1,'Toronto',null,null,'Customer','LIMITED@example.test')`,[category])).rejects.toThrow('Too many requests');
     await expect(db.query(`SELECT submit_lead($1,'Toronto',null,null,$2,'another@example.test')`,[category,'x'.repeat(101)])).rejects.toThrow('Invalid request details');
   });
+  it('rejects identical anonymous intake retries without revealing the prior request ID', async () => {
+    await asRole('anon');
+    const category = await scalar('SELECT name FROM service_categories WHERE is_active LIMIT 1');
+    const sql = `SELECT submit_lead($1,'Montréal',null,null,'Client','duplicate@example.test',null,$2,'{}'::jsonb,false) AS id`;
+    const first = await db.query<{ id: string }>(sql,[category,'Kitchen renovation']);
+    expect(first.rows[0].id).toMatch(/^[0-9a-f-]{36}$/i);
+    await expect(db.query(sql,[category,'Kitchen renovation'])).rejects.toThrow('DUPLICATE_REQUEST');
+    // A genuine change of scope is a new request, still subject to the mailbox limit.
+    const revised = await db.query<{ id: string }>(sql,[category,'Bathroom renovation']);
+    expect(revised.rows[0].id).not.toBe(first.rows[0].id);
+    await asRole('service_role');
+    expect(Number(await scalar("SELECT count(*) FROM leads WHERE customer_email='duplicate@example.test'"))).toBe(2);
+  });
+
   it('validates intake on the server and protects public review email', async () => {
     await asRole('anon');
     await expect(db.query(`SELECT submit_lead('Invented','Toronto',null,null,'Buyer','invalid')`)).rejects.toThrow();

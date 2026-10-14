@@ -55,8 +55,12 @@ export default function JobContact() {
     try {
       const requestId = await submitLead(state.categoryName, result.data, state.answers);
       navigate("/post-job/success", { state: { categoryName: state.categoryName, requestId, email: result.data.email } });
-    } catch {
-      toast.error("Unable to submit your request. Please try again.");
+    } catch (cause) {
+      const safeMessage = cause instanceof Error && [
+        "You already sent this request. Please wait 10 minutes before trying again.",
+        "Too many requests from this email. Please try again later.",
+      ].includes(cause.message) ? cause.message : "Unable to submit your request. Please try again.";
+      toast.error(safeMessage);
     } finally {
       setSubmitting(false);
     }
