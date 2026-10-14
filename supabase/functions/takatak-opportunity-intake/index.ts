@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2.95.3";
 import { parseTakatakOpportunity } from "../_shared/takatak-opportunity.ts";
+import { readBoundedUtf8Body } from "../_shared/bounded-body.ts";
 
 const encoder = new TextEncoder();
 const MAX_BODY_BYTES = 18_000;
@@ -102,10 +103,14 @@ Deno.serve(async (req: Request) => {
     return json({ accepted: false, error: "not_configured" }, 503);
   }
 
-  const rawBody = await req.text();
-  if (encoder.encode(rawBody).byteLength > MAX_BODY_BYTES) {
-    return json({ accepted: false, error: "payload_too_large" }, 413);
+  const incoming = await readBoundedUtf8Body(req, MAX_BODY_BYTES);
+  if (!incoming.ok) {
+    if (incoming.error === "too_large") {
+      return json({ accepted: false, error: "payload_too_large" }, 413);
+    }
+    return json({ accepted: false, error: "invalid_body" }, 400);
   }
+  const rawBody = incoming.body;
 
   const auth = await verify(req, rawBody, integrationId, secret);
   if (!auth.ok) {
