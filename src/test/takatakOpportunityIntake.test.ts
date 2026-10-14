@@ -101,6 +101,7 @@ describe("TAKATAK -> FLEXS opportunity contract", () => {
 
     expect(migration).toContain("leads_external_source_id_uniq");
     expect(migration).toContain("contact_disclosure_authorized = true");
+    expect(migration).toContain("contact_disclosure_authorized boolean NOT NULL DEFAULT false");
     expect(migration).not.toContain("DROP TABLE");
   });
 });
