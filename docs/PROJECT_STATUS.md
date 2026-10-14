@@ -1,0 +1,26 @@
+# FLEXS project status
+
+Last reviewed: 2026-10-14. Repository: [takatakca/flexsca](https://github.com/takatakca/flexsca). Main branch: `main`.
+
+## Current reality
+
+**Not 100% complete; not verified as deployed to production.** Existing React/TypeScript/Vite marketplace and Supabase backend are preserved. PR #1 delivered the marketplace release and was merged. PR #3 delivered the signed TAKATAK/R2F lead-projection adapter and was merged on 2026-10-14 (merge SHA `33bec04a3ef3e249ba5e0fa6ccb82ee0906993ee`). The latest code hardening commit, `be61369802b770ca7f89a89d5b7d1374b141d73e`, bounds streamed intake bodies to 18,000 bytes with dedicated unit tests.
+
+The previously completed [Marketplace checks run #38610800042](https://github.com/takatakca/flexsca/actions/runs/38610800042) passed the CI suite for `961340d5`. Newer commits must pass their own checks; do not reuse older successful runs as evidence for later code.
+
+The [backend deployment #38610629598](https://github.com/takatakca/flexsca/actions/runs/38610629598) failed **before schema changes**: GitHub Actions environment `production` does not supply `SUPABASE_ACCESS_TOKEN`; `SUPABASE_DB_PASSWORD` was also empty in logs. The connected Supabase account did not have access to project `vcaphsvudlseemkalawz`. No deployed migration, function version, Stripe transaction, TAKATAK callback, or website release was verified. A public website request from this agent environment did not produce a usable response; hosting, DNS, TLS and deployed build remain **unverified**, not assumed down.
+
+## Delivered implementation areas (code, not live certification)
+
+- Mobile-first public intake, customer workspace and professional opportunity, response and reminder flows.
+- Supabase Auth and tenant/role protections; credit unlock, Stripe checkout and webhook code.
+- Reviews, private support tickets, admin controls and opaque TAKATAK attribution with leased delivery.
+- TAKATAK/R2F signed, consent-gated inbound opportunity projection; category pricing controlled by FLEXS; deduplicated provenance.
+- GitHub CI for typecheck, lint, database/unit tests, build, synthetic browser checks, Deno checks and visual evidence.
+- Guarded GitHub Actions backend promotion requiring a recent recovery point, known migration history, required secrets and active functions.
+
+## Known remaining obligations
+
+Production credentials, migration reconciliation, backups/restore confidence, deployment and real-system verification are **P0**. TAKATAK outbound counterpart and professional lifecycle event delivery are not complete. Shared TAKATAK Auth has no approved cross-project session exchange. Roadmap gaps include abuse/CAPTCHA and phone validation, professional service areas, private attachments, external notifications, account data lifecycle, subscriptions and further UX/accessibility checks. None is falsely marked complete.
+
+See [TASK_QUEUE](TASK_QUEUE.md), [DEPLOYMENT](DEPLOYMENT.md), [DECISIONS](DECISIONS.md), [AGENT_HANDOFF](AGENT_HANDOFF.md), [FLEXS_RELEASE](FLEXS_RELEASE.md) and [FLEXS_PRODUCT_ROADMAP](FLEXS_PRODUCT_ROADMAP.md).
