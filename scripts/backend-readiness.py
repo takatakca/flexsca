@@ -10,8 +10,8 @@ import sys
 
 PROJECT = 'vcaphsvudlseemkalawz'
 ROOT = Path(__file__).resolve().parents[1]
-FUNCTIONS = {'create-checkout-session', 'stripe-webhook', 'takatak-attribution-worker'}
-SECRETS = {'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'ADS_FLEXS_SERVICE_TOKEN', 'FLEXS_WORKER_TOKEN'}
+FUNCTIONS = {'create-checkout-session', 'stripe-webhook', 'takatak-attribution-worker', 'takatak-opportunity-intake'}
+SECRETS = {'STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'ADS_FLEXS_SERVICE_TOKEN', 'FLEXS_WORKER_TOKEN', 'TAKATAK_FLEXS_INTEGRATION_ID', 'TAKATAK_FLEXS_OPPORTUNITY_SECRET'}
 
 class ReadinessError(Exception):
     pass
@@ -40,8 +40,8 @@ def check_history(rows, versions, deployed=False):
     if unknown:
         raise ReadinessError('Remote migration versions are absent from this checkout. Reconcile remote changes before deployment.')
     pending = [version for version in versions if version not in applied]
-    if any(not version.startswith('20261007') for version in pending):
-        raise ReadinessError('Historical migrations are missing. Reconcile history before applying release migrations.')
+    if any(not (version.startswith('20261007') or version == '20261010090000') for version in pending):
+        raise ReadinessError('Historical or unapproved migrations are missing. Reconcile history before applying release migrations.')
     if deployed and pending:
         raise ReadinessError('Release migrations remain unapplied after deployment.')
     return pending
