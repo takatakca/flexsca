@@ -1,6 +1,6 @@
 # Work log
 
-- 2026-10-14 | ChatGPT | main | active | Prevent identical accidental guest lead submissions in server RPC while preserving mailbox limits | implement SQL, client feedback, PGlite tests, run CI, update handoff
+- 2026-10-14 | ChatGPT | main | done; production blocked | SQL duplicate guard, safer client feedback, PGlite checks, strict migration allowlist; pushed f7df3757 and 2dd00443 | confirm current CI #38624276910; Supabase project access and production secrets still needed
 
 - 2026-10-14 | ChatGPT | main | done; production blocked | Bounded TAKATAK intake streaming (18 KB), malformed UTF-8 handling and seven tests, plus eight runtime HMAC tests; created five project/handoff/runbook files | inspect latest CI for current main SHA, then resolve Supabase production access and continue P1 queue
 
