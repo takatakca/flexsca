@@ -15,13 +15,15 @@ function json(body: unknown, status = 200) {
   });
 }
 
-function hexToBytes(value: string): Uint8Array | null {
+function hexToBytes(value: string): ArrayBuffer | null {
   if (!/^[a-f0-9]{64}$/i.test(value)) return null;
-  const bytes = new Uint8Array(32);
+  // Use an owned ArrayBuffer: Web Crypto BufferSource excludes SharedArrayBuffer.
+  const buffer = new ArrayBuffer(32);
+  const bytes = new Uint8Array(buffer);
   for (let i = 0; i < value.length; i += 2) {
     bytes[i / 2] = Number.parseInt(value.slice(i, i + 2), 16);
   }
-  return bytes;
+  return buffer;
 }
 
 async function sha256(value: string): Promise<string> {
