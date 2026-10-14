@@ -8,7 +8,7 @@ ALTER TABLE public.leads
   ADD COLUMN IF NOT EXISTS external_lead_id text,
   ADD COLUMN IF NOT EXISTS external_reference text,
   ADD COLUMN IF NOT EXISTS external_payload_hash text,
-  ADD COLUMN IF NOT EXISTS contact_disclosure_authorized boolean NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS contact_disclosure_authorized boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS external_authorization_basis text;
 
 CREATE UNIQUE INDEX IF NOT EXISTS leads_external_source_id_uniq
