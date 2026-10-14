@@ -15,6 +15,14 @@ Repository `takatakca/flexsca`; default branch `main`; no open PRs were reported
 - Deployment: [backend attempt #38624276836](https://github.com/takatakca/flexsca/actions/runs/38624276836) failed at credential validation before any SQL/function mutation. The required GitHub `production` environment secrets remain unavailable to this run; do not request secret values in chat.
 - **Exact next action:** confirm conclusion for Marketplace checks #38624276910. If failed, inspect the failing step and fix it in GitHub; otherwise resume the next independent P1 item from TASK_QUEUE. After authorized Supabase access is available, reconcile remote migrations, verify recent backup and server secrets, then use guarded backend deployment and staging checks. Do not promote frontend first.
 
+## 2026-10-14 customer-form continuation
+
+- Last completed feature commits: `435242bc4686a38756b3cff0e608591dd29bd250` (real keyboard-submittable contact form, accessible labels/errors, duplicate-submit guard) and `07dd62584a6bd4b7e0eca654dfd2c1d8b808b2c1` (`noValidate` so Zod messages are shown and browser smoke test submits with Enter). These are on `main`.
+- Modified this segment: `src/pages/customer/JobContact.tsx`, `scripts/browser-smoke.mjs`, `WORKLOG.md` and operational docs. Current latest code SHA is `07dd62584a6bd4b7e0eca654dfd2c1d8b808b2c1`; **this handoff documentation commit follows it**, so re-read the main ref for the actual latest SHA.
+- The anti-duplicate database/client release passed [Marketplace checks #38624276910](https://github.com/takatakca/flexsca/actions/runs/38624276910) in full. Latest keyboard form test [Marketplace checks #38624925575](https://github.com/takatakca/flexsca/actions/runs/38624925575) was queued/in progress at time of handoff; verify its final conclusion before claiming this last change green.
+- Production [Deploy FLEXS backend #38624276836](https://github.com/takatakca/flexsca/actions/runs/38624276836) still failed before any schema/function changes at missing secret validation. Supabase project authorization/production GitHub secrets and verified frontend host are outstanding; no live deployed SHA was observed.
+- **Next exact action:** check latest CI run #38624925575. Fix failed steps if any. When green, continue remaining P1 requirements from TASK_QUEUE (CAPTCHA, phone verification, service area matching and TAKATAK lifecycle events once an agreed contract exists). Preserve FLEXS tenant isolation, migrate backend before live frontend, and record real environment evidence.
+
 ## Task in progress
 
 Track [Marketplace checks #38622879746](https://github.com/takatakca/flexsca/actions/runs/38622879746) for the last feature commit; correct any failures. Once tests pass, resume issue #2 lifecycle callbacks only after locating and reviewing the real TAKATAK counterpart contract. Continue other P1 backlog independently of blocked deployment.

@@ -15,7 +15,7 @@ Updated 2026-10-14. The order can change only with a documented reason. Track ea
 | P1 | queued | Professional service-area matching and privacy controls | Provider-managed preferences, server-filtered matches, RLS and location tests |
 | P1 | queued | Private customer attachments | Private bucket, per-request authorization, bounds, malware strategy, retention and audit |
 | P2 | queued | External notification delivery, professional verification/disputes, data deletion/retention, subscriptions | Specific product requirements, migrations, permissions and integration tests |
-| P2 | queued | Remaining mobile/a11y review, conversion metrics, worker alarms and representative load tests | Accessibility fixes, monitors and baseline capacity evidence |
+| P2 | partial: contact form enhanced; CI pending | Remaining mobile/a11y review, conversion metrics, worker alarms and representative load tests | Contact step now supports keyboard Enter submission and accessible error labels; check CI #38624925575, then audit other screens and add monitors/load baselines |
 
 ## Execution rules
 

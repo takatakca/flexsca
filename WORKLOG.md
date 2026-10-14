@@ -1,6 +1,6 @@
 # Work log
 
-- 2026-10-14 | ChatGPT | main | active | Make customer request form keyboard-submittable with accessible labels/errors | check CI, document next action and deployment blocker
+- 2026-10-14 | ChatGPT | main | done; current CI pending | Contact form keyboard submission, accessible labels/errors and Playwright Enter scenario; commits 435242bc and 07dd6258 | Check CI #38624925575; unblock Supabase production environment, continue P1 tasks
 
 - 2026-10-14 | ChatGPT | main | done; production blocked | SQL duplicate guard, safer client feedback, PGlite checks, strict migration allowlist; pushed f7df3757 and 2dd00443 | confirm current CI #38624276910; Supabase project access and production secrets still needed
 

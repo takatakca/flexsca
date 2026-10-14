@@ -21,6 +21,8 @@ The [backend deployment #38610629598](https://github.com/takatakca/flexsca/actio
 - GitHub CI for typecheck, lint, database/unit tests, build, synthetic browser checks, Deno checks and visual evidence.
 - Guarded GitHub Actions backend promotion requiring a recent recovery point, known migration history, required secrets and active functions.
 
+Latest UI improvement: `435242bc` and `07dd6258` convert the customer contact step into an accessible form that accepts Enter-key submission, presents associated validation errors, and is exercised in the Playwright smoke suite. Await the matching [Marketplace checks #38624925575](https://github.com/takatakca/flexsca/actions/runs/38624925575) before declaring the new revision fully validated. No claim of live promotion is made.
+
 ## Known remaining obligations
 
 Production credentials, migration reconciliation, backups/restore confidence, deployment and real-system verification are **P0**. TAKATAK outbound counterpart and professional lifecycle event delivery are not complete. Shared TAKATAK Auth has no approved cross-project session exchange. Roadmap gaps include abuse/CAPTCHA and phone validation, professional service areas, private attachments, external notifications, account data lifecycle, subscriptions and further UX/accessibility checks. None is falsely marked complete.
