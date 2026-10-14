@@ -4,22 +4,22 @@ Updated: 2026-10-14. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](
 
 ## Repository and last completed task
 
-Repository `takatakca/flexsca`; default branch `main`; no open PRs were reported at session start. Existing PR #3 was merged as `33bec04a3ef3e249ba5e0fa6ccb82ee0906993ee`. Latest **feature code pushed**: `be61369802b770ca7f89a89d5b7d1374b141d73e` — TAKATAK signed intake now checks streamed request size and rejects malformed UTF-8, with seven additional bounded-body tests. The last observed baseline commit before this session was `961340d5db434288bf7dcaa7e2b190fcfdb81e0d`. **This handoff file's own documentation commit comes afterward; use `git log -1 --format=%H main` or GitHub's main ref for the actual latest commit**, not the code SHA above.
+Repository `takatakca/flexsca`; default branch `main`; no open PRs were reported at session start. Existing PR #3 was merged as `33bec04a3ef3e249ba5e0fa6ccb82ee0906993ee`. Latest **feature code pushed**: `2a6747052b8b427cd7a7f1642fd97191088a3ca6` — after `be613698` added bounded 18 KB streaming and seven tests, this commit extracted the TAKATAK HMAC verifier and added eight live crypto tests covering tampering, time and event binding. Latest pre-handoff documentation commit was `38555ac6416c5c2f3d2f60551345b58836661912`. The last observed baseline commit before this session was `961340d5db434288bf7dcaa7e2b190fcfdb81e0d`. **This handoff file's own documentation commit comes afterward; use `git log -1 --format=%H main` or GitHub's main ref for the actual latest commit**, not the code SHA above.
 
 ## Task in progress
 
-Track the latest CI execution for the streaming limit hardening and documentation; correct any failures. Once tests pass, resume issue #2 lifecycle callbacks only after locating and reviewing the real TAKATAK counterpart contract. Continue other P1 backlog independently of blocked deployment.
+Track [Marketplace checks #38622879746](https://github.com/takatakca/flexsca/actions/runs/38622879746) for the last feature commit; correct any failures. Once tests pass, resume issue #2 lifecycle callbacks only after locating and reviewing the real TAKATAK counterpart contract. Continue other P1 backlog independently of blocked deployment.
 
 ## Files changed in this session
 
-- `supabase/functions/_shared/bounded-body.ts` (new), `supabase/functions/takatak-opportunity-intake/index.ts` (edited)
-- `src/test/takatakBoundedBody.test.ts` (new)
+- `supabase/functions/_shared/bounded-body.ts`, `supabase/functions/_shared/takatak-signature.ts` (both new); `supabase/functions/takatak-opportunity-intake/index.ts` (edited)
+- `src/test/takatakBoundedBody.test.ts`, `src/test/takatakSignature.test.ts` (new); `src/test/takatakOpportunityIntake.test.ts` (edited)
 - `WORKLOG.md`, `AGENTS.md`, `README.md`
 - `docs/PROJECT_STATUS.md`, `docs/TASK_QUEUE.md`, `docs/AGENT_HANDOFF.md`, `docs/DEPLOYMENT.md`, `docs/DECISIONS.md`
 
 ## Commands/checks and evidence
 
-Used the connected GitHub API to read repo tree, main ref, recent commits, PRs, issues and workflow runs. The existing commit `961340d5` passed [Marketplace checks #38610800042](https://github.com/takatakca/flexsca/actions/runs/38610800042). New code/tests were pushed; inspect the most recent `Marketplace checks` for their commit SHA rather than assuming success. Source code and tests were not run locally in this session. Deployment [#38610629598](https://github.com/takatakca/flexsca/actions/runs/38610629598) failed at credential validation before any database change. An attempt to access `https://flexs.ca` from the agent's web tool was inconclusive.
+Used the connected GitHub API to read repo tree, main ref, recent commits, PRs, issues and workflow runs. The existing commit `961340d5` passed [Marketplace checks #38610800042](https://github.com/takatakca/flexsca/actions/runs/38610800042). New code/tests were pushed in two commits; the streaming-limit CI reached 68 passing unit tests and a passing Deno check before being superseded. The latest HMAC commit's current CI has passed TypeScript, lint, unit tests, backend readiness checks and build; its final conclusion must be checked. Inspect the run for its exact SHA instead of assuming success. Source code and tests were not run locally in this session. Deployment [#38610629598](https://github.com/takatakca/flexsca/actions/runs/38610629598) failed at credential validation before any database change. An attempt to access `https://flexs.ca` from the agent's web tool was inconclusive.
 
 Recommended repeatable commands in an available checkout:
 
@@ -44,4 +44,4 @@ deno check --node-modules-dir=none --no-lock supabase/functions/create-checkout-
 
 ## Exact next action
 
-Read GitHub `main` ref and the latest `Marketplace checks` run for the latest commit; fix failures if any. Check FLEXS Supabase management access and production environment binding **without displaying values**. If still blocked, continue task queue P1 items, recording commits and CI runs in this file. Only deploy after read-only schema/secret/recovery-point gates pass. An external orchestrator may restart future sessions if explicitly connected and configured; no persistent autonomous runner is claimed by this file.
+Read GitHub `main` ref and the latest `Marketplace checks` run for code commit `2a674705`; fix failures if any. Check FLEXS Supabase management access and production environment binding **without displaying values**. If still blocked, continue task queue P1 items, recording commits and CI runs in this file. Only deploy after read-only schema/secret/recovery-point gates pass. An external orchestrator may restart future sessions if explicitly connected and configured; no persistent autonomous runner is claimed by this file.

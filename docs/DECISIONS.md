@@ -8,7 +8,7 @@ Reviewed 2026-10-14. Distinguish documented architecture from verified integrati
 | FLEXS is a separate product, TAKATAK is the master identity/data authority across products | Each professional business sees only entitled data; no automatic merger of dashboards or CRM | Architecture direction; shared-login token exchange **not implemented** |
 | TAKATAK/R2F communicates through a signed adapter, never direct cross-database access | Restrict PII, avoid duplicate opportunities and enforce server permissions | PR #3; `takatak-opportunity-intake` |
 | Reject external contact disclosure by default, require explicit authorization and at least one valid contact | Prevent unauthorized personal-data exposure and mis-selling of credit unlocks | Additive migration, parser and tests; live proof pending |
-| HMAC includes timestamp, event ID and exact body; reject over-limit data during streaming | Bound memory exposure of the unauthenticated public Edge Function; preserve signature identity | `bounded-body.ts` and signed intake tests |
+| HMAC includes timestamp, event ID and exact body; reject over-limit data during streaming | Bound memory exposure of the unauthenticated public Edge Function; preserve signature identity | `bounded-body.ts`, `takatak-signature.ts` and runtime HMAC/streaming tests |
 | FLEXS controls opportunity credit pricing, not the source | Prevent cross-product pricing bypass | Existing server category lookup |
 | Unknown cross-product callback schema is not invented | Prevent broken or insecure events and identity linking | Lifecycle event feature remains open in issue #2 |
 | Backend before frontend | New UI depends on database RPCs and Edge Functions | Guarded `deploy-backend.yml`; blocked pending production credentials |

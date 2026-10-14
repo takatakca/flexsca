@@ -9,7 +9,7 @@ Updated 2026-10-14. The order can change only with a documented reason. Track ea
 | P0 | blocked: preceding gates | Deploy existing backend SQL migrations and all four Edge Functions from `main` | GitHub backend deployment is successful, functions ACTIVE, privileged RPC checks pass |
 | P0 | blocked: access | Verify Stripe test-mode payments, Auth redirects/email, administrator bootstrap, worker schedule and tenant isolation | Real staging checks and signed acknowledgements recorded; no synthetic/live confusion |
 | P0 | blocked: hosting identification | Identify the actual frontend host, configure build delivery after backend readiness, SPA fallback, DNS and TLS | Live `flexs.ca` and deep routes serve the correct verified revision |
-| P1 | code pushed; CI verification required | Bound TAKATAK signed-intake streaming body size | 18 KB cap, UTF-8 rejection and oversized-body tests pass on the committed SHA |
+| P1 | code pushed; current CI verification required | Bound TAKATAK signed-intake body size and test real HMAC authentication | 18 KB cap, UTF-8 rejection, eight signature and seven streaming tests pass on committed SHA and Deno typecheck is green |
 | P1 | queued | Complete GitHub issue #2: counterpart TAKATAK outbound sender and FLEXS professional lifecycle events (view/contact/respond/win/loss) | Agreed event contract; authenticated, tenant-scoped, idempotent callback outbox, retry tests and staging acceptance |
 | P1 | queued | Server-side CAPTCHA, throttling, duplicate/spam detection and phone verification | Abuse resistance verified with unauthorized and rate-limited requests |
 | P1 | queued | Professional service-area matching and privacy controls | Provider-managed preferences, server-filtered matches, RLS and location tests |

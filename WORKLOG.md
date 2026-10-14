@@ -1,6 +1,6 @@
 # Work log
 
-- 2026-10-14 | ChatGPT | main | done; production blocked | Bounded TAKATAK intake streaming (18 KB), malformed UTF-8 handling and seven tests; created five project/handoff/runbook files | inspect latest CI for current main SHA, then resolve Supabase production access and continue P1 queue
+- 2026-10-14 | ChatGPT | main | done; production blocked | Bounded TAKATAK intake streaming (18 KB), malformed UTF-8 handling and seven tests, plus eight runtime HMAC tests; created five project/handoff/runbook files | inspect latest CI for current main SHA, then resolve Supabase production access and continue P1 queue
 
 - 2026-10-08 | codex | codex/flexs-marketplace-release | done | Merged owner instructions; 55 tests, 6 readiness tests and 27 browser scenarios pass; added six image/DOM/OCR evidence sets and CI artifact publication | provide SUPABASE_ACCESS_TOKEN and SUPABASE_DB_PASSWORD securely for deployment; expose Figma connector or supply design export for parity review
 
