@@ -22,7 +22,7 @@ The backend run [#38610629598](https://github.com/takatakca/flexsca/actions/runs
 
 ### Service-area activation checklist
 
-After the new migration is applied, use two independent professional accounts. Confirm an opted-in city/province filter matches only new leads in that service area, leaves purchased/contacted leads visible and does not affect the second professional. Assert anonymous and unrelated accounts cannot access `provider_profiles` preferences, and `provider_profiles_public` does not include the private fields. Do not claim geospatial distance, map accuracy or automatic job assignment: matching is city/province equality only. Confirm the profile save persists server-side before promoting the frontend.
+After the new migration is applied, use two independent professional accounts. Confirm an opted-in city/province filter matches only new leads in that service area, leaves purchased/contacted leads visible and does not affect the second professional. Assert anonymous and unrelated accounts cannot access `provider_profiles` preferences, and `provider_profiles_public` does not include the private fields. Do not claim geospatial distance, map accuracy or automatic job assignment: matching is city/province equality only. Confirm the profile save persists server-side before promoting the frontend. Fixture-based browser save-and-reload was validated by CI #38735165455; live Supabase persistence is **not** verified.
 
 ## Production smoke and rollback
 
