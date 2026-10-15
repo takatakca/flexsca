@@ -1,5 +1,7 @@
 # Work log
 
+- 2026-10-15 | ChatGPT | main | active | Implement opt-in provider service-area matching using owner-controlled preferences, RLS and server-only marketplace filters | SQL, profile UI/types, PGlite tests, release gates, CI, handoff
+
 - 2026-10-14 | ChatGPT | main | done; CI green | Contact form keyboard submission, accessible labels/errors and Playwright Enter scenario; commits 435242bc and 07dd6258, 77 tests passed in CI #38624925575 | Unblock Supabase production access, then resume P1 queue
 
 - 2026-10-14 | ChatGPT | main | done; production blocked | SQL duplicate guard, safer client feedback, PGlite checks, strict migration allowlist; pushed f7df3757 and 2dd00443 | CI #38624276910 succeeded; Supabase project access and production secrets still needed
