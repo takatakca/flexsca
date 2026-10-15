@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
@@ -25,18 +25,26 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
   const [province, setProvince] = useState(profile.province || "");
   const [locationPrivate, setLocationPrivate] = useState(profile.location_private);
   const [privateReason, setPrivateReason] = useState("");
+  const [serviceCity, setServiceCity] = useState(profile.service_area_city || "");
+  const [serviceProvince, setServiceProvince] = useState(profile.service_area_province || "");
+  const [localOnly, setLocalOnly] = useState(profile.match_service_area_only);
+  const [serviceError, setServiceError] = useState("");
 
   const handleSave = () => {
-    onSave({
+    if (localOnly && !serviceCity.trim()) {
+      setServiceError("Enter a service-area city to enable local matching.");
+      return;
+    }
+    setServiceError("");
+    void onSave({
       city: city.trim() || null,
       province: province.trim() || null,
       location_private: locationPrivate,
+      service_area_city: serviceCity.trim() || null,
+      service_area_province: serviceProvince.trim() || null,
+      match_service_area_only: localOnly,
     });
   };
-
-  // Build a static map URL from city+province
-  const mapQuery = [city, province].filter(Boolean).join(", ") || "Canada";
-  const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=-141,42,-52,70&layer=mapnik&marker=56,-106`;
 
   return (
     <div className="space-y-5">
@@ -62,27 +70,35 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
         />
       </div>
 
-      {/* Map preview */}
-      <div className="rounded-xl overflow-hidden border">
-        <iframe
-          title="Location map"
-          src={mapSrc}
-          className="w-full h-[220px] border-0"
-          loading="lazy"
-        />
-      </div>
-
-      {/* Service area info callout */}
-      <div className="rounded-xl bg-primary/5 border border-primary/10 p-4 space-y-1.5">
-        <p className="text-sm font-semibold text-foreground">
-          Will this affect my service area?
-        </p>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Your public business location is separate from where you travel to provide a service.
-          You can filter available requests by city in the marketplace.
-
-        </p>
-      </div>
+      <section className="rounded-xl border p-4 space-y-4" aria-labelledby="service-area-heading">
+        <div>
+          <h3 id="service-area-heading" className="font-semibold text-foreground">Where you offer services</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            Enter the city where you work, separately from your public business location.
+            This first version matches city names, not driving distance.
+          </p>
+        </div>
+        <div>
+          <label htmlFor="service-area-city" className="block text-sm font-medium mb-1">Service area city</label>
+          <Input id="service-area-city" maxLength={120} value={serviceCity} placeholder="e.g. Montréal"
+            onChange={e => { setServiceCity(e.target.value); setServiceError(""); }}
+            aria-invalid={!!serviceError} aria-describedby={serviceError ? "service-area-error" : undefined} />
+        </div>
+        <div>
+          <label htmlFor="service-area-province" className="block text-sm font-medium mb-1">Service area province (optional)</label>
+          <Input id="service-area-province" maxLength={40} value={serviceProvince} placeholder="e.g. QC"
+            onChange={e => setServiceProvince(e.target.value)} />
+        </div>
+        <div className="flex gap-2 items-start">
+          <Checkbox id="match-local-only" checked={localOnly}
+            onCheckedChange={checked => setLocalOnly(checked === true)} />
+          <label htmlFor="match-local-only" className="text-sm leading-snug cursor-pointer">
+            Only show new marketplace requests from my service area.
+            <span className="block text-muted-foreground">Requests you have already unlocked remain accessible.</span>
+          </label>
+        </div>
+        {serviceError && <p id="service-area-error" role="alert" className="text-sm text-destructive">{serviceError}</p>}
+      </section>
 
       {/* Display notice */}
       <p className="text-sm font-medium text-foreground leading-relaxed">

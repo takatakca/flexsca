@@ -948,6 +948,9 @@ export type Database = {
           personal_photo_url: string | null
           profile_photo_url: string | null
           province: string | null
+          service_area_city: string | null
+          service_area_province: string | null
+          match_service_area_only: boolean
           twitter_handle: string | null
           updated_at: string
           user_id: string
@@ -971,6 +974,9 @@ export type Database = {
           personal_photo_url?: string | null
           profile_photo_url?: string | null
           province?: string | null
+          service_area_city?: string | null
+          service_area_province?: string | null
+          match_service_area_only?: boolean
           twitter_handle?: string | null
           updated_at?: string
           user_id: string
@@ -994,6 +1000,9 @@ export type Database = {
           personal_photo_url?: string | null
           profile_photo_url?: string | null
           province?: string | null
+          service_area_city?: string | null
+          service_area_province?: string | null
+          match_service_area_only?: boolean
           twitter_handle?: string | null
           updated_at?: string
           user_id?: string

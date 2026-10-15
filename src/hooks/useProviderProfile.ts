@@ -11,6 +11,9 @@ export interface ProviderProfile {
   years_in_business: number;
   city: string | null;
   province: string | null;
+  service_area_city: string | null;
+  service_area_province: string | null;
+  match_service_area_only: boolean;
   location_private: boolean;
   profile_photo_url: string | null;
   covid_safety: string | null;
@@ -62,6 +65,9 @@ const DEFAULT_PROFILE: ProviderProfile = {
   years_in_business: 0,
   city: null,
   province: null,
+  service_area_city: null,
+  service_area_province: null,
+  match_service_area_only: false,
   location_private: true,
   profile_photo_url: null,
   covid_safety: null,

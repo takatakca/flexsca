@@ -247,6 +247,33 @@ describe('paginated marketplace search', () => {
     const yesterday=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"],"timeRange":"yesterday"}')`) as {total:number};
     expect(yesterday.total).toBe(0);
   });
+  it('filters only new leads by authenticated professional private service city', async () => {
+    await asRole('authenticated',pro);
+    const saved=await db.query(`UPDATE provider_profiles SET service_area_city=' oTtAwA ',
+      service_area_province=NULL,match_service_area_only=true
+      WHERE user_id='${pro}' RETURNING user_id`);
+    expect(saved.rows).toHaveLength(1);
+    const local=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"]}')`) as {total:number;leads:{id:string;details:string|null;customer_email:string|null}[]};
+    expect(local.total).toBe(2);
+    expect(local.leads.map(l=>l.id)).toContain(searchLead);
+    expect(local.leads[0].details).toBeNull();
+    expect(local.leads[0].customer_email).toBeNull();
+    await db.exec(`UPDATE provider_profiles SET service_area_city='Montréal' WHERE user_id='${pro}'`);
+    const elsewhere=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"]}')`) as {total:number};
+    expect(elsewhere.total).toBe(0);
+    await asRole('authenticated',other);
+    const independent=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"]}')`) as {total:number};
+    expect(independent.total).toBe(2);
+    const forbidden=await db.query(`UPDATE provider_profiles SET match_service_area_only=false
+      WHERE user_id='${pro}' RETURNING user_id`);
+    expect(forbidden.rows).toHaveLength(0);
+    await asRole('anon');
+    await expect(db.query('SELECT service_area_city FROM provider_profiles_public')).rejects.toThrow();
+    await asRole('authenticated',pro);
+    await expect(db.query(`UPDATE provider_profiles SET service_area_city=NULL WHERE user_id='${pro}'`)).rejects.toThrow();
+    await db.exec(`UPDATE provider_profiles SET match_service_area_only=false,
+      service_area_city=NULL,service_area_province=NULL WHERE user_id='${pro}'`);
+  });
   it('isolates archive filters to the current professional', async () => {
     await asRole('authenticated',pro);
     await db.exec(`INSERT INTO lead_agent_state(lead_id,agent_id) VALUES('${secondLead}','${pro}'); UPDATE lead_agent_state SET is_archived=true WHERE lead_id='${secondLead}'`);
