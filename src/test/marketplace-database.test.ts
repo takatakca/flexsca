@@ -258,6 +258,11 @@ describe('paginated marketplace search', () => {
     expect(local.leads.map(l=>l.id)).toContain(searchLead);
     expect(local.leads[0].details).toBeNull();
     expect(local.leads[0].customer_email).toBeNull();
+    // An explicitly configured province must also match; unknown province is not guessed.
+    await db.exec(`UPDATE provider_profiles SET service_area_province='ON' WHERE user_id='${pro}'`);
+    const provinceRestricted=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"]}')`) as {total:number};
+    expect(provinceRestricted.total).toBe(0);
+    await db.exec(`UPDATE provider_profiles SET service_area_province=NULL WHERE user_id='${pro}'`);
     await db.exec(`UPDATE provider_profiles SET service_area_city='Montréal' WHERE user_id='${pro}'`);
     const elsewhere=await scalar(`SELECT search_marketplace_leads('{"services":["Search Fixture"]}')`) as {total:number};
     expect(elsewhere.total).toBe(0);

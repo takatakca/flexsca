@@ -3,7 +3,6 @@ import { Info } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ProviderProfile } from "@/hooks/useProviderProfile";
 
@@ -13,18 +12,10 @@ interface Props {
   onSave: (updates: Partial<ProviderProfile>) => Promise<void>;
 }
 
-const LOCATION_REASONS = [
-  { value: "home_based", label: "I work from home" },
-  { value: "travel_to_clients", label: "I travel to my clients" },
-  { value: "security", label: "Security reasons" },
-  { value: "other", label: "Other" },
-];
-
 export default function LocationSection({ profile, saving, onSave }: Props) {
   const [city, setCity] = useState(profile.city || "");
   const [province, setProvince] = useState(profile.province || "");
   const [locationPrivate, setLocationPrivate] = useState(profile.location_private);
-  const [privateReason, setPrivateReason] = useState("");
   const [serviceCity, setServiceCity] = useState(profile.service_area_city || "");
   const [serviceProvince, setServiceProvince] = useState(profile.service_area_province || "");
   const [localOnly, setLocalOnly] = useState(profile.match_service_area_only);
@@ -52,19 +43,20 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
       <div className="space-y-1.5">
         <h3 className="text-xl font-semibold text-foreground">Company location</h3>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          Use a specific address to help customers searching for a local business.
+          Set your business city and province. Your service area below can be different.
         </p>
       </div>
 
       {/* Business location */}
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
-          What's the business location?
+        <label htmlFor="business-city" className="text-sm font-medium text-foreground mb-1 block">
+          Business city
         </label>
         <Input
+          id="business-city"
           value={city}
           onChange={(e) => setCity(e.target.value)}
-          placeholder="Enter the company's address"
+          placeholder="Enter your business city"
           className="rounded-xl"
           maxLength={200}
         />
@@ -102,7 +94,7 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
 
       {/* Display notice */}
       <p className="text-sm font-medium text-foreground leading-relaxed">
-        Customers will see the location you've selected displayed on your profile
+        Your business city and province appear on your public profile only if the location is not marked private.
       </p>
 
       {/* Make private checkbox */}
@@ -126,41 +118,21 @@ export default function LocationSection({ profile, saving, onSave }: Props) {
             </TooltipTrigger>
             <TooltipContent>
               <p className="text-xs max-w-[200px]">
-                When enabled, your exact location won't be shown on your public profile.
-                Only your city will be visible.
+                When enabled, your business city and province are hidden from your public profile.
+                This does not affect your private service-area matching preferences.
               </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
 
-      {/* Reason dropdown — only shown when private is checked */}
-      {locationPrivate && (
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground block">
-            Can't give us a particular location?
-          </label>
-          <Select value={privateReason} onValueChange={setPrivateReason}>
-            <SelectTrigger className="rounded-xl">
-              <SelectValue placeholder="Select a reason" />
-            </SelectTrigger>
-            <SelectContent>
-              {LOCATION_REASONS.map((r) => (
-                <SelectItem key={r.value} value={r.value}>
-                  {r.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
       {/* Province — kept for data but secondary */}
       <div>
-        <label className="text-sm font-medium text-foreground mb-1 block">
+        <label htmlFor="business-province" className="text-sm font-medium text-foreground mb-1 block">
           Province / Region
         </label>
         <Input
+          id="business-province"
           value={province}
           onChange={(e) => setProvince(e.target.value)}
           placeholder="e.g. QC"
