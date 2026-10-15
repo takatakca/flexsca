@@ -15,6 +15,9 @@ const followUps=[], notices=[], supportTickets=[], supportMessages=[];
 const supportId="12121212-1212-4212-8212-121212121212";
 let preference={messages:true,reminders:true}, accountName="Fixture Customer", emailChange, checkoutRequest;
 let isAdmin=false, replayedEvent=false;
+let providerProfile={user_id:userId,company_name:'Fixture Cleaning',company_size:'solo',years_in_business:0,
+  city:'Toronto',province:'ON',location_private:true,service_area_city:null,
+  service_area_province:null,match_service_area_only:false};
 const integrationEventId="abababab-abab-4bab-8bab-abababababab";
 let unlocked = false, quoteStatus = "sent";
 let searches = [], failSearch = false, customerMany=false, failCustomerRequest=false;
@@ -90,7 +93,12 @@ await page.route('**/rest/v1/**', async route => {
   if (path === 'provider_sales_summary') body={quotedRequests:3,acceptedRequests:1,pendingQuotes:2,declinedQuotes:0,pricedAccepted:1,estimatedMin:100,estimatedMax:150,creditsSpent:6,creditsRefunded:0};
   if (path === 'credit_wallets') body = { balance: 20 };
   if (path === 'provider_reviews') body = [{id:'66666666-6666-4666-8666-666666666666',rating:5,reviewer_name:'Verified Customer',review_text:'Fixture verified feedback',verified:true,source:'flexs',created_at:new Date().toISOString()}];
-  if (path === 'provider_profiles') body={user_id:userId,company_name:'Fixture Cleaning',location_private:true,city:'Toronto',province:'ON'};
+  if (path === 'provider_profiles') {
+    if(route.request().method()==='POST' || route.request().method()==='PATCH') {
+      providerProfile={...providerProfile,...route.request().postDataJSON()};
+      body=[];
+    } else body=providerProfile;
+  }
   if (path === 'notification_preferences') body=preference;
   if (path === 'set_notification_preferences') { const input=route.request().postDataJSON(); preference={messages:input.p_messages,reminders:input.p_reminders}; body=null; }
   if (path === 'profiles') {
@@ -395,6 +403,22 @@ try {
   await emailResponse;
   assert.equal(emailChange.email,'updated@example.test');
   console.log('PASS account settings save the name and request an Auth-confirmed email change');
+  await page.goto('http://127.0.0.1:4173/app/settings/profile');
+  await page.getByRole('button',{name:'Location',exact:true}).click();
+  await page.getByLabel('Service area city',{exact:true}).fill('Ottawa');
+  await page.getByLabel('Service area province (optional)',{exact:true}).fill('ON');
+  await page.getByRole('checkbox',{name:/Only show new marketplace requests from my service area/}).click();
+  const savedArea=page.waitForResponse(r=>r.url().includes('/rest/v1/provider_profiles') && r.request().method()==='POST');
+  await page.getByRole('button',{name:'Save location',exact:true}).click();
+  await savedArea;
+  assert.equal(providerProfile.service_area_city,'Ottawa');
+  assert.equal(providerProfile.service_area_province,'ON');
+  assert.equal(providerProfile.match_service_area_only,true);
+  await page.reload();
+  await page.getByRole('button',{name:'Location',exact:true}).click();
+  assert.equal(await page.getByLabel('Service area city',{exact:true}).inputValue(),'Ottawa');
+  assert.equal(await page.getByRole('checkbox',{name:/Only show new marketplace requests from my service area/}).isChecked(),true);
+  console.log('PASS provider service-area preferences persist across reloads through the authenticated profile API');
   await page.goto('http://127.0.0.1:4173/app/settings/credits');
   await page.getByText('Current balance',{exact:true}).waitFor();
   await page.getByText('Lead unlocked',{exact:true}).waitFor();
