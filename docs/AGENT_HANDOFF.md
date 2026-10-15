@@ -1,6 +1,20 @@
 # FLEXS agent handoff
 
-Updated: 2026-10-14. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](TASK_QUEUE.md), and this file before changing code.
+Updated: 2026-10-15. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](TASK_QUEUE.md), and this file before changing code.
+
+## 2026-10-15 active handoff — service-area matching
+
+**Repository:** `takatakca/flexsca`, default `main`. No open PRs or additional commits by other agents were observed on 2026-10-15. The last known completed checks before changes were [#38624925575](https://github.com/takatakca/flexsca/actions/runs/38624925575), passing on `07dd6258`. Last observed starting `main` was `5ea9c743f9a6a125c6211b45d1fd18d20500ba8e`.
+
+**Last task implemented:** Private service-area city/province with opt-in per-provider matching in SQL and profile UI. Code commit `f45a96ffb69b82890b08a9cd3aeda3fe1b5a642f`, refinement `a02b603ecb116a9becf4dee23e1b79acaa948878`. The eventual documentation commit containing this handoff is **later** than these code commits; check GitHub's `main` ref for its actual SHA.
+
+**Files modified:** `supabase/migrations/20261015093000_provider_service_area_matching.sql`, `src/components/profile/LocationSection.tsx`, `src/hooks/useProviderProfile.ts`, `src/integrations/supabase/types.ts`, `src/test/marketplace-database.test.ts`, `scripts/backend-readiness.py`, `scripts/test-backend-readiness.py`, `WORKLOG.md`, plus status, deployment, decisions, queue and this handoff.
+
+**Actual verification executed via GitHub:** Code `f45a96ff` started [Marketplace checks #38734568840](https://github.com/takatakca/flexsca/actions/runs/38734568840); steps through npm build, TypeScript, lint, PGlite/Vitest, Python deployment-gate tests and browser fixtures passed on first observation, with Deno then running. Follow-up UI/province code `a02b603e` started [Marketplace checks #38734778562](https://github.com/takatakca/flexsca/actions/runs/38734778562); its final status must be checked before claiming complete verification. Supabase get_project for `vcaphsvudlseemkalawz` returned **permission denied**. The backend attempt [#38734568845](https://github.com/takatakca/flexsca/actions/runs/38734568845) failed; no remote SQL/functions changed by that job. Public `https://flexs.ca` could not be opened by the search environment: frontend host/build/TLS remain unverified rather than declared offline.
+
+**Blocking production accesses:** GitHub Actions `production` environment requires `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD`; the connected Supabase account needs membership on the actual FLEXS project. Inspect existing server-side Stripe, worker and TAKATAK credentials in Supabase without displaying them. Real frontend hosting has not been identified.
+
+**Current task / exact next action:** Check the conclusion and logs of #38734778562. If failing, repair typecheck, PGlite, browser or Deno issues first. If green, update the queue and continue the next P1 task (e.g., server-side challenge/phone OTP with secrets and staging verification, or cross-product lifecycle events when TAKATAK provides a verified contract). Do not deploy backend without migration history, recent restore point and secret gates. Promote frontend only after real backend success and hosting identification. No orchestrator to restart an ended session is currently established.
 
 ## Repository and last completed task
 

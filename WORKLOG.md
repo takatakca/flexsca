@@ -1,6 +1,6 @@
 # Work log
 
-- 2026-10-15 | ChatGPT | main | active | Implement opt-in provider service-area matching using owner-controlled preferences, RLS and server-only marketplace filters | SQL, profile UI/types, PGlite tests, release gates, CI, handoff
+- 2026-10-15 | ChatGPT | main | done in code, CI pending; production blocked | Provider-owned service city/province filtering in invoker RPC, privacy-safe UI, RLS and province PGlite tests; commits f45a96ff and a02b603e | Check CI #38734778562, then resume P1; production Supabase permissions/secrets and real frontend host still required
 
 - 2026-10-14 | ChatGPT | main | done; CI green | Contact form keyboard submission, accessible labels/errors and Playwright Enter scenario; commits 435242bc and 07dd6258, 77 tests passed in CI #38624925575 | Unblock Supabase production access, then resume P1 queue
 

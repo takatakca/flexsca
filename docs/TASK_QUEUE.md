@@ -1,6 +1,6 @@
 # FLEXS task queue — oldest unfinished blocker first
 
-Updated 2026-10-14. The order can change only with a documented reason. Track each item as **done / active / blocked / queued**; passing fixture-based tests does not verify production.
+Updated 2026-10-15. The order can change only with a documented reason. Track each item as **done / active / blocked / queued**; passing fixture-based tests does not verify production.
 
 | Priority | Status | Task | Done when |
 | --- | --- | --- | --- |
@@ -13,7 +13,7 @@ Updated 2026-10-14. The order can change only with a documented reason. Track ea
 | P1 | queued | Complete GitHub issue #2: counterpart TAKATAK outbound sender and FLEXS professional lifecycle events (view/contact/respond/win/loss) | Agreed event contract; authenticated, tenant-scoped, idempotent callback outbox, retry tests and staging acceptance |
 | P1 | code complete for duplicate guard; CI green; live deploy blocked | Exact anonymous-request duplicate prevention and mailbox limit | 10-minute exact duplicate rejection and 3-per-15-minute quota passed PGlite CI #38624276910; requires real production rollout verification |
 | P1 | queued | CAPTCHA, independent spam signals and genuine phone verification | Safe server-side challenge verification, abuse controls and consent-aware phone OTP tests in staging |
-| P1 | queued | Professional service-area matching and privacy controls | Provider-managed preferences, server-filtered matches, RLS and location tests |
+| P1 | implemented in code; CI pending; live blocked | Private service-area city/province preferences, opt-in server-side matching and RLS checks | Verify CI #38734778562 and real staging behavior; then add multi-city/radius and remote-work rules only with validated locations |
 | P1 | queued | Private customer attachments | Private bucket, per-request authorization, bounds, malware strategy, retention and audit |
 | P2 | queued | External notification delivery, professional verification/disputes, data deletion/retention, subscriptions | Specific product requirements, migrations, permissions and integration tests |
 | P2 | partial: contact form CI green | Remaining mobile/a11y review, conversion metrics, worker alarms and representative load tests | Keyboard Enter submission, associated errors and Playwright smoke verified in CI #38624925575; other screens and monitoring remain |

@@ -1,6 +1,6 @@
 # FLEXS project status
 
-Last reviewed: 2026-10-14. Repository: [takatakca/flexsca](https://github.com/takatakca/flexsca). Main branch: `main`.
+Last reviewed: 2026-10-15. Repository: [takatakca/flexsca](https://github.com/takatakca/flexsca). Main branch: `main`.
 
 ## Current reality
 
@@ -22,6 +22,10 @@ The [backend deployment #38610629598](https://github.com/takatakca/flexsca/actio
 - Guarded GitHub Actions backend promotion requiring a recent recovery point, known migration history, required secrets and active functions.
 
 Latest UI improvement: `435242bc` and `07dd6258` convert the customer contact step into an accessible form that accepts Enter-key submission, presents associated validation errors, and is exercised in the Playwright smoke suite. [Marketplace checks #38624925575](https://github.com/takatakca/flexsca/actions/runs/38624925575) succeeded on `07dd6258`: 77 Vitest/PGlite tests, TypeScript/lint, Python release gates, build, Playwright keyboard test and Deno checks all passed. No claim of live promotion is made.
+
+## Service-area matching update — 2026-10-15
+
+Code merged to `main`: `f45a96ffb69b82890b08a9cd3aeda3fe1b5a642f` adds private, owner-managed service city/province preferences and an opt-in PostgreSQL search restriction. `a02b603ecb116a9becf4dee23e1b79acaa948878` removes a misleading static map and inactive reason selector, corrects privacy copy, and tests province-specific restrictions. The API uses `auth.uid()` under invoker rights, does not accept a provider ID or matching city from the caller, and keeps already-contacted leads visible. This is normalized city/province matching, **not** geospatial radius/drive-time matching or automated service-category onboarding. New code CI: [Marketplace checks #38734778562](https://github.com/takatakca/flexsca/actions/runs/38734778562); check final result for `a02b603e`. Production Supabase project access remains denied and no backend deployment was confirmed.
 
 ## Known remaining obligations
 
