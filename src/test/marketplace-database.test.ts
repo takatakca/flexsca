@@ -240,15 +240,12 @@ describe('private customer request attachments', () => {
       VALUES('request-attachments',$1)`,[badPath])).rejects.toThrow();
     await expect(db.query(`INSERT INTO request_attachments(lead_id,path,uploaded_by,original_name,mime_type,size_bytes)
       VALUES('${fileLead}','${path}','${buyer}','sensitive.pdf','application/pdf',512)`)).rejects.toThrow();
-    const matching=await db.query<{regex_ok:boolean;lead_ok:boolean;mime_ok:boolean}>(`SELECT
-      $1::text ~ $2::text AS regex_ok,
-      split_part($1::text,'/',1)=$3::uuid::text AS lead_ok,
-      right($1::text,4)='.pdf' AS mime_ok`,[
-      path,
-      '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[.](pdf|jpg|png)$',
-      fileLead
-    ]);
-    expect(matching.rows[0]).toEqual({regex_ok:true,lead_ok:true,mime_ok:true});
+    const matching=await db.query<{path_ok:boolean;lead_ok:boolean;mime_ok:boolean}>(`SELECT
+      char_length($1::text)=77 AND split_part($1::text,'/',2)=
+        split_part(split_part($1::text,'/',2),'.',1)::uuid::text || '.' || split_part($1::text,'.',2) AS path_ok,
+      split_part($1::text,'/',1)=$2::uuid::text AS lead_ok,
+      right($1::text,4)='.pdf' AS mime_ok`,[path,fileLead]);
+    expect(matching.rows[0]).toEqual({path_ok:true,lead_ok:true,mime_ok:true});
     await db.query(`INSERT INTO storage.objects(bucket_id,name,owner_id)
       VALUES('request-attachments',$1,$2)`,[path,buyer]);
     await db.query(`INSERT INTO request_attachments(lead_id,path,uploaded_by,original_name,mime_type,size_bytes)
