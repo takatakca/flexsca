@@ -23,7 +23,7 @@ END $bucket$;
 CREATE POLICY "request attachments owner upload" ON storage.objects
   FOR INSERT TO authenticated WITH CHECK (
     bucket_id='request-attachments'
-    AND name ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(pdf|jpg|png)$'
+    AND name ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[.](pdf|jpg|png)$'
     AND EXISTS (
       SELECT 1 FROM public.leads l
       WHERE l.id::text=split_part(name,'/',1) AND l.customer_user_id=auth.uid()
@@ -60,7 +60,7 @@ CREATE TABLE public.request_attachments (
   size_bytes integer NOT NULL CHECK (size_bytes BETWEEN 1 AND 8388608),
   created_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT request_attachment_path CHECK (
-    path ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\\.(pdf|jpg|png)$'
+    path ~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[.](pdf|jpg|png)$'
     AND split_part(path,'/',1)=lead_id::text
     AND (mime_type='application/pdf' AND right(path,4)='.pdf'
       OR mime_type='image/jpeg' AND right(path,4)='.jpg'

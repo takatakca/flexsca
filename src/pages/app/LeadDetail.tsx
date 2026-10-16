@@ -1,4 +1,5 @@
 import QuoteComposer from "@/components/lead-detail/QuoteComposer";
+import RequestAttachments from "@/components/customer/RequestAttachments";
 import QuoteList from "@/components/lead-detail/QuoteList";
 import RefundRequest from "@/components/lead-detail/RefundRequest";
 import { useQueryClient } from "@tanstack/react-query";
@@ -263,6 +264,8 @@ export default function LeadDetail() {
             postalCode={lead.postal_code}
           />
         </div>
+
+        {isContacted && id && <div className="px-4 mt-4"><RequestAttachments leadId={id} /></div>}
 
         {/* Messages (only visible when contacted) */}
         {isContacted && (
