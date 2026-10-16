@@ -29,6 +29,7 @@ beforeAll(async () => {
     CREATE FUNCTION storage.foldername(text) RETURNS text[] LANGUAGE sql AS $$ SELECT string_to_array($1,'/') $$;
     CREATE PUBLICATION supabase_realtime;
     GRANT USAGE ON SCHEMA public,auth,storage TO anon,authenticated,service_role;
+    GRANT SELECT ON storage.buckets TO service_role;
     GRANT SELECT,INSERT,DELETE ON storage.objects TO authenticated;
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon,authenticated,service_role;
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon,authenticated,service_role;
