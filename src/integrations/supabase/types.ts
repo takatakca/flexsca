@@ -393,6 +393,54 @@ export type Database = {
           },
         ]
       }
+      request_attachments: {
+        Row: {
+          id: string
+          lead_id: string
+          path: string
+          uploaded_by: string
+          original_name: string
+          mime_type: string
+          size_bytes: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          lead_id: string
+          path: string
+          uploaded_by: string
+          original_name: string
+          mime_type: string
+          size_bytes: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          lead_id?: string
+          path?: string
+          uploaded_by?: string
+          original_name?: string
+          mime_type?: string
+          size_bytes?: number
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_attachments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       leads: {
         Row: {
           answers: Json

@@ -23,12 +23,13 @@ beforeAll(async () => {
     CREATE SCHEMA auth; CREATE SCHEMA storage;
     CREATE TABLE auth.users(id uuid PRIMARY KEY,email text,raw_user_meta_data jsonb DEFAULT '{}',email_confirmed_at timestamptz);
     CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
-    CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean);
-    CREATE TABLE storage.objects(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),bucket_id text,name text);
+    CREATE TABLE storage.buckets(id text PRIMARY KEY,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+    CREATE TABLE storage.objects(id uuid PRIMARY KEY DEFAULT gen_random_uuid(),bucket_id text,name text,owner_id text);
     ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
     CREATE FUNCTION storage.foldername(text) RETURNS text[] LANGUAGE sql AS $$ SELECT string_to_array($1,'/') $$;
     CREATE PUBLICATION supabase_realtime;
-    GRANT USAGE ON SCHEMA public,auth TO anon,authenticated,service_role;
+    GRANT USAGE ON SCHEMA public,auth,storage TO anon,authenticated,service_role;
+    GRANT SELECT,INSERT,DELETE ON storage.objects TO authenticated;
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon,authenticated,service_role;
     ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon,authenticated,service_role;
   `);
@@ -206,6 +207,67 @@ describe('marketplace database release integrity', () => {
   });
 });
 
+
+describe('private customer request attachments', () => {
+  const fileLead = '45454545-4545-4454-8454-454545454545';
+  const fileKey = '56565656-5656-4565-8565-565656565656';
+  const path = fileLead + '/' + fileKey + '.pdf';
+  beforeAll(async () => {
+    await asRole('service_role');
+    await db.exec(`INSERT INTO leads(id,category,location_text,customer_name,customer_email,customer_user_id)
+      VALUES ('${fileLead}','Attachments Fixture','Toronto','Buyer','buyer@example.test','${buyer}')`);
+  });
+  it('keeps the bucket private and rejects anonymous or unrelated uploads', async () => {
+    await asRole('service_role');
+    const {rows}=await db.query<{public:boolean;file_size_limit:string}>(`SELECT public,file_size_limit
+      FROM storage.buckets WHERE id='request-attachments'`);
+    expect(rows[0]).toMatchObject({public:false});
+    expect(Number(rows[0].file_size_limit)).toBe(8388608);
+    await asRole('anon');
+    await expect(db.query(`INSERT INTO storage.objects(bucket_id,name)
+      VALUES('request-attachments','${path}')`)).rejects.toThrow();
+    await asRole('authenticated',other);
+    await expect(db.query(`INSERT INTO storage.objects(bucket_id,name)
+      VALUES('request-attachments','${path}')`)).rejects.toThrow();
+    await expect(db.query(`INSERT INTO request_attachments(lead_id,path,uploaded_by,original_name,mime_type,size_bytes)
+      VALUES('${fileLead}','${path}','${other}','sensitive.pdf','application/pdf',512)`)).rejects.toThrow();
+  });
+  it('allows only the owning customer to register a real private object', async () => {
+    await asRole('authenticated',buyer);
+    const badPath=fileLead+'/../../secrets.pdf';
+    await expect(db.query(`INSERT INTO storage.objects(bucket_id,name)
+      VALUES('request-attachments',$1)`,[badPath])).rejects.toThrow();
+    await expect(db.query(`INSERT INTO request_attachments(lead_id,path,uploaded_by,original_name,mime_type,size_bytes)
+      VALUES('${fileLead}','${path}','${buyer}','sensitive.pdf','application/pdf',512)`)).rejects.toThrow();
+    await db.query(`INSERT INTO storage.objects(bucket_id,name,owner_id)
+      VALUES('request-attachments',$1,$2)`,[path,buyer]);
+    await db.query(`INSERT INTO request_attachments(lead_id,path,uploaded_by,original_name,mime_type,size_bytes)
+      VALUES('${fileLead}','${path}','${buyer}','sensitive.pdf','application/pdf',512)`);
+    expect(Number(await scalar(`SELECT count(*) FROM request_attachments WHERE lead_id='${fileLead}'`))).toBe(1);
+  });
+  it('never discloses attachments before paid contact and never allows professional edits', async () => {
+    await asRole('authenticated',pro);
+    expect(Number(await scalar(`SELECT count(*) FROM request_attachments WHERE lead_id='${fileLead}'`))).toBe(0);
+    expect(Number(await scalar(`SELECT count(*) FROM storage.objects WHERE bucket_id='request-attachments'`))).toBe(0);
+    await expect(db.query(`DELETE FROM storage.objects WHERE name=$1`,[path])).resolves.toMatchObject({rows:[]});
+    await asRole('service_role');
+    await db.exec(`INSERT INTO lead_agent_state(lead_id,agent_id,contacted)
+      VALUES('${fileLead}','${pro}',true)`);
+    await asRole('authenticated',pro);
+    expect(Number(await scalar(`SELECT count(*) FROM request_attachments WHERE lead_id='${fileLead}'`))).toBe(1);
+    expect(Number(await scalar(`SELECT count(*) FROM storage.objects WHERE bucket_id='request-attachments'`))).toBe(1);
+    await db.query(`DELETE FROM request_attachments WHERE path=$1`,[path]);
+    expect(Number(await scalar(`SELECT count(*) FROM request_attachments WHERE lead_id='${fileLead}'`))).toBe(1);
+    await asRole('authenticated',other);
+    expect(Number(await scalar(`SELECT count(*) FROM request_attachments WHERE lead_id='${fileLead}'`))).toBe(0);
+  });
+  it('lets the owner remove a file without leaking it to other users', async () => {
+    await asRole('authenticated',buyer);
+    await db.query(`DELETE FROM request_attachments WHERE path=$1`,[path]);
+    await db.query(`DELETE FROM storage.objects WHERE name=$1`,[path]);
+    expect(Number(await scalar(`SELECT count(*) FROM request_attachments WHERE lead_id='${fileLead}'`))).toBe(0);
+  });
+});
 
 describe('paginated marketplace search', () => {
   let searchLead: string;
