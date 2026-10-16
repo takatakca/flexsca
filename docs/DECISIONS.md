@@ -1,6 +1,6 @@
 # FLEXS technical decisions and boundaries
 
-Reviewed 2026-10-15. Distinguish documented architecture from verified integration.
+Reviewed 2026-10-16. Distinguish documented architecture from verified integration.
 
 | Decision | Rationale | Evidence / status |
 | --- | --- | --- |
@@ -9,6 +9,7 @@ Reviewed 2026-10-15. Distinguish documented architecture from verified integrati
 | TAKATAK/R2F communicates through a signed adapter, never direct cross-database access | Restrict PII, avoid duplicate opportunities and enforce server permissions | PR #3; `takatak-opportunity-intake` |
 | Reject external contact disclosure by default, require explicit authorization and at least one valid contact | Prevent unauthorized personal-data exposure and mis-selling of credit unlocks | Additive migration, parser and tests; live proof pending |
 | HMAC includes timestamp, event ID and exact body; reject over-limit data during streaming | Bound memory exposure of the unauthenticated public Edge Function; preserve signature identity | `bounded-body.ts`, `takatak-signature.ts` and runtime HMAC/streaming tests |
+| Keep customer request attachments private and subject to paid contact entitlement | A request owner controls uploads and deletion, contacted professionals may download without access before contact | `20261016190000_private_request_attachments.sql`, client UI and PGlite tests; live acceptance and malware/quota/retention gates pending |
 | Match provider-defined private service city/province on the server only when opted in | Keep marketplace matching owner-scoped, distinct from public business location; retain access to already purchased contacts | `20261015093000_provider_service_area_matching.sql`, location UI, PGlite/RLS and browser persistence fixtures (CI #38735165455 succeeded); live deployment pending |
 | Native public intake serializes submissions per mailbox and denies identical requests for 10 minutes without returning prior lead IDs | Limits accidental duplicate paid leads while retaining 3-per-15-minute quota and distinct customer scopes; not a replacement for CAPTCHA/phone verification | `20261014194000_guest_lead_deduplication.sql`, client feedback and PGlite tests; production deployment pending |
 | FLEXS controls opportunity credit pricing, not the source | Prevent cross-product pricing bypass | Existing server category lookup |

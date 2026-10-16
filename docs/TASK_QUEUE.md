@@ -1,6 +1,6 @@
 # FLEXS task queue — oldest unfinished blocker first
 
-Updated 2026-10-15. The order can change only with a documented reason. Track each item as **done / active / blocked / queued**; passing fixture-based tests does not verify production.
+Updated 2026-10-16. The order can change only with a documented reason. Track each item as **done / active / blocked / queued**; passing fixture-based tests does not verify production.
 
 | Priority | Status | Task | Done when |
 | --- | --- | --- | --- |
@@ -14,7 +14,7 @@ Updated 2026-10-15. The order can change only with a documented reason. Track ea
 | P1 | code complete for duplicate guard; CI green; live deploy blocked | Exact anonymous-request duplicate prevention and mailbox limit | 10-minute exact duplicate rejection and 3-per-15-minute quota passed PGlite CI #38624276910; requires real production rollout verification |
 | P1 | queued | CAPTCHA, independent spam signals and genuine phone verification | Safe server-side challenge verification, abuse controls and consent-aware phone OTP tests in staging |
 | P1 | code verified, production gated | Private service-area city/province preferences, opt-in server-side matching and RLS checks | CI #38735165455 green (78 tests + browser persistence); real Supabase deployment and staging RLS checks still needed; multi-city/radius, remote-work rules remain open |
-| P1 | queued | Private customer attachments | Private bucket, per-request authorization, bounds, malware strategy, retention and audit |
+| P1 | code pushed; CI and real staging pending | Private customer attachments (PDF/JPEG/PNG) | Private bucket, authenticated customer/professional RLS and owner UI implemented; confirm CI #38943922793 and Supabase staging. Malware scanning/quarantine, authoritative storage quotas, orphan cleanup, retention and audit remain open |
 | P2 | queued | External notification delivery, professional verification/disputes, data deletion/retention, subscriptions | Specific product requirements, migrations, permissions and integration tests |
 | P2 | partial: contact form CI green | Remaining mobile/a11y review, conversion metrics, worker alarms and representative load tests | Keyboard Enter submission, associated errors and Playwright smoke verified in CI #38624925575; other screens and monitoring remain |
 

@@ -1,6 +1,6 @@
 # FLEXS project status
 
-Last reviewed: 2026-10-15. Repository: [takatakca/flexsca](https://github.com/takatakca/flexsca). Main branch: `main`.
+Last reviewed: 2026-10-16. Repository: [takatakca/flexsca](https://github.com/takatakca/flexsca). Main branch: `main`.
 
 ## Current reality
 
@@ -26,6 +26,12 @@ Latest UI improvement: `435242bc` and `07dd6258` convert the customer contact st
 ## Service-area matching update — 2026-10-15
 
 Code merged to `main`: `f45a96ffb69b82890b08a9cd3aeda3fe1b5a642f` adds private, owner-managed service city/province preferences and an opt-in PostgreSQL search restriction. `a02b603ecb116a9becf4dee23e1b79acaa948878` removes a misleading static map and inactive reason selector, corrects privacy copy, and tests province-specific restrictions. The API uses `auth.uid()` under invoker rights, does not accept a provider ID or matching city from the caller, and keeps already-contacted leads visible. This is normalized city/province matching, **not** geospatial radius/drive-time matching or automated service-category onboarding. Browser persistence test commit `ad7a14e025c3d19c77fd86d4ffd90f46178f10eb` adds a full UI fixture for saving and reloading service area preferences. The final [Marketplace checks #38735165455](https://github.com/takatakca/flexsca/actions/runs/38735165455) **passed** on that SHA: 78 Vitest/PGlite tests, TypeScript, ESLint, Python readiness tests, build, browser smoke/visual evidence and Deno typechecks/runtime tests. Production Supabase project access remains denied and no backend deployment was confirmed.
+
+## Private request documents — 2026-10-16
+
+Pushed additive private Storage and metadata migration `20261016190000_private_request_attachments.sql`. The bucket is private with 8 MB maximum files and a PDF/JPEG/PNG MIME allowlist. `request_attachments` metadata and object policies restrict writes/deletion to the request's verified customer owner and downloads to that owner or professionals whose lead was legitimately unlocked. The UI is integrated into `CustomerRequest` and contacted `LeadDetail`; downloads use authenticated Storage, **not public URLs**. Static types, PGlite role tests, upload/reload browser fixtures and deployment-history gates are included. Latest code/test commit: `e77558f3274b62bca0641f1774131c0876200db6`; [Marketplace checks #38943922793](https://github.com/takatakca/flexsca/actions/runs/38943922793) is the matching validation job.
+
+**Not live-certified.** The Supabase connection still cannot administer project `vcaphsvudlseemkalawz`, backend workflow failed credential validation before deploying SQL, and frontend hosting remains unverified. An operational malware scan/quarantine workflow, server-authoritative per-request quota, orphan-object cleanup/retention and end-to-end real-account Storage acceptance are outstanding gates before activating private documents in production.
 
 ## Known remaining obligations
 

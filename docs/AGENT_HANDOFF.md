@@ -1,6 +1,20 @@
 # FLEXS agent handoff
 
-Updated: 2026-10-15. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](TASK_QUEUE.md), and this file before changing code.
+Updated: 2026-10-16. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](TASK_QUEUE.md), and this file before changing code.
+
+## 2026-10-16 handoff — private request attachments
+
+**Repo/branch:** `takatakca/flexsca`, `main`. Starting HEAD `48b3a2d9e0d6725a6ac16291795ccf8675a05e33`; no open PRs and no unclaimed recent agent commits at start.
+
+**Last feature code and task:** New private customer documents via Supabase Storage and RLS. Commits `06a1650937fd15c29e5ff1d19175b7362ab2dfc3` (schema/RLS), `963650a6bfd9225ec8282fde6e4acc6a7e8a37b3` (UI, corrected path regex), `d31c88fd`, `1fe306e7` (test fixes), `599e5484504f8108a15ed3069df1962051fbe522` (portable canonical UUID path checks) and `e77558f3274b62bca0641f1774131c0876200db6` (browser upload and reload fixture). Latest functional SHA `e77558f3`. The next documentation commit is expected to move `main`; use the live GitHub ref for actual HEAD.
+
+**Files changed:** `supabase/migrations/20261016190000_private_request_attachments.sql`, `src/integrations/supabase/types.ts`, `src/test/marketplace-database.test.ts`, `src/components/customer/RequestAttachments.tsx`, `src/pages/customer/CustomerRequest.tsx`, `src/pages/app/LeadDetail.tsx`, `scripts/backend-readiness.py`, `scripts/test-backend-readiness.py`, `scripts/browser-smoke.mjs`, `WORKLOG.md` and the five mandated operational docs plus roadmap.
+
+**Checks executed / truthful result:** [Marketplace checks #38943662454](https://github.com/takatakca/flexsca/actions/runs/38943662454) passed completely on `599e5484` (schema/RLS, React UI, 82 tests, TS, lint, Python readiness, build, browser, Deno). New browser persistence test on `e77558f3` has [Marketplace checks #38943922793](https://github.com/takatakca/flexsca/actions/runs/38943922793); check its final conclusion/logs before marking this last test green. Earlier CI runs on intermediate feature commits failed due PGlite policy grant fixture and regex validation; those were fixed; do not confuse canceled/failed intermediate builds with current code. The GitHub backend deploy [#38943662288](https://github.com/takatakca/flexsca/actions/runs/38943662288) failed at secret validation before any deployment. No local production SQL/Storage changes were executed. Supabase get_project for `vcaphsvudlseemkalawz` was denied; host `flexs.ca` was not reachable from the constrained web tool (unverified, not automatically down).
+
+**Known remaining blockers:** GitHub `production` secrets `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD`, authorized Supabase project membership, recent restore point and valid remote migrations, real frontend host. Before enabling private attachments for customers, require genuine Storage policy acceptance with two customer/pro identities, scanning or quarantine of untrusted uploads, server-authoritative per-lead quota, orphan cleanup/retention, and operational audit. Do not expose secrets or stage live payment data.
+
+**Current task / exact next action:** Inspect [CI #38943922793](https://github.com/takatakca/flexsca/actions/runs/38943922793) for the browser upload test. Fix failures, then continue privacy/storage gating or another independent P1 task; document a new passing SHA. When authorized Supabase access arrives, reconcile remote schema/backup, apply pending migrations through guarded backend workflow, test Stripe/TAKATAK/Auth in test mode and verify real hosting/version. No external auto-restart orchestrator is configured here.
 
 ## 2026-10-15 active handoff — service-area matching
 

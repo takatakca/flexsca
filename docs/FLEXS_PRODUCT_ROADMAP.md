@@ -29,7 +29,7 @@ The TakaTak V1 reference examined at commit `8adfa23ca50f52f6a49e0eaec68e933c68d
 
 The generic FLEXS CRM adapter is a placeholder in the reference. Shared login and customer synchronization require a defined and verified contract before implementation. Other ChatGPT project conversations are not available in this workspace; they are not evidence of an API contract.
 
-Private customer documents/attachments are a separate remaining feature. They require private storage, per-request authorization, file size/type limits, malware handling, deletion/retention rules, and signed download URLs. Public portfolio media must remain separate from private customer documents. Do not place attachments in attribution payloads or expose private files through public storage.
+Private customer attachment code has been added (2026-10-16), but is not yet production certified. They require private storage, per-request authorization, file size/type limits, malware handling, deletion/retention rules, and signed download URLs. Public portfolio media must remain separate from private customer documents. Do not place attachments in attribution payloads or expose private files through public storage.
 
 ## Next implementation priorities
 
