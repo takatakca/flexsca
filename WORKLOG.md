@@ -1,5 +1,7 @@
 # Work log
 
+- 2026-10-16 | ChatGPT | main | active | Add RLS-protected customer request attachments, restricted Storage and verified download UI | implement schema, UI, permission tests, deploy gate, CI and handoff
+
 - 2026-10-15 | ChatGPT | main | done in code, CI green; production blocked | Provider-owned private service-area matching, RLS tests, privacy-safe location UI, save/reload fixture; commits f45a96ff, a02b603e, ad7a14e0; CI #38735165455 passed 78 tests plus browser/Deno | Resume P1; Supabase production permission/secrets and real frontend host still required
 
 - 2026-10-14 | ChatGPT | main | done; CI green | Contact form keyboard submission, accessible labels/errors and Playwright Enter scenario; commits 435242bc and 07dd6258, 77 tests passed in CI #38624925575 | Unblock Supabase production access, then resume P1 queue
