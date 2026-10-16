@@ -21,6 +21,8 @@ let providerProfile={user_id:userId,company_name:'Fixture Cleaning',company_size
 const integrationEventId="abababab-abab-4bab-8bab-abababababab";
 let unlocked = false, quoteStatus = "sent";
 let searches = [], failSearch = false, customerMany=false, failCustomerRequest=false;
+let privateAttachments = [];
+const storedPrivateObjects = new Set();
 const errors = [];
 const page = await browser.newPage();
 const visualCaptures=[];
@@ -43,6 +45,22 @@ await page.route('**/functions/v1/create-checkout-session',route=>{
   return route.fulfill({status:200,json:{url:'https://checkout.stripe.com/fixture-checkout'},headers:{'access-control-allow-origin':'*','access-control-allow-headers':'*'}});
 });
 await page.route('https://checkout.stripe.com/**',route=>route.fulfill({status:200,contentType:'text/html',body:'<h1>Fixture checkout</h1>'}));
+await page.route('**/storage/v1/**', async route => {
+  const req=route.request();
+  const location=new URL(req.url()).pathname;
+  if(req.method()==='POST' && location.includes('/object/request-attachments/')) {
+    storedPrivateObjects.add(decodeURIComponent(location.split('/object/request-attachments/')[1]));
+    return route.fulfill({status:200,json:{Key:location}});
+  }
+  if(req.method()==='GET' && location.includes('/object/authenticated/request-attachments/')) {
+    return route.fulfill({status:200,contentType:'application/pdf',body:Buffer.from('%PDF-1.4 private fixture')});
+  }
+  if(req.method()==='DELETE' && location.endsWith('/object/request-attachments')) {
+    for(const key of req.postDataJSON()?.prefixes ?? []) storedPrivateObjects.delete(key);
+    return route.fulfill({status:200,json:[]});
+  }
+  return route.fulfill({status:404,json:{message:'No fixture for storage operation'}});
+});
 await page.route('**/rest/v1/**', async route => {
   const url = new URL(route.request().url());
   const path = url.pathname.split('/').at(-1);
@@ -93,6 +111,17 @@ await page.route('**/rest/v1/**', async route => {
   if (path === 'provider_sales_summary') body={quotedRequests:3,acceptedRequests:1,pendingQuotes:2,declinedQuotes:0,pricedAccepted:1,estimatedMin:100,estimatedMax:150,creditsSpent:6,creditsRefunded:0};
   if (path === 'credit_wallets') body = { balance: 20 };
   if (path === 'provider_reviews') body = [{id:'66666666-6666-4666-8666-666666666666',rating:5,reviewer_name:'Verified Customer',review_text:'Fixture verified feedback',verified:true,source:'flexs',created_at:new Date().toISOString()}];
+  if(path === 'request_attachments') {
+    if(route.request().method()==='POST') {
+      const item=route.request().postDataJSON();
+      privateAttachments.push({...item,id:'79797979-7979-4797-8797-797979797979',created_at:new Date().toISOString()});
+      body=[];
+    } else if(route.request().method()==='DELETE') {
+      const id=url.searchParams.get('id')?.replace('eq.','');
+      privateAttachments=privateAttachments.filter(item=>item.id!==id);
+      body=[];
+    } else body=privateAttachments;
+  }
   if (path === 'provider_profiles') {
     if(route.request().method()==='POST' || route.request().method()==='PATCH') {
       providerProfile={...providerProfile,...route.request().postDataJSON()};
@@ -239,6 +268,8 @@ try {
   assert.equal(await page.getByRole('link',{name:'customer@example.test',exact:true}).count(),0);
   await page.getByRole('button',{name:'Contact C***',exact:true}).click();
   await page.getByRole('link',{name:'customer@example.test',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Private request attachments',exact:true}).waitFor();
+  assert.equal(await page.getByLabel('Add a private document').count(),0);
   await page.getByRole('button',{name:'Send quote',exact:true}).click();
   const dialog=page.getByRole('dialog');
   await dialog.getByPlaceholder('Write your response to the customer…').fill('A detailed cleaning quote');
@@ -282,6 +313,16 @@ try {
   console.log('PASS reminder creation from an empty list, due notification deduplication, and completion');
   await page.goto('http://127.0.0.1:4173/app/responses');
   await page.getByRole('heading',{name:'House Cleaning',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Private request attachments',exact:true}).waitFor();
+  await page.getByLabel('Add a private document',{exact:true}).setInputFiles({
+    name:'project-plan.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4 customer fixture')
+  });
+  await page.getByRole('button',{name:'Download project-plan.pdf',exact:true}).waitFor();
+  assert.equal(privateAttachments.length,1);
+  assert.equal(storedPrivateObjects.size,1);
+  await page.reload();
+  await page.getByRole('button',{name:'Download project-plan.pdf',exact:true}).waitFor();
+  console.log('PASS private request attachment upload and owner listing persist after browser reload');
   console.log('PASS newly unlocked conversations remain visible without a custom status');
   customerMany=true;
   await page.goto('http://127.0.0.1:4173/my-requests');
