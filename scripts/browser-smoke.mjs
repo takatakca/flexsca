@@ -313,16 +313,6 @@ try {
   console.log('PASS reminder creation from an empty list, due notification deduplication, and completion');
   await page.goto('http://127.0.0.1:4173/app/responses');
   await page.getByRole('heading',{name:'House Cleaning',exact:true}).waitFor();
-  await page.getByRole('heading',{name:'Private request attachments',exact:true}).waitFor();
-  await page.getByLabel('Add a private document',{exact:true}).setInputFiles({
-    name:'project-plan.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4 customer fixture')
-  });
-  await page.getByRole('button',{name:'Download project-plan.pdf',exact:true}).waitFor();
-  assert.equal(privateAttachments.length,1);
-  assert.equal(storedPrivateObjects.size,1);
-  await page.reload();
-  await page.getByRole('button',{name:'Download project-plan.pdf',exact:true}).waitFor();
-  console.log('PASS private request attachment upload and owner listing persist after browser reload');
   console.log('PASS newly unlocked conversations remain visible without a custom status');
   customerMany=true;
   await page.goto('http://127.0.0.1:4173/my-requests');
@@ -354,6 +344,16 @@ try {
   await page.getByRole('button',{name:'View request',exact:true}).click();
   await page.waitForURL(`**/my-requests/${leadId}`);
   await page.getByRole('heading',{name:'House Cleaning',exact:true}).waitFor();
+  await page.getByRole('heading',{name:'Private request attachments',exact:true}).waitFor();
+  await page.getByLabel('Add a private document',{exact:true}).setInputFiles({
+    name:'project-plan.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-1.4 customer fixture')
+  });
+  await page.getByRole('button',{name:'Download project-plan.pdf',exact:true}).waitFor();
+  assert.equal(privateAttachments.length,1);
+  assert.equal(storedPrivateObjects.size,1);
+  await page.reload();
+  await page.getByRole('button',{name:'Download project-plan.pdf',exact:true}).waitFor();
+  console.log('PASS private request attachment upload and owner listing persist after browser reload');
   await page.getByRole('button',{name:'Accept quote',exact:true}).click();
   await page.getByText('accepted',{exact:true}).waitFor();
   console.log('PASS customer quote acceptance refreshes status');
