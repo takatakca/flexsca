@@ -1,6 +1,6 @@
 # Work log
 
-- 2026-10-16 | ChatGPT | main | code pushed, final browser CI pending; production blocked | Private PDF/image Storage bucket and RLS, customer upload/deletion, contacted-pro download, 82 database/unit tests and browser upload fixture, commits 06a16509..e77558f3 | Check CI #38943922793, implement production scanning/quotas/retention, resolve Supabase and hosting access
+- 2026-10-16 | ChatGPT | main | done in code, CI green; production blocked | Private PDF/image Storage bucket and RLS, customer upload/delete, contacted-pro authenticated download, 82 tests and browser upload/reload; final code 796445c7, CI #38944358593 success | Implement server quotas/scanning/retention, establish Supabase prod access and actual frontend hosting
 
 - 2026-10-15 | ChatGPT | main | done in code, CI green; production blocked | Provider-owned private service-area matching, RLS tests, privacy-safe location UI, save/reload fixture; commits f45a96ff, a02b603e, ad7a14e0; CI #38735165455 passed 78 tests plus browser/Deno | Resume P1; Supabase production permission/secrets and real frontend host still required
 

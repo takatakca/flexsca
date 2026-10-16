@@ -28,7 +28,7 @@ After the new migration is applied, use two independent professional accounts. C
 
 Do not enable public document uploads on production until the following are verified with real dedicated test accounts: Supabase Storage bucket `request-attachments` is **private**, 8 MB capped and restricted to PDF/JPEG/PNG MIME types; a customer who has claimed a request can upload and remove only that request's objects, unauthorized customers and anonymous users cannot list or upload, an uncontacted professional cannot fetch or enumerate the bucket, and a contacted professional can download but cannot upload/delete. Confirm customer and contacted-pro role tests against deployed Supabase, not just PGlite or intercepted Playwright fixtures. Verify the upload happens via the Storage API; never write only `storage.objects` metadata.
 
-Before activation, agree and implement scanning/quarantine of untrusted PDFs/images, a **server-side** file-count/storage quota (10-file UI cap is not authoritative), an orphan-object reconciliation worker, document retention/deletion policy and operational/audit ownership. The current implementation does not claim those controls. Do not use public file links or durable signed URLs.
+Before activation, agree and implement scanning/quarantine of untrusted PDFs/images, a **server-side** file-count/storage quota (10-file UI cap is not authoritative), an orphan-object reconciliation worker, document retention/deletion policy and operational/audit ownership. The current implementation does not claim those controls. Fixture browser upload/reload, owner/pro entitlement and SQL tests passed CI #38944358593; **this is not deployed Storage verification**. Do not use public file links or durable signed URLs.
 
 ## Production smoke and rollback
 

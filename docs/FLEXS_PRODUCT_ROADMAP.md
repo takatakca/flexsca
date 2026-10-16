@@ -29,14 +29,14 @@ The TakaTak V1 reference examined at commit `8adfa23ca50f52f6a49e0eaec68e933c68d
 
 The generic FLEXS CRM adapter is a placeholder in the reference. Shared login and customer synchronization require a defined and verified contract before implementation. Other ChatGPT project conversations are not available in this workspace; they are not evidence of an API contract.
 
-Private customer attachment code has been added (2026-10-16), but is not yet production certified. They require private storage, per-request authorization, file size/type limits, malware handling, deletion/retention rules, and signed download URLs. Public portfolio media must remain separate from private customer documents. Do not place attachments in attribution payloads or expose private files through public storage.
+Private customer attachment code has been added (2026-10-16), but is not yet production certified. The code now includes private storage, owner/paid-contact RLS, size/type limits and JWT-authenticated Storage downloads without long-lived links. Production still requires malware scanning/quarantine, authoritative per-request quotas, deletion/retention controls and real-system security acceptance. Public portfolio media must remain separate from private customer documents. Do not place attachments in attribution payloads or expose private files through public storage.
 
 ## Next implementation priorities
 
 1. Complete responsive and accessibility review of remaining screens: customer workspace, onboarding, public profiles, quotes, settings, service pages, and legal/informational routes. Replace remaining inert actions and unsupported marketing claims.
 2. Strengthen intake quality: CAPTCHA verification on the server, phone verification, duplicate/spam detection, bounded submission limits, and moderation tools. Validate costs and provider/customer expectations with real requests.
 3. Build professional service-area preferences and matching. Document remote-work behavior and location privacy before adding geospatial ranking.
-4. Add private request attachments and the document lifecycle described above.
+4. Complete private request document release gates: malware quarantine, server quotas, orphan cleanup, retention, audit and real Storage role tests; code and fixture tests are in place.
 5. Add external notifications using explicit consent, signed provider callbacks, delivery tracking, retries, and user preferences. Keep in-app reminders available.
 6. Implement professional verification operations, customer dispute handling, and account/data lifecycle workflows with recorded decisions.
 7. Add subscriptions only with defined entitlements, cancellation behavior, signed billing events, and migration coverage.
