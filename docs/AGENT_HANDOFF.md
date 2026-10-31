@@ -1,3 +1,7 @@
+# 2026-10-31 — REVEW counterpart request
+
+Read [TAKATAK Review API handoff](TAKATAK_REVIEW_API_HANDOFF.md) for the owner-requested business/review/lead API contract. This is a documentation-only review branch; existing production blockers and code remain unchanged. No key values are requested in public notes. — REVEW
+
 # FLEXS agent handoff
 
 Updated: 2026-10-16. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](TASK_QUEUE.md), and this file before changing code.

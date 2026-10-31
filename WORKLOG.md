@@ -1,3 +1,5 @@
+2026-10-31 | REVEW | revew/review-api-handoff → PR pending | done: documentation handoff; API implementation requested | Owner requested dedicated review/business APIs and authorized lead summaries for the V1 review cockpit; reviewed existing code, recorded missing capabilities, tenant boundaries and acceptance tests in docs/TAKATAK_REVIEW_API_HANDOFF.md; no source/runtime changes | Next: counterpart agent accepts the contract and implements/tests its own APIs; Drive upload blocked by unavailable connector. — REVEW
+
 # Work log
 
 - 2026-10-16 | ChatGPT | main | done in code, CI green; production blocked | Private PDF/image Storage bucket and RLS, customer upload/delete, contacted-pro authenticated download, 82 tests and browser upload/reload; final code 796445c7, CI #38944358593 success | Implement server quotas/scanning/retention, establish Supabase prod access and actual frontend hosting

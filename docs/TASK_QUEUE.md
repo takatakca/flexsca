@@ -1,3 +1,7 @@
+# REVEW counterpart request — 2026-10-31
+
+Owner requested versioned tenant-scoped business/lead/review APIs for TAKATAK Review. Contract and acceptance criteria: [handoff](TAKATAK_REVIEW_API_HANDOFF.md). Preserve marketplace unlock/contact consent and existing integration boundaries. Pending FLEXS maintainer acceptance/implementation; no live API claimed. — REVEW
+
 # FLEXS task queue — oldest unfinished blocker first
 
 Updated 2026-10-16. The order can change only with a documented reason. Track each item as **done / active / blocked / queued**; passing fixture-based tests does not verify production.
