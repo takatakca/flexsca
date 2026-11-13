@@ -195,7 +195,7 @@ export default function Onboarding() {
                 type="text"
                 value={locationPostcode}
                 onChange={(e) => setLocationPostcode(e.target.value)}
-                placeholder="Enter your postcode or town"
+                placeholder="Enter your postal code or city"
                 className="flex-1 text-sm text-foreground outline-none bg-transparent placeholder:text-muted-foreground"
               />
             </div>

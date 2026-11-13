@@ -1,6 +1,6 @@
 # Work log
 
-- 2026-11-13 | claude | claude/hosting-and-mobile-apps | done in code; production blocked: owner decision on backend | Coolify Dockerfile + nginx (serving verified in a container), web-app manifest and icons, Capacitor Android/iOS projects, canonical flexs.ca links for store apps, docs/MOBILE_APPS.md; found flexs.ca returns 403 and both TAKATAK databases collide with FLEXS table names, so no migration was applied | Owner chooses backend home (new FLEXS project in takatakca org recommended), then deploy backend, Coolify site and DNS
+- 2026-11-13 | claude | claude/hosting-and-mobile-apps | done: backend live and verified in Supabase ALKAO; website hosting is an owner action | 50 migrations + 4 functions deployed to ALKAO, Data API enabled, live sign-up/request/unlock checks passed; removed fake demo leads at sign-up and false About/Affiliate/testimonial content; Coolify Dockerfile, web-app manifest, Capacitor Android/iOS projects; 86 tests + 29 browser scenarios pass | Owner: deploy on Coolify + DNS, set Stripe secrets and SMTP, create admin; then account deletion and store builds
 
 - 2026-10-16 | ChatGPT | main | done in code, CI green; production blocked | Private PDF/image Storage bucket and RLS, customer upload/delete, contacted-pro authenticated download, 82 tests and browser upload/reload; final code 796445c7, CI #38944358593 success | Implement server quotas/scanning/retention, establish Supabase prod access and actual frontend hosting
 

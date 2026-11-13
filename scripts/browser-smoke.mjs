@@ -211,7 +211,7 @@ try {
   await serviceDialog.getByPlaceholder('Full name',{exact:true}).fill('Modal Customer');
   await serviceDialog.getByPlaceholder('Email address',{exact:true}).fill('modal@example.test');
   await serviceDialog.getByRole('button',{name:'Continue',exact:true}).click();
-  await serviceDialog.getByPlaceholder('Enter postcode or town',{exact:true}).fill('Toronto');
+  await serviceDialog.getByPlaceholder('Enter postal code or city',{exact:true}).fill('Toronto');
   await serviceDialog.getByRole('button',{name:'Continue',exact:true}).click();
   await serviceDialog.getByRole('button',{name:'Continue',exact:true}).click();
   await serviceDialog.getByPlaceholder('Tell professionals exactly what you need...').fill('A cleaning request from the service page');
@@ -221,7 +221,7 @@ try {
   assert.equal(submitted.p_customer_email,'modal@example.test');
   console.log('PASS service-page intake collects required customer details, including categories without questions');
   const claims = Buffer.from(JSON.stringify({sub:userId,exp:Math.floor(Date.now()/1000)+3600})).toString('base64url');
-  await page.evaluate(({userId,claims})=>localStorage.setItem('sb-vcaphsvudlseemkalawz-auth-token',JSON.stringify({access_token:`header.${claims}.signature`,refresh_token:'ui-fixture',token_type:'bearer',expires_at:Math.floor(Date.now()/1000)+3600,expires_in:3600,user:{id:userId,email:'customer@example.test',app_metadata:{},user_metadata:{},aud:'authenticated',created_at:new Date().toISOString()}})),{userId,claims});
+  await page.evaluate(({userId,claims})=>localStorage.setItem('sb-ysghtkallwuoodwqgkjm-auth-token',JSON.stringify({access_token:`header.${claims}.signature`,refresh_token:'ui-fixture',token_type:'bearer',expires_at:Math.floor(Date.now()/1000)+3600,expires_in:3600,user:{id:userId,email:'customer@example.test',app_metadata:{},user_metadata:{},aud:'authenticated',created_at:new Date().toISOString()}})),{userId,claims});
   await page.goto('http://127.0.0.1:4173/app/leads');
   await page.getByText('21 Matching leads',{exact:true}).waitFor();
   const nextSearch=page.waitForResponse(r=>r.url().endsWith('/rpc/search_marketplace_leads') && r.request().postDataJSON().p_page===1);

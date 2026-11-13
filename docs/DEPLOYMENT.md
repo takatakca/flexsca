@@ -47,7 +47,7 @@ The owner chose Coolify for the flexs.ca website. The repository root now has a 
 1. In Coolify: **New resource › Public or private Git repository** › `takatakca/flexsca`, branch `main`, build pack **Dockerfile**, port **80**, health check path `/healthz`.
 2. Domain: `https://flexs.ca` (add `https://www.flexs.ca` as a redirect). Coolify issues the TLS certificate.
 3. DNS: point the `A` record of `flexs.ca` and `www` to the Coolify server's IP address. Today the domain answers `403 Forbidden` from another Apache server.
-4. Build variables (only if the backend is not the one committed in `.env`): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`. These are public browser values. Never put service-role, Stripe or TAKATAK secrets here.
-5. Deploy the backend first, then the website (see above).
+4. The committed `.env` already points at the live backend (Supabase project ALKAO, `ysghtkallwuoodwqgkjm`). Build variables are needed only to override it: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`. These are public browser values. Never put service-role, Stripe or TAKATAK secrets here.
+5. The backend was deployed and verified on 2026-11-13, so the website can be deployed now. Older sections of this file that name project `vcaphsvudlseemkalawz` describe the abandoned Lovable backend.
 
 Verified on 2026-11-13 in a container: nginx stage serves `/`, deep route `/app/leads`, `/manifest.webmanifest`, icons and `/healthz` with status 200 and a missing asset with 404. The npm build stage was not run inside Docker in the agent sandbox (its network proxy blocks npm inside containers); the same `npm ci && npm run build` passes outside Docker. No Coolify deployment has been made by an agent: no Coolify access is connected.

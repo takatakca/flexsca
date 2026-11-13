@@ -8,9 +8,13 @@ Updated: 2026-10-16. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](
 
 **Done:** `Dockerfile`, `deploy/nginx.conf`, `.dockerignore` for Coolify; `public/manifest.webmanifest` and `public/icons/`; Capacitor 8 (`capacitor.config.ts`, `android/`, `ios/`, `assets/`, `scripts/generate-app-icons.mjs`); `src/lib/platform.ts`, `src/components/NativeAppBridge.tsx`, canonical-origin fixes in auth, checkout and profile-link code; `src/test/platform.test.ts`; `docs/MOBILE_APPS.md`.
 
-**Findings:** flexs.ca answers 403 from Apache. The original Supabase project is outside the owner's organization and Lovable workspaces. Owner said "use the TAKATAK Supabase we already have"; both TAKATAK projects already own `public.profiles`, `public.leads`, `public.notifications`, so nothing was applied there. No Coolify connector exists in the agent session.
+**Backend (same session):** owner chose Supabase project ALKAO (`ysghtkallwuoodwqgkjm`). Applied all migrations through the Supabase management API (`POST /v1/projects/{ref}/database/query`, one transaction, dry run first), recorded history, deployed four functions through `/functions/deploy`, enabled Data API schema `public` with owner approval, added flexs.ca redirect URLs. `.env`, `supabase/config.toml` and scripts now reference ALKAO. Added migration `20261113080000_remove_signup_sample_leads.sql` (applied live) and a sign-up regression test (86 tests). Replaced false About/Affiliate content and invented testimonials.
 
-**Exact next action:** get the owner's answer on the backend home (see TASK_QUEUE first row). If a new FLEXS project in organization `takatakca`: create it in `ca-central-1`, apply all migrations in order, deploy the four Edge Functions, set server secrets (Stripe, TAKATAK, scheduler), update `.env` public values, add flexs.ca Auth redirect URLs, then deploy on Coolify and verify. Do not run FLEXS migrations in a TAKATAK project's `public` schema.
+**How access works:** cloud environment `flexsca` allows `api.supabase.com` with a saved access token injected by the session proxy, plus the ALKAO project host. No token is in the repository. `scripts/deploy-backend.sh` still expects the Supabase CLI and GitHub secrets and was not used.
+
+**Never do:** alter or drop `ticketing_*` tables, the `alkao_private` / `alkao_meta` schemas, or the Auth site URL in ALKAO; they belong to the ticketing product.
+
+**Exact next action:** owner deploys the website on Coolify and points DNS (DEPLOYMENT.md), sets Stripe secrets and SMTP (TASK_QUEUE first rows). Then run a test-mode purchase, a real sign-up with email confirmation, and bootstrap the administrator. Then in-app account deletion before store submission (MOBILE_APPS.md).
 
 ## 2026-10-16 handoff — private request attachments
 

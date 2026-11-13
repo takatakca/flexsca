@@ -2,7 +2,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, MapPin, ChevronRight, Star, Menu, User, Loader2, FileText, CheckCircle, MessageSquare, X } from "lucide-react";
+import { Search, MapPin, ChevronRight, Menu, User, Loader2, FileText, CheckCircle, MessageSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
@@ -63,12 +63,6 @@ function PopularRegions() {
     </div>
   );
 }
-
-const reviews = [
-  { rating: 5, text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend FLEX'S!", author: "Sarah M." },
-  { rating: 5, text: "Finding a quality professional has never been easier. The platform made the whole process smooth and stress-free.", author: "Michael T." },
-  { rating: 4, text: "Great experience overall. Got connected with multiple professionals quickly and found the perfect match for my project.", author: "Jennifer L." },
-];
 
 // Category-specific related content images
 const categoryRelatedImages: Record<string, { services: string[]; guides: string[]; priceGuides: string[] }> = {
@@ -334,7 +328,7 @@ export default function ServiceCategoryPage() {
               <label className="block text-sm font-medium text-foreground mb-1">Where do you need it?</label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input value={locationSearch} onChange={(e) => setLocationSearch(e.target.value)} placeholder="Enter your postcode" className="w-full pl-10" />
+                <Input value={locationSearch} onChange={(e) => setLocationSearch(e.target.value)} placeholder="Enter your postal code" className="w-full pl-10" />
               </div>
             </div>
             <Button onClick={handleStartRequest} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold h-11">Continue</Button>
@@ -451,29 +445,10 @@ export default function ServiceCategoryPage() {
             {/* Pick the best */}
             <section className="mb-12 text-center">
               <h2 className="text-2xl font-bold text-foreground mb-3">Pick the best</h2>
-              <div className="flex items-center justify-center gap-1 mb-3">{[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-warning text-warning" />)}</div>
               <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">
                 Compare quotes from top {name} professionals near you on FLEX'S. Get responses from trusted pros, read real reviews, compare prices and choose the best one.
               </p>
               <Button onClick={handleStartRequest} className="rounded-full px-8">Get quotes from {name} near you</Button>
-            </section>
-
-            {/* Reviews */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Reviews</h2>
-              <div className="flex items-center gap-2 mb-6">
-                <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                <span className="text-sm text-muted-foreground">4.89/560</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {reviews.map((r, i) => (
-                  <div key={i} className="bg-card border border-border rounded-xl p-6">
-                    <div className="flex gap-0.5 mb-3">{[...Array(r.rating)].map((_, j) => <Star key={j} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                    <p className="text-sm text-foreground mb-4">"{r.text}"</p>
-                    <p className="text-xs font-semibold text-muted-foreground">— {r.author}</p>
-                  </div>
-                ))}
-              </div>
             </section>
 
             {/* Related Services — dynamic from siblings */}

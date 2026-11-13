@@ -33,11 +33,23 @@ Pushed additive private Storage and metadata migration `20261016190000_private_r
 
 **Not live-certified.** The Supabase connection still cannot administer project `vcaphsvudlseemkalawz`, backend workflow failed credential validation before deploying SQL, and frontend hosting remains unverified. An operational malware scan/quarantine workflow, server-authoritative per-request quota, orphan-object cleanup/retention and end-to-end real-account Storage acceptance are outstanding gates before activating private documents in production.
 
-## Hosting and mobile preparation — 2026-11-13
+## Backend live in ALKAO, hosting and mobile preparation — 2026-11-13
 
-Observed 2026-11-13: `https://flexs.ca` returns **403 Forbidden** from an Apache server, so the public site is down. Supabase project `vcaphsvudlseemkalawz` is not in the owner's Supabase organization (`takatakca`) and the Lovable project `b24b4595…` is not in any Lovable workspace connected to the owner, so that backend still cannot be administered. The owner asked to use the existing TAKATAK Supabase and to host on Coolify. **FLEXS migrations were not applied to either TAKATAK database**: both `TAKATAK STAGING` and `TAKATAK User Official Dashboard V1` already have their own `public.profiles`, `public.leads` and `public.notifications` with live data, and the FLEXS migrations create tables and auth triggers with the same names. A separate FLEXS project inside the same organization (or a dedicated `flexs` schema, a large rewrite) is required; the owner's decision is pending.
+**Backend is deployed and verified.** On the owner's instruction FLEXS now runs in the existing Supabase project **ALKAO** (`ysghtkallwuoodwqgkjm`, ca-central-1, organization `takatakca`), shared with the ticketing product (`ticketing_*` tables, billets.promohavana.ca). The old Lovable project `vcaphsvudlseemkalawz` is abandoned: it is outside the owner's accounts.
 
-Added in code on branch `claude/hosting-and-mobile-apps`: Coolify-ready `Dockerfile` and nginx config; installable web-app manifest and icons; Capacitor 8 Android and iOS projects (`ca.flexs.app`); canonical `https://flexs.ca` links for emails and payments when running as a store app; deep-link handling. See [MOBILE_APPS](MOBILE_APPS.md) and [DEPLOYMENT](DEPLOYMENT.md). No store build, Coolify deployment or backend deployment was performed.
+- All 50 migrations applied in one transaction after a rolled-back dry run; history recorded in `supabase_migrations.schema_migrations`. 41 FLEXS tables, 51 categories, buckets `provider-media` and `request-attachments`. The 48 ticketing tables were not changed.
+- Four Edge Functions deployed and ACTIVE (version 1).
+- ALKAO's Data API had no exposed schema. With the owner's approval it now exposes `public`. Ticketing tables give anonymous callers "permission denied" and give a signed-in non-member zero rows (checked live).
+- `https://flexs.ca/**` and `https://www.flexs.ca/**` added to the Auth redirect allow-list. Site URL left as the ticketing value.
+- Live checks with temporary data, all removed afterwards: anonymous category read; anonymous cannot read leads, profiles, wallets, messages, admin tables; request submission and 10-minute duplicate rejection; sign-up creates profile, 20 welcome credits and 7 statuses; marketplace search hides contact details; unlocking spends credits and reveals the contact; built site loads categories from the live backend in a browser with no errors.
+
+**Fixed while verifying:** sign-up used to give every new account seven fake UK demo leads (fake names, emails, phone numbers). Migration `20261113080000_remove_signup_sample_leads.sql` removes that and stops anonymous callers running internal helper functions. The About page (invented London head office, international hubs, staff perks), the Affiliate page (promised "$100/£80" payouts for a programme that does not exist) and invented testimonials with a "4.89/560" rating on service pages were replaced or removed.
+
+**Still not done:** website is not hosted (flexs.ca answers 403 from an Apache server; Coolify deployment is an owner action, see DEPLOYMENT). Stripe secrets are not set, so buying credits fails. TAKATAK integration secrets are not set. Auth email uses Supabase's built-in sender, limited to 2 emails per hour and sharing ALKAO's templates and site URL: a custom SMTP sender is required before launch. No administrator exists in `platform_admins`. No store build exists.
+
+**Shared-project consequences to know:** FLEXS and the ticketing product share one login table; any new ticketing staff account also gets a FLEXS profile and wallet. Supabase advisor reports three FLEXS views as security-definer (intended privacy-filtered projections, covered by tests) and leaked-password protection off.
+
+Also on branch `claude/hosting-and-mobile-apps`: Coolify `Dockerfile` and nginx config, web-app manifest and icons, Capacitor 8 Android and iOS projects. See [MOBILE_APPS](MOBILE_APPS.md) and [DEPLOYMENT](DEPLOYMENT.md).
 
 ## Known remaining obligations
 

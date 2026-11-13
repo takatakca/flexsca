@@ -622,4 +622,13 @@ describe('administrator integration operations',()=>{
     await asRole('authenticated',other);
     await expect(db.query(`SELECT admin_retry_attribution('00000000-0000-4000-8000-000000000000')`)).rejects.toThrow('Event not found');
   });
+  it('creates a profile, welcome credits and statuses on sign-up without demo leads',async()=>{
+    const fresh='99999999-9999-4999-8999-999999999999';
+    await db.exec(`RESET ROLE; INSERT INTO auth.users(id,email,email_confirmed_at) VALUES ('${fresh}','fresh@example.test',now())`);
+    expect(await scalar(`SELECT count(*)::int FROM profiles WHERE id='${fresh}'`)).toBe(1);
+    expect(await scalar(`SELECT balance FROM credit_wallets WHERE user_id='${fresh}'`)).toBe(20);
+    expect(await scalar(`SELECT count(*)::int FROM custom_statuses WHERE agent_id='${fresh}'`)).toBeGreaterThan(0);
+    expect(await scalar(`SELECT count(*)::int FROM leads WHERE assigned_to='${fresh}'`)).toBe(0);
+    expect(await scalar(`SELECT count(*)::int FROM leads WHERE customer_email LIKE '%@email.com'`)).toBe(0);
+  });
 });
