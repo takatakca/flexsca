@@ -1,5 +1,7 @@
 # Work log
 
+- 2026-11-13 | Claude (Claude Code cloud) | claude/hosting-and-mobile-apps → PR #6 | active | FLEXS backend installed live in Supabase ALKAO (50 migrations, 4 functions, Data API on public, flexs.ca auth redirects) and verified; fake sign-up demo leads and false About/Affiliate/testimonial content removed; Coolify Dockerfile; Capacitor Android/iOS projects. Trace was missing from main and Drive until 03:17 EST: corrected in `00-FLEXS-START-HERE.md` | Now: Android build, OCR re-verification, account deletion, TAKATAK-V1 link check, AI adapter. Owner: merge PR #6, Coolify + DNS, Stripe, SMTP, admin
+
 - 2026-10-16 | ChatGPT | main | done in code, CI green; production blocked | Private PDF/image Storage bucket and RLS, customer upload/delete, contacted-pro authenticated download, 82 tests and browser upload/reload; final code 796445c7, CI #38944358593 success | Implement server quotas/scanning/retention, establish Supabase prod access and actual frontend hosting
 
 - 2026-10-15 | ChatGPT | main | done in code, CI green; production blocked | Provider-owned private service-area matching, RLS tests, privacy-safe location UI, save/reload fixture; commits f45a96ff, a02b603e, ad7a14e0; CI #38735165455 passed 78 tests plus browser/Deno | Resume P1; Supabase production permission/secrets and real frontend host still required

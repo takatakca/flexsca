@@ -1,5 +1,9 @@
 # Agent instructions
 
+## Read first: `00-FLEXS-START-HERE.md`
+
+Before any work, read [`00-FLEXS-START-HERE.md`](00-FLEXS-START-HERE.md) on `main`. It holds the current live state and the standing order: signed notes **before, during and after** every piece of work, on `main`, in `WORKLOG.md` and in the Google Drive coordination folder. A branch or a chat message is not a trace. Also list pull requests with `gh api repos/takatakca/flexsca/pulls` and branches with `git ls-remote --heads origin`; `gh pr list` can fail silently in cloud sessions.
+
 ## Work log rule (every agent: Claude, Codex, Cursor, people)
 
 Cheap to follow: read only what is listed here.
