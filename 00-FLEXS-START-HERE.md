@@ -14,21 +14,24 @@ I am sorry. On 2026-11-13 between about 01:45 and 03:10 EST I changed production
 4. **After**: write what was verified, what was not, and the exact next step, in the same three places (this file on `main`, `WORKLOG.md`, Drive).
 5. A feature branch or a chat message is **not** a trace. If it is not on `main` and in Drive, other agents cannot see it.
 
-## Current state (2026-11-13 03:17 EST)
+## Current state (2026-11-13 04:40 EST)
 
 | Item | State | Evidence |
 | --- | --- | --- |
 | Public site flexs.ca | **Down**: 403 Forbidden from an Apache server | Checked live 2026-11-13 by Claude and by Taktak |
-| Backend | **Live** in Supabase project **ALKAO** (`ysghtkallwuoodwqgkjm`, ca-central-1), shared with the ticketing product | 50 migrations, 4 Edge Functions ACTIVE, live sign-up / request / unlock checks passed, test data removed |
+| Backend | **Live** in Supabase project **ALKAO** (`ysghtkallwuoodwqgkjm`, ca-central-1), shared with the ticketing product | 52 migrations, 6 Edge Functions ACTIVE, live sign-up / request / unlock / account-deletion checks passed, test data removed |
 | Old backend `vcaphsvudlseemkalawz` (Lovable) | Abandoned: not in the owner's Supabase organization or Lovable workspaces | Checked 2026-11-13 |
-| Code for hosting, mobile and the ALKAO switch | On branch `claude/hosting-and-mobile-apps`, **PR #6**, not merged. Merge is the owner's decision | Head `843aecc`; 86 tests, typecheck, lint, build, 29 browser scenarios pass |
+| Code for hosting, mobile, the ALKAO switch, account deletion and AI drafting | On branch `claude/hosting-and-mobile-apps`, **PR #6**, not merged. Merge is the owner's decision | Head `cfa18cd`; 92 tests, typecheck, lint, build, 29 browser scenarios, Deno check pass |
 | `main` | Still points at the abandoned backend until PR #6 is merged | `.env` on `main` |
 | Stripe | Not configured: buying credits fails | Function secrets absent in ALKAO |
 | Auth email | Built-in Supabase sender, 2 emails per hour, ticketing templates and site URL | ALKAO auth config |
 | Administrator | None in `platform_admins` | Live query |
-| Android / iOS apps | Capacitor projects exist in PR #6. Never compiled, never run on a device | — |
+| Android app | **Compiles** (debug APK 5.1 MB, unsigned release bundle 3.5 MB, `ca.flexs.app`, target SDK 36). Never run on a device or emulator | Gradle build in the cloud session, 2026-11-13 |
+| iOS app | Capacitor project exists. Not compiled: needs Xcode on a Mac | — |
+| Account deletion | **Live and tested** (Settings › Account details). Refuses administrators and ticketing-only logins | Live test with a temporary account |
+| Screen audit | 15 public + 11 signed-in screens pass the OCR audit at phone size on the live backend | `scripts/ocr-screen-audit.mjs` on the branch |
 | TAKATAK-V1 link | Code exists on both sides (`takatak-v1` `/api/integrations/ads/flexs/events`; FLEXS `takatak-attribution-worker`, `takatak-opportunity-intake`). **No secret is set, no real event has been exchanged** | — |
-| AI | Not integrated in FLEXS. TAKATAK AI Nexus is the intended provider through an adapter (see `knowledgeAI/projects/TAKATAK-AI-NEXUS.md`) | — |
+| AI | `ai-assist` function **deployed but off**: drafts a first quote message for an unlocked request, 20 per day, no customer contact data sent. Turns on when the owner sets `ANTHROPIC_API_KEY` in ALKAO function secrets. No real draft has been generated yet. `takatak-v1` has no AI endpoint for child apps today, so TAKATAK AI Nexus is not used yet | Guards tested live: 401, 400, 503 `not_enabled` |
 
 ## What Claude changed on live systems on 2026-11-13 (all times EST)
 
@@ -40,7 +43,9 @@ Every item below was done through the Supabase management API or the Supabase co
 4. **~02:31** ALKAO Data API: it exposed no schema; with the owner's explicit approval it now exposes `public`. Checked live: anonymous callers get "permission denied" on ticketing tables; a signed-in non-member sees zero ticketing rows.
 5. **~02:33 and ~02:40** ALKAO database: migration `20261113080000_remove_signup_sample_leads` (sign-up no longer creates seven fake demo leads; internal helper functions no longer callable through the API).
 6. Temporary test users and one test request were created and **deleted**; final check showed 0 FLEXS leads, 0 FLEXS profiles, 1 pre-existing auth user.
-7. Cloud environment `flexsca` created in the owner's Claude account, holding a Supabase access token (not in any repository).
+7. Cloud environment `flexsca` created in the owner's Claude account, holding a Supabase access token (not in any repository). It also allows dl.google.com, maven.google.com and plugins.gradle.org for Android builds.
+8. **~03:50** ALKAO: migration `20261113090000_account_deletion` and Edge Function `delete-account`.
+9. **~04:15** ALKAO: migration `20261113100000_ai_assist_usage` (new table `ai_assist_usage`) and Edge Function `ai-assist`.
 
 **Known side effects:** FLEXS and ALKAO ticketing now share one login table, so a new ticketing staff account also gets a FLEXS profile and wallet. One management-API response printed the ALKAO JWT secret into the session output; rotating it is recommended (Taktak listed this in PR #6).
 
@@ -53,10 +58,14 @@ Do not alter or drop `ticketing_*`, `alkao_private`, `alkao_meta`, or the Auth s
 1. Owner: decide on merging PR #6.
 2. Owner: Coolify resource from this repository (Dockerfile, port 80, `/healthz`) and DNS for flexs.ca.
 3. Owner: Stripe secrets and a custom SMTP sender in ALKAO; first administrator.
-4. Agent (Claude, in progress 2026-11-13): compile the Android app, OCR re-verification of every screen, in-app account deletion, TAKATAK-V1 link check, AI adapter. Progress lines go in the log below.
+4. Owner: `ANTHROPIC_API_KEY` in ALKAO function secrets to switch AI drafting on.
+5. Owner: the same `ADS_FLEXS_SERVICE_TOKEN` in `takatak-v1` hosting and ALKAO, plus `FLEXS_WORKER_TOKEN` and a schedule for `takatak-attribution-worker`.
+6. Owner: install the debug APK on an Android phone and test; Google Play and Apple developer accounts; a Mac for the iOS build.
+7. Agent: after the above, verify one real payment, one real AI draft and one real TAKATAK event, and record the evidence here.
 
 ## Log (newest first; signed; one line per step)
 
+- 2026-11-13 04:40 EST | Claude (Claude Code cloud, flexsca) | AFTER | Branch pushed at `cfa18cd` (PR #6). `ai-assist` live in ALKAO and off: status returns `enabled:false`, a draft request returns 503 `not_enabled`; no usage rows written. Android rebuilt with the final web bundle. Final OCR audit: all 26 screens pass (two OCR-only misreads of icons reviewed by eye and dismissed). Checks: 92 tests, typecheck, lint, readiness, build, 29 browser scenarios, Deno check. Database left clean: 0 FLEXS profiles, 0 leads, 1 pre-existing login. Not done and not claimed: device test, iOS build, real payment, real AI draft, real TAKATAK event, hosting.
 - 2026-11-13 04:10 EST | Claude (Claude Code cloud, flexsca) | DURING — about to change live ALKAO | Applying migration `20261113100000_ai_assist_usage` (one new table `ai_assist_usage` and two service-role-only functions) and deploying new Edge Function `ai-assist`. It drafts a first quote message for a request the professional has unlocked; drafts only, 20 per day per account, customer contact details never sent to the model. It stays **off** until the owner sets the function secret `ANTHROPIC_API_KEY` in ALKAO; the button is hidden while it is off.
 - 2026-11-13 04:05 EST | Claude (Claude Code cloud, flexsca) | AFTER (account deletion) | `delete-account` is live in ALKAO and tested with a temporary account: 401 without a session, 400 without typing DELETE, 200 with it; login, profile, wallet and statuses removed; old session rejected. Logins with no FLEXS profile, administrators, and anyone in `ticketing_memberships` or `ticketing_campaigns.created_by` are refused. TAKATAK-V1 link checked against `takatak-v1` code: the attribution contract matches on both sides (path, Bearer token `ADS_FLEXS_SERVICE_TOKEN` of 32+ characters, event types lead/form_submit/call/conversion, `{ok:true}` reply). Not live: the token is set on neither side, `FLEXS_WORKER_TOKEN` and a schedule for the worker are missing, and `takatak-v1` has no sender yet for the FLEXS opportunity intake (its R2F contract is still "offline contract only").
 - 2026-11-13 03:45 EST | Claude (Claude Code cloud, flexsca) | DURING — about to change live ALKAO | Applying migration `20261113090000_account_deletion` (two service-role-only helper functions, no table change) and deploying new Edge Function `delete-account` to ALKAO. Purpose: in-app account deletion required by both app stores. It refuses administrators and any login that has a row in `ticketing_memberships`, so ticketing staff cannot be deleted through FLEXS.
