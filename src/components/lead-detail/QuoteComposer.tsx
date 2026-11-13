@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Send, Loader2, DollarSign, CalendarDays } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Send, Loader2, DollarSign, CalendarDays, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -35,14 +36,48 @@ interface QuoteComposerProps {
   }) => Promise<boolean>;
   sending: boolean;
   disabled?: boolean;
+  /** When set, a professional who unlocked this request can ask for an AI-written first draft. */
+  leadId?: string;
 }
 
-export default function QuoteComposer({ onSend, sending, disabled }: QuoteComposerProps) {
+export default function QuoteComposer({ onSend, sending, disabled, leadId }: QuoteComposerProps) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
   const [availability, setAvailability] = useState<string | null>(null);
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [drafting, setDrafting] = useState(false);
+  const [aiNote, setAiNote] = useState<string | null>(null);
+
+  // The button only appears when the server reports that AI drafting is switched on.
+  useEffect(() => {
+    if (!open || !leadId) return;
+    let cancelled = false;
+    supabase.functions.invoke("ai-assist", { body: { task: "status" } })
+      .then(({ data }) => { if (!cancelled) setAiEnabled(Boolean(data?.enabled)); })
+      .catch(() => { if (!cancelled) setAiEnabled(false); });
+    return () => { cancelled = true; };
+  }, [open, leadId]);
+
+  const draftWithAi = async () => {
+    if (drafting || !leadId) return;
+    setDrafting(true); setAiNote(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-assist", { body: { task: "quote_reply", leadId } });
+      if (error || !data?.draft) {
+        const details = await (error as { context?: Response } | null)?.context?.json?.().catch(() => null);
+        setAiNote(details?.code === "limit_reached" ? "You have used today's AI drafts. Try again tomorrow."
+          : details?.code === "not_unlocked" ? "Unlock this request before drafting a reply."
+          : "A draft could not be written right now. You can still write your own message.");
+        return;
+      }
+      setMessage(String(data.draft));
+      setAiNote("AI draft. Read it and edit it before you send: you are responsible for what it says.");
+    } catch {
+      setAiNote("A draft could not be written right now. You can still write your own message.");
+    } finally { setDrafting(false); }
+  };
 
   const resetForm = () => {
     setMessage("");
@@ -107,14 +142,24 @@ export default function QuoteComposer({ onSend, sending, disabled }: QuoteCompos
 
           {/* Message */}
           <div className="space-y-2">
-            <Label>Your message</Label>
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor="quote-message">Your message</Label>
+              {aiEnabled && leadId && (
+                <Button type="button" variant="outline" size="sm" onClick={() => void draftWithAi()} disabled={drafting}>
+                  {drafting ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Sparkles className="h-4 w-4 mr-1.5" />}
+                  {drafting ? "Writing…" : "Draft with AI"}
+                </Button>
+              )}
+            </div>
             <Textarea
               placeholder="Write your response to the customer…"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
               className="resize-none"
+              id="quote-message"
             />
+            {aiNote && <p role="status" className="text-xs text-muted-foreground">{aiNote}</p>}
           </div>
 
           {/* Price range (CAD) */}

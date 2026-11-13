@@ -10,7 +10,7 @@ export default function CookiesPage() {
       <header className="border-b border-border sticky top-0 z-50 bg-background">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <button onClick={() => navigate("/")} className="text-xl font-bold text-foreground tracking-tight">
-            FLEX'S
+            FLEXS
           </button>
           <nav className="hidden md:flex items-center gap-4">
             <button onClick={() => navigate("/")} className="text-sm text-muted-foreground hover:text-foreground">
@@ -32,7 +32,7 @@ export default function CookiesPage() {
         <div className="prose prose-sm max-w-none text-muted-foreground space-y-6">
           <h2 className="text-xl font-bold text-foreground">What is this document and why should I read it?</h2>
           <p>
-            This cookie policy explains how and why FLEX'S (also referred to as "flex's.ca", "we", "our" and "us") uses technology
+            This cookie policy explains how and why FLEXS (also referred to as "flex's.ca", "we", "our" and "us") uses technology
             to collect information about the use of our website www.flexs.ca ("the Website") and to distinguish you from other users of our
             Website in order to improve your experience when you browse the Website.
           </p>
@@ -172,7 +172,7 @@ export default function CookiesPage() {
             <div>
               <h4 className="font-semibold text-foreground mb-3 text-sm">About</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate("/about")} className="hover:text-foreground">About FLEX'S</button></li>
+                <li><button onClick={() => navigate("/about")} className="hover:text-foreground">About FLEXS</button></li>
                 <li><button className="hover:text-foreground">Careers</button></li>
                 <li><button onClick={() => navigate("/affiliates")} className="hover:text-foreground">Affiliates</button></li>
                 <li><button className="hover:text-foreground">Blog</button></li>
@@ -188,7 +188,7 @@ export default function CookiesPage() {
             </div>
           </div>
           <div className="border-t border-border mt-8 pt-6 text-xs text-muted-foreground">
-            <p>© 2025 FLEX'S Global Limited. <button onClick={() => navigate("/cookies")} className="hover:underline">Cookie policy</button> / Privacy policy</p>
+            <p>© 2025 FLEXS Global Limited. <button onClick={() => navigate("/cookies")} className="hover:underline">Cookie policy</button> / Privacy policy</p>
           </div>
         </div>
       </footer>

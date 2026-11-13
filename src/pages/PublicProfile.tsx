@@ -117,7 +117,7 @@ export default function PublicProfile() {
     <div className="min-h-screen bg-background pb-24">
       {/* Header bar */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-foreground">FLEX'S</h1>
+        <h1 className="text-lg font-bold text-foreground">FLEXS</h1>
       </div>
 
       {/* Tabs */}

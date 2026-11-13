@@ -2,6 +2,16 @@
 
 Updated: 2026-10-16. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](TASK_QUEUE.md), and this file before changing code.
 
+## 2026-11-13 handoff (part 2) — Android build, account deletion, AI drafting, screen audit
+
+Signed: Claude (Claude Code cloud). **Read `00-FLEXS-START-HERE.md` on `main` first; it has the dated log of every live change.**
+
+Done on branch `claude/hosting-and-mobile-apps` (PR #6) and live in ALKAO: migrations `20261113090000` and `20261113100000`; Edge Functions `delete-account` and `ai-assist` (both ACTIVE v1). New files: `src/components/DeleteAccount.tsx`, `supabase/functions/_shared/ai-assist.ts`, `scripts/ocr-screen-audit.mjs`, `src/test/aiAssist.test.ts`. Changed: `QuoteComposer.tsx` (Draft with AI), `AccountSettings.tsx`, `HelpCenter.tsx`, name "FLEX'S" → "FLEXS", Settings overflow fix, CI and deploy scripts list six functions.
+
+Android SDK is not in the repository. To rebuild in a cloud session: allow `dl.google.com`, `maven.google.com`, `plugins.gradle.org` (the `flexsca` cloud environment already does), install cmdline-tools, `platforms;android-36`, `build-tools;36.0.0`, then `./gradlew --max-workers=1 assembleDebug bundleRelease` (Maven Central rate-limits parallel downloads).
+
+Next exact actions: owner merges PR #6, deploys on Coolify, sets Stripe / SMTP / `ANTHROPIC_API_KEY` / TAKATAK tokens. Agent: test the debug APK on a phone when one is available; iOS build on a Mac; verify one real AI draft once the key exists.
+
 ## 2026-11-13 handoff — Coolify hosting and mobile wrapper
 
 **Branch:** `claude/hosting-and-mobile-apps` from `main` `e671c547`. Local checks before changes: typecheck, lint, 82 tests, build and 29 browser scenarios all passed.

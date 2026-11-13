@@ -51,6 +51,18 @@ Pushed additive private Storage and metadata migration `20261016190000_private_r
 
 Also on branch `claude/hosting-and-mobile-apps`: Coolify `Dockerfile` and nginx config, web-app manifest and icons, Capacitor 8 Android and iOS projects. See [MOBILE_APPS](MOBILE_APPS.md) and [DEPLOYMENT](DEPLOYMENT.md).
 
+## Mobile build, account deletion, AI drafting, TAKATAK-V1 check — 2026-11-13 (second session part)
+
+Signed: Claude (Claude Code cloud). Live-state source of truth: `00-FLEXS-START-HERE.md` on `main`.
+
+- **Android app compiled** for the first time (debug APK and unsigned release bundle, `ca.flexs.app`, target SDK 36). Not yet run on a device. iOS still needs a Mac.
+- **Account deletion** is live: migration `20261113090000_account_deletion`, Edge Function `delete-account`, UI in Account settings. Live test with a temporary account passed (401 / 400 / 200, all rows removed, old session rejected). Administrators and logins that belong to the ticketing product are refused.
+- **AI drafting** is deployed but **off**: migration `20261113100000_ai_assist_usage`, Edge Function `ai-assist` (Anthropic SDK, model `claude-opus-5-5`, low effort, server-side fallback on a policy decline). It writes a first quote message for a request the professional has unlocked. Drafts only, 20 per day per account, customer name, email, phone and address are never sent to the model, the customer's text is treated as data. The "Draft with AI" button is hidden until the function secret `ANTHROPIC_API_KEY` is set in ALKAO. **No real generation has been run**: there is no key. The guards were tested live (401, 400, 503 `not_enabled`, status `enabled:false`).
+- **Why not TAKATAK AI Nexus yet:** `takatak-v1` has no service-to-service AI endpoint for child apps today (`/api/takbot/run` is same-origin and needs a TAKATAK workspace session; `/api/ai/*` serves TAKATAK's own gateway token). When Nexus exposes a versioned adapter, replace the provider call inside `ai-assist` and keep the same FLEXS contract.
+- **TAKATAK-V1 link:** FLEXS's attribution sender matches `takatak-v1` `/api/integrations/ads/flexs/events` (path, Bearer `ADS_FLEXS_SERVICE_TOKEN` of 32+ characters, the four event types, `{ok:true}` reply). To go live: set the same `ADS_FLEXS_SERVICE_TOKEN` on both sides, set `FLEXS_WORKER_TOKEN` and `TAKATAK_BASE_URL` in ALKAO, and schedule the worker. `takatak-v1` has no sender yet for FLEXS's opportunity intake.
+- **Screen audit by OCR:** 26 screens pass on the live backend. Fixed from it: old name "FLEX'S" (4 files) and a 16 px sideways overflow on Settings.
+- Checks on the branch: 92 tests, typecheck, lint, readiness tests, build, 29 browser scenarios, Deno type-check of the new functions.
+
 ## Known remaining obligations
 
 Production credentials, migration reconciliation, backups/restore confidence, deployment and real-system verification are **P0**. TAKATAK outbound counterpart and professional lifecycle event delivery are not complete. Shared TAKATAK Auth has no approved cross-project session exchange. Roadmap gaps include abuse/CAPTCHA and phone validation, professional service areas, private attachments, external notifications, account data lifecycle, subscriptions and further UX/accessibility checks. None is falsely marked complete.

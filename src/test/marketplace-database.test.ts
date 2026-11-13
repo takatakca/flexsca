@@ -631,4 +631,33 @@ describe('administrator integration operations',()=>{
     expect(await scalar(`SELECT count(*)::int FROM leads WHERE assigned_to='${fresh}'`)).toBe(0);
     expect(await scalar(`SELECT count(*)::int FROM leads WHERE customer_email LIKE '%@email.com'`)).toBe(0);
   });
+  it('lets only the service role check account deletion and lists only the account\'s own files',async()=>{
+    await db.exec(`RESET ROLE; INSERT INTO storage.objects(bucket_id,name,owner_id) VALUES ('provider-media','a/own.png','${pro}'),('provider-media','b/other.png','${other}'),('unrelated','c/x.png','${pro}')`);
+    await asRole('authenticated',pro);
+    await expect(db.query(`SELECT account_deletion_blocker('${pro}')`)).rejects.toThrow(/permission denied/);
+    await expect(db.query(`SELECT * FROM account_storage_objects('${other}')`)).rejects.toThrow(/permission denied/);
+    await asRole('anon');
+    await expect(db.query(`SELECT account_deletion_blocker('${pro}')`)).rejects.toThrow(/permission denied/);
+    await asRole('service_role');
+    expect(await scalar(`SELECT account_deletion_blocker('${pro}')`)).toBeNull();
+    const {rows}=await db.query<{bucket_id:string;name:string}>(`SELECT * FROM account_storage_objects('${pro}')`);
+    expect(rows).toEqual([{bucket_id:'provider-media',name:'a/own.png'}]);
+    await db.exec(`RESET ROLE; INSERT INTO platform_admins(user_id) VALUES ('${other}') ON CONFLICT DO NOTHING`);
+    await asRole('service_role');
+    expect(await scalar(`SELECT account_deletion_blocker('${other}')`)).toBe('administrator');
+    await db.exec(`RESET ROLE; DELETE FROM platform_admins WHERE user_id='${other}'`);
+  });
+  it('limits AI drafts per day, refunds failures and keeps the allowance service-only',async()=>{
+    await asRole('authenticated',pro);
+    await expect(db.query(`SELECT consume_ai_assist('${pro}',2)`)).rejects.toThrow(/permission denied/);
+    await expect(db.query(`SELECT * FROM ai_assist_usage`)).rejects.toThrow(/permission denied/);
+    await asRole('service_role');
+    expect(await scalar(`SELECT consume_ai_assist('${pro}',2)`)).toBe(true);
+    expect(await scalar(`SELECT consume_ai_assist('${pro}',2)`)).toBe(true);
+    expect(await scalar(`SELECT consume_ai_assist('${pro}',2)`)).toBe(false);
+    await db.exec(`SELECT refund_ai_assist('${pro}')`);
+    expect(await scalar(`SELECT consume_ai_assist('${pro}',2)`)).toBe(true);
+    expect(await scalar(`SELECT uses FROM ai_assist_usage WHERE user_id='${pro}'`)).toBe(2);
+    expect(await scalar(`SELECT consume_ai_assist('${pro}',0)`)).toBe(false);
+  });
 });

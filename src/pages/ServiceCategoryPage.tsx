@@ -282,7 +282,7 @@ export default function ServiceCategoryPage() {
       {/* Header */}
       <header className="bg-background border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-primary">FLEX'S</Link>
+          <Link to="/" className="text-xl font-bold text-primary">FLEXS</Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/post-job" className="text-sm text-muted-foreground hover:text-foreground">Find a Pro</Link>
             <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
@@ -369,7 +369,7 @@ export default function ServiceCategoryPage() {
             Need help finding {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional?
           </h2>
           <p className="text-muted-foreground mb-4">
-            You can find the best {name} professionals on FLEX'S. Start your search and get free quotes now!
+            You can find the best {name} professionals on FLEXS. Start your search and get free quotes now!
           </p>
           <p className="text-muted-foreground mb-4 text-sm">
             First time looking for {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional and not sure where to start? Tell us about your project and we'll send you a list of {name} professionals to review. There's no pressure to hire, so you can compare profiles, read previous reviews and ask for more information before you make your decision.
@@ -421,7 +421,7 @@ export default function ServiceCategoryPage() {
                 <div className="bg-card border border-border rounded-xl p-6 text-center">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><FileText className="h-6 w-6 text-primary" /></div>
                   <h3 className="font-bold text-foreground mb-2">Tell us what you need</h3>
-                  <p className="text-sm text-muted-foreground">Tell FLEX'S what {name} service you need. We'll help you find professionals who can do the work for you.</p>
+                  <p className="text-sm text-muted-foreground">Tell FLEXS what {name} service you need. We'll help you find professionals who can do the work for you.</p>
                 </div>
                 <div className="bg-card border border-border rounded-xl p-6 text-center">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><CheckCircle className="h-6 w-6 text-primary" /></div>
@@ -446,7 +446,7 @@ export default function ServiceCategoryPage() {
             <section className="mb-12 text-center">
               <h2 className="text-2xl font-bold text-foreground mb-3">Pick the best</h2>
               <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">
-                Compare quotes from top {name} professionals near you on FLEX'S. Get responses from trusted pros, read real reviews, compare prices and choose the best one.
+                Compare quotes from top {name} professionals near you on FLEXS. Get responses from trusted pros, read real reviews, compare prices and choose the best one.
               </p>
               <Button onClick={handleStartRequest} className="rounded-full px-8">Get quotes from {name} near you</Button>
             </section>
@@ -550,7 +550,7 @@ export default function ServiceCategoryPage() {
             <div>
               <h4 className="font-semibold mb-4">About</h4>
               <ul className="space-y-2 text-sm opacity-70">
-                <li><Link to="/about" className="hover:opacity-100">About FLEX'S</Link></li>
+                <li><Link to="/about" className="hover:opacity-100">About FLEXS</Link></li>
                 <li><Link to="/" className="hover:opacity-100">Careers</Link></li>
                 <li><Link to="/affiliates" className="hover:opacity-100">Affiliates</Link></li>
                 <li><Link to="/" className="hover:opacity-100">Blog</Link></li>
@@ -571,7 +571,7 @@ export default function ServiceCategoryPage() {
             <span>🇨🇦</span><span>Canada</span><ChevronRight className="h-3 w-3" />
           </div>
           <div className="border-t border-background/20 pt-6 text-center text-xs opacity-50">
-            <p>© {new Date().getFullYear()} FLEX'S. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} FLEXS. All rights reserved.</p>
             <div className="flex justify-center gap-4 mt-2">
               <Link to="/">Terms & Conditions</Link>
               <Link to="/cookies">Cookie Policy</Link>

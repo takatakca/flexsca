@@ -38,10 +38,27 @@ Run `npm run mobile:sync` after every website change before building a store pac
    - iOS: add the Associated Domains capability `applinks:flexs.ca` in Xcode and publish `https://flexs.ca/.well-known/apple-app-site-association` listing `<TeamID>.ca.flexs.app` with paths `/auth/*`, `/app/*`, `/my-requests/*`.
    - Add `https://flexs.ca/auth/callback` and `https://flexs.ca/auth/reset-password` to the Supabase Auth redirect allow-list.
 6. **Store listing:** privacy policy URL, support URL, screenshots, data-safety / privacy-nutrition answers (account email, name, phone, messages, uploaded documents, purchase history).
-7. **Account deletion:** both stores require a way to delete an account from inside the app. FLEXS has no self-service account deletion yet (`TASK_QUEUE.md`, P2 data lifecycle). Build it before submitting.
+7. **Account deletion:** done on 2026-11-13 (Settings › Account details › Delete my account). In Play Console's data-safety form, give `https://flexs.ca/help/privacy` as the account-deletion web link.
 8. **Apple payment review risk:** credits are bought with Stripe. Apple normally requires In-App Purchase for digital goods used in the app; lead-marketplace credits are often accepted as payment for a real-world business service, but this is Apple's decision at review. If rejected, either sell credits on the website only (hide the buy buttons when `isNativeApp()` is true on iOS) or add In-App Purchase.
 9. **Push notifications** are not implemented. Notifications currently appear only inside the app.
 
+## Build status — 2026-11-13
+
+- **Android compiles.** `./gradlew assembleDebug bundleRelease` succeeds in a cloud session (Android SDK platform 36, build-tools 36.0.0, Gradle 8.14.3, Android Gradle Plugin 8.13.0, JDK 21): debug APK about 5.1 MB, unsigned release bundle about 3.5 MB, package `ca.flexs.app`, version 1.0 (code 1), target SDK 36, only the INTERNET permission. The release bundle is **unsigned**: Play Console needs it signed with your upload key.
+- **Android has not run on a device or emulator.** Cloud sessions have no virtualization. Install the debug APK on a phone to test.
+- **iOS has not been compiled.** It needs Xcode on a Mac.
+- **In-app account deletion exists** (Settings › Account details › Delete my account), backed by the `delete-account` Edge Function. Tested live.
+- **Screen audit:** `scripts/ocr-screen-audit.mjs` opens every screen at phone size, screenshots it, reads it back with OCR (Tesseract, English and French) and compares with the page text; it also flags console errors, failed requests, broken images, sideways overflow and wording that must not ship. On 2026-11-13 all 15 public and 11 signed-in screens passed against the live backend.
+
+```sh
+# Local build (Linux or macOS with the Android SDK installed)
+npm run mobile:sync
+cd android && ./gradlew assembleDebug bundleRelease
+# Screen audit against a running preview (needs tesseract-ocr)
+npx vite preview --port 4188 &
+npm run audit:screens -- http://127.0.0.1:4188 /tmp/flexs-screens
+```
+
 ## Not verified
 
-No Android or iOS build has been compiled in CI or on a device. `npx cap add` and `npx cap sync` succeeded on Linux; the first real build should be tested on a phone for sign-in, posting a request, unlocking a lead, messaging, file upload and buying credits.
+On a real phone, test sign-in, posting a request, unlocking a lead, messaging, file upload, buying credits and deleting the account.
