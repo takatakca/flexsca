@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/platform";
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { z } from 'zod';
@@ -20,7 +21,7 @@ export default function ForgotPassword() {
     if (!z.string().email().max(254).safeParse(email.trim()).success) { setError('Enter a valid email address.'); return; }
     setSending(true); setError('');
     try {
-      const redirect = new URL('/auth/reset-password',window.location.origin);
+      const redirect = new URL('/auth/reset-password',publicOrigin());
       if (next) redirect.searchParams.set('next',next);
       const {error} = await supabase.auth.resetPasswordForEmail(email.trim(),{redirectTo:redirect.toString()});
       if (error) throw error;

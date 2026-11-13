@@ -33,6 +33,12 @@ Pushed additive private Storage and metadata migration `20261016190000_private_r
 
 **Not live-certified.** The Supabase connection still cannot administer project `vcaphsvudlseemkalawz`, backend workflow failed credential validation before deploying SQL, and frontend hosting remains unverified. An operational malware scan/quarantine workflow, server-authoritative per-request quota, orphan-object cleanup/retention and end-to-end real-account Storage acceptance are outstanding gates before activating private documents in production.
 
+## Hosting and mobile preparation — 2026-11-13
+
+Observed 2026-11-13: `https://flexs.ca` returns **403 Forbidden** from an Apache server, so the public site is down. Supabase project `vcaphsvudlseemkalawz` is not in the owner's Supabase organization (`takatakca`) and the Lovable project `b24b4595…` is not in any Lovable workspace connected to the owner, so that backend still cannot be administered. The owner asked to use the existing TAKATAK Supabase and to host on Coolify. **FLEXS migrations were not applied to either TAKATAK database**: both `TAKATAK STAGING` and `TAKATAK User Official Dashboard V1` already have their own `public.profiles`, `public.leads` and `public.notifications` with live data, and the FLEXS migrations create tables and auth triggers with the same names. A separate FLEXS project inside the same organization (or a dedicated `flexs` schema, a large rewrite) is required; the owner's decision is pending.
+
+Added in code on branch `claude/hosting-and-mobile-apps`: Coolify-ready `Dockerfile` and nginx config; installable web-app manifest and icons; Capacitor 8 Android and iOS projects (`ca.flexs.app`); canonical `https://flexs.ca` links for emails and payments when running as a store app; deep-link handling. See [MOBILE_APPS](MOBILE_APPS.md) and [DEPLOYMENT](DEPLOYMENT.md). No store build, Coolify deployment or backend deployment was performed.
+
 ## Known remaining obligations
 
 Production credentials, migration reconciliation, backups/restore confidence, deployment and real-system verification are **P0**. TAKATAK outbound counterpart and professional lifecycle event delivery are not complete. Shared TAKATAK Auth has no approved cross-project session exchange. Roadmap gaps include abuse/CAPTCHA and phone validation, professional service areas, private attachments, external notifications, account data lifecycle, subscriptions and further UX/accessibility checks. None is falsely marked complete.

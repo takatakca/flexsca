@@ -9,6 +9,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import AppLayout from "@/components/AppLayout";
 import { captureAttribution } from "@/lib/lead-intake";
 import MerchantLayout from "@/components/MerchantLayout";
+import NativeAppBridge from "@/components/NativeAppBridge";
 
 const Admin = lazy(() => import("@/pages/app/Admin"));
 const Notifications = lazy(() => import("@/pages/app/Notifications"));
@@ -64,6 +65,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <NativeAppBridge />
           <Suspense fallback={<div role="status" className="p-8 text-center text-muted-foreground">Loading…</div>}>
           <Routes>
             {/* Public landing */}

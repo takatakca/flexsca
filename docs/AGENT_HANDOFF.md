@@ -2,6 +2,16 @@
 
 Updated: 2026-10-16. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](TASK_QUEUE.md), and this file before changing code.
 
+## 2026-11-13 handoff — Coolify hosting and mobile wrapper
+
+**Branch:** `claude/hosting-and-mobile-apps` from `main` `e671c547`. Local checks before changes: typecheck, lint, 82 tests, build and 29 browser scenarios all passed.
+
+**Done:** `Dockerfile`, `deploy/nginx.conf`, `.dockerignore` for Coolify; `public/manifest.webmanifest` and `public/icons/`; Capacitor 8 (`capacitor.config.ts`, `android/`, `ios/`, `assets/`, `scripts/generate-app-icons.mjs`); `src/lib/platform.ts`, `src/components/NativeAppBridge.tsx`, canonical-origin fixes in auth, checkout and profile-link code; `src/test/platform.test.ts`; `docs/MOBILE_APPS.md`.
+
+**Findings:** flexs.ca answers 403 from Apache. The original Supabase project is outside the owner's organization and Lovable workspaces. Owner said "use the TAKATAK Supabase we already have"; both TAKATAK projects already own `public.profiles`, `public.leads`, `public.notifications`, so nothing was applied there. No Coolify connector exists in the agent session.
+
+**Exact next action:** get the owner's answer on the backend home (see TASK_QUEUE first row). If a new FLEXS project in organization `takatakca`: create it in `ca-central-1`, apply all migrations in order, deploy the four Edge Functions, set server secrets (Stripe, TAKATAK, scheduler), update `.env` public values, add flexs.ca Auth redirect URLs, then deploy on Coolify and verify. Do not run FLEXS migrations in a TAKATAK project's `public` schema.
+
 ## 2026-10-16 handoff — private request attachments
 
 **Repo/branch:** `takatakca/flexsca`, `main`. Starting HEAD `48b3a2d9e0d6725a6ac16291795ccf8675a05e33`; no open PRs and no unclaimed recent agent commits at start.

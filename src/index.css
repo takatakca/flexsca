@@ -102,6 +102,13 @@
   }
 }
 
+/* Store apps draw under the status bar and home indicator: keep content inside the safe area. */
+html.native-app body {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
 /* Safe area insets for mobile */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .pb-safe {

@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/platform";
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -29,7 +30,7 @@ export default function AccountSettings() {
     if(!z.string().email().max(254).safeParse(email.trim()).success){toast.error('Enter a valid email address.');return;}
     setSaving(true);
     try {
-      const {error}=await supabase.auth.updateUser({email:email.trim()},{emailRedirectTo:new URL('/auth/callback',window.location.origin).toString()});
+      const {error}=await supabase.auth.updateUser({email:email.trim()},{emailRedirectTo:new URL('/auth/callback',publicOrigin()).toString()});
       if(error)throw error;setEmail('');toast.info('Email change requested. Follow the confirmation instructions sent to your email accounts.');
     }catch{toast.error('Unable to request this email change. Try again shortly.');}finally{setSaving(false);}
   };

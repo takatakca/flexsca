@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/platform";
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
@@ -16,7 +17,7 @@ export default function ReviewsSection() {
     if(error)throw new Error('Unable to load your reviews.');return data ?? [];
   }});
   const copy=async()=>{
-    try {await navigator.clipboard.writeText(new URL(`/profile/${user!.id}`,window.location.origin).toString());toast.success('Public profile link copied.');}
+    try {await navigator.clipboard.writeText(new URL(`/profile/${user!.id}`,publicOrigin()).toString());toast.success('Public profile link copied.');}
     catch{toast.error('Unable to copy the link. Use View public profile instead.');}
   };
   const remove=async(id:string)=>{

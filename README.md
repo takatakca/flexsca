@@ -47,6 +47,10 @@ GitHub Actions runs these checks and Deno Edge Function checks. Remaining fast-r
 
 This repository was created with [Lovable](https://lovable.dev/projects/b24b4595-d350-4adf-be45-0c31ec9766d3). Changes pushed to `main` can sync to Lovable. Release branches allow backend deployment and review before frontend promotion.
 
+## Hosting and mobile apps
+
+The website deploys from the root `Dockerfile` (nginx) on Coolify: see [deployment runbook](docs/DEPLOYMENT.md). Android and iOS apps are packaged with Capacitor: see [mobile apps](docs/MOBILE_APPS.md).
+
 ## Agent continuation and operations
 
 Start with [project status](docs/PROJECT_STATUS.md), [task queue](docs/TASK_QUEUE.md), [agent handoff](docs/AGENT_HANDOFF.md), [deployment runbook](docs/DEPLOYMENT.md), and [architecture decisions](docs/DECISIONS.md). Read [AGENTS.md](AGENTS.md) and [WORKLOG.md](WORKLOG.md) before editing. A green CI run verifies only the matching commit; production availability needs separate evidence.
