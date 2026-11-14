@@ -115,14 +115,14 @@ export default function Settings() {
         description="Your profile is key to attracting customers. Update your profile to stand out"
         onClick={() => navigate("/app/settings/profile")}
       />
-      <Separator className="mx-4" />
+      <div className="px-4"><Separator /></div>
 
       <SettingsRow
         title="Reviews"
         description="All your reviews in one place"
         onClick={() => navigate("/app/settings/profile", { state: { section: "reviews" } })}
       />
-      <Separator className="mx-4" />
+      <div className="px-4"><Separator /></div>
 
       <SettingsRow
         title="Account details"
@@ -138,14 +138,14 @@ export default function Settings() {
         description="Describe the services shown on your public profile"
         onClick={() => navigate("/app/settings/profile", { state: { section: "services" } })}
       />
-      <Separator className="mx-4" />
+      <div className="px-4"><Separator /></div>
 
       <SettingsRow
         title="My locations"
         description="Manage your public business location and its visibility"
         onClick={() => navigate("/app/settings/profile", { state: { section: "location" } })}
       />
-      <Separator className="mx-4" />
+      <div className="px-4"><Separator /></div>
 
       <SettingsRow
         title="Custom statuses"
@@ -176,7 +176,7 @@ export default function Settings() {
         onClick={() => navigate("/support")}
       />
 
-      <Separator className="mx-4" />
+      <div className="px-4"><Separator /></div>
 
       <div className="px-4 py-4"><p className="text-sm text-muted-foreground">For account deletion or a data request, create a private support ticket. The team will review it before any account or data changes.</p></div>
 

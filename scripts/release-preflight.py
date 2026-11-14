@@ -6,7 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-project = 'vcaphsvudlseemkalawz'
+project = 'ysghtkallwuoodwqgkjm'
 token = os.environ.get('SUPABASE_ACCESS_TOKEN')
 if not token:
     sys.exit('SUPABASE_ACCESS_TOKEN is not configured. Add it securely in environment settings; do not paste it in chat.')

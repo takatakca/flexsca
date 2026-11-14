@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/platform";
 import { errorMessage } from "@/lib/errors";
 import { Coins, TrendingUp, TrendingDown, Gift, ArrowLeftRight, Loader2, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +43,7 @@ export default function WalletCard() {
       const response = await supabase.functions.invoke("create-checkout-session", {
         body: {
           packageId,
-          origin: window.location.origin,
+          origin: publicOrigin(),
         },
       });
 

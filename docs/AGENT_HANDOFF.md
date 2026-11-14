@@ -2,6 +2,30 @@
 
 Updated: 2026-10-16. Resume from [`AGENTS.md`](../AGENTS.md), [`TASK_QUEUE.md`](TASK_QUEUE.md), and this file before changing code.
 
+## 2026-11-13 handoff (part 2) — Android build, account deletion, AI drafting, screen audit
+
+Signed: Claude (Claude Code cloud). **Read `00-FLEXS-START-HERE.md` on `main` first; it has the dated log of every live change.**
+
+Done on branch `claude/hosting-and-mobile-apps` (PR #6) and live in ALKAO: migrations `20261113090000` and `20261113100000`; Edge Functions `delete-account` and `ai-assist` (both ACTIVE v1). New files: `src/components/DeleteAccount.tsx`, `supabase/functions/_shared/ai-assist.ts`, `scripts/ocr-screen-audit.mjs`, `src/test/aiAssist.test.ts`. Changed: `QuoteComposer.tsx` (Draft with AI), `AccountSettings.tsx`, `HelpCenter.tsx`, name "FLEX'S" → "FLEXS", Settings overflow fix, CI and deploy scripts list six functions.
+
+Android SDK is not in the repository. To rebuild in a cloud session: allow `dl.google.com`, `maven.google.com`, `plugins.gradle.org` (the `flexsca` cloud environment already does), install cmdline-tools, `platforms;android-36`, `build-tools;36.0.0`, then `./gradlew --max-workers=1 assembleDebug bundleRelease` (Maven Central rate-limits parallel downloads).
+
+Next exact actions: owner merges PR #6, deploys on Coolify, sets Stripe / SMTP / `ANTHROPIC_API_KEY` / TAKATAK tokens. Agent: test the debug APK on a phone when one is available; iOS build on a Mac; verify one real AI draft once the key exists.
+
+## 2026-11-13 handoff — Coolify hosting and mobile wrapper
+
+**Branch:** `claude/hosting-and-mobile-apps` from `main` `e671c547`. Local checks before changes: typecheck, lint, 82 tests, build and 29 browser scenarios all passed.
+
+**Done:** `Dockerfile`, `deploy/nginx.conf`, `.dockerignore` for Coolify; `public/manifest.webmanifest` and `public/icons/`; Capacitor 8 (`capacitor.config.ts`, `android/`, `ios/`, `assets/`, `scripts/generate-app-icons.mjs`); `src/lib/platform.ts`, `src/components/NativeAppBridge.tsx`, canonical-origin fixes in auth, checkout and profile-link code; `src/test/platform.test.ts`; `docs/MOBILE_APPS.md`.
+
+**Backend (same session):** owner chose Supabase project ALKAO (`ysghtkallwuoodwqgkjm`). Applied all migrations through the Supabase management API (`POST /v1/projects/{ref}/database/query`, one transaction, dry run first), recorded history, deployed four functions through `/functions/deploy`, enabled Data API schema `public` with owner approval, added flexs.ca redirect URLs. `.env`, `supabase/config.toml` and scripts now reference ALKAO. Added migration `20261113080000_remove_signup_sample_leads.sql` (applied live) and a sign-up regression test (86 tests). Replaced false About/Affiliate content and invented testimonials.
+
+**How access works:** cloud environment `flexsca` allows `api.supabase.com` with a saved access token injected by the session proxy, plus the ALKAO project host. No token is in the repository. `scripts/deploy-backend.sh` still expects the Supabase CLI and GitHub secrets and was not used.
+
+**Never do:** alter or drop `ticketing_*` tables, the `alkao_private` / `alkao_meta` schemas, or the Auth site URL in ALKAO; they belong to the ticketing product.
+
+**Exact next action:** owner deploys the website on Coolify and points DNS (DEPLOYMENT.md), sets Stripe secrets and SMTP (TASK_QUEUE first rows). Then run a test-mode purchase, a real sign-up with email confirmation, and bootstrap the administrator. Then in-app account deletion before store submission (MOBILE_APPS.md).
+
 ## 2026-10-16 handoff — private request attachments
 
 **Repo/branch:** `takatakca/flexsca`, `main`. Starting HEAD `48b3a2d9e0d6725a6ac16291795ccf8675a05e33`; no open PRs and no unclaimed recent agent commits at start.

@@ -18,10 +18,10 @@ if ! command -v "$flexs_cli" >/dev/null 2>&1; then
 fi
 [[ "$("$flexs_cli" --version)" == '2.75.0' ]] || { echo 'Use validated Supabase CLI 2.75.0.' >&2; exit 1; }
 python3 scripts/backend-readiness.py
-"$flexs_cli" link --project-ref vcaphsvudlseemkalawz --yes
+"$flexs_cli" link --project-ref ysghtkallwuoodwqgkjm --yes
 "$flexs_cli" db push --linked --dry-run
 "$flexs_cli" db push --linked --yes
-for flexs_function in create-checkout-session stripe-webhook takatak-attribution-worker takatak-opportunity-intake; do
-  "$flexs_cli" functions deploy "$flexs_function" --project-ref vcaphsvudlseemkalawz --use-api
+for flexs_function in create-checkout-session stripe-webhook takatak-attribution-worker takatak-opportunity-intake delete-account ai-assist; do
+  "$flexs_cli" functions deploy "$flexs_function" --project-ref ysghtkallwuoodwqgkjm --use-api
  done
 python3 scripts/backend-readiness.py --verify-deployed

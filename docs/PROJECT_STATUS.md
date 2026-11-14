@@ -33,6 +33,36 @@ Pushed additive private Storage and metadata migration `20261016190000_private_r
 
 **Not live-certified.** The Supabase connection still cannot administer project `vcaphsvudlseemkalawz`, backend workflow failed credential validation before deploying SQL, and frontend hosting remains unverified. An operational malware scan/quarantine workflow, server-authoritative per-request quota, orphan-object cleanup/retention and end-to-end real-account Storage acceptance are outstanding gates before activating private documents in production.
 
+## Backend live in ALKAO, hosting and mobile preparation — 2026-11-13
+
+**Backend is deployed and verified.** On the owner's instruction FLEXS now runs in the existing Supabase project **ALKAO** (`ysghtkallwuoodwqgkjm`, ca-central-1, organization `takatakca`), shared with the ticketing product (`ticketing_*` tables, billets.promohavana.ca). The old Lovable project `vcaphsvudlseemkalawz` is abandoned: it is outside the owner's accounts.
+
+- All 50 migrations applied in one transaction after a rolled-back dry run; history recorded in `supabase_migrations.schema_migrations`. 41 FLEXS tables, 51 categories, buckets `provider-media` and `request-attachments`. The 48 ticketing tables were not changed.
+- Four Edge Functions deployed and ACTIVE (version 1).
+- ALKAO's Data API had no exposed schema. With the owner's approval it now exposes `public`. Ticketing tables give anonymous callers "permission denied" and give a signed-in non-member zero rows (checked live).
+- `https://flexs.ca/**` and `https://www.flexs.ca/**` added to the Auth redirect allow-list. Site URL left as the ticketing value.
+- Live checks with temporary data, all removed afterwards: anonymous category read; anonymous cannot read leads, profiles, wallets, messages, admin tables; request submission and 10-minute duplicate rejection; sign-up creates profile, 20 welcome credits and 7 statuses; marketplace search hides contact details; unlocking spends credits and reveals the contact; built site loads categories from the live backend in a browser with no errors.
+
+**Fixed while verifying:** sign-up used to give every new account seven fake UK demo leads (fake names, emails, phone numbers). Migration `20261113080000_remove_signup_sample_leads.sql` removes that and stops anonymous callers running internal helper functions. The About page (invented London head office, international hubs, staff perks), the Affiliate page (promised "$100/£80" payouts for a programme that does not exist) and invented testimonials with a "4.89/560" rating on service pages were replaced or removed.
+
+**Still not done:** website is not hosted (flexs.ca answers 403 from an Apache server; Coolify deployment is an owner action, see DEPLOYMENT). Stripe secrets are not set, so buying credits fails. TAKATAK integration secrets are not set. Auth email uses Supabase's built-in sender, limited to 2 emails per hour and sharing ALKAO's templates and site URL: a custom SMTP sender is required before launch. No administrator exists in `platform_admins`. No store build exists.
+
+**Shared-project consequences to know:** FLEXS and the ticketing product share one login table; any new ticketing staff account also gets a FLEXS profile and wallet. Supabase advisor reports three FLEXS views as security-definer (intended privacy-filtered projections, covered by tests) and leaked-password protection off.
+
+Also on branch `claude/hosting-and-mobile-apps`: Coolify `Dockerfile` and nginx config, web-app manifest and icons, Capacitor 8 Android and iOS projects. See [MOBILE_APPS](MOBILE_APPS.md) and [DEPLOYMENT](DEPLOYMENT.md).
+
+## Mobile build, account deletion, AI drafting, TAKATAK-V1 check — 2026-11-13 (second session part)
+
+Signed: Claude (Claude Code cloud). Live-state source of truth: `00-FLEXS-START-HERE.md` on `main`.
+
+- **Android app compiled** for the first time (debug APK and unsigned release bundle, `ca.flexs.app`, target SDK 36). Not yet run on a device. iOS still needs a Mac.
+- **Account deletion** is live: migration `20261113090000_account_deletion`, Edge Function `delete-account`, UI in Account settings. Live test with a temporary account passed (401 / 400 / 200, all rows removed, old session rejected). Administrators and logins that belong to the ticketing product are refused.
+- **AI drafting** is deployed but **off**: migration `20261113100000_ai_assist_usage`, Edge Function `ai-assist` (Anthropic SDK, model `claude-opus-5-5`, low effort, server-side fallback on a policy decline). It writes a first quote message for a request the professional has unlocked. Drafts only, 20 per day per account, customer name, email, phone and address are never sent to the model, the customer's text is treated as data. The "Draft with AI" button is hidden until the function secret `ANTHROPIC_API_KEY` is set in ALKAO. **No real generation has been run**: there is no key. The guards were tested live (401, 400, 503 `not_enabled`, status `enabled:false`).
+- **Why not TAKATAK AI Nexus yet:** `takatak-v1` has no service-to-service AI endpoint for child apps today (`/api/takbot/run` is same-origin and needs a TAKATAK workspace session; `/api/ai/*` serves TAKATAK's own gateway token). When Nexus exposes a versioned adapter, replace the provider call inside `ai-assist` and keep the same FLEXS contract.
+- **TAKATAK-V1 link:** FLEXS's attribution sender matches `takatak-v1` `/api/integrations/ads/flexs/events` (path, Bearer `ADS_FLEXS_SERVICE_TOKEN` of 32+ characters, the four event types, `{ok:true}` reply). To go live: set the same `ADS_FLEXS_SERVICE_TOKEN` on both sides, set `FLEXS_WORKER_TOKEN` and `TAKATAK_BASE_URL` in ALKAO, and schedule the worker. `takatak-v1` has no sender yet for FLEXS's opportunity intake.
+- **Screen audit by OCR:** 26 screens pass on the live backend. Fixed from it: old name "FLEX'S" (4 files) and a 16 px sideways overflow on Settings.
+- Checks on the branch: 92 tests, typecheck, lint, readiness tests, build, 29 browser scenarios, Deno type-check of the new functions.
+
 ## Known remaining obligations
 
 Production credentials, migration reconciliation, backups/restore confidence, deployment and real-system verification are **P0**. TAKATAK outbound counterpart and professional lifecycle event delivery are not complete. Shared TAKATAK Auth has no approved cross-project session exchange. Roadmap gaps include abuse/CAPTCHA and phone validation, professional service areas, private attachments, external notifications, account data lifecycle, subscriptions and further UX/accessibility checks. None is falsely marked complete.

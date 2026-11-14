@@ -328,7 +328,7 @@ export default function JobQuestionnaire() {
             type="text"
             value={(answers[question.id] as string) || ""}
             onChange={(e) => handleTextChange(e.target.value)}
-            placeholder={question.placeholder || "Enter postcode or town"}
+            placeholder={question.placeholder || "Enter postal code or city"}
             className="flex-1 text-sm text-gray-800 outline-none placeholder:text-gray-400"
           />
         </div>

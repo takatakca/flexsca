@@ -4,11 +4,19 @@ Updated 2026-10-16. The order can change only with a documented reason. Track ea
 
 | Priority | Status | Task | Done when |
 | --- | --- | --- | --- |
-| P0 | blocked: access | Verify FLEXS Supabase project membership and securely configure GitHub environment `production` secrets `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` | Read-only readiness can access the *correct* project, with no credentials committed |
-| P0 | blocked: access | Check restore point, remote migration history and required server-side secrets | `backend-readiness.py` succeeds; inspect drift and explicitly confirm backup recovery |
-| P0 | blocked: preceding gates | Deploy existing backend SQL migrations and all four Edge Functions from `main` | GitHub backend deployment is successful, functions ACTIVE, privileged RPC checks pass |
+| P0 | superseded 2026-11-13 (ALKAO) | Verify FLEXS Supabase project membership and securely configure GitHub environment `production` secrets `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` | Read-only readiness can access the *correct* project, with no credentials committed |
+| P0 | superseded 2026-11-13 (ALKAO) | Check restore point, remote migration history and required server-side secrets | `backend-readiness.py` succeeds; inspect drift and explicitly confirm backup recovery |
+| P0 | superseded 2026-11-13 (ALKAO) | Deploy existing backend SQL migrations and all four Edge Functions from `main` | GitHub backend deployment is successful, functions ACTIVE, privileged RPC checks pass |
 | P0 | blocked: access | Verify Stripe test-mode payments, Auth redirects/email, administrator bootstrap, worker schedule and tenant isolation | Real staging checks and signed acknowledgements recorded; no synthetic/live confusion |
 | P0 | blocked: hosting identification | Identify the actual frontend host, configure build delivery after backend readiness, SPA fallback, DNS and TLS | Live `flexs.ca` and deep routes serve the correct verified revision |
+| P0 | done 2026-11-13 | Backend in Supabase project ALKAO (`ysghtkallwuoodwqgkjm`): 50 migrations, 4 Edge Functions, Data API on `public`, live checks passed | Recorded in PROJECT_STATUS |
+| P0 | owner action | Set Edge Function secrets in ALKAO: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (webhook URL `https://ysghtkallwuoodwqgkjm.supabase.co/functions/v1/stripe-webhook`), later `TAKATAK_FLEXS_INTEGRATION_ID`, `TAKATAK_FLEXS_OPPORTUNITY_SECRET` | A test-mode credit purchase adds credits |
+| P0 | owner action | Custom SMTP sender for Auth email (built-in sender allows 2 emails per hour) and FLEXS-appropriate email templates | Sign-up confirmation arrives from a FLEXS address |
+| P0 | owner action | Create the first administrator: insert the owner's user id into `platform_admins` after they sign up | `/app/admin` opens for the owner |
+| P0 | code ready; owner action | Deploy the website on Coolify from the root `Dockerfile` and point flexs.ca DNS at it | flexs.ca and deep routes return the verified build over TLS |
+| P1 | Android compiles; not device-tested; iOS not built | Android and iOS apps with Capacitor (`docs/MOBILE_APPS.md`). In-app account deletion done 2026-11-13 | Signed builds tested on devices; store listings submitted |
+| P1 | deployed, switched off | AI quote drafting (`ai-assist`). Owner sets `ANTHROPIC_API_KEY` in ALKAO function secrets, then one real draft is checked by a person | A professional gets a sensible editable draft; daily limit and refusal paths confirmed with a real key |
+| P1 | owner action | TAKATAK-V1 attribution live: same `ADS_FLEXS_SERVICE_TOKEN` in `takatak-v1` hosting and ALKAO; `FLEXS_WORKER_TOKEN`, `TAKATAK_BASE_URL`; schedule `takatak-attribution-worker` | One real event accepted by TAKATAK with `{ok:true}` |
 | P1 | code pushed; current CI verification required | Bound TAKATAK signed-intake body size and test real HMAC authentication | 18 KB cap, UTF-8 rejection, eight signature and seven streaming tests pass on committed SHA and Deno typecheck is green |
 | P1 | queued | Complete GitHub issue #2: counterpart TAKATAK outbound sender and FLEXS professional lifecycle events (view/contact/respond/win/loss) | Agreed event contract; authenticated, tenant-scoped, idempotent callback outbox, retry tests and staging acceptance |
 | P1 | code complete for duplicate guard; CI green; live deploy blocked | Exact anonymous-request duplicate prevention and mailbox limit | 10-minute exact duplicate rejection and 3-per-15-minute quota passed PGlite CI #38624276910; requires real production rollout verification |

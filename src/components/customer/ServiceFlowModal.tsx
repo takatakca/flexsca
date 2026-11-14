@@ -348,7 +348,7 @@ export default function ServiceFlowModal({
             type="text"
             value={(answers[question.id] as string) || ""}
             onChange={(e) => handleTextChange(e.target.value)}
-            placeholder={question.placeholder || "Enter postcode or town"}
+            placeholder={question.placeholder || "Enter postal code or city"}
             className="flex-1 text-sm text-gray-800 outline-none placeholder:text-gray-400"
           />
         </div>
@@ -678,14 +678,14 @@ export default function ServiceFlowModal({
         </div>
         <div className="px-6 pb-6">
           <h2 className="text-xl font-bold text-gray-900 text-center mb-2">Where do you need the {categoryName}?</h2>
-          <p className="text-sm text-gray-500 text-center mb-6">The postcode or town for the address where you want the {categoryName}.</p>
+          <p className="text-sm text-gray-500 text-center mb-6">The postal code or city for the address where you want the {categoryName}.</p>
           <div className="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-3 mb-6">
             <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter postcode or town"
+              placeholder="Enter postal code or city"
               className="flex-1 text-sm text-gray-800 outline-none placeholder:text-gray-400"
             />
           </div>

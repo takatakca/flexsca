@@ -2,7 +2,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, MapPin, ChevronRight, Star, Menu, User, Loader2, FileText, CheckCircle, MessageSquare, X } from "lucide-react";
+import { Search, MapPin, ChevronRight, Menu, User, Loader2, FileText, CheckCircle, MessageSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
@@ -63,12 +63,6 @@ function PopularRegions() {
     </div>
   );
 }
-
-const reviews = [
-  { rating: 5, text: "Absolutely fantastic service! The professional was knowledgeable, punctual, and delivered exactly what I needed. Highly recommend FLEX'S!", author: "Sarah M." },
-  { rating: 5, text: "Finding a quality professional has never been easier. The platform made the whole process smooth and stress-free.", author: "Michael T." },
-  { rating: 4, text: "Great experience overall. Got connected with multiple professionals quickly and found the perfect match for my project.", author: "Jennifer L." },
-];
 
 // Category-specific related content images
 const categoryRelatedImages: Record<string, { services: string[]; guides: string[]; priceGuides: string[] }> = {
@@ -288,7 +282,7 @@ export default function ServiceCategoryPage() {
       {/* Header */}
       <header className="bg-background border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-primary">FLEX'S</Link>
+          <Link to="/" className="text-xl font-bold text-primary">FLEXS</Link>
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/post-job" className="text-sm text-muted-foreground hover:text-foreground">Find a Pro</Link>
             <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
@@ -334,7 +328,7 @@ export default function ServiceCategoryPage() {
               <label className="block text-sm font-medium text-foreground mb-1">Where do you need it?</label>
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input value={locationSearch} onChange={(e) => setLocationSearch(e.target.value)} placeholder="Enter your postcode" className="w-full pl-10" />
+                <Input value={locationSearch} onChange={(e) => setLocationSearch(e.target.value)} placeholder="Enter your postal code" className="w-full pl-10" />
               </div>
             </div>
             <Button onClick={handleStartRequest} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold h-11">Continue</Button>
@@ -375,7 +369,7 @@ export default function ServiceCategoryPage() {
             Need help finding {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional?
           </h2>
           <p className="text-muted-foreground mb-4">
-            You can find the best {name} professionals on FLEX'S. Start your search and get free quotes now!
+            You can find the best {name} professionals on FLEXS. Start your search and get free quotes now!
           </p>
           <p className="text-muted-foreground mb-4 text-sm">
             First time looking for {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional and not sure where to start? Tell us about your project and we'll send you a list of {name} professionals to review. There's no pressure to hire, so you can compare profiles, read previous reviews and ask for more information before you make your decision.
@@ -427,7 +421,7 @@ export default function ServiceCategoryPage() {
                 <div className="bg-card border border-border rounded-xl p-6 text-center">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><FileText className="h-6 w-6 text-primary" /></div>
                   <h3 className="font-bold text-foreground mb-2">Tell us what you need</h3>
-                  <p className="text-sm text-muted-foreground">Tell FLEX'S what {name} service you need. We'll help you find professionals who can do the work for you.</p>
+                  <p className="text-sm text-muted-foreground">Tell FLEXS what {name} service you need. We'll help you find professionals who can do the work for you.</p>
                 </div>
                 <div className="bg-card border border-border rounded-xl p-6 text-center">
                   <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><CheckCircle className="h-6 w-6 text-primary" /></div>
@@ -451,29 +445,10 @@ export default function ServiceCategoryPage() {
             {/* Pick the best */}
             <section className="mb-12 text-center">
               <h2 className="text-2xl font-bold text-foreground mb-3">Pick the best</h2>
-              <div className="flex items-center justify-center gap-1 mb-3">{[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-warning text-warning" />)}</div>
               <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">
-                Compare quotes from top {name} professionals near you on FLEX'S. Get responses from trusted pros, read real reviews, compare prices and choose the best one.
+                Compare quotes from top {name} professionals near you on FLEXS. Get responses from trusted pros, read real reviews, compare prices and choose the best one.
               </p>
               <Button onClick={handleStartRequest} className="rounded-full px-8">Get quotes from {name} near you</Button>
-            </section>
-
-            {/* Reviews */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Reviews</h2>
-              <div className="flex items-center gap-2 mb-6">
-                <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                <span className="text-sm text-muted-foreground">4.89/560</span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {reviews.map((r, i) => (
-                  <div key={i} className="bg-card border border-border rounded-xl p-6">
-                    <div className="flex gap-0.5 mb-3">{[...Array(r.rating)].map((_, j) => <Star key={j} className="h-4 w-4 fill-warning text-warning" />)}</div>
-                    <p className="text-sm text-foreground mb-4">"{r.text}"</p>
-                    <p className="text-xs font-semibold text-muted-foreground">— {r.author}</p>
-                  </div>
-                ))}
-              </div>
             </section>
 
             {/* Related Services — dynamic from siblings */}
@@ -575,7 +550,7 @@ export default function ServiceCategoryPage() {
             <div>
               <h4 className="font-semibold mb-4">About</h4>
               <ul className="space-y-2 text-sm opacity-70">
-                <li><Link to="/about" className="hover:opacity-100">About FLEX'S</Link></li>
+                <li><Link to="/about" className="hover:opacity-100">About FLEXS</Link></li>
                 <li><Link to="/" className="hover:opacity-100">Careers</Link></li>
                 <li><Link to="/affiliates" className="hover:opacity-100">Affiliates</Link></li>
                 <li><Link to="/" className="hover:opacity-100">Blog</Link></li>
@@ -596,7 +571,7 @@ export default function ServiceCategoryPage() {
             <span>🇨🇦</span><span>Canada</span><ChevronRight className="h-3 w-3" />
           </div>
           <div className="border-t border-background/20 pt-6 text-center text-xs opacity-50">
-            <p>© {new Date().getFullYear()} FLEX'S. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} FLEXS. All rights reserved.</p>
             <div className="flex justify-center gap-4 mt-2">
               <Link to="/">Terms & Conditions</Link>
               <Link to="/cookies">Cookie Policy</Link>

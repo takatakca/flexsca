@@ -1,3 +1,4 @@
+import { publicOrigin } from "@/lib/platform";
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -7,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import DeleteAccount from '@/components/DeleteAccount';
 
 export default function AccountSettings() {
   const {user}=useAuth();
@@ -29,7 +31,7 @@ export default function AccountSettings() {
     if(!z.string().email().max(254).safeParse(email.trim()).success){toast.error('Enter a valid email address.');return;}
     setSaving(true);
     try {
-      const {error}=await supabase.auth.updateUser({email:email.trim()},{emailRedirectTo:new URL('/auth/callback',window.location.origin).toString()});
+      const {error}=await supabase.auth.updateUser({email:email.trim()},{emailRedirectTo:new URL('/auth/callback',publicOrigin()).toString()});
       if(error)throw error;setEmail('');toast.info('Email change requested. Follow the confirmation instructions sent to your email accounts.');
     }catch{toast.error('Unable to request this email change. Try again shortly.');}finally{setSaving(false);}
   };
@@ -37,5 +39,6 @@ export default function AccountSettings() {
     {isLoading ? <p role="status">Loading account settings…</p> : error ? <div role="alert"><p>{error.message}</p><Button onClick={()=>void refetch()}>Retry account settings</Button></div> : <form onSubmit={saveName} className="border rounded-xl p-5 space-y-3"><label htmlFor="account-name" className="block font-medium">Account name</label><Input id="account-name" autoComplete="name" maxLength={100} value={name ?? data?.display_name ?? ''} onChange={e=>setName(e.target.value)} /><Button disabled={saving} type="submit">Save account name</Button></form>}
     <form onSubmit={changeEmail} className="border rounded-xl p-5 space-y-3"><h3 className="font-semibold">Sign-in email</h3><p className="text-sm">{user?.email}</p><p className="text-sm text-muted-foreground">A new sign-in email requires confirmation. Your public business contact details are managed separately in your profile.</p><label htmlFor="account-email" className="block text-sm font-medium">New email address</label><Input id="account-email" type="email" autoComplete="email" required maxLength={254} value={email} onChange={e=>setEmail(e.target.value)} /><Button type="submit" disabled={saving || !email.trim() || email.trim()===user?.email}>Request email change</Button></form>
     <section className="border rounded-xl p-5 space-y-3"><h3 className="font-semibold">Password</h3><p className="text-sm text-muted-foreground">Request an email reset link to change your password securely.</p><Button asChild variant="outline"><Link to="/auth/forgot-password" state={{email:user?.email}}>Reset password</Link></Button></section>
+    <DeleteAccount />
   </div>;
 }

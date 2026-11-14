@@ -270,7 +270,7 @@ export default function LeadDetail() {
         {/* Messages (only visible when contacted) */}
         {isContacted && (
           <div className="p-4 space-y-3">
-            <QuoteComposer onSend={sendQuote} sending={sending} disabled={lead.status === "won" || lead.status === "lost"} />
+            <QuoteComposer leadId={lead.id} onSend={sendQuote} sending={sending} disabled={lead.status === "won" || lead.status === "lost"} />
             <QuoteList leadId={id!} />
             <MessageThread messages={messages} />
             <RefundRequest leadId={id!} />
