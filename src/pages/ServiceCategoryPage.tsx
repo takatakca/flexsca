@@ -1,3 +1,4 @@
+import PostJob from "@/pages/customer/PostJob";
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
 import type { Tables } from "@/integrations/supabase/types";
@@ -229,6 +230,8 @@ export default function ServiceCategoryPage() {
 
   const name = category.name;
   const isParent = childCategories.length > 0;
+  // A category that groups other services uses the landing layout of frame 617:2419.
+  if (childCategories.length > 0) return <PostJob scope={{ name: category.name, slug: category.slug }} />;
   const isChild = !!category.parent_slug;
   const theme = getCategoryTheme(category.slug, category.parent_slug);
   const images = categoryRelatedImages[theme] || categoryRelatedImages.default;

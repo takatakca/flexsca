@@ -12,12 +12,12 @@ export default function CookiesPage() {
       <SiteHeader />
 
       <main className="max-w-4xl mx-auto px-4 py-10">
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Cookies</h1>
+        <h1 className="mb-10 text-center text-4xl text-fx-ink">Cookies</h1>
 
         <div className="prose prose-sm max-w-none text-muted-foreground space-y-6">
-          <h2 className="text-xl font-bold text-foreground">What is this document and why should I read it?</h2>
+          <h2 className="text-lg leading-snug text-fx-ink">What is this document and why should I read it?</h2>
           <p>
-            This cookie policy explains how and why FLEXS (also referred to as "flex's.ca", "we", "our" and "us") uses technology
+            This cookie policy explains how and why FLEXS (also referred to as "flexs.ca", "we", "our" and "us") uses technology
             to collect information about the use of our website www.flexs.ca ("the Website") and to distinguish you from other users of our
             Website in order to improve your experience when you browse the Website.
           </p>
@@ -25,7 +25,7 @@ export default function CookiesPage() {
             This cookie policy should be read in conjunction with our website privacy policy available at flexs.ca/privacy-policy.
           </p>
 
-          <h2 className="text-xl font-bold text-foreground">Cookies and similar technologies: what are they?</h2>
+          <h2 className="text-lg leading-snug text-fx-ink">Cookies and similar technologies: what are they?</h2>
           <p>
             When you use our Website, we may collect certain information by automated means, such as cookies and similar technologies which
             may include web beacons or SDKs.
@@ -41,7 +41,7 @@ export default function CookiesPage() {
             and works in a similar way.
           </p>
 
-          <h2 className="text-xl font-bold text-foreground">Why do we use cookies and similar technologies?</h2>
+          <h2 className="text-lg leading-snug text-fx-ink">Why do we use cookies and similar technologies?</h2>
           <p>
             The information we collect in this manner enables us to better serve you when you return to our Website - for example, it can
             remember your email address to save you having to enter it manually upon your return.
@@ -52,7 +52,7 @@ export default function CookiesPage() {
             restricting cookies may impact the functionality of this Website.
           </p>
 
-          <h2 className="text-xl font-bold text-foreground">What types of cookies and similar technology do we use?</h2>
+          <h2 className="text-lg leading-snug text-fx-ink">What types of cookies and similar technology do we use?</h2>
           <p>
             The information we collect in this manner enables us to better serve you when you return to our Website - for example, it can
             remember your email address to save you having to enter it manually upon your return.
@@ -94,7 +94,7 @@ export default function CookiesPage() {
             </li>
           </ul>
 
-          <h2 className="text-xl font-bold text-foreground">How do we store cookies and for how long?</h2>
+          <h2 className="text-lg leading-snug text-fx-ink">How do we store cookies and for how long?</h2>
           <p>
             Cookies are either stored in memory (session cookies) or placed on the user's hard disk (persistent cookies). The key difference between
             the two is the time of expiration. Session cookies expire at the end of the session, i.e. when a user closes his browser window; the
@@ -109,7 +109,7 @@ export default function CookiesPage() {
             For more information on the cookies we use on this Website and how long we store them for, please see the cookies table below.
           </p>
 
-          <h2 className="text-xl font-bold text-foreground">Do we use web analytics and interest-based advertising?</h2>
+          <h2 className="text-lg leading-snug text-fx-ink">Do we use web analytics and interest-based advertising?</h2>
           <p>
             We may use web analytics services on our websites, such as those of Google Analytics, Google AdSense or Meta. The service providers
             that administer these services use technologies such as cookies to help us analyse how visitors use the site. The information collected
@@ -117,14 +117,14 @@ export default function CookiesPage() {
             evaluate use of the website, or for advertising purposes, as described below.
           </p>
 
-          <h2 className="text-xl font-bold text-foreground">How to turn off cookies?</h2>
+          <h2 className="text-lg leading-snug text-fx-ink">How to turn off cookies?</h2>
           <p>
             If you do not want to accept cookies, you can change your browser settings so that cookies are not accepted. If you do this, you may
             not be able to use the cookie preferences centre. If you do this, please be aware that you may lose some of the functionality of this Website.
             For further information about cookies and how to disable them please go to www.aboutcookies.org or www.allaboutcookies.org
           </p>
 
-          <h2 className="text-xl font-bold text-foreground">How to contact us?</h2>
+          <h2 className="text-lg leading-snug text-fx-ink">How to contact us?</h2>
           <p>
             We may update this cookie notice from time to time to reflect changes to the type of cookies and similar technology we use. We also
             encourage you to check this cookie notice on a regular basis.
