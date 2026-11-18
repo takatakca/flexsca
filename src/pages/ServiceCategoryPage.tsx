@@ -1,3 +1,5 @@
+import SiteHeader from "@/components/fx/SiteHeader";
+import SiteFooter from "@/components/fx/SiteFooter";
 import type { Tables } from "@/integrations/supabase/types";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -281,34 +283,7 @@ export default function ServiceCategoryPage() {
       )}
 
       {/* Header */}
-      <header className="bg-background border-b sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-primary">FLEXS</Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/post-job" className="text-sm text-muted-foreground hover:text-foreground">Find a Pro</Link>
-            <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground">About</Link>
-            <Link to="/help" className="text-sm text-muted-foreground hover:text-foreground">Help</Link>
-            <Link to="/auth/login" className="text-sm font-medium text-foreground hover:text-primary border border-border px-4 py-2 rounded-full">Sign In</Link>
-            <Link to="/auth/welcome" className="bg-primary text-primary-foreground text-sm font-medium px-4 py-2 rounded-full hover:bg-primary/90">Sign Up</Link>
-            <Link to="/pro" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"><User className="h-4 w-4" /> For Pros</Link>
-          </nav>
-          <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
-        </div>
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t px-4 py-4 space-y-3 bg-background">
-            <Link to="/post-job" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Find a Pro</Link>
-            <Link to="/about" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>About</Link>
-            <Link to="/help" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>Help</Link>
-            <Link to="/pro" className="block text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>For Professionals</Link>
-            <div className="flex gap-2 pt-2">
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => { setMobileMenuOpen(false); navigate("/auth/login"); }}>Sign In</Button>
-              <Button size="sm" className="flex-1" onClick={() => { setMobileMenuOpen(false); navigate("/auth/welcome"); }}>Sign Up</Button>
-            </div>
-          </div>
-        )}
-      </header>
+      <SiteHeader />
 
       {/* Hero */}
       <section className="relative bg-primary text-primary-foreground">
@@ -527,60 +502,7 @@ export default function ServiceCategoryPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-foreground text-background">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <h4 className="font-semibold mb-4">For Customers</h4>
-              <ul className="space-y-2 text-sm opacity-70">
-                <li><Link to="/post-job" className="hover:opacity-100">Find a Professional</Link></li>
-                <li><Link to="/about" className="hover:opacity-100">How it works</Link></li>
-                <li><Link to="/auth/login" className="hover:opacity-100">Login</Link></li>
-                <li><Link to="/" className="hover:opacity-100">Mobile App</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">For Professionals</h4>
-              <ul className="space-y-2 text-sm opacity-70">
-                <li><Link to="/about" className="hover:opacity-100">How it works</Link></li>
-                <li><Link to="/about" className="hover:opacity-100">Pricing</Link></li>
-                <li><Link to="/auth/welcome" className="hover:opacity-100">Join as a Professional</Link></li>
-                <li><Link to="/help" className="hover:opacity-100">Help centre</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">About</h4>
-              <ul className="space-y-2 text-sm opacity-70">
-                <li><Link to="/about" className="hover:opacity-100">About FLEXS</Link></li>
-                <li><Link to="/" className="hover:opacity-100">Careers</Link></li>
-                <li><Link to="/affiliates" className="hover:opacity-100">Affiliates</Link></li>
-                <li><Link to="/" className="hover:opacity-100">Blog</Link></li>
-                <li><Link to="/" className="hover:opacity-100">Press</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Need help?</h4>
-              <Button onClick={() => navigate("/help")} variant="secondary" className="mb-4">Contact us</Button>
-              <div className="flex gap-3 mt-2">
-                <span className="text-sm opacity-70">𝕏</span>
-                <span className="text-sm opacity-70">f</span>
-                <span className="text-sm opacity-70">in</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-sm opacity-70 mb-6">
-            <span>🇨🇦</span><span>Canada</span><ChevronRight className="h-3 w-3" />
-          </div>
-          <div className="border-t border-background/20 pt-6 text-center text-xs opacity-50">
-            <p>© {new Date().getFullYear()} FLEXS. All rights reserved.</p>
-            <div className="flex justify-center gap-4 mt-2">
-              <Link to="/">Terms & Conditions</Link>
-              <Link to="/cookies">Cookie Policy</Link>
-              <Link to="/">Privacy Policy</Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import SiteHeader from "@/components/fx/SiteHeader";
+import SiteFooter from "@/components/fx/SiteFooter";
 import { Link } from "react-router-dom";
 import { ClipboardList, MessagesSquare, ShieldCheck, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,17 +13,7 @@ const steps = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <nav className="max-w-6xl mx-auto px-5 py-4 flex flex-wrap items-center justify-between gap-4" aria-label="Main">
-          <Link to="/" className="font-bold text-xl text-primary">FLEXS</Link>
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <Link to="/help" className="text-muted-foreground hover:text-foreground">Help</Link>
-            <Link to="/pro" className="text-muted-foreground hover:text-foreground">For professionals</Link>
-            <Link to="/auth/login" className="text-muted-foreground hover:text-foreground">Log in</Link>
-            <Button asChild size="sm"><Link to="/post-job">Post a request</Link></Button>
-          </div>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main>
         <section className="bg-primary text-primary-foreground">
@@ -77,12 +69,7 @@ export default function AboutPage() {
         </section>
       </main>
 
-      <footer className="border-t">
-        <div className="max-w-6xl mx-auto px-5 py-6 flex flex-wrap justify-between gap-3 text-sm text-muted-foreground">
-          <span>© {new Date().getFullYear()} FLEXS</span>
-          <div className="flex gap-4"><Link to="/help" className="hover:text-foreground">Help</Link><Link to="/cookies" className="hover:text-foreground">Cookies</Link><Link to="/support" className="hover:text-foreground">Support</Link></div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

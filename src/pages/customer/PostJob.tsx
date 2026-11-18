@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import SiteHeader from "@/components/fx/SiteHeader";
+import SiteFooter from "@/components/fx/SiteFooter";
 import { Input } from "@/components/ui/input";
 
 interface Category {
@@ -9,6 +11,7 @@ interface Category {
   name: string;
   slug: string;
   icon: string;
+  hero_image: string | null;
 }
 
 export default function PostJob() {
@@ -24,7 +27,7 @@ export default function PostJob() {
     let active=true;setLoading(true);setError(false);
     supabase
       .from("service_categories")
-      .select("id, name, slug, icon")
+      .select("id, name, slug, icon, hero_image")
       .eq("is_active", true)
       .order("sort_order")
       .then(({ data,error }) => {
@@ -41,62 +44,44 @@ export default function PostJob() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-primary text-primary-foreground px-4 py-4 pb-6">
-        <button onClick={() => navigate("/")} className="mb-4">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <h1 className="text-2xl font-bold mb-1">What do you need help with?</h1>
-        <p className="text-primary-foreground/80 text-sm">
-          Tell us what you need and we'll connect you with top professionals
-        </p>
-      </div>
-
-      {/* Search */}
-      <div className="px-4 -mt-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search for a service..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 rounded-xl bg-card shadow-md border-0 h-12"
-          />
+    <div className="min-h-screen bg-background text-fx-ink">
+      <SiteHeader />
+      <main className="mx-auto max-w-6xl px-gutter pb-16 pt-12">
+        <h1 className="text-4xl leading-[1.28]">What do you need help with?</h1>
+        <p className="mt-3 text-lg text-fx-muted">Choose a service and answer a few questions. Posting is free.</p>
+        <div className="relative mt-5">
+          <label htmlFor="service-search" className="sr-only">Search for a service</label>
+          <Search aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-fx-muted" />
+          <Input id="service-search" placeholder="Search for a service..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-[50px] rounded-fx-xs border-fx-line pl-10 text-base" />
         </div>
-      </div>
 
-      {/* Categories */}
-      <div className="max-w-5xl mx-auto px-4 pt-6 pb-8">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
-          Popular services
-        </h2>
-
+        <h2 className="mt-14 text-center text-[28px]">{search.trim() ? "Matching services" : "All services"}</h2>
         {loading ? (
-          <div className="flex justify-center py-12">
-            <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="flex justify-center py-12" role="status" aria-label="Loading services">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
           </div>
-        ) : error ? <div role="alert" className="p-6 text-center border rounded-xl"><p>Services could not be loaded.</p><button className="mt-3 text-primary font-semibold" onClick={()=>setRetry(v=>v+1)}>Retry services</button></div> : filtered.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">
-            No services found. Try a different search.
-          </p>
+        ) : error ? <div role="alert" className="mt-8 rounded-fx-xs border border-fx-line p-6 text-center"><p>Services could not be loaded.</p><button className="mt-3 text-primary" onClick={()=>setRetry(v=>v+1)}>Retry services</button></div> : filtered.length === 0 ? (
+          <p className="py-8 text-center text-fx-muted">No services found. Try a different search.</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
             {filtered.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => navigate(`/post-job/${cat.slug}${params.get("location") ? `?${new URLSearchParams({location:params.get("location")!.slice(0,120)})}` : ""}`)}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl bg-card border border-border hover:border-primary hover:bg-accent transition-colors text-center"
+                className="group overflow-hidden rounded-fx-xs border border-fx-line bg-card text-left"
               >
-                <span className="text-3xl">{cat.icon}</span>
-                <span className="text-sm font-medium text-foreground leading-tight">
-                  {cat.name}
+                <span className="relative block aspect-[380/232] bg-fx-sunken">
+                  {cat.hero_image
+                    ? <img src={cat.hero_image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+                    : <span aria-hidden="true" className="absolute inset-0 grid place-items-center text-5xl">{cat.icon}</span>}
                 </span>
+                <span className="block px-3 py-3 text-sm leading-snug text-fx-ink md:px-[18px] md:py-4 md:text-lg">{cat.name}</span>
               </button>
             ))}
           </div>
         )}
-      </div>
+      </main>
+      <SiteFooter />
     </div>
   );
 }
