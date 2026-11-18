@@ -1,3 +1,5 @@
+import SiteHeader from "@/components/fx/SiteHeader";
+import SiteFooter from "@/components/fx/SiteFooter";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -7,24 +9,7 @@ export default function CookiesPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border sticky top-0 z-50 bg-background">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <button onClick={() => navigate("/")} className="text-xl font-bold text-foreground tracking-tight">
-            FLEXS
-          </button>
-          <nav className="hidden md:flex items-center gap-4">
-            <button onClick={() => navigate("/")} className="text-sm text-muted-foreground hover:text-foreground">
-              Explore ▾
-            </button>
-            <button onClick={() => navigate("/auth/login")} className="text-sm text-muted-foreground hover:text-foreground">
-              Login
-            </button>
-            <Button size="sm" onClick={() => navigate("/auth/welcome")}>
-              Join as a Professional
-            </Button>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="max-w-4xl mx-auto px-4 py-10">
         <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-8">Cookies</h1>
@@ -148,50 +133,7 @@ export default function CookiesPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-background border-t border-border mt-16">
-        <div className="max-w-6xl mx-auto px-4 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h4 className="font-semibold text-foreground mb-3 text-sm">For Customers</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate("/")} className="hover:text-foreground">Find a Professional</button></li>
-                <li><button onClick={() => navigate("/")} className="hover:text-foreground">How it works</button></li>
-                <li><button onClick={() => navigate("/auth/login")} className="hover:text-foreground">Login</button></li>
-                <li><button onClick={() => navigate("/")} className="hover:text-foreground">Mobile App</button></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-3 text-sm">For Professionals</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate("/")} className="hover:text-foreground">How it works</button></li>
-                <li><button onClick={() => navigate("/")} className="hover:text-foreground">Pricing</button></li>
-                <li><button onClick={() => navigate("/auth/welcome")} className="hover:text-foreground">Join as a Professional</button></li>
-                <li><button onClick={() => navigate("/help")} className="hover:text-foreground">Help centre</button></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-3 text-sm">About</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><button onClick={() => navigate("/about")} className="hover:text-foreground">About FLEXS</button></li>
-                <li><button className="hover:text-foreground">Careers</button></li>
-                <li><button onClick={() => navigate("/affiliates")} className="hover:text-foreground">Affiliates</button></li>
-                <li><button className="hover:text-foreground">Blog</button></li>
-                <li><button className="hover:text-foreground">Press</button></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground mb-3 text-sm">Need help?</h4>
-              <Button size="sm" variant="outline" onClick={() => navigate("/help")}>Contact us</Button>
-              <div className="flex gap-3 mt-4 text-muted-foreground">
-                <span>🇨🇦 Canada ▾</span>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-border mt-8 pt-6 text-xs text-muted-foreground">
-            <p>© 2025 FLEXS Global Limited. <button onClick={() => navigate("/cookies")} className="hover:underline">Cookie policy</button> / Privacy policy</p>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

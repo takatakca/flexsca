@@ -1,6 +1,6 @@
 # Figma parity — `TakaTak-Marketplace`, Page 1, phone frames (440 px)
 
-Signed: Claude (Claude Code cloud). Last updated 2026-11-18. Source of the frame list: scanner BRIEF 1 plus the inventory in `00-FLEXS-START-HERE.md`.
+Signed: Claude (Claude Code cloud). Last updated 2026-11-18 (part 2). Source of the frame list: scanner BRIEF 1 plus the inventory in `00-FLEXS-START-HERE.md`.
 
 ## Rules applied
 
@@ -33,26 +33,30 @@ Signed: Claude (Claude Code cloud). Last updated 2026-11-18. Source of the frame
 | 7 | Email To Login (633:246) | `/auth/check-email` | Works. Frame not read: tokens only |
 | 8 | Login (634:553) | `/auth/login` | **Done**, compared. "Keep me signed in" is functional. The other 7 Login variants were not read |
 | 9 | Loading Screen (568:26669) | loading step inside the wizard | Works. Frame not read |
-| 10 | Search results 1 (568:13658) | wizard question step on `/services/:slug` | **Done** from the frame: photo strip, progress bar, option list with "Other", Back / Continue. Not yet screenshot-compared |
+| 10 | Search results 1 (568:13658) | wizard question step on `/services/:slug` | **Done**, compared at 440 px on live data. Small difference: the "Other" text field appears after choosing Other, not before |
 | 11 | Search results 2–16 (568:14316 … 574:1330) | later wizard steps | Same component, driven by each category's questions. Frames not read |
 | 12 | Buyer Dashboard (576:2007) | `/my-requests` | **Done**, compared with live data. Keeps filters, paging and support/notification shortcuts that the frame does not show |
-| 13 | Search Page (569:2) | `/post-job` | Works. Frame not read: tokens only |
+| 13 | Search Page (569:2) | `/post-job` | Rebuilt on shared header, footer and category cards (two columns on phones). Frame not read |
 | 14 | Categories (610:1588) | `/post-job` | Mapped to the same screen. Frame not read |
 | 15 | Submit a Request (609:843, 610:988, 610:1295) | `/post-job/:slug`, `/post-job/contact`, `/post-job/success` | Works. Frames not read: tokens only |
-| 16 | Category landing pages (602:53, 644:2 and about 60 more) | `/services/:slug` | Works for all 51 live categories. Frames not read: tokens only |
+| 16 | Category landing pages (602:53, 644:2 and about 60 more) | `/services/:slug` | Works for all 51 live categories; shared header and footer. Frames not read |
 | 17 | Read Guide (609:2) | — | **Missing**: no guide content exists |
 | 18 | Profile (617:824) | `/profile/:userId` | Works. Frame not read |
-| 19 | business Page (617:2419) | `/pro` | Works. Frame not read |
-| 20 | Help (610:1383) | `/help` | Works. Frame not read |
+| 19 | business Page (617:2419) | `/pro` | Works; shared header and footer. Frame not read |
+| 20 | Help (610:1383) | `/help` | Works; shared header. Frame not read |
 | 21 | Contact us (609:500) | `/support` (signed-in tickets) | Works. Frame not read |
-| 22 | About (610:1717) | `/about` | Works, truthful FLEXS content. Frame not read |
+| 22 | About (610:1717) | `/about` | Works, truthful FLEXS content; shared header and footer. Frame not read |
 | 23 | Affiliate (610:2211) | `/affiliates` | Works; states that no programme is running. Frame not read |
 | 24 | Press (614:8) | — | **Missing**: FLEXS has no press coverage to show |
 | 25 | Terms (615:123) | — | **Missing**: needs FLEXS's own legal text from the owner |
-| 26 | Cookies (616:711) | `/cookies` | Works. Frame not read |
+| 26 | Cookies (616:711) | `/cookies` | Works; shared header and footer. Frame not read |
 | 27 | Privacy (617:430) | `/help/privacy` | Partial: explains deletion and data requests; a full policy needs the owner's legal text |
 | 28 | Request wizard frames (about 250, e.g. 716:280, 716:557, 674:2, 695:530) | wizard steps | One component covers them. Frames not read; questions come from the database, not from the file |
 | 29 | Desktop frames (441, 1440 px) | all routes | Not started. Current screens are responsive, not matched to the desktop frames |
+
+## Verification after the redesign (2026-11-18)
+
+OCR audit at phone size on the live backend: 15 public and 11 signed-in screens load with no errors, no sideways overflow and no banned wording. 92 tests, typecheck, lint, build and 29 browser scenarios pass. Android debug APK and unsigned release bundle rebuilt with the new design (not yet run on a device).
 
 ## Frames still needed to finish
 
