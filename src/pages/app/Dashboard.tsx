@@ -43,7 +43,7 @@ export default function Dashboard() {
   ];
   return <div className="max-w-7xl mx-auto p-4 md:p-8 lg:p-10 space-y-7">
     <div className="flex flex-wrap items-start justify-between gap-4">
-      <div><p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-orange-700 mb-3">FLEXS FOR PROFESSIONALS</p><h2 className="text-3xl lg:text-4xl font-semibold tracking-[-0.035em]">Your next opportunity starts here.</h2><p className="text-muted-foreground mt-2">Find work, follow up with customers, and keep your business moving.</p></div>
+      <div><p className="text-[10px] uppercase tracking-[0.18em] font-semibold text-primary mb-3">FLEXS FOR PROFESSIONALS</p><h2 className="text-3xl lg:text-4xl font-semibold tracking-[-0.035em]">Your next opportunity starts here.</h2><p className="text-muted-foreground mt-2">Find work, follow up with customers, and keep your business moving.</p></div>
       <Button variant="outline" className="bg-white rounded-xl" onClick={() => void refetch()} aria-label="Refresh dashboard"><RefreshCw className="h-4 w-4 mr-2" />Refresh</Button>
     </div>
     <div className="rounded-2xl bg-primary px-5 py-5 text-white flex flex-wrap items-center justify-between gap-4"><div><p className="text-sm font-semibold">Make room for your next project.</p><p className="text-xs text-white/65 mt-1.5">Explore requests and start the conversations that fit your business.</p></div><Button asChild className="bg-white text-primary hover:bg-white/90 rounded-xl"><Link to="/app/leads">Explore opportunities <ArrowRight className="size-4 ml-2" /></Link></Button></div>

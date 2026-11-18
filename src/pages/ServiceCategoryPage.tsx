@@ -275,6 +275,7 @@ export default function ServiceCategoryPage() {
           categoryName={category.name}
           categorySlug={category.slug}
           questions={category.questions}
+          heroImage={category.hero_image}
           onClose={() => setShowFlow(false)}
         />
       )}
@@ -331,7 +332,7 @@ export default function ServiceCategoryPage() {
                 <Input value={locationSearch} onChange={(e) => setLocationSearch(e.target.value)} placeholder="Enter your postal code" className="w-full pl-10" />
               </div>
             </div>
-            <Button onClick={handleStartRequest} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold h-11">Continue</Button>
+            <Button onClick={handleStartRequest} className="w-full bg-success hover:bg-success text-white font-semibold h-11">Continue</Button>
           </div>
         </div>
       </section>

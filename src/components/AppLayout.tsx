@@ -22,10 +22,10 @@ export default function AppLayout(){
   const {data:unread=0}=useUnreadNotifications();
   const initial=user?.email?.charAt(0).toUpperCase() || 'U';
   const title=pageTitle(location.pathname);
-  return <div className="min-h-screen flex flex-col bg-[#f5f6f8]">
+  return <div className="min-h-screen flex flex-col bg-fx-soft">
     <a href="#workspace-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-white focus:p-3">Skip to workspace</a>
     <aside className="hidden md:flex fixed inset-y-0 left-0 w-64 bg-[#142449] text-white flex-col z-40">
-      <Link to="/" className="px-7 h-24 flex items-center gap-2 text-3xl font-extrabold tracking-tight">FLEXS<span className="text-orange-300">.</span></Link>
+      <Link to="/" className="px-7 h-24 flex items-center gap-2 text-3xl font-extrabold tracking-tight">FLEXS<span className="text-primary-foreground/80">.</span></Link>
       <div className="px-5 mb-7"><div className="rounded-xl border border-white/15 bg-white/5 px-4 py-3"><p className="text-sm font-semibold">Professional workspace</p><p className="mt-1 text-xs text-white/55">Your business. Your next move.</p></div></div>
       <nav aria-label="Professional navigation" className="px-4 space-y-1.5">
         <p className="text-[10px] uppercase tracking-[0.2em] text-white/45 px-4 pb-3">Manage your work</p>

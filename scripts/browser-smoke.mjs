@@ -168,7 +168,7 @@ try {
     await new Promise(resolve=>setTimeout(resolve,100));
   }
   await page.goto('http://127.0.0.1:4173/?ttclid=dddddddd-dddd-4ddd-8ddd-dddddddddddd');
-  await page.getByRole('heading',{name:/Big ideas/}).waitFor();
+  await page.getByRole('heading',{name:/Find a professional/}).waitFor();
   await captureVisual('/tmp/flexsca-home-desktop.png');
   await page.setViewportSize({width:390,height:844});
   await page.getByRole('button',{name:'Open navigation',exact:true}).click();
@@ -186,7 +186,7 @@ try {
   await page.goto('http://127.0.0.1:4173/?ttclid=dddddddd-dddd-4ddd-8ddd-dddddddddddd');
   await page.getByLabel('What do you need?',{exact:true}).fill('House Cleaning');
   await page.getByLabel('Where is your project?',{exact:true}).fill('Toronto, M1A1A1');
-  await page.getByRole('button',{name:'Find my professional',exact:true}).click();
+  await page.getByRole('button',{name:'Search',exact:true}).click();
   await page.getByPlaceholder('Search for a service...').waitFor();
   assert.equal(await page.getByPlaceholder('Search for a service...').inputValue(),'House Cleaning');
 

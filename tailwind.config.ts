@@ -56,6 +56,11 @@ export default {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        fx: {
+          blue: "hsl(var(--fx-blue))", ink: "hsl(var(--fx-ink))", secondary: "hsl(var(--fx-ink-secondary))", muted: "hsl(var(--fx-ink-muted))",
+          soft: "hsl(var(--fx-surface-soft))", sunken: "hsl(var(--fx-surface-sunken))", line: "hsl(var(--fx-border))",
+          "danger-soft": "hsl(var(--fx-danger-soft))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -67,7 +72,11 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      fontFamily: { sans: ["var(--fx-font)"] },
+      boxShadow: { "fx-card": "var(--fx-shadow-card)", "fx-button": "var(--fx-shadow-button)" },
+      spacing: { gutter: "var(--fx-gutter)" },
       borderRadius: {
+        "fx-xs": "var(--fx-radius-xs)", "fx-sm": "var(--fx-radius-sm)", "fx-md": "var(--fx-radius-md)", "fx-lg": "var(--fx-radius-lg)", "fx-pill": "var(--fx-radius-pill)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
