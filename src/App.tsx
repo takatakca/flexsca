@@ -30,7 +30,6 @@ const ProfileSetup = lazy(() => import("@/pages/app/ProfileSetup"));
 const OpenInApp = lazy(() => import("@/pages/app/OpenInApp"));
 const PostJob = lazy(() => import("@/pages/customer/PostJob"));
 const JobQuestionnaire = lazy(() => import("@/pages/customer/JobQuestionnaire"));
-const JobContact = lazy(() => import("@/pages/customer/JobContact"));
 const BuyerDashboard = lazy(() => import("@/pages/customer/BuyerDashboard"));
 const JobSuccess = lazy(() => import("@/pages/customer/JobSuccess"));
 const ServiceCategoryPage = lazy(() => import("@/pages/ServiceCategoryPage"));
@@ -77,7 +76,7 @@ const App = () => (
 
             {/* Customer lead posting flow (no auth required) */}
             <Route path="/post-job" element={<PostJob />} />
-            <Route path="/post-job/contact" element={<JobContact />} />
+            <Route path="/post-job/contact" element={<Navigate to="/post-job" replace />} />
             <Route path="/post-job/success" element={<JobSuccess />} />
             <Route path="/post-job/:slug" element={<JobQuestionnaire />} />
             <Route path="/my-requests" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />

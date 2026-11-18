@@ -28,6 +28,8 @@ interface ServiceFlowModalProps {
   questions: Question[];
   /** Category photo shown as the strip at the top of each question, as in the design. */
   heroImage?: string | null;
+  /** Town or postal code already typed on the page that opened the wizard. */
+  initialLocation?: string;
   onClose: () => void;
 }
 
@@ -38,6 +40,8 @@ type FlowStep =
   | "matches-found"
   | "email-step"
   | "location-step"
+  | "phone-step"
+  | "name-step"
   | "welcome-back"
   | "details"
   | "loading-submit"
@@ -48,7 +52,7 @@ export default function ServiceFlowModal({
   categoryId,
   categoryName,
   categorySlug,
-  questions, heroImage,
+  questions, heroImage, initialLocation,
   onClose,
 }: ServiceFlowModalProps) {
   const navigate = useNavigate();
@@ -65,7 +69,7 @@ export default function ServiceFlowModal({
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState((initialLocation ?? "").slice(0, 120));
 
   // Details step
   const [detailsText, setDetailsText] = useState("");
@@ -79,7 +83,7 @@ export default function ServiceFlowModal({
         if (questions.length > 0) {
           setStep("questionnaire");
         } else {
-          setStep("email-step");
+          setStep("location-step");
         }
       }, 1500);
       return () => clearTimeout(timer);
@@ -179,7 +183,7 @@ export default function ServiceFlowModal({
     if (currentQ < questions.length - 1) {
       setCurrentQ((p) => p + 1);
     } else {
-      setStep("loading-contact");
+      setStep("location-step");
     }
   };
 
@@ -200,8 +204,8 @@ export default function ServiceFlowModal({
     submitting.current = true;
     try {
       const requestId = await submitLead(categoryName, result.data, answers, contactAsap);
+      // Leaving for the success page unmounts the wizard; calling onClose here would send /post-job users back to the list.
       navigate("/post-job/success", { state: { categoryName, requestId, email: result.data.email } });
-      onClose();
     } catch {
       toast.error("Unable to submit your request. Please try again.");
       setStep("details");
@@ -456,7 +460,7 @@ export default function ServiceFlowModal({
           <div className="flex items-center justify-between">
             <Button
               variant="outline"
-              onClick={() => setStep("location-step")}
+              onClick={() => setStep("name-step")}
               className="px-6"
             >
               Back
@@ -596,107 +600,62 @@ export default function ServiceFlowModal({
     </div>
   );
 
-  // ── Matches Found modal ──
-  const renderMatchesFound = () => {
-    const progress = questions.length > 0
-      ? ((questions.length + 0.5) / (questions.length + 5)) * 100
-      : 70;
+  // ── Contact steps, one field at a time (frames 568:18035 to 697:7516) ──
+  // Order: where, "nearly ready", email, phone, name. Each uses the same card.
+  const CONTACT_STEPS: FlowStep[] = ["location-step", "matches-found", "email-step", "phone-step", "name-step"];
+  const stepCard = (current: FlowStep, body: React.ReactNode, opts: { onBack?: () => void; onNext: () => void; canContinue?: boolean; tint?: boolean }) => {
+    const total = questions.length + CONTACT_STEPS.length + 1;
+    const progress = ((questions.length + CONTACT_STEPS.indexOf(current) + 1) / total) * 100;
     return (
-      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        <div className="h-1.5 bg-fx-sunken">
-          <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
-        </div>
-        <div className="flex justify-end px-4 pt-4">
-          <button onClick={handleClose} className="text-fx-muted hover:text-fx-secondary"><X className="h-5 w-5" /></button>
-        </div>
-        <div className="px-6 pb-6 text-center">
-          <div className="h-16 w-16 rounded-full bg-success flex items-center justify-center mx-auto mb-4">
-            <Check className="h-8 w-8 text-white stroke-[3]" />
+      <form onSubmit={e => { e.preventDefault(); if (opts.canContinue !== false) opts.onNext(); }} className={cn("mx-2.5 w-full max-w-lg rounded-fx-xs px-5 pb-5 pt-5 shadow-2xl", opts.tint ? "bg-[hsl(var(--fx-mint))]" : "bg-white")}>
+        <div className="flex items-center gap-4">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-fx-pill bg-fx-line" role="progressbar" aria-label="Request progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
+            <div className="h-full rounded-fx-pill bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
           </div>
-          <h2 className="text-xl font-bold text-fx-ink mb-2">Your request is nearly ready.</h2>
-          <p className="text-sm text-fx-secondary mb-6">Lastly, we need your details to attach to your request.</p>
-          <div className="flex items-center justify-between">
-            <Button variant="outline" onClick={() => {
-              if (questions.length > 0) { setCurrentQ(questions.length - 1); setStep("questionnaire"); }
-            }} className="px-6">Back</Button>
-            <Button onClick={() => setStep("email-step")} className="px-6 bg-primary hover:bg-primary/90 text-white">Continue</Button>
-          </div>
+          <button type="button" onClick={handleClose} aria-label="Close" className="text-fx-muted hover:text-fx-secondary"><X className="h-4 w-4" /></button>
         </div>
-      </div>
+        <div className="pb-6 pt-6">{body}</div>
+        <div className={cn("flex items-center justify-between", opts.tint && "-mx-0 rounded-fx-xs bg-white p-4")}>
+          {opts.onBack ? <Button type="button" variant="outline" onClick={opts.onBack} className="h-9 rounded-fx-xs border-fx-muted px-7 text-xs text-fx-secondary">Back</Button> : <span />}
+          <Button type="submit" disabled={opts.canContinue === false} className="h-9 rounded-fx-xs px-7 text-xs shadow-fx-button">Continue</Button>
+        </div>
+      </form>
     );
   };
+  const stepTitle = "text-center text-[22px] leading-[1.45] text-fx-ink";
+  const stepField = "h-[52px] w-full rounded-fx-xs border border-fx-muted bg-white px-4 text-base text-fx-ink outline-none placeholder:text-fx-secondary focus:border-primary";
 
-  // ── Email step modal ──
-  const renderEmailStep = () => {
-    const progress = questions.length > 0
-      ? ((questions.length + 1.5) / (questions.length + 5)) * 100
-      : 75;
-    return (
-      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        <div className="h-1.5 bg-fx-sunken">
-          <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
-        </div>
-        <div className="flex justify-end px-4 pt-4">
-          <button onClick={handleClose} className="text-fx-muted hover:text-fx-secondary"><X className="h-5 w-5" /></button>
-        </div>
-        <div className="px-6 pb-6">
-          <h2 className="text-xl font-bold text-fx-ink text-center mb-6">How can professionals contact you?</h2>
-          <label htmlFor="modal-contact-name" className="block text-sm font-medium mb-1">Your name</label>
-          <input id="modal-contact-name" value={contactName} onChange={e => setContactName(e.target.value)} placeholder="Full name" maxLength={100} className="w-full border rounded-lg px-4 py-3 text-sm mb-4" />
-          <label htmlFor="modal-contact-email" className="block text-sm font-medium mb-1">Email address</label>
-          <input
-            id="modal-contact-email"
-            type="email"
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-            placeholder="Email address"
-            className="w-full border border-fx-line rounded-lg px-4 py-3 text-sm text-fx-ink outline-none placeholder:text-fx-muted focus:border-primary mb-6"
-          />
-          <label htmlFor="modal-contact-phone" className="block text-sm font-medium mb-1">Phone (optional)</label>
-          <input id="modal-contact-phone" type="tel" value={contactPhone} onChange={e => setContactPhone(e.target.value)} maxLength={40} className="w-full border rounded-lg px-4 py-3 text-sm mb-4" />
-          <div className="flex items-center justify-between">
-            <Button variant="outline" onClick={() => setStep("matches-found")} className="px-6">Back</Button>
-            <Button onClick={() => setStep("location-step")} disabled={!contactName.trim() || !contactEmail.trim()} className="px-6 bg-primary hover:bg-primary/90 text-white">Continue</Button>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const renderLocationStep = () => stepCard("location-step", <>
+    <h2 className={stepTitle}>Where do you need the {categoryName}?</h2>
+    <p className="mb-5 mt-2 text-center text-sm leading-6 text-fx-secondary">The postal code or town for the address where you want the {categoryName}.</p>
+    <div className="relative">
+      <MapPin className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-fx-ink" aria-hidden="true" />
+      <input type="text" aria-label="Postal code or town" value={location} onChange={e => setLocation(e.target.value)} maxLength={120} placeholder="Enter postal code or city" className={cn(stepField, "pl-11")} autoFocus />
+    </div>
+  </>, { onBack: questions.length > 0 ? () => { setCurrentQ(questions.length - 1); setStep("questionnaire"); } : undefined, onNext: () => setStep("loading-contact"), canContinue: !!location.trim() });
 
-  // ── Location step modal ──
-  const renderLocationStep = () => {
-    const progress = questions.length > 0
-      ? ((questions.length + 2.5) / (questions.length + 5)) * 100
-      : 82;
-    return (
-      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        <div className="h-1.5 bg-fx-sunken">
-          <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
-        </div>
-        <div className="flex justify-end px-4 pt-4">
-          <button onClick={handleClose} className="text-fx-muted hover:text-fx-secondary"><X className="h-5 w-5" /></button>
-        </div>
-        <div className="px-6 pb-6">
-          <h2 className="text-xl font-bold text-fx-ink text-center mb-2">Where do you need the {categoryName}?</h2>
-          <p className="text-sm text-fx-secondary text-center mb-6">The postal code or city for the address where you want the {categoryName}.</p>
-          <div className="flex items-center gap-3 border border-fx-line rounded-lg px-4 py-3 mb-6">
-            <MapPin className="h-5 w-5 text-fx-muted flex-shrink-0" />
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter postal code or city"
-              className="flex-1 text-sm text-fx-ink outline-none placeholder:text-fx-muted"
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Button variant="outline" onClick={() => setStep("email-step")} className="px-6">Back</Button>
-            <Button onClick={() => setStep("welcome-back")} disabled={!location.trim()} className="px-6 bg-primary hover:bg-primary/90 text-white">Continue</Button>
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const renderMatchesFound = () => stepCard("matches-found", <div className="text-center">
+    <div className="mx-auto mb-5 flex h-[72px] w-[72px] items-center justify-center rounded-full bg-success"><Check className="h-8 w-8 stroke-[3] text-white" aria-hidden="true" /></div>
+    <h2 className={stepTitle}>Your request is nearly ready.</h2>
+    <p className="mx-auto mt-4 max-w-[280px] text-sm leading-5 text-fx-ink">Lastly, we need your details to attach to your request.</p>
+  </div>, { onBack: () => setStep("location-step"), onNext: () => setStep("email-step"), tint: true });
+
+  const renderEmailStep = () => stepCard("email-step", <>
+    <h2 className={stepTitle}>What email address would you like quotes sent to?</h2>
+    <input type="email" aria-label="Email address" autoComplete="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} maxLength={254} placeholder="Email address" className={cn(stepField, "mt-5")} autoFocus />
+  </>, { onBack: () => setStep("matches-found"), onNext: () => setStep("phone-step"), canContinue: /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail.trim()) });
+
+  const renderPhoneStep = () => stepCard("phone-step", <>
+    <h2 className={stepTitle}>Your number is safe with us.</h2>
+    <p className="mb-5 mt-2 text-center text-sm leading-7 text-fx-secondary">Some professionals prefer to give quotes by phone. You can leave this empty.</p>
+    <input type="tel" aria-label="Phone number (optional)" autoComplete="tel" value={contactPhone} onChange={e => setContactPhone(e.target.value)} maxLength={40} placeholder="Phone number" className={stepField} autoFocus />
+  </>, { onBack: () => setStep("email-step"), onNext: () => setStep("name-step") });
+
+  const renderNameStep = () => stepCard("name-step", <>
+    <h2 className={stepTitle}>What is your name?</h2>
+    <label htmlFor="modal-contact-name" className="mb-3 mt-4 block text-sm text-fx-ink">Please tell us your name:</label>
+    <input id="modal-contact-name" autoComplete="name" value={contactName} onChange={e => setContactName(e.target.value)} placeholder="Full name" maxLength={100} className={stepField} autoFocus />
+  </>, { onBack: () => setStep("phone-step"), onNext: () => setStep("welcome-back"), canContinue: !!contactName.trim() });
 
   const renderStep = () => {
     switch (step) {
@@ -712,6 +671,10 @@ export default function ServiceFlowModal({
         return renderEmailStep();
       case "location-step":
         return renderLocationStep();
+      case "phone-step":
+        return renderPhoneStep();
+      case "name-step":
+        return renderNameStep();
       case "welcome-back":
         return renderWelcomeBack();
       case "details":
