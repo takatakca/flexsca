@@ -40,17 +40,19 @@ def main(src, out):
     for number, entry in licences.items():
         r = entry['row']
         if r['Type de licence'] != 'Entrepreneur': skipped['not_contractor'] += 1; continue
-        if r['Statut juridique'] == 'Personne physique': skipped['person'] += 1; continue
+        # Licences held in a person's own name are listed too (owner's decision, 2026-11-18): the RBQ publishes them as businesses.
         if r['Statut juridique'] == 'Autorite publique': skipped['public_body'] += 1; continue
         if r['Restriction'].strip().lower() == 'oui': skipped['restricted'] += 1; continue
-        name, city = clean(r["Nom de l'intervenant"], 200), clean(r['Municipalité'], 120)
+        # The open file blanks the name of a person; such a licence is listed only under its trade name.
+        other = clean(r['Autre nom'], 200)
+        name, city = clean(r["Nom de l'intervenant"], 200) or other, clean(r['Municipalité'], 120)
         if not name or not city or not re.fullmatch(r'[0-9-]{6,20}', number): skipped['incomplete'] += 1; continue
         trade, category = 'Construction and renovation', None
         for codes, label, slug in SPECIALISED:
             if entry['codes'] & codes: trade, category = label, slug; break
         email = r['Courriel'].strip().lower()
         rows.append({
-            'source_ref': number, 'name': name, 'other_name': clean(r['Autre nom'], 200) or None, 'city': city.title() if city.isupper() else city,
+            'source_ref': number, 'name': name, 'other_name': other if other and other != name else None, 'city': city.title() if city.isupper() else city,
             'region': clean(r['Région administrative'], 120) or None, 'trade': trade, 'category_slug': category,
             'trade_codes': sorted(c for c in entry['codes'] if re.fullmatch(r'[0-9.]{1,6}', c)),
             'slug': (slugify(name)[:90] + '-' + slugify(city)[:40] + '-' + number.replace('-', ''))[:160],

@@ -5,7 +5,7 @@ Owner's order, 2026-11-18: every Quebec business should already have a basic pag
 
 ## What is live
 
-- `public.business_listings`: 99,223 businesses in 1,790 municipalities on 2026-11-18: 49,252 contractors (RBQ), 11,449 Montréal food establishments, 20,596 Montréal street-level businesses, 7,991 car dealers, gyms and travel agencies (OPC), 9,935 tourism businesses province-wide (SIT Québec).
+- `public.business_listings`: 155,637 businesses in 1,876 municipalities on 2026-11-18: 49,252 contractors (RBQ), 43,116 from OpenStreetMap (every category, province-wide), 23,233 tourism businesses and tourist homes (SIT Québec), 20,596 Montréal street-level businesses, 11,449 Montréal food establishments, 7,991 car dealers, gyms and travel agencies (OPC). The database is at 146 MB; the Supabase free plan stops at 500 MB.
 - Pages: `/directory` (search by name, city, trade), `/business/:slug`, `/business/:slug/claim`.
 - Admin screen: "Business claims to verify".
 
@@ -16,11 +16,12 @@ Owner's order, 2026-11-18: every Quebec business should already have a basic pag
 | Régie du bâtiment du Québec, "Liste des licences actives" (Données Québec, daily) | CC BY 4.0, commercial use allowed with attribution | Imported (`rbq`) |
 | Ville de Montréal, "Établissements alimentaires" (weekly) | CC BY 4.0 | Imported (`mtl_food`), open establishments only |
 | Office de la protection du consommateur, "Liste des permis et des exemptions en vigueur" (daily) | CC BY 4.0 | Imported (`opc`): vehicle dealers and recyclers, health studios, travel agents. Permits in a person's own name are left out |
-| Ministère du Tourisme, SIT Québec (13 files, daily) | CC BY 4.0 | Imported (`sit`): hotels, B&Bs, campgrounds, outfitters, restaurants, attractions, producers, transport. Parks, trails, beaches, monuments, info offices left out. The 13,751 chalets and tourist homes are not imported (mostly private owners; owner to decide) |
+| Ministère du Tourisme, SIT Québec (13 files, daily) | CC BY 4.0 | Imported (`sit`): hotels, B&Bs, campgrounds, outfitters, restaurants, attractions, producers, transport. Parks, trails, beaches, monuments, info offices left out. The 13,751 chalets and tourist homes were added on the owner's decision (2026-11-18) under the trade "Chalets and tourist homes" |
 | Ville de Montréal, "Locaux commerciaux et statuts d'occupation" 2025 (annual) | CC BY 4.0 | Imported (`mtl_shops`) |
 | Registraire des entreprises du Québec (all enterprises) | CC BY-NC-SA 4.0, **no commercial use** | Not used. A commercial agreement with the Registraire is needed first |
 | Google Maps, Yelp, Yellow Pages, 411, RestoMontréal | Proprietary, terms forbid copying | Not used |
-| Statistics Canada ODBus, OpenStreetMap, other cities' open data (Québec, Laval, Longueuil, Gatineau, Sherbrooke) | Open, commercial use allowed (check each) | Next candidates |
+| OpenStreetMap, Quebec extract | ODbL 1.0: commercial use allowed; credit "© OpenStreetMap contributors"; the `osm` rows must be shareable under ODbL on request | Imported (`osm`), every category, town found from the map position. Owner accepted the conditions on 2026-11-18. Undo: `update business_listings set status='removed' where source='osm' and status='listed'` |
+| Statistics Canada ODBus (2022, stale), other cities' open data (Québec, Laval, Longueuil, Gatineau, Sherbrooke) | Open, commercial use allowed (check each) | Next candidates |
 | Google Places API, Google Business Profile API | Licensed API | Allowed use: keep the Google place ID and show Google details live with attribution; let an owner connect their own profile when claiming. Not allowed: storing Google's list |
 
 The attribution line on `/directory` and on each business page is a licence condition. Keep it.
@@ -31,8 +32,8 @@ Stored: business name, other name, municipality, region, trade, RBQ licence numb
 Never stored: phone, street address, email. The email is reduced to a SHA-256 in
 `business_listing_verifiers`, which no client role can read.
 
-Left out of the import: 4,289 licences held by individuals in their own name (the name is a
-person's name; owner to decide), 993 owner-builders, 43 restricted licences.
+Left out of the import: 993 owner-builders, 46 restricted licences, and 4,306 licences held by individuals:
+the owner asked to list them (2026-11-18), but the open file blanks their names, so there is nothing to show.
 
 ## Claiming
 
@@ -61,6 +62,12 @@ python3 -I scripts/build_quebec_open_directory.py data/ out/
 ```
 
 A business already listed under the same name and city from another source is not listed twice.
+
+OpenStreetMap (needs `pip install osmium shapely`, about 1.2 GB download, 15 GB RAM is plenty):
+
+```bash
+python3 scripts/build_osm_directory.py quebec-latest.osm.pbf out/
+```
 
 RBQ:
 

@@ -5,11 +5,11 @@ import { supabase } from "@/integrations/supabase/client";
 const db = supabase as unknown as SupabaseClient;
 
 export interface Listing {
-  id: string; source: "rbq" | "mtl_food" | "mtl_shops" | "opc" | "sit"; source_ref: string; activity: string | null; name: string; other_name: string | null; city: string; region: string | null;
+  id: string; source: "rbq" | "mtl_food" | "mtl_shops" | "opc" | "sit" | "osm"; source_ref: string; activity: string | null; name: string; other_name: string | null; city: string; region: string | null;
   trade: string; category_slug: string | null; slug: string; status: "listed" | "claimed"; claimed_at: string | null;
 }
 export const TRADES = ["Restaurant", "Bar", "Bakery and café", "Caterer", "Grocery and food shop", "Retail shop", "Beauty and personal care", "Health and wellness",
-  "Fitness and leisure", "Arts and culture", "Hotel and venue", "Camping and outfitters", "Travel agency", "Farm and local products", "Transport", "Auto services", "Home and repair services", "Professional services", "Plumbing", "Electrical", "Heating and cooling",
+  "Fitness and leisure", "Arts and culture", "Hotel and venue", "Chalets and tourist homes", "Camping and outfitters", "Travel agency", "Farm and local products", "Transport", "Auto services", "Home and repair services", "Professional services", "Plumbing", "Electrical", "Heating and cooling",
   "General contractor", "Construction and renovation", "Other services"] as const;
 
 /** Where a listing comes from. The credit line is a condition of each open-data licence. */
@@ -18,6 +18,7 @@ export const SOURCES: Record<Listing["source"], { credit: string; register: stri
   mtl_food: { credit: 'Ville de Montréal, "Établissements alimentaires", CC BY 4.0', register: "Montréal's public list of food establishments" },
   opc: { credit: 'Office de la protection du consommateur, "Liste des permis et des exemptions en vigueur", CC BY 4.0', register: "the consumer protection office's public list of permit holders" },
   sit: { credit: 'Ministère du Tourisme, "Système d\'information touristique Québec", CC BY 4.0', register: "the Quebec tourism ministry's public directory" },
+  osm: { credit: "© OpenStreetMap contributors, Open Database License", register: "OpenStreetMap, the open map of the world" },
   mtl_shops: { credit: 'Ville de Montréal, "Locaux commerciaux et statuts d\'occupation", CC BY 4.0', register: "Montréal's public survey of commercial spaces" },
 };
 export const PAGE_SIZE = 20;
