@@ -70,6 +70,25 @@ Deno.serve(async (req: Request) => {
       console.log(`Credit fulfillment completed: ${fulfilled}`);
     }
 
+    // Money taken back: remove the credits it bought. A dispute also freezes the wallet.
+    if (event.type === "charge.refunded" || event.type === "charge.dispute.created") {
+      const object = event.data.object as Stripe.Charge | Stripe.Dispute;
+      const intent = typeof object.payment_intent === "string" ? object.payment_intent : object.payment_intent?.id;
+      // Partial refunds are handled by an administrator; only a full refund reverses credits.
+      const full = event.type === "charge.dispute.created" || (object as Stripe.Charge).amount_refunded === (object as Stripe.Charge).amount;
+      if (intent && full) {
+        const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+        const { error } = await supabase.rpc("reverse_credit_purchase", {
+          p_payment_intent_id: intent,
+          p_kind: event.type === "charge.refunded" ? "refunded" : "disputed",
+        });
+        if (error) {
+          console.error("Credit reversal failed");
+          return new Response(JSON.stringify({ error: "Credit reversal failed" }), { status: 500 });
+        }
+      }
+    }
+
     return new Response(JSON.stringify({ received: true }), {
       headers: { "Content-Type": "application/json" },
     });

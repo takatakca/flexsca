@@ -54,6 +54,12 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // Rate limit and frozen-wallet check before any call to Stripe.
+    const guard = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    const { data: allowed, error: guardError } = await guard.rpc("checkout_allowed", { p_user_id: userId });
+    if (guardError) throw new Error("Unable to check purchase limits");
+    if (!allowed) return new Response(JSON.stringify({ error: "Too many purchase attempts, or purchases are paused on this account. Contact support." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
     // Create Stripe checkout session
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
       apiVersion: "2025-02-24.acacia",
@@ -71,6 +77,8 @@ Deno.serve(async (req: Request) => {
           quantity: 1,
         },
       ],
+      client_reference_id: userId,
+      expires_at: Math.floor(Date.now() / 1000) + 1800,
       metadata: {
         user_id: userId,
         credits: String(pkg.credits),
