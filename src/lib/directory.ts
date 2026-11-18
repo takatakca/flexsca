@@ -5,12 +5,21 @@ import { supabase } from "@/integrations/supabase/client";
 const db = supabase as unknown as SupabaseClient;
 
 export interface Listing {
-  id: string; source_ref: string; name: string; other_name: string | null; city: string; region: string | null;
+  id: string; source: "rbq" | "mtl_food" | "mtl_shops"; source_ref: string; activity: string | null; name: string; other_name: string | null; city: string; region: string | null;
   trade: string; category_slug: string | null; slug: string; status: "listed" | "claimed"; claimed_at: string | null;
 }
-export const TRADES = ["Plumbing", "Electrical", "Heating and cooling", "General contractor", "Construction and renovation"] as const;
+export const TRADES = ["Restaurant", "Bar", "Bakery and café", "Caterer", "Grocery and food shop", "Retail shop", "Beauty and personal care", "Health and wellness",
+  "Fitness and leisure", "Hotel and venue", "Auto services", "Home and repair services", "Professional services", "Plumbing", "Electrical", "Heating and cooling",
+  "General contractor", "Construction and renovation", "Other services"] as const;
+
+/** Where a listing comes from. The credit line is a condition of each open-data licence. */
+export const SOURCES: Record<Listing["source"], { credit: string; register: string }> = {
+  rbq: { credit: 'Régie du bâtiment du Québec, "Liste des licences actives", CC BY 4.0', register: "the public RBQ licence register" },
+  mtl_food: { credit: 'Ville de Montréal, "Établissements alimentaires", CC BY 4.0', register: "Montréal's public list of food establishments" },
+  mtl_shops: { credit: 'Ville de Montréal, "Locaux commerciaux et statuts d\'occupation", CC BY 4.0', register: "Montréal's public survey of commercial spaces" },
+};
 export const PAGE_SIZE = 20;
-const COLUMNS = "id,source_ref,name,other_name,city,region,trade,category_slug,slug,status,claimed_at";
+const COLUMNS = "id,source,activity,source_ref,name,other_name,city,region,trade,category_slug,slug,status,claimed_at";
 
 /** Characters that have a meaning in a PostgREST filter or a LIKE pattern are dropped from what people type. */
 export const cleanTerm = (value: string) => value.replace(/[%_,()*\\"']/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);

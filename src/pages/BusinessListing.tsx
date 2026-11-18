@@ -5,7 +5,7 @@ import { BadgeCheck, MapPin, ShieldCheck, Wrench } from "lucide-react";
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
 import { Button } from "@/components/ui/button";
-import { getListing, getTrialTerms } from "@/lib/directory";
+import { SOURCES, getListing, getTrialTerms } from "@/lib/directory";
 
 /** One business from the directory. Shows what the public register shows; never a phone, email or address. */
 export default function BusinessListing() {
@@ -27,14 +27,14 @@ export default function BusinessListing() {
               <h1 className="text-[28px] leading-tight text-fx-ink md:text-[36px]">{title}</h1>
               {listing.other_name && <p className="mt-1 text-sm text-fx-muted">Registered as {listing.name}</p>}
               <dl className="mt-5 grid gap-3 text-fx-secondary">
-                <div className="flex items-center gap-3"><Wrench className="size-5 text-fx-muted" aria-hidden="true" /><dt className="sr-only">Trade</dt><dd>{listing.trade}</dd></div>
+                <div className="flex items-center gap-3"><Wrench className="size-5 text-fx-muted" aria-hidden="true" /><dt className="sr-only">Trade</dt><dd>{listing.trade}{listing.activity && listing.activity.toLowerCase() !== listing.trade.toLowerCase() ? ` · ${listing.activity}` : ""}</dd></div>
                 <div className="flex items-center gap-3"><MapPin className="size-5 text-fx-muted" aria-hidden="true" /><dt className="sr-only">Location</dt><dd>{listing.city}, QC{listing.region && listing.region !== listing.city ? ` · ${listing.region}` : ""}</dd></div>
-                <div className="flex items-center gap-3"><ShieldCheck className="size-5 text-fx-muted" aria-hidden="true" /><dt className="sr-only">Licence</dt><dd>RBQ licence {listing.source_ref}</dd></div>
+                {listing.source === "rbq" && <div className="flex items-center gap-3"><ShieldCheck className="size-5 text-fx-muted" aria-hidden="true" /><dt className="sr-only">Licence</dt><dd>RBQ licence {listing.source_ref}</dd></div>}
               </dl>
             </header>
 
             <section className="mt-8 rounded-fx-md border border-fx-line bg-white p-5">
-              <h2 className="text-xl text-fx-ink">Need {listing.trade.toLowerCase()} work in {listing.city}?</h2>
+              <h2 className="text-xl text-fx-ink">Looking for a professional in {listing.city}?</h2>
               <p className="mt-2 text-fx-secondary">Describe your project once. Professionals on FLEXS reply with quotes. Posting is free.</p>
               <Button asChild className="mt-4 h-[50px] rounded-fx-xs px-6 text-base"><Link to={listing.category_slug ? `/post-job/${listing.category_slug}` : "/post-job"}>Get quotes</Link></Button>
             </section>
@@ -43,10 +43,10 @@ export default function BusinessListing() {
               ? <p className="mt-6 flex items-center gap-2 text-success"><BadgeCheck className="size-5" aria-hidden="true" />This business is on FLEXS.</p>
               : <section className="mt-6 rounded-fx-md bg-fx-soft p-5">
                   <h2 className="text-xl text-fx-ink">Is this your business?</h2>
-                  <p className="mt-2 text-fx-secondary">This listing comes from the public RBQ licence register and has not been claimed. Claim it to add your details, receive customer requests and reply to them{terms ? `, with a ${terms.trial_days}-day free trial${terms.trial_credits ? ` and ${terms.trial_credits} credits` : ""}` : ""}.</p>
+                  <p className="mt-2 text-fx-secondary">This listing comes from {SOURCES[listing.source].register} and has not been claimed. Claiming is free. Claim it to add your details, receive customer requests and reply to them{terms ? `, with a ${terms.trial_days}-day free trial${terms.trial_credits ? ` and ${terms.trial_credits} credits` : ""}` : ""}.</p>
                   <Button asChild variant="outline" className="mt-4 h-[50px] rounded-fx-xs px-6 text-base"><Link to={`/business/${listing.slug}/claim`}>Claim this business</Link></Button>
                 </section>}
-            <p className="mt-10 text-xs text-fx-muted">Source: Régie du bâtiment du Québec, "Liste des licences actives", CC BY 4.0. FLEXS is not affiliated with the RBQ and does not verify the work of unclaimed businesses. To correct or remove this listing, <Link to="/support" className="underline">contact us</Link>.</p>
+            <p className="mt-10 text-xs text-fx-muted">Source: {SOURCES[listing.source].credit}. FLEXS is not affiliated with the source and does not verify unclaimed businesses. To correct or remove this listing, <Link to="/support" className="underline">contact us</Link>.</p>
           </>}
       </main>
       <SiteFooter />

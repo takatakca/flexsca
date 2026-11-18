@@ -25,6 +25,13 @@ describe("business directory", () => {
     expect(migration).toMatch(/REVOKE ALL ON FUNCTION public\.directory_grant_listing\(uuid, text, uuid\) FROM PUBLIC, anon, authenticated/);
   });
 
+  it("never writes Montréal addresses or coordinates into a listing", () => {
+    const mtl = readFileSync("scripts/build_montreal_directory.py", "utf8");
+    const written = mtl.slice(mtl.indexOf("rows.append"), mtl.indexOf("size = 2500"));
+    expect(written).not.toMatch(/'address'|'ADRESSE'|latitude|LAT|LONG|'CIVIQUE'\]\s*,\s*'/);
+    expect(mtl).toMatch(/INSERT INTO public\.business_listings \(source, source_ref, name, city, region, trade, activity, slug\)/);
+  });
+
   it("writes the source email only as a hash and never the phone or address", () => {
     expect(importer).toMatch(/hashlib\.sha256\(email\.encode\(\)\)/);
     expect(importer).not.toMatch(/r\['(Numéro de téléphone|Adresse)'\]/);

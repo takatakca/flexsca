@@ -5,7 +5,7 @@ Owner's order, 2026-11-18: every Quebec business should already have a basic pag
 
 ## What is live
 
-- `public.business_listings`: 49,252 Quebec contractors imported on 2026-11-18.
+- `public.business_listings`: 81,297 businesses on 2026-11-18: 49,252 Quebec contractors (RBQ), 11,449 Montréal food establishments, 20,596 Montréal street-level businesses.
 - Pages: `/directory` (search by name, city, trade), `/business/:slug`, `/business/:slug/claim`.
 - Admin screen: "Business claims to verify".
 
@@ -13,10 +13,13 @@ Owner's order, 2026-11-18: every Quebec business should already have a basic pag
 
 | Source | Licence | Status |
 |---|---|---|
-| Régie du bâtiment du Québec, "Liste des licences actives" (Données Québec, daily) | CC BY 4.0, commercial use allowed with attribution | Imported |
+| Régie du bâtiment du Québec, "Liste des licences actives" (Données Québec, daily) | CC BY 4.0, commercial use allowed with attribution | Imported (`rbq`) |
+| Ville de Montréal, "Établissements alimentaires" (weekly) | CC BY 4.0 | Imported (`mtl_food`), open establishments only |
+| Ville de Montréal, "Locaux commerciaux et statuts d'occupation" 2025 (annual) | CC BY 4.0 | Imported (`mtl_shops`) |
 | Registraire des entreprises du Québec (all enterprises) | CC BY-NC-SA 4.0, **no commercial use** | Not used. A commercial agreement with the Registraire is needed first |
 | Google Maps, Yelp, Yellow Pages, 411, RestoMontréal | Proprietary, terms forbid copying | Not used |
-| Ville de Montréal open data, Statistics Canada ODBus, OpenStreetMap | Open, commercial use allowed | Next candidates (restaurants, shops, services) |
+| Statistics Canada ODBus, OpenStreetMap, other cities' open data (Québec, Laval, Longueuil, Gatineau, Sherbrooke) | Open, commercial use allowed (check each) | Next candidates |
+| Google Places API, Google Business Profile API | Licensed API | Allowed use: keep the Google place ID and show Google details live with attribution; let an owner connect their own profile when claiming. Not allowed: storing Google's list |
 
 The attribution line on `/directory` and on each business page is a licence condition. Keep it.
 
@@ -40,6 +43,16 @@ Limits: one business per account, one open claim per account, three claims per 3
 listing and per account for life (deleting the account does not reset it).
 
 ## Refresh
+
+Montréal (the download link redirects to `montreal-prod.storage.googleapis.com`):
+
+```bash
+python3 -I scripts/build_montreal_directory.py businesses.csv occupation-commerciale-2025.csv out/
+```
+
+Left out of the Montréal import: closed establishments, home kitchens, daycares, schools, hospitals, residences, food banks, wholesalers, vending machines, vacant spaces, religious and public bodies, bank branches. The same business in both files is listed once. Montréal listings carry no ownership proof, so their claims always go to an administrator.
+
+RBQ:
 
 ```bash
 python3 -I scripts/build_rbq_directory.py rdl01_ExtractionDonneesOuvertes.csv out/

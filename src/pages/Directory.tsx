@@ -29,7 +29,7 @@ export default function Directory() {
       <SiteHeader />
       <main className="mx-auto max-w-4xl px-gutter py-8">
         <h1 className="text-[28px] leading-tight text-fx-ink md:text-[36px]">Quebec business directory</h1>
-        <p className="mt-2 text-fx-secondary">Licensed contractors across Quebec. Find one near you, or claim your own business.</p>
+        <p className="mt-2 text-fx-secondary">Restaurants, shops, services and licensed contractors. Find one near you, or claim your own business for free.</p>
         <form className="mt-6 flex flex-col gap-3 md:grid md:grid-cols-[1fr_1fr_1fr_auto]" onSubmit={e => { e.preventDefault(); go({ name, city, trade, page: 0 }); }}>
           <label className="sr-only" htmlFor="dir-name">Business name</label>
           <input id="dir-name" className={field} placeholder="Business name" value={name} maxLength={60} onChange={e => setName(e.target.value)} />
@@ -69,7 +69,7 @@ export default function Directory() {
               </nav>}
             </>}
         </section>
-        <p className="mt-10 text-xs text-fx-muted">Contains information from the Régie du bâtiment du Québec, "Liste des licences actives", licensed under CC BY 4.0. FLEXS is not affiliated with the RBQ. To correct or remove a listing, <Link to="/support" className="underline">contact us</Link>.</p>
+        <p className="mt-10 text-xs text-fx-muted">Contains open data from the Régie du bâtiment du Québec ("Liste des licences actives") and the Ville de Montréal ("Établissements alimentaires", "Locaux commerciaux et statuts d'occupation"), licensed under CC BY 4.0. FLEXS is not affiliated with them. To correct or remove a listing, <Link to="/support" className="underline">contact us</Link>.</p>
       </main>
       <SiteFooter />
     </div>

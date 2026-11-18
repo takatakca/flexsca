@@ -24,7 +24,7 @@ export default function AdminClaimQueue() {
         : <div className="space-y-3">{data.map(claim => (
           <div key={claim.claim_id} className="p-4 border rounded-fx-md">
             <p className="font-medium">{claim.listing_name} · {claim.city} · {claim.trade}</p>
-            <p className="text-sm text-muted-foreground">RBQ licence {claim.licence}. Claimed by {claim.claimant_email} as {claim.role}. Check the RBQ register and call the number listed there before approving.</p>
+            <p className="text-sm text-muted-foreground">Record {claim.licence}. Claimed by {claim.claimant_email} as {claim.role}. Find the business in its public register and call the number listed there before approving.</p>
             {claim.note && <p className="text-sm whitespace-pre-wrap mt-2">{claim.note}</p>}
             <div className="flex gap-2 mt-3">
               <Button size="sm" disabled={busy} onClick={() => void decide(claim.claim_id, true)}>Approve and start trial</Button>
