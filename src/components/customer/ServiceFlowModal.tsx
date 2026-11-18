@@ -386,9 +386,9 @@ export default function ServiceFlowModal({
     if (!question) return null;
     const progress = ((currentQ + 1) / (questions.length + 2)) * 100;
     return (
-      <div className="bg-white rounded-fx-xs shadow-2xl max-w-[420px] w-full mx-2.5 overflow-hidden">
+      <div className="bg-white rounded-fx-xs shadow-2xl max-w-[420px] md:max-w-[700px] w-full mx-2.5 overflow-hidden">
         {/* Photo strip with close button */}
-        <div className="relative h-24 bg-fx-sunken">
+        <div className="relative h-24 bg-fx-sunken md:h-36">
           {heroImage && <img src={heroImage} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover" />}
           <button onClick={handleClose} aria-label="Close" className="absolute right-4 top-4 grid size-[30px] place-items-center rounded-full bg-white/90 text-fx-secondary hover:text-fx-ink">
             <X className="h-4 w-4" />
@@ -402,7 +402,7 @@ export default function ServiceFlowModal({
 
         {/* Question */}
         <div className="px-5 pt-6 pb-6">
-          <h2 className="text-[22px] leading-snug text-fx-ink text-center mb-4">{question.label}</h2>
+          <h2 className="text-[22px] leading-snug text-fx-ink text-center mb-4 md:text-[34px]">{question.label}</h2>
           <p className="text-sm text-fx-muted text-center">{question.subtitle || `Get quotes for ${categoryName.toLowerCase()} today`}</p>
         </div>
 
@@ -607,7 +607,7 @@ export default function ServiceFlowModal({
     const total = questions.length + CONTACT_STEPS.length + 1;
     const progress = ((questions.length + CONTACT_STEPS.indexOf(current) + 1) / total) * 100;
     return (
-      <form onSubmit={e => { e.preventDefault(); if (opts.canContinue !== false) opts.onNext(); }} className={cn("mx-2.5 w-full max-w-lg rounded-fx-xs px-5 pb-5 pt-5 shadow-2xl", opts.tint ? "bg-[hsl(var(--fx-mint))]" : "bg-white")}>
+      <form onSubmit={e => { e.preventDefault(); if (opts.canContinue !== false) opts.onNext(); }} className={cn("mx-2.5 w-full max-w-lg rounded-fx-xs px-5 pb-5 pt-5 shadow-2xl md:max-w-[700px] md:px-8 md:pb-7", opts.tint ? "bg-[hsl(var(--fx-mint))]" : "bg-white")}>
         <div className="flex items-center gap-4">
           <div className="h-1.5 flex-1 overflow-hidden rounded-fx-pill bg-fx-line" role="progressbar" aria-label="Request progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
             <div className="h-full rounded-fx-pill bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
@@ -622,7 +622,7 @@ export default function ServiceFlowModal({
       </form>
     );
   };
-  const stepTitle = "text-center text-[22px] leading-[1.45] text-fx-ink";
+  const stepTitle = "text-center text-[22px] leading-[1.45] text-fx-ink md:text-[34px] md:leading-[1.3]";
   const stepField = "h-[52px] w-full rounded-fx-xs border border-fx-muted bg-white px-4 text-base text-fx-ink outline-none placeholder:text-fx-secondary focus:border-primary";
 
   const renderLocationStep = () => stepCard("location-step", <>

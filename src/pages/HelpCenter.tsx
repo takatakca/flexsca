@@ -29,7 +29,7 @@ const articles: { group: GroupId; slug: string; title: string; body: string; to:
 function HelpHero({ search, onSearch }: { search: string; onSearch: (value: string) => void }) {
   return (
     <div className="bg-gradient-to-r from-[hsl(var(--fx-hero-from))] via-[hsl(var(--fx-hero-via))] to-[hsl(var(--fx-hero-to))] px-gutter py-16 md:py-24">
-      <div className="relative mx-auto max-w-3xl">
+      <div className="relative mx-auto max-w-xl">
         <Search className="pointer-events-none absolute left-5 top-1/2 size-5 -translate-y-1/2 text-fx-muted" aria-hidden="true" />
         <input aria-label="Search help topics" placeholder="Tell us how we can help..." value={search} onChange={e => onSearch(e.target.value)}
           className="h-[52px] w-full rounded-fx-xs border-0 bg-white pl-12 pr-4 text-base text-fx-ink placeholder:text-fx-secondary focus:outline-none focus:ring-2 focus:ring-primary" />
@@ -48,7 +48,7 @@ function Crumbs({ items }: { items: [string, string?][] }) {
 
 function GetInTouch() {
   return (
-    <section className="mx-auto max-w-3xl px-gutter py-14">
+    <section className="mx-auto max-w-5xl px-gutter py-14">
       <h2 className="text-[28px] text-fx-ink">Get in touch</h2>
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <Link to="/support" className="flex items-center gap-5 rounded-fx-xs border border-fx-line bg-white px-8 py-6 hover:border-primary">
@@ -67,7 +67,7 @@ function GetInTouch() {
 function CannotFind() {
   return (
     <section className="bg-[hsl(var(--fx-callout))] px-gutter py-12 text-center">
-      <h2 className="mx-auto max-w-sm text-[28px] leading-tight text-fx-ink">Can't find what you're looking for?</h2>
+      <h2 className="mx-auto max-w-sm text-[28px] leading-tight text-fx-ink md:max-w-none md:text-[36px]">Can't find what you're looking for?</h2>
       <Button asChild className="mt-6 h-11 rounded-fx-xs px-8 shadow-fx-button"><Link to="/support">Open support</Link></Button>
     </section>
   );
@@ -92,22 +92,22 @@ export default function HelpCenter() {
   let content;
   if (!slug) {
     content = <>
-      <section className="mx-auto max-w-3xl px-gutter py-14">
-        <h1 className="text-center text-[28px] text-fx-ink">Categories</h1>
+      <section className="mx-auto max-w-5xl px-gutter py-14">
+        <h1 className="text-center text-[28px] text-fx-ink md:text-[44px]">Categories</h1>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {GROUPS.map(({ id, title, blurb, icon: Icon }) => (
             <Link key={id} to={`/help/${id}`} className="rounded-fx-xs border border-fx-line bg-white px-6 py-8 text-center shadow-fx-card hover:border-primary">
               <Icon className="mx-auto size-14 text-primary" strokeWidth={1.25} aria-hidden="true" />
-              <span className="mt-5 block text-xl text-fx-ink">{title}</span>
-              <span className="mt-3 block text-sm text-fx-ink">{blurb}</span>
+              <span className="mt-5 block text-xl text-fx-ink md:text-2xl">{title}</span>
+              <span className="mt-3 block text-sm text-fx-ink md:text-base">{blurb}</span>
             </Link>
           ))}
         </div>
       </section>
       <section className="bg-fx-sunken px-gutter py-12">
-        <h2 className="text-center text-[28px] text-fx-ink">Popular</h2>
-        <ul className="mx-auto mt-6 max-w-3xl divide-y divide-fx-line">
-          {articles.map(article => <li key={article.slug}><Link to={`/help/${article.slug}`} className="block py-3.5 text-center text-primary hover:underline">{article.title}</Link></li>)}
+        <h2 className="text-center text-[28px] text-fx-ink md:text-[44px]">Popular</h2>
+        <ul className="mx-auto mt-6 max-w-5xl divide-y divide-fx-line md:grid md:grid-cols-3 md:gap-x-6 md:divide-y-0">
+          {articles.map(article => <li key={article.slug} className="md:border-b md:border-fx-line"><Link to={`/help/${article.slug}`} className="block py-3.5 text-center text-primary hover:underline">{article.title}</Link></li>)}
         </ul>
       </section>
       <GetInTouch />

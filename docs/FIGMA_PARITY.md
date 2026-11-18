@@ -52,7 +52,7 @@ Signed: Claude (Claude Code cloud). Last updated 2026-11-18 (part 2). Source of 
 | 26 | Cookies (616:711) | `/cookies` | **Done**, read and compared: centred title, section headings, body text. **Owner: the wording of this policy needs a legal review**; it describes analytics and advertising tools FLEXS may not use |
 | 27 | Privacy (617:430) | `/help/privacy` | Partial: explains deletion and data requests; a full policy needs the owner's legal text |
 | 28 | Request wizard frames (about 250, e.g. 716:280, 716:557, 674:2, 695:530) | wizard steps | Not read one by one. The 15 frames of row 11 give every step type; each category's questions come from the database (`service_categories.questions`), which is the data-driven source. Copying the other company's 250 question sets into FLEXS is not done: FLEXS questions are written per category |
-| 29 | Desktop frames (441, 1440 px) | all routes | Not started. Current screens are responsive, not matched to the desktop frames |
+| 29 | Desktop frames (441 frames, 158 distinct screens at 1440 px) | all routes | **Started.** Listed by a small read-only script. Compared and adjusted so far: Homepage (2:2), Help (39:2435), Search results 1 (19:828), Join as a Professional (424:2), plus the shared header. Read, not yet compared: Buyer Dashboard (25:6315), Submit a Request (39:1939). Not read yet: Search Page (4:546), business Page (102:1433), Categories (39:2642), Contact us (37:1525), Cookies (73:2590), Profile (75:3138), Search results 2–16 (19:1155 to 24:5974), Loading (568:19137), Terms (72:1751), Privacy (74:2941), Press (62:1423), Read Guide (36:869), articles (818:303), Banned Reviews Policy (818:482), About us (39:2786), affiliate (62:755), and about 130 category landing and flow frames that share those templates |
 
 ## Verification after the redesign (2026-11-18)
 
@@ -77,6 +77,15 @@ Checks: typecheck, lint (0 errors), 99 tests, build, 29 browser scenarios; 440 p
 
 Read: 633:178, 633:192, 633:209, 633:232, 633:246, 568:26669 (B); 609:843, 610:988, 610:1295 (C); the 15 search-result frames (D).
 Checks after these groups: typecheck, lint (0 errors), unit tests, build, browser scenarios.
+
+## Desktop pass 1 (2026-11-18)
+
+- Header: section links beside the wordmark, Sign in and a blue pill for professionals on the right (frame 2:2).
+- Home: 60 px headline, group headings left with "View All" on the right.
+- Help centre: wider column, Popular in three columns, larger headings.
+- Wizard: 700 px card and 34 px question on desktop.
+- Professional page (frame 424:2): headline, service field with GO, popular services, three benefit columns with bullet points, a facts block. The frame's rating badge, daily-lead and revenue figures, customer stories and client logos are not used: FLEXS has none of them. The facts block shows two live numbers from the database (businesses listed, services).
+- Checks: typecheck, lint (0 errors), unit tests, build, browser scenarios, OCR audit; 440 px and 1440 px screenshots without overflow.
 
 ## Frames still needed to finish
 
