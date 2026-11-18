@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
 import { Button } from "@/components/ui/button";
@@ -49,16 +49,19 @@ export default function Directory() {
             : !data?.rows.length ? <p className="rounded-fx-md bg-fx-soft p-6 text-fx-secondary">No business matches this search. Try a shorter name or another city.</p>
             : <>
               <p className="mb-3 text-sm text-fx-muted">About {data.total.toLocaleString("en-CA")} businesses</p>
-              <ul className="flex flex-col gap-3">
+              <ul className="grid gap-5 md:grid-cols-2">
                 {data.rows.map(row => (
-                  <li key={row.id}>
-                    <Link to={`/business/${row.slug}`} className="flex items-center justify-between gap-4 rounded-fx-md border border-fx-line bg-white p-4 hover:border-primary">
-                      <span className="min-w-0">
-                        <span className="block truncate text-lg text-fx-ink">{row.other_name || row.name}</span>
-                        <span className="block text-sm text-fx-secondary">{row.trade} · {row.city}, QC</span>
-                      </span>
+                  <li key={row.id} className="min-w-0 rounded-fx-xs border border-fx-line bg-white p-5 shadow-fx-card">
+                    <div className="flex items-start justify-between gap-3">
+                      <h2 className="min-w-0 break-words text-xl text-fx-ink">{row.other_name || row.name}</h2>
                       <span className={`shrink-0 rounded-fx-pill px-3 py-1 text-xs ${row.status === "claimed" ? "bg-success/10 text-success" : "bg-fx-soft text-fx-secondary"}`}>{row.status === "claimed" ? "On FLEXS" : "Not claimed"}</span>
-                    </Link>
+                    </div>
+                    <p className="mt-3 flex items-center gap-2 text-fx-ink"><MapPin className="size-4 shrink-0" aria-hidden="true" />{row.city}, QC</p>
+                    <p className="mt-3 text-fx-ink"><span className="font-bold">Category: </span>{row.trade}</p>
+                    <div className="mt-5 flex items-center justify-between gap-3">
+                      <Link to={`/business/${row.slug}`} className="text-lg text-primary hover:underline">View profile ›</Link>
+                      <Button asChild className="h-11 rounded-fx-xs px-6 shadow-fx-button"><Link to={row.category_slug ? `/post-job/${row.category_slug}` : "/post-job"}>Request quote</Link></Button>
+                    </div>
                   </li>
                 ))}
               </ul>

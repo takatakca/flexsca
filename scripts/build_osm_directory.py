@@ -75,6 +75,8 @@ def classify(tags):
         return ('Travel agency' if v == 'travel_agent' else 'Professional services'), v
     return None
 
+PUBLIC_NAME = re.compile(r'^(CLSC|CHSLD|CISSS|CIUSSS|Centre hospitalier|Hôpital|Hopital|Bureau de poste|Postes Canada|SAAQ|Services? Québec)\b', re.I)
+
 def slugify(text):
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode().lower()
     return re.sub(r'[^a-z0-9]+', '-', text).strip('-')
@@ -122,7 +124,9 @@ def main(pbf, out):
         city = town_of.get(i)
         if not city: skipped['outside_boundaries'] += 1; continue
         key = (slugify(name), slugify(city))
-        if len(name) < 2 or not key[0]: skipped['incomplete'] += 1; continue
+        # A name needs real letters (map codes such as "25-238" are not business names) and must not be a public body.
+        if len(re.sub(r'[^A-Za-zÀ-ÿ]', '', name)) < 3 or not key[0] or PUBLIC_NAME.match(name): skipped['incomplete'] += 1; continue
+        if activity == 'Yes': activity = None
         if key in seen: skipped['duplicate'] += 1; continue
         seen.add(key)
         rows.append({'source': 'osm', 'source_ref': ref, 'name': name, 'city': city, 'trade': trade, 'activity': activity,
