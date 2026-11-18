@@ -72,7 +72,7 @@ export default function PostJob() {
               >
                 <span className="relative block aspect-[380/232] bg-fx-sunken">
                   {cat.hero_image
-                    ? <img src={cat.hero_image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+                    ? <img src={cat.hero_image} alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
                     : <span aria-hidden="true" className="absolute inset-0 grid place-items-center text-5xl">{cat.icon}</span>}
                 </span>
                 <span className="block px-3 py-3 text-sm leading-snug text-fx-ink md:px-[18px] md:py-4 md:text-lg">{cat.name}</span>

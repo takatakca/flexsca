@@ -1,3 +1,4 @@
+import { Brand } from "@/components/fx/SiteHeader";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, CheckCircle2, PenLine, BellRing, Clock, Check, AlertCircle, ChevronDown, Star, MapPin } from "lucide-react";
@@ -161,7 +162,7 @@ export default function Onboarding() {
       <div className="flex min-h-screen flex-col bg-background">
         <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
           <div className="flex h-14 items-center justify-between px-4">
-            <span className="text-xl font-bold text-primary italic">FLEXS</span>
+            <Brand />
             <div className="h-6 w-6" />
           </div>
         </header>
@@ -174,13 +175,13 @@ export default function Onboarding() {
             Tell us the area you cover so we can show you leads for your location
           </p>
 
-          <div className="w-full max-w-sm border border-border rounded-xl p-6 space-y-5">
+          <div className="w-full max-w-sm border border-fx-line rounded-fx-md p-6 space-y-5">
             <h2 className="text-xl font-bold text-foreground">I serve customers within</h2>
 
             <select
               value={radius}
               onChange={(e) => setRadius(e.target.value)}
-              className="w-full h-12 border border-border rounded-xl px-4 text-sm text-foreground bg-background"
+              className="w-full h-[50px] border border-fx-line rounded-fx-xs px-4 text-sm text-foreground bg-background"
             >
               {RADIUS_OPTIONS.map((r) => (
                 <option key={r} value={r}>{r}</option>
@@ -189,7 +190,7 @@ export default function Onboarding() {
 
             <p className="text-sm text-muted-foreground">From</p>
 
-            <div className="flex items-center gap-3 border border-border rounded-xl px-4 py-3">
+            <div className="flex items-center gap-3 border border-fx-line rounded-fx-md px-4 py-3">
               <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
               <input
                 type="text"
@@ -204,7 +205,7 @@ export default function Onboarding() {
               <MapPin className="h-3 w-3" /> You can change your location at any time
             </p>
 
-            <Button onClick={handleLocationNext} className="px-8 rounded-xl">
+            <Button onClick={handleLocationNext} className="px-8 h-[50px] rounded-fx-xs">
               Next
             </Button>
           </div>
@@ -219,7 +220,7 @@ export default function Onboarding() {
       <div className="flex min-h-screen flex-col bg-background">
         <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
           <div className="flex h-14 items-center justify-between px-4">
-            <span className="text-xl font-bold text-primary italic">FLEXS</span>
+            <Brand />
             <div className="h-6 w-6" />
           </div>
         </header>
@@ -232,14 +233,14 @@ export default function Onboarding() {
             You're just a few steps away from viewing our leads
           </p>
 
-          <div className="w-full max-w-sm border border-border rounded-xl p-6 space-y-5">
+          <div className="w-full max-w-sm border border-fx-line rounded-fx-md p-6 space-y-5">
             <div>
               <label className="text-sm font-semibold text-foreground mb-1.5 block">Your name</label>
               <Input
                 value={yourName}
                 onChange={(e) => setYourName(e.target.value)}
                 placeholder="Your full name"
-                className="h-12 rounded-xl"
+                className="h-[50px] rounded-fx-xs"
               />
             </div>
 
@@ -249,7 +250,7 @@ export default function Onboarding() {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="Company name"
-                className="h-12 rounded-xl"
+                className="h-[50px] rounded-fx-xs"
               />
               <p className="text-xs text-muted-foreground mt-1">
                 If you aren't a business or don't have this information, you can leave this blank
@@ -263,7 +264,7 @@ export default function Onboarding() {
                 value={emailAddress}
                 onChange={(e) => setEmailAddress(e.target.value)}
                 placeholder="your@email.com"
-                className="h-12 rounded-xl"
+                className="h-[50px] rounded-fx-xs"
               />
             </div>
 
@@ -273,7 +274,7 @@ export default function Onboarding() {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="Optional"
-                className="h-12 rounded-xl"
+                className="h-[50px] rounded-fx-xs"
               />
             </div>
 
@@ -312,10 +313,10 @@ export default function Onboarding() {
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <Button variant="outline" onClick={() => setPhase("location")} className="px-8 rounded-xl">
+              <Button variant="outline" onClick={() => setPhase("location")} className="px-8 h-[50px] rounded-fx-xs">
                 Back
               </Button>
-              <Button onClick={handleDetailsNext} className="px-8 rounded-xl">
+              <Button onClick={handleDetailsNext} className="px-8 h-[50px] rounded-fx-xs">
                 Next
               </Button>
             </div>
@@ -374,7 +375,7 @@ export default function Onboarding() {
 
       {/* Continue button */}
       <div className="px-6 pb-8">
-        <Button onClick={handleContinue} className="w-full h-12 text-base font-semibold rounded-xl">
+        <Button onClick={handleContinue} className="w-full h-[50px] text-base rounded-fx-xs">
           {currentSlide === slides.length - 1 ? "Get started" : "Continue"}
         </Button>
       </div>

@@ -312,16 +312,6 @@ export default function ServiceCategoryPage() {
         </div>
       </section>
 
-      {/* Press bar */}
-      <div className="border-b py-5">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center gap-6 sm:gap-12 flex-wrap opacity-30">
-          <span className="text-lg font-bold tracking-tight font-serif">CBC</span>
-          <span className="text-lg font-bold tracking-tight italic">Globe&Mail</span>
-          <span className="text-lg font-bold tracking-widest uppercase font-serif">TORONTO STAR</span>
-          <span className="text-lg font-bold tracking-widest uppercase">MACLEAN'S</span>
-        </div>
-      </div>
-
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-4">
         <nav className="text-xs text-muted-foreground flex items-center flex-wrap gap-1">
