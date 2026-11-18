@@ -66,7 +66,7 @@ export default function JobQuestionnaire() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center bg-fx-sunken">
         <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -74,7 +74,7 @@ export default function JobQuestionnaire() {
 
   if (!category) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-fx-sunken p-4">
         <p className="text-muted-foreground mb-4">Service not found</p>
         <Button onClick={() => navigate("/post-job")}>Back to services</Button>
       </div>
@@ -179,20 +179,20 @@ export default function JobQuestionnaire() {
             className={cn(
               "w-full flex items-center gap-3 px-4 py-4 text-left transition-colors",
               idx > 0 && "border-t border-border",
-              selected === opt ? "bg-primary/5" : "hover:bg-gray-50"
+              selected === opt ? "bg-primary/5" : "hover:bg-fx-soft"
             )}
           >
             <div
               className={cn(
                 "h-5 w-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center",
-                selected === opt ? "border-primary" : "border-gray-300"
+                selected === opt ? "border-primary" : "border-fx-line"
               )}
             >
               {selected === opt && (
                 <div className="h-2.5 w-2.5 rounded-full bg-primary" />
               )}
             </div>
-            <span className="text-sm text-gray-700">{opt}</span>
+            <span className="text-sm text-fx-secondary">{opt}</span>
           </button>
         ))}
         {question.hasOther && (
@@ -209,7 +209,7 @@ export default function JobQuestionnaire() {
                   "h-5 w-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors",
                   otherChecked[question.id]
                     ? "border-primary bg-primary"
-                    : "border-gray-300"
+                    : "border-fx-line"
                 )}
               >
                 {otherChecked[question.id] && <CheckIcon />}
@@ -227,7 +227,7 @@ export default function JobQuestionnaire() {
                 onClick={() =>
                   !otherChecked[question.id] && handleOtherToggle()
                 }
-                className="flex-1 text-sm outline-none bg-transparent border border-gray-200 rounded px-3 py-1.5 placeholder:text-gray-400 focus:border-primary"
+                className="flex-1 text-sm outline-none bg-transparent border border-fx-line rounded px-3 py-1.5 placeholder:text-fx-muted focus:border-primary"
               />
             </div>
           </div>
@@ -249,18 +249,18 @@ export default function JobQuestionnaire() {
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-4 text-left transition-colors",
                 idx > 0 && "border-t border-border",
-                isChecked ? "bg-primary/5" : "hover:bg-gray-50"
+                isChecked ? "bg-primary/5" : "hover:bg-fx-soft"
               )}
             >
               <div
                 className={cn(
                   "h-5 w-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors",
-                  isChecked ? "border-primary bg-primary" : "border-gray-300"
+                  isChecked ? "border-primary bg-primary" : "border-fx-line"
                 )}
               >
                 {isChecked && <CheckIcon />}
               </div>
-              <span className="text-sm text-gray-700">{opt}</span>
+              <span className="text-sm text-fx-secondary">{opt}</span>
             </button>
           );
         })}
@@ -278,7 +278,7 @@ export default function JobQuestionnaire() {
                   "h-5 w-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors",
                   otherChecked[question.id]
                     ? "border-primary bg-primary"
-                    : "border-gray-300"
+                    : "border-fx-line"
                 )}
               >
                 {otherChecked[question.id] && <CheckIcon />}
@@ -296,7 +296,7 @@ export default function JobQuestionnaire() {
                 onClick={() =>
                   !otherChecked[question.id] && handleOtherToggle()
                 }
-                className="flex-1 text-sm outline-none bg-transparent border border-gray-200 rounded px-3 py-1.5 placeholder:text-gray-400 focus:border-primary"
+                className="flex-1 text-sm outline-none bg-transparent border border-fx-line rounded px-3 py-1.5 placeholder:text-fx-muted focus:border-primary"
               />
             </div>
           </div>
@@ -313,7 +313,7 @@ export default function JobQuestionnaire() {
           onChange={(e) => handleTextChange(e.target.value)}
           placeholder={question.placeholder || "Enter your answer..."}
           rows={6}
-          className="w-full px-4 py-4 text-sm text-gray-800 outline-none resize-none placeholder:text-gray-400 focus:ring-0"
+          className="w-full px-4 py-4 text-sm text-fx-ink outline-none resize-none placeholder:text-fx-muted focus:ring-0"
         />
       </div>
     );
@@ -323,13 +323,13 @@ export default function JobQuestionnaire() {
     return (
       <div className="border border-border rounded-lg overflow-hidden bg-white">
         <div className="flex items-center gap-3 px-4 py-4">
-          <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <MapPin className="h-5 w-5 text-fx-muted flex-shrink-0" />
           <input
             type="text"
             value={(answers[question.id] as string) || ""}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder={question.placeholder || "Enter postal code or city"}
-            className="flex-1 text-sm text-gray-800 outline-none placeholder:text-gray-400"
+            className="flex-1 text-sm text-fx-ink outline-none placeholder:text-fx-muted"
           />
         </div>
       </div>
@@ -351,9 +351,9 @@ export default function JobQuestionnaire() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-fx-sunken flex flex-col">
       {/* Progress bar at very top */}
-      <div className="h-1.5 bg-gray-200">
+      <div className="h-1.5 bg-fx-sunken">
         <div
           className="h-full bg-primary transition-all duration-300"
           style={{ width: `${progress}%` }}
@@ -367,7 +367,7 @@ export default function JobQuestionnaire() {
           <div className="flex justify-end px-4 pt-4">
             <button
               onClick={() => navigate("/post-job")}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-fx-muted hover:text-fx-secondary transition-colors"
             >
               <X className="h-5 w-5" />
             </button>
@@ -375,11 +375,11 @@ export default function JobQuestionnaire() {
 
           {/* Question */}
           <div className="px-6 pb-4">
-            <h2 className="text-xl font-bold text-gray-900 text-center mb-1">
+            <h2 className="text-xl font-bold text-fx-ink text-center mb-1">
               {question.label}
             </h2>
             {question.subtitle && (
-              <p className="text-sm text-gray-500 text-center">
+              <p className="text-sm text-fx-secondary text-center">
                 {question.subtitle}
               </p>
             )}
@@ -389,7 +389,7 @@ export default function JobQuestionnaire() {
           <div className="px-6 pb-6">{renderQuestion()}</div>
 
           {/* Footer navigation */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-gray-50">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-fx-soft">
             {currentQ > 0 ? (
               <Button variant="outline" onClick={handleBack} className="px-6">
                 Back

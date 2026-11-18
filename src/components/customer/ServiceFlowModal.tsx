@@ -26,6 +26,8 @@ interface ServiceFlowModalProps {
   categoryName: string;
   categorySlug: string;
   questions: Question[];
+  /** Category photo shown as the strip at the top of each question, as in the design. */
+  heroImage?: string | null;
   onClose: () => void;
 }
 
@@ -46,7 +48,7 @@ export default function ServiceFlowModal({
   categoryId,
   categoryName,
   categorySlug,
-  questions,
+  questions, heroImage,
   onClose,
 }: ServiceFlowModalProps) {
   const navigate = useNavigate();
@@ -222,34 +224,34 @@ export default function ServiceFlowModal({
     if (!question) return null;
     const selected = answers[question.id] as string;
     return (
-      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-fx-muted rounded-fx-sm overflow-hidden bg-white">
         {question.options.map((opt, idx) => (
           <button
             key={opt}
             onClick={() => handleRadioSelect(opt)}
             className={cn(
               "w-full flex items-center gap-3 px-4 py-4 text-left transition-colors",
-              idx > 0 && "border-t border-gray-200",
-              selected === opt ? "bg-blue-50" : "hover:bg-gray-50"
+              idx > 0 && "border-t border-fx-line",
+              selected === opt ? "bg-accent" : "hover:bg-fx-soft"
             )}
           >
             <div className={cn(
               "h-5 w-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center",
-              selected === opt ? "border-blue-600" : "border-gray-300"
+              selected === opt ? "border-primary" : "border-fx-line"
             )}>
-              {selected === opt && <div className="h-2.5 w-2.5 rounded-full bg-blue-600" />}
+              {selected === opt && <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
             </div>
-            <span className="text-sm text-gray-700">{opt}</span>
+            <span className="text-base text-fx-muted">{opt}</span>
           </button>
         ))}
         {question.hasOther && (
-          <div className={cn("border-t border-gray-200", otherChecked[question.id] ? "bg-blue-50" : "")}>
+          <div className={cn("border-t border-fx-line", otherChecked[question.id] ? "bg-accent" : "")}>
             <div className="flex items-center gap-3 px-4 py-3">
               <button
                 onClick={handleOtherToggle}
                 className={cn(
                   "h-5 w-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors",
-                  otherChecked[question.id] ? "border-blue-600 bg-blue-600" : "border-gray-300"
+                  otherChecked[question.id] ? "border-primary bg-primary" : "border-fx-line"
                 )}
               >
                 {otherChecked[question.id] && <CheckIcon />}
@@ -260,7 +262,7 @@ export default function ServiceFlowModal({
                 value={otherText[question.id] || ""}
                 onChange={(e) => setOtherText((prev) => ({ ...prev, [question.id]: e.target.value }))}
                 onClick={() => !otherChecked[question.id] && handleOtherToggle()}
-                className="flex-1 text-sm outline-none bg-transparent border border-gray-200 rounded px-3 py-1.5 placeholder:text-gray-400 focus:border-blue-500"
+                className="flex-1 text-sm outline-none bg-transparent border border-fx-line rounded px-3 py-1.5 placeholder:text-fx-muted focus:border-primary"
               />
             </div>
           </div>
@@ -273,7 +275,7 @@ export default function ServiceFlowModal({
     if (!question) return null;
     const selected = (answers[question.id] as string[]) || [];
     return (
-      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-fx-muted rounded-fx-sm overflow-hidden bg-white">
         {question.options.map((opt, idx) => {
           const isChecked = selected.includes(opt);
           return (
@@ -282,28 +284,28 @@ export default function ServiceFlowModal({
               onClick={() => handleCheckboxToggle(opt)}
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-4 text-left transition-colors",
-                idx > 0 && "border-t border-gray-200",
-                isChecked ? "bg-blue-50" : "hover:bg-gray-50"
+                idx > 0 && "border-t border-fx-line",
+                isChecked ? "bg-accent" : "hover:bg-fx-soft"
               )}
             >
               <div className={cn(
                 "h-5 w-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors",
-                isChecked ? "border-blue-600 bg-blue-600" : "border-gray-300"
+                isChecked ? "border-primary bg-primary" : "border-fx-line"
               )}>
                 {isChecked && <CheckIcon />}
               </div>
-              <span className="text-sm text-gray-700">{opt}</span>
+              <span className="text-base text-fx-muted">{opt}</span>
             </button>
           );
         })}
         {question.hasOther && (
-          <div className={cn("border-t border-gray-200", otherChecked[question.id] ? "bg-blue-50" : "")}>
+          <div className={cn("border-t border-fx-line", otherChecked[question.id] ? "bg-accent" : "")}>
             <div className="flex items-center gap-3 px-4 py-3">
               <button
                 onClick={handleOtherToggle}
                 className={cn(
                   "h-5 w-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors",
-                  otherChecked[question.id] ? "border-blue-600 bg-blue-600" : "border-gray-300"
+                  otherChecked[question.id] ? "border-primary bg-primary" : "border-fx-line"
                 )}
               >
                 {otherChecked[question.id] && <CheckIcon />}
@@ -314,7 +316,7 @@ export default function ServiceFlowModal({
                 value={otherText[question.id] || ""}
                 onChange={(e) => setOtherText((prev) => ({ ...prev, [question.id]: e.target.value }))}
                 onClick={() => !otherChecked[question.id] && handleOtherToggle()}
-                className="flex-1 text-sm outline-none bg-transparent border border-gray-200 rounded px-3 py-1.5 placeholder:text-gray-400 focus:border-blue-500"
+                className="flex-1 text-sm outline-none bg-transparent border border-fx-line rounded px-3 py-1.5 placeholder:text-fx-muted focus:border-primary"
               />
             </div>
           </div>
@@ -326,13 +328,13 @@ export default function ServiceFlowModal({
   const renderTextarea = () => {
     if (!question) return null;
     return (
-      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-fx-muted rounded-fx-sm overflow-hidden bg-white">
         <textarea
           value={(answers[question.id] as string) || ""}
           onChange={(e) => handleTextChange(e.target.value)}
           placeholder={question.placeholder || "Enter your answer..."}
           rows={6}
-          className="w-full px-4 py-4 text-sm text-gray-800 outline-none resize-none placeholder:text-gray-400"
+          className="w-full px-4 py-4 text-sm text-fx-ink outline-none resize-none placeholder:text-fx-muted"
         />
       </div>
     );
@@ -341,15 +343,15 @@ export default function ServiceFlowModal({
   const renderLocation = () => {
     if (!question) return null;
     return (
-      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+      <div className="border border-fx-muted rounded-fx-sm overflow-hidden bg-white">
         <div className="flex items-center gap-3 px-4 py-4">
-          <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <MapPin className="h-5 w-5 text-fx-muted flex-shrink-0" />
           <input
             type="text"
             value={(answers[question.id] as string) || ""}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder={question.placeholder || "Enter postal code or city"}
-            className="flex-1 text-sm text-gray-800 outline-none placeholder:text-gray-400"
+            className="flex-1 text-sm text-fx-ink outline-none placeholder:text-fx-muted"
           />
         </div>
       </div>
@@ -371,10 +373,10 @@ export default function ServiceFlowModal({
     <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-12 flex flex-col items-center">
       {/* Animated spinner ring */}
       <div className="relative h-16 w-16 mb-6">
-        <div className="absolute inset-0 border-4 border-gray-200 rounded-full" />
-        <div className="absolute inset-0 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <div className="absolute inset-0 border-4 border-fx-line rounded-full" />
+        <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
-      <p className="text-xl font-semibold text-gray-900">Please Wait...</p>
+      <p className="text-xl font-semibold text-fx-ink">Please Wait...</p>
     </div>
   );
 
@@ -383,34 +385,35 @@ export default function ServiceFlowModal({
     if (!question) return null;
     const progress = ((currentQ + 1) / (questions.length + 2)) * 100;
     return (
-      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        {/* Progress */}
-        <div className="h-1.5 bg-gray-200">
-          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
-        </div>
-
-        {/* Close */}
-        <div className="flex justify-end px-4 pt-4">
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
-            <X className="h-5 w-5" />
+      <div className="bg-white rounded-fx-xs shadow-2xl max-w-[420px] w-full mx-2.5 overflow-hidden">
+        {/* Photo strip with close button */}
+        <div className="relative h-24 bg-fx-sunken">
+          {heroImage && <img src={heroImage} alt="" className="absolute inset-0 size-full object-cover" />}
+          <button onClick={handleClose} aria-label="Close" className="absolute right-4 top-4 grid size-[30px] place-items-center rounded-full bg-white/90 text-fx-secondary hover:text-fx-ink">
+            <X className="h-4 w-4" />
           </button>
         </div>
 
+        {/* Progress */}
+        <div className="mx-5 mt-5 h-1.5 overflow-hidden rounded-full bg-fx-sunken" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)} aria-label="Request progress">
+          <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+        </div>
+
         {/* Question */}
-        <div className="px-6 pb-4">
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-1">{question.label}</h2>
-          {question.subtitle && <p className="text-sm text-gray-500 text-center">{question.subtitle}</p>}
+        <div className="px-5 pt-6 pb-6">
+          <h2 className="text-[22px] leading-snug text-fx-ink text-center mb-4">{question.label}</h2>
+          <p className="text-sm text-fx-muted text-center">{question.subtitle || `Get quotes for ${categoryName.toLowerCase()} today`}</p>
         </div>
 
         {/* Options */}
-        <div className="px-6 pb-6">{renderQuestionContent()}</div>
+        <div className="px-5 pb-6">{renderQuestionContent()}</div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between px-5 pb-5 pt-2">
           {currentQ > 0 ? (
-            <Button variant="outline" onClick={handleQuestionBack} className="px-6">Back</Button>
+            <Button variant="outline" onClick={handleQuestionBack} className="h-9 rounded-fx-xs px-[30px] text-xs">Back</Button>
           ) : <div />}
-          <Button onClick={handleQuestionNext} disabled={!isAnswered()} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">
+          <Button onClick={handleQuestionNext} disabled={!isAnswered()} className="h-9 rounded-fx-xs px-[30px] text-xs shadow-fx-button">
             Continue
           </Button>
         </div>
@@ -426,21 +429,21 @@ export default function ServiceFlowModal({
     return (
       <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
         {/* Progress bar - fills most of the width */}
-        <div className="h-1.5 bg-gray-200">
-          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
+        <div className="h-1.5 bg-fx-sunken">
+          <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
 
         <div className="flex justify-end px-4 pt-4">
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={handleClose} className="text-fx-muted hover:text-fx-secondary">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="px-6 pb-6">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
+          <h2 className="text-2xl font-bold text-fx-ink text-center mb-3">
             Review your request
           </h2>
-          <p className="text-gray-600 text-center mb-6">
+          <p className="text-fx-secondary text-center mb-6">
             Confirm your preferences, then add the details professionals need to prepare a quote.
           </p>
 
@@ -448,9 +451,9 @@ export default function ServiceFlowModal({
             <Checkbox
               checked={receiveRemotely}
               onCheckedChange={(c) => setReceiveRemotely(c === true)}
-              className="data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
+              className="data-[state=checked]:bg-success data-[state=checked]:border-emerald-500"
             />
-            <span className="text-sm text-gray-700">I'm happy to receive this online or remotely.</span>
+            <span className="text-sm text-fx-secondary">I'm happy to receive this online or remotely.</span>
           </label>
 
           <div className="flex items-center justify-between">
@@ -463,15 +466,15 @@ export default function ServiceFlowModal({
             </Button>
             <Button
               onClick={() => setStep("details")}
-              className="px-6 bg-emerald-500 hover:bg-emerald-600 text-white"
+              className="px-6 bg-success hover:bg-success text-white"
             >
               Continue
             </Button>
           </div>
 
-          <p className="text-xs text-gray-400 text-center mt-4">
+          <p className="text-xs text-fx-muted text-center mt-4">
             By continuing, you confirm your agreement to our{" "}
-            <a href="#" className="text-blue-500 hover:underline">Terms & Conditions</a>
+            <a href="#" className="text-primary hover:underline">Terms & Conditions</a>
           </p>
         </div>
       </div>
@@ -484,14 +487,14 @@ export default function ServiceFlowModal({
       <div className="px-6 pt-6 pb-6">
         {/* Green success badge */}
         <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center">
+          <div className="h-5 w-5 rounded-full bg-success flex items-center justify-center">
             <Check className="h-3 w-3 text-white" />
           </div>
-          <span className="text-sm text-gray-600">Complete your request</span>
+          <span className="text-sm text-fx-secondary">Complete your request</span>
         </div>
 
-        <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Describe your request in detail</h2>
-        <p className="text-sm text-gray-500 text-center mb-6">
+        <h2 className="text-2xl font-bold text-fx-ink text-center mb-2">Describe your request in detail</h2>
+        <p className="text-sm text-fx-secondary text-center mb-6">
           Add more details to get faster and more accurate quotes
         </p>
 
@@ -500,19 +503,19 @@ export default function ServiceFlowModal({
           onChange={(e) => setDetailsText(e.target.value)}
           placeholder="Tell professionals exactly what you need..."
           rows={5}
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 outline-none resize-none placeholder:text-gray-400 focus:border-blue-500 mb-4"
+          className="w-full border border-fx-line rounded-lg px-4 py-3 text-sm text-fx-ink outline-none resize-none placeholder:text-fx-muted focus:border-primary mb-4"
         />
 
 
 
-        <p className="text-xs text-gray-400 mb-4">
-          Protected under our <a href="#" className="text-blue-500 hover:underline">privacy policy</a>
+        <p className="text-xs text-fx-muted mb-4">
+          Protected under our <a href="#" className="text-primary hover:underline">privacy policy</a>
         </p>
 
         {/* Quality score */}
         <div className="mb-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-2">Quality score</h3>
-          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+          <h3 className="text-sm font-semibold text-fx-ink mb-2">Quality score</h3>
+          <div className="h-2 bg-fx-sunken rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
@@ -531,7 +534,7 @@ export default function ServiceFlowModal({
           <Checkbox
             checked={contactAsap}
             onCheckedChange={(c) => setContactAsap(c === true)}
-            className="border-white data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
+            className="border-white data-[state=checked]:bg-success data-[state=checked]:border-emerald-500"
           />
           <span className="text-sm font-medium">Let professionals know I want to be contacted ASAP</span>
         </label>
@@ -539,7 +542,7 @@ export default function ServiceFlowModal({
         <div className="flex justify-end">
           <Button
             onClick={() => setStep("loading-submit")}
-            className="px-8 bg-emerald-500 hover:bg-emerald-600 text-white"
+            className="px-8 bg-success hover:bg-success text-white"
           >
             Submit request
           </Button>
@@ -552,23 +555,23 @@ export default function ServiceFlowModal({
   const renderSuccess = () => (
     <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden text-center px-8 py-12">
       {/* Large green checkmark circle */}
-      <div className="h-24 w-24 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-6">
+      <div className="h-24 w-24 rounded-full bg-success flex items-center justify-center mx-auto mb-6">
         <Check className="h-12 w-12 text-white stroke-[3]" />
       </div>
 
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">Your request has been posted</h2>
+      <h2 className="text-2xl font-bold text-fx-ink mb-4">Your request has been posted</h2>
 
-      <p className="text-gray-600 mb-2">
+      <p className="text-fx-secondary mb-2">
         Sign in with the email used for this request to manage it.
       </p>
-      <p className="text-gray-600 mb-8">
+      <p className="text-fx-secondary mb-8">
         Or, if you remember your password, log in to view your account.
       </p>
 
       <div className="flex justify-center">
         <Button
           onClick={() => navigate("/auth/login")}
-          className="px-8 bg-blue-600 hover:bg-blue-700 text-white"
+          className="px-8 bg-primary hover:bg-primary/90 text-white"
         >
           Log In
         </Button>
@@ -579,17 +582,17 @@ export default function ServiceFlowModal({
   // ── Quit confirmation ──
   const renderQuitConfirm = () => (
     <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden px-8 py-8">
-      <h2 className="text-2xl font-bold text-gray-900 text-center mb-3">
+      <h2 className="text-2xl font-bold text-fx-ink text-center mb-3">
         Are you sure that you want to leave?
       </h2>
-      <p className="text-gray-600 text-center mb-6">
+      <p className="text-fx-secondary text-center mb-6">
         We're asking a few questions so we can find you the right pros, and send you quotes fast and free!
       </p>
       <div className="flex items-center justify-between">
         <Button variant="outline" onClick={handleQuit} className="px-8">
           Quit
         </Button>
-        <Button onClick={handleContinueFromQuit} className="px-8 bg-blue-600 hover:bg-blue-700 text-white">
+        <Button onClick={handleContinueFromQuit} className="px-8 bg-primary hover:bg-primary/90 text-white">
           Continue
         </Button>
       </div>
@@ -603,23 +606,23 @@ export default function ServiceFlowModal({
       : 70;
     return (
       <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        <div className="h-1.5 bg-gray-200">
-          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
+        <div className="h-1.5 bg-fx-sunken">
+          <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
         <div className="flex justify-end px-4 pt-4">
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+          <button onClick={handleClose} className="text-fx-muted hover:text-fx-secondary"><X className="h-5 w-5" /></button>
         </div>
         <div className="px-6 pb-6 text-center">
-          <div className="h-16 w-16 rounded-full bg-emerald-500 flex items-center justify-center mx-auto mb-4">
+          <div className="h-16 w-16 rounded-full bg-success flex items-center justify-center mx-auto mb-4">
             <Check className="h-8 w-8 text-white stroke-[3]" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Your request is nearly ready.</h2>
-          <p className="text-sm text-gray-500 mb-6">Lastly, we need your details to attach to your request.</p>
+          <h2 className="text-xl font-bold text-fx-ink mb-2">Your request is nearly ready.</h2>
+          <p className="text-sm text-fx-secondary mb-6">Lastly, we need your details to attach to your request.</p>
           <div className="flex items-center justify-between">
             <Button variant="outline" onClick={() => {
               if (questions.length > 0) { setCurrentQ(questions.length - 1); setStep("questionnaire"); }
             }} className="px-6">Back</Button>
-            <Button onClick={() => setStep("email-step")} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">Continue</Button>
+            <Button onClick={() => setStep("email-step")} className="px-6 bg-primary hover:bg-primary/90 text-white">Continue</Button>
           </div>
         </div>
       </div>
@@ -633,14 +636,14 @@ export default function ServiceFlowModal({
       : 75;
     return (
       <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        <div className="h-1.5 bg-gray-200">
-          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
+        <div className="h-1.5 bg-fx-sunken">
+          <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
         <div className="flex justify-end px-4 pt-4">
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+          <button onClick={handleClose} className="text-fx-muted hover:text-fx-secondary"><X className="h-5 w-5" /></button>
         </div>
         <div className="px-6 pb-6">
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-6">How can professionals contact you?</h2>
+          <h2 className="text-xl font-bold text-fx-ink text-center mb-6">How can professionals contact you?</h2>
           <label htmlFor="modal-contact-name" className="block text-sm font-medium mb-1">Your name</label>
           <input id="modal-contact-name" value={contactName} onChange={e => setContactName(e.target.value)} placeholder="Full name" maxLength={100} className="w-full border rounded-lg px-4 py-3 text-sm mb-4" />
           <label htmlFor="modal-contact-email" className="block text-sm font-medium mb-1">Email address</label>
@@ -650,13 +653,13 @@ export default function ServiceFlowModal({
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
             placeholder="Email address"
-            className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-blue-500 mb-6"
+            className="w-full border border-fx-line rounded-lg px-4 py-3 text-sm text-fx-ink outline-none placeholder:text-fx-muted focus:border-primary mb-6"
           />
           <label htmlFor="modal-contact-phone" className="block text-sm font-medium mb-1">Phone (optional)</label>
           <input id="modal-contact-phone" type="tel" value={contactPhone} onChange={e => setContactPhone(e.target.value)} maxLength={40} className="w-full border rounded-lg px-4 py-3 text-sm mb-4" />
           <div className="flex items-center justify-between">
             <Button variant="outline" onClick={() => setStep("matches-found")} className="px-6">Back</Button>
-            <Button onClick={() => setStep("location-step")} disabled={!contactName.trim() || !contactEmail.trim()} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">Continue</Button>
+            <Button onClick={() => setStep("location-step")} disabled={!contactName.trim() || !contactEmail.trim()} className="px-6 bg-primary hover:bg-primary/90 text-white">Continue</Button>
           </div>
         </div>
       </div>
@@ -670,28 +673,28 @@ export default function ServiceFlowModal({
       : 82;
     return (
       <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-        <div className="h-1.5 bg-gray-200">
-          <div className="h-full bg-blue-600 transition-all duration-300" style={{ width: `${progress}%` }} />
+        <div className="h-1.5 bg-fx-sunken">
+          <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
         </div>
         <div className="flex justify-end px-4 pt-4">
-          <button onClick={handleClose} className="text-gray-400 hover:text-gray-600"><X className="h-5 w-5" /></button>
+          <button onClick={handleClose} className="text-fx-muted hover:text-fx-secondary"><X className="h-5 w-5" /></button>
         </div>
         <div className="px-6 pb-6">
-          <h2 className="text-xl font-bold text-gray-900 text-center mb-2">Where do you need the {categoryName}?</h2>
-          <p className="text-sm text-gray-500 text-center mb-6">The postal code or city for the address where you want the {categoryName}.</p>
-          <div className="flex items-center gap-3 border border-gray-200 rounded-lg px-4 py-3 mb-6">
-            <MapPin className="h-5 w-5 text-gray-400 flex-shrink-0" />
+          <h2 className="text-xl font-bold text-fx-ink text-center mb-2">Where do you need the {categoryName}?</h2>
+          <p className="text-sm text-fx-secondary text-center mb-6">The postal code or city for the address where you want the {categoryName}.</p>
+          <div className="flex items-center gap-3 border border-fx-line rounded-lg px-4 py-3 mb-6">
+            <MapPin className="h-5 w-5 text-fx-muted flex-shrink-0" />
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Enter postal code or city"
-              className="flex-1 text-sm text-gray-800 outline-none placeholder:text-gray-400"
+              className="flex-1 text-sm text-fx-ink outline-none placeholder:text-fx-muted"
             />
           </div>
           <div className="flex items-center justify-between">
             <Button variant="outline" onClick={() => setStep("email-step")} className="px-6">Back</Button>
-            <Button onClick={() => setStep("welcome-back")} disabled={!location.trim()} className="px-6 bg-blue-600 hover:bg-blue-700 text-white">Continue</Button>
+            <Button onClick={() => setStep("welcome-back")} disabled={!location.trim()} className="px-6 bg-primary hover:bg-primary/90 text-white">Continue</Button>
           </div>
         </div>
       </div>

@@ -167,7 +167,7 @@ export default function MerchantMarketplace() {
             </p>
             <Button size="sm" onClick={() => setEditSection("summary")}>Check Summary</Button>
             {profile.verified && (
-              <div className="flex items-center gap-1.5 mt-3 text-emerald-600">
+              <div className="flex items-center gap-1.5 mt-3 text-success">
                 <CheckCircle className="h-4 w-4" />
                 <span className="text-xs font-medium">Verified by business owner</span>
               </div>
@@ -372,7 +372,7 @@ export default function MerchantMarketplace() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <div className={`h-3 w-3 rounded-full ${profile.business_status === 'open' ? 'bg-emerald-500' : profile.business_status === 'limited' ? 'bg-amber-500' : 'bg-destructive'}`} />
+              <div className={`h-3 w-3 rounded-full ${profile.business_status === 'open' ? 'bg-success' : profile.business_status === 'limited' ? 'bg-amber-500' : 'bg-destructive'}`} />
               <span className="text-sm font-medium text-foreground">
                 {profile.business_status === 'open' ? 'Open for business' :
                  profile.business_status === 'limited' ? 'Limited hours' :
