@@ -5,7 +5,7 @@ Owner's order, 2026-11-18: every Quebec business should already have a basic pag
 
 ## What is live
 
-- `public.business_listings`: 81,297 businesses on 2026-11-18: 49,252 Quebec contractors (RBQ), 11,449 Montréal food establishments, 20,596 Montréal street-level businesses.
+- `public.business_listings`: 99,223 businesses in 1,790 municipalities on 2026-11-18: 49,252 contractors (RBQ), 11,449 Montréal food establishments, 20,596 Montréal street-level businesses, 7,991 car dealers, gyms and travel agencies (OPC), 9,935 tourism businesses province-wide (SIT Québec).
 - Pages: `/directory` (search by name, city, trade), `/business/:slug`, `/business/:slug/claim`.
 - Admin screen: "Business claims to verify".
 
@@ -15,6 +15,8 @@ Owner's order, 2026-11-18: every Quebec business should already have a basic pag
 |---|---|---|
 | Régie du bâtiment du Québec, "Liste des licences actives" (Données Québec, daily) | CC BY 4.0, commercial use allowed with attribution | Imported (`rbq`) |
 | Ville de Montréal, "Établissements alimentaires" (weekly) | CC BY 4.0 | Imported (`mtl_food`), open establishments only |
+| Office de la protection du consommateur, "Liste des permis et des exemptions en vigueur" (daily) | CC BY 4.0 | Imported (`opc`): vehicle dealers and recyclers, health studios, travel agents. Permits in a person's own name are left out |
+| Ministère du Tourisme, SIT Québec (13 files, daily) | CC BY 4.0 | Imported (`sit`): hotels, B&Bs, campgrounds, outfitters, restaurants, attractions, producers, transport. Parks, trails, beaches, monuments, info offices left out. The 13,751 chalets and tourist homes are not imported (mostly private owners; owner to decide) |
 | Ville de Montréal, "Locaux commerciaux et statuts d'occupation" 2025 (annual) | CC BY 4.0 | Imported (`mtl_shops`) |
 | Registraire des entreprises du Québec (all enterprises) | CC BY-NC-SA 4.0, **no commercial use** | Not used. A commercial agreement with the Registraire is needed first |
 | Google Maps, Yelp, Yellow Pages, 411, RestoMontréal | Proprietary, terms forbid copying | Not used |
@@ -51,6 +53,14 @@ python3 -I scripts/build_montreal_directory.py businesses.csv occupation-commerc
 ```
 
 Left out of the Montréal import: closed establishments, home kitchens, daycares, schools, hospitals, residences, food banks, wholesalers, vending machines, vacant spaces, religious and public bodies, bank branches. The same business in both files is listed once. Montréal listings carry no ownership proof, so their claims always go to an administrator.
+
+Province-wide (OPC and SIT Québec; put `opc.csv` and the `sit-quebec-*.csv` files, renamed `sit-*.csv`, in one folder):
+
+```bash
+python3 -I scripts/build_quebec_open_directory.py data/ out/
+```
+
+A business already listed under the same name and city from another source is not listed twice.
 
 RBQ:
 
