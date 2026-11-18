@@ -35,6 +35,9 @@ const BuyerDashboard = lazy(() => import("@/pages/customer/BuyerDashboard"));
 const JobSuccess = lazy(() => import("@/pages/customer/JobSuccess"));
 const ServiceCategoryPage = lazy(() => import("@/pages/ServiceCategoryPage"));
 const AboutPage = lazy(() => import("@/pages/AboutPage"));
+const Directory = lazy(() => import("./pages/Directory"));
+const BusinessListing = lazy(() => import("./pages/BusinessListing"));
+const ClaimBusiness = lazy(() => import("./pages/ClaimBusiness"));
 const AffiliatePage = lazy(() => import("@/pages/AffiliatePage"));
 const Support = lazy(() => import("@/pages/Support"));
 const HelpCenter = lazy(() => import("@/pages/HelpCenter"));
@@ -83,6 +86,9 @@ const App = () => (
 
             {/* Public marketing pages */}
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
+            <Route path="/directory" element={<Directory />} />
+            <Route path="/business/:slug" element={<BusinessListing />} />
+            <Route path="/business/:slug/claim" element={<ProtectedRoute><ClaimBusiness /></ProtectedRoute>} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/affiliates" element={<AffiliatePage />} />
             <Route path="/cookies" element={<CookiesPage />} />
