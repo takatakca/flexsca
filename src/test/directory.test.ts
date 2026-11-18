@@ -38,6 +38,14 @@ describe("business directory", () => {
     expect(qc).toMatch(/email_hash\(r\.get\('Courriel'\)\)/);
   });
 
+  it("keeps OpenStreetMap contact tags and coordinates out of listings and credits the source", () => {
+    const osm = readFileSync("scripts/build_osm_directory.py", "utf8");
+    const written = osm.slice(osm.indexOf("rows.append"), osm.indexOf("size = 2500"));
+    expect(written).not.toMatch(/lon|lat|phone|website|email|addr/);
+    expect(osm).not.toMatch(/tags\.get\('(phone|contact:phone|website|email|addr:street|addr:housenumber)'/);
+    expect(readFileSync("src/lib/directory.ts", "utf8")).toMatch(/© OpenStreetMap contributors/);
+  });
+
   it("writes the source email only as a hash and never the phone or address", () => {
     expect(importer).toMatch(/hashlib\.sha256\(email\.encode\(\)\)/);
     expect(importer).not.toMatch(/r\['(Numéro de téléphone|Adresse)'\]/);

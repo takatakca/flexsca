@@ -21,12 +21,13 @@ COMPANY = re.compile(r"\b(inc|ltée|ltee|ltd|enr|s\.?e\.?n\.?c|corp|cie|limitée
 
 SIT_FILE = {  # file suffix -> default trade (None = decide by TypeEtablissement)
     'hotels': 'Hotel and venue', 'gites': 'Hotel and venue', 'hebergements-collectifs': 'Hotel and venue',
-    'congres-et-tourisme-d-affaires': 'Hotel and venue', 'campings': 'Camping and outfitters', 'pourvoiries': 'Camping and outfitters',
+    'congres-et-tourisme-d-affaires': 'Hotel and venue', 'chalets-appartements-et-residences-de-tourisme': 'Chalets and tourist homes', 'campings': 'Camping and outfitters', 'pourvoiries': 'Camping and outfitters',
     'restauration': 'Restaurant', 'agrotourisme-et-saveurs-regionales': 'Farm and local products',
     'divertissements-et-loisirs': 'Fitness and leisure', 'nature-sports-et-plein-air': 'Fitness and leisure',
     'culture-art-et-patrimoine': 'Arts and culture', 'transport': 'Transport', 'services-connexes': 'Other services',
 }
-SIT_LABEL = {'hotels': 'Hôtel', 'gites': 'Gîte touristique', 'hebergements-collectifs': 'Hébergement collectif', 'campings': 'Camping', 'pourvoiries': 'Pourvoirie'}
+SIT_LABEL = {'hotels': 'Hôtel', 'gites': 'Gîte touristique', 'hebergements-collectifs': 'Hébergement collectif', 'campings': 'Camping', 'pourvoiries': 'Pourvoirie',
+             'chalets-appartements-et-residences-de-tourisme': 'Résidence de tourisme'}
 SIT_TYPE = {'Café / salon de thé': 'Bakery and café', 'Comptoir de crème glacée': 'Bakery and café', 'Traiteur': 'Caterer',
             'Bar, boîte de nuit': 'Bar', 'Centre de santé, spa': 'Beauty and personal care', 'Agence de voyages': 'Travel agency',
             'Magasin, boutique': 'Retail shop', 'Centre commercial': 'Retail shop', 'Microbrasserie': 'Bar',

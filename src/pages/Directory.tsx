@@ -69,7 +69,7 @@ export default function Directory() {
               </nav>}
             </>}
         </section>
-        <p className="mt-10 text-xs text-fx-muted">Contains open data from the Régie du bâtiment du Québec, the Office de la protection du consommateur, the Ministère du Tourisme (SIT Québec) and the Ville de Montréal, licensed under CC BY 4.0. Each business page names its source. FLEXS is not affiliated with them. To correct or remove a listing, <Link to="/support" className="underline">contact us</Link>.</p>
+        <p className="mt-10 text-xs text-fx-muted">Contains open data from the Régie du bâtiment du Québec, the Office de la protection du consommateur, the Ministère du Tourisme (SIT Québec) and the Ville de Montréal, licensed under CC BY 4.0, and data © OpenStreetMap contributors (Open Database License). Each business page names its source. FLEXS is not affiliated with them. To correct or remove a listing, <Link to="/support" className="underline">contact us</Link>.</p>
       </main>
       <SiteFooter />
     </div>
