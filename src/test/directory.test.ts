@@ -32,6 +32,12 @@ describe("business directory", () => {
     expect(mtl).toMatch(/INSERT INTO public\.business_listings \(source, source_ref, name, city, region, trade, activity, slug\)/);
   });
 
+  it("keeps tourism and permit contact fields out of the province-wide import", () => {
+    const qc = readFileSync("scripts/build_quebec_open_directory.py", "utf8");
+    expect(qc).not.toMatch(/TelephonePrincipal|SiteInternet|CodePostal|NumeroVoie|ETABLISSEMENT_RUE|ETABLISSEMENT_CODE_POSTAL|Latitude/);
+    expect(qc).toMatch(/email_hash\(r\.get\('Courriel'\)\)/);
+  });
+
   it("writes the source email only as a hash and never the phone or address", () => {
     expect(importer).toMatch(/hashlib\.sha256\(email\.encode\(\)\)/);
     expect(importer).not.toMatch(/r\['(Numéro de téléphone|Adresse)'\]/);

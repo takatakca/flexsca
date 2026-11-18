@@ -46,7 +46,7 @@ export default function ClaimBusiness() {
             </>
           : result === "pending" ? <>
               <h1 className="text-[26px] leading-snug text-fx-ink">Claim received</h1>
-              <p className="text-fx-secondary">We need to confirm that you represent {listing.other_name || listing.name}. You will get a notification when it is decided.{listing.source === "rbq" ? " To be confirmed at once, sign in with the email your business gave the RBQ." : ""}</p>
+              <p className="text-fx-secondary">We need to confirm that you represent {listing.other_name || listing.name}. You will get a notification when it is decided.{listing.source === "rbq" || listing.source === "sit" ? " To be confirmed at once, sign in with the email your business has on that public register." : ""}</p>
               <Button asChild variant="outline" className="w-full h-[50px] rounded-fx-xs text-base"><Link to={`/business/${listing.slug}`}>Back to the listing</Link></Button>
             </>
           : listing.status !== "listed" ? <>
@@ -57,7 +57,7 @@ export default function ClaimBusiness() {
           : <form onSubmit={submit} className="space-y-4">
               <h1 className="text-[26px] leading-snug text-fx-ink">Claim {listing.other_name || listing.name}</h1>
               <p className="text-sm text-fx-secondary">{listing.trade} · {listing.city}, QC{listing.source === "rbq" ? ` · RBQ licence ${listing.source_ref}` : ""}</p>
-              <p className="text-sm text-fx-secondary">Signed in as <span className="text-fx-ink">{user?.email}</span>. {listing.source === "rbq" ? "If this is the email your business gave the RBQ, the claim is confirmed immediately. Otherwise our team reviews it." : "Our team confirms each claim before the business is handed over."} Claiming is free.</p>
+              <p className="text-sm text-fx-secondary">Signed in as <span className="text-fx-ink">{user?.email}</span>. {listing.source === "rbq" || listing.source === "sit" ? "If this is the email your business has on the public register, the claim is confirmed immediately. Otherwise our team reviews it." : "Our team confirms each claim before the business is handed over."} Claiming is free.</p>
               <label htmlFor="claim-role" className="block text-sm text-fx-ink">Your role</label>
               <select id="claim-role" value={role} onChange={e => setRole(e.target.value)} className="h-[50px] w-full rounded-fx-xs border border-fx-line bg-white px-4">
                 {ROLES.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
