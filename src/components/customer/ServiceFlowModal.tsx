@@ -388,7 +388,7 @@ export default function ServiceFlowModal({
       <div className="bg-white rounded-fx-xs shadow-2xl max-w-[420px] w-full mx-2.5 overflow-hidden">
         {/* Photo strip with close button */}
         <div className="relative h-24 bg-fx-sunken">
-          {heroImage && <img src={heroImage} alt="" className="absolute inset-0 size-full object-cover" />}
+          {heroImage && <img src={heroImage} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover" />}
           <button onClick={handleClose} aria-label="Close" className="absolute right-4 top-4 grid size-[30px] place-items-center rounded-full bg-white/90 text-fx-secondary hover:text-fx-ink">
             <X className="h-4 w-4" />
           </button>

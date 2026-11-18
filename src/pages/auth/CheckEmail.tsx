@@ -85,10 +85,9 @@ export default function CheckEmail() {
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="w-full max-w-sm space-y-8 text-center">
           <div className="space-y-4">
-            <h1 className="text-2xl font-bold text-foreground leading-snug">
-              You already have an account with FLEXS, check your email to login
-            </h1>
-            <p className="text-primary font-semibold text-lg">{email}</p>
+            <h1 className="text-[28px] leading-snug text-fx-ink">Check your email to sign in</h1>
+            <p className="text-sm text-fx-muted">We sent a sign-in link to</p>
+            <p className="text-lg text-primary">{email}</p>
           </div>
 
           {/* Paper plane illustration */}
@@ -103,13 +102,13 @@ export default function CheckEmail() {
           </div>
 
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">Not Received The Link?</p>
+            <p className="text-sm text-fx-muted">Did not receive the link?</p>
             <Button
               onClick={handleResend}
               disabled={resending}
-              className="w-full h-12 text-base font-semibold rounded-xl"
+              className="w-full h-[50px] text-base rounded-fx-xs"
             >
-              {resending ? "Sending…" : "Send Another Link"}
+              {resending ? "Sending…" : "Send another link"}
             </Button>
           </div>
 
@@ -126,9 +125,9 @@ export default function CheckEmail() {
             <Button
               variant="outline"
               onClick={() => setShowPassword(true)}
-              className="w-full h-12 text-base font-medium rounded-xl text-primary border-primary"
+              className="w-full h-[50px] text-base rounded-fx-xs text-primary border-primary"
             >
-              Sign In With a Password
+              Sign in with a password
             </Button>
           ) : (
             <form onSubmit={handlePasswordLogin} className="space-y-3">
@@ -137,14 +136,14 @@ export default function CheckEmail() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-12 text-base rounded-xl"
+                className="h-[50px] text-base rounded-fx-xs"
                 autoFocus
                 required
               />
               <Button
                 type="submit"
                 disabled={loading || !password}
-                className="w-full h-12 text-base font-semibold rounded-xl"
+                className="w-full h-[50px] text-base rounded-fx-xs"
               >
                 {loading ? "Signing in…" : "Sign in"}
               </Button>

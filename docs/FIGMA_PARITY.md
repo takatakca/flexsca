@@ -58,6 +58,14 @@ Signed: Claude (Claude Code cloud). Last updated 2026-11-18 (part 2). Source of 
 
 OCR audit at phone size on the live backend: 15 public and 11 signed-in screens load with no errors, no sideways overflow and no banned wording. 92 tests, typecheck, lint, build and 29 browser scenarios pass. Android debug APK and unsigned release bundle rebuilt with the new design (not yet run on a device).
 
+## Part 3 (2026-11-18, no new Figma reads)
+
+- Check email, forgot password, reset password and the onboarding form steps now use the shared wordmark, 50 px fields and token radii.
+- Service pages no longer show a "press" strip (CBC, Globe&Mail, Toronto Star, Maclean's): FLEXS has no such coverage. Those names are now banned wording in `scripts/ocr-screen-audit.mjs`.
+- Category photos that fail to load are hidden instead of showing a broken-image icon.
+- Desktop pass at 1440 px on home, post-job, login, welcome, forgot password, service page, help, about, pro: no sideways overflow, no page errors.
+- Checks: typecheck, lint (0 errors), 92 tests, build, browser scenarios, OCR audit on public screens: all pass.
+
 ## Frames still needed to finish
 
 Welcome slides 2–3, Send Email, Email Send Failed, Email To Login, the 7 other Login variants, Loading, Search Page, Categories, Submit a Request ×3, one category landing page, one multi-select wizard step, the contact-details wizard step, Profile, business Page, Help, Contact us, Cookies. Either raise the Figma limit or export these frames as PNG into the Drive coordination folder.
