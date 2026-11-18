@@ -36,20 +36,20 @@ Signed: Claude (Claude Code cloud). Last updated 2026-11-18 (part 2). Source of 
 | 10 | Search results 1 (568:13658) | wizard question step on `/services/:slug` | **Done**, compared at 440 px on live data. Small difference: the "Other" text field appears after choosing Other, not before |
 | 11 | Search results 2–16 (568:14316 … 574:1330) | later wizard steps | Same component, driven by each category's questions. Frames not read |
 | 12 | Buyer Dashboard (576:2007) | `/my-requests` | **Done**, compared with live data. Keeps filters, paging and support/notification shortcuts that the frame does not show |
-| 13 | Search Page (569:2) | `/post-job` | Rebuilt on shared header, footer and category cards (two columns on phones). Frame not read |
-| 14 | Categories (610:1588) | `/post-job` | Mapped to the same screen. Frame not read |
+| 13 | Search Page (569:2) | `/post-job` | **Done**, read and compared at 440 px: hero with the two questions, intro, three numbered steps, call to action, Popular Categories, All services as chips by group. FLEXS wording; live categories |
+| 14 | Categories (610:1588) | `/help/new`, `/help/professionals`, `/help/customers` | **Done**, read and compared. The frame is the help centre's category page (breadcrumb, three tabs, article list, Get in touch), not a service list |
 | 15 | Submit a Request (609:843, 610:988, 610:1295) | `/post-job/:slug`, `/post-job/contact`, `/post-job/success` | Works. Frames not read: tokens only |
-| 16 | Category landing pages (602:53, 644:2 and about 60 more) | `/services/:slug` | Works for all 51 live categories; shared header and footer. Frames not read |
+| 16 | Category landing pages (602:53, 644:2 and about 60 more) | `/services/:slug` | Group categories now use the landing layout of 617:2419 (see row 19). Leaf categories keep the existing page with the wizard. Individual frames not read one by one: same template |
 | 17 | Read Guide (609:2) | — | **Missing**: no guide content exists |
-| 18 | Profile (617:824) | `/profile/:userId` | Works. Frame not read |
-| 19 | business Page (617:2419) | `/pro` | Works; shared header and footer. Frame not read |
-| 20 | Help (610:1383) | `/help` | Works; shared header. Frame not read |
-| 21 | Contact us (609:500) | `/support` (signed-in tickets) | Works. Frame not read |
-| 22 | About (610:1717) | `/about` | Works, truthful FLEXS content; shared header and footer. Frame not read |
-| 23 | Affiliate (610:2211) | `/affiliates` | Works; states that no programme is running. Frame not read |
+| 18 | Profile (617:824) | `/directory` | **Done**, read and compared. The frame is a list of professional cards (name, distance, categories, View profile, Request quote). Built as the directory result cards in PR #14. No photo or stars for unclaimed businesses: FLEXS has none to show |
+| 19 | business Page (617:2419) | `/services/:slug` for group categories (for example `/services/event-and-travel-services`) | **Done**, read and compared. The frame is the "Business" category landing page, not the professionals page: hero form, breadcrumb, intro, three steps, popular categories, every service of the group as full-width rows |
+| 20 | Help (610:1383) | `/help` | **Done**, read and compared: gradient search band, three category cards, Popular list, Get in touch, call-out. No photo collage in the band (stock photos of people not used) and no phone line (FLEXS has none) |
+| 21 | Contact us (609:500) | `/help/:article` | **Done**, read and compared. The frame is a help article page: breadcrumb, Articles in this section, Contact customer support (ticket, credit refund), previous and next article. `/support` stays the signed-in ticket screen |
+| 22 | About (610:1717) | `/about` | Read. **Not applied**: the frame is another company's careers page (job openings, offices in six countries, staff numbers, perks, a company timeline). None of it is true of FLEXS. `/about` keeps FLEXS's own content on the shared header and footer |
+| 23 | Affiliate (610:2211) | `/affiliates` | Read. **Not applied**: the frame describes a paid affiliate programme run through a third-party network with set commissions. FLEXS runs no programme; the page says so. Build it when the owner defines one |
 | 24 | Press (614:8) | — | **Missing**: FLEXS has no press coverage to show |
 | 25 | Terms (615:123) | — | **Missing**: needs FLEXS's own legal text from the owner |
-| 26 | Cookies (616:711) | `/cookies` | Works; shared header and footer. Frame not read |
+| 26 | Cookies (616:711) | `/cookies` | **Done**, read and compared: centred title, section headings, body text. **Owner: the wording of this policy needs a legal review**; it describes analytics and advertising tools FLEXS may not use |
 | 27 | Privacy (617:430) | `/help/privacy` | Partial: explains deletion and data requests; a full policy needs the owner's legal text |
 | 28 | Request wizard frames (about 250, e.g. 716:280, 716:557, 674:2, 695:530) | wizard steps | One component covers them. Frames not read; questions come from the database, not from the file |
 | 29 | Desktop frames (441, 1440 px) | all routes | Not started. Current screens are responsive, not matched to the desktop frames |
@@ -65,6 +65,13 @@ OCR audit at phone size on the live backend: 15 public and 11 signed-in screens 
 - Category photos that fail to load are hidden instead of showing a broken-image icon.
 - Desktop pass at 1440 px on home, post-job, login, welcome, forgot password, service page, help, about, pro: no sideways overflow, no page errors.
 - Checks: typecheck, lint (0 errors), 92 tests, build, browser scenarios, OCR audit on public screens: all pass.
+
+## Group A, core pages (2026-11-18, new file key `KW0VGNTJesMw7TyGrZkcsI`)
+
+Read one frame at a time (never page 0:1 whole): 569:2, 610:1588, 617:2419, 617:824, 610:1383, 609:500, 610:1717, 610:2211, 616:711.
+Several frame names do not say what the frame is: "Profile" is a list of professionals, "business Page" is a category landing page,
+"Categories" and "Contact us" are help-centre pages. Routes were mapped to what each frame shows.
+Checks: typecheck, lint (0 errors), 99 tests, build, 29 browser scenarios; 440 px and 1440 px screenshots without overflow.
 
 ## Frames still needed to finish
 
