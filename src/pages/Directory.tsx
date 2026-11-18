@@ -30,7 +30,7 @@ export default function Directory() {
       <main className="mx-auto max-w-4xl px-gutter py-8">
         <h1 className="text-[28px] leading-tight text-fx-ink md:text-[36px]">Quebec business directory</h1>
         <p className="mt-2 text-fx-secondary">Licensed contractors across Quebec. Find one near you, or claim your own business.</p>
-        <form className="mt-6 grid gap-3 md:grid-cols-[1fr_1fr_1fr_auto]" onSubmit={e => { e.preventDefault(); go({ name, city, trade, page: 0 }); }}>
+        <form className="mt-6 flex flex-col gap-3 md:grid md:grid-cols-[1fr_1fr_1fr_auto]" onSubmit={e => { e.preventDefault(); go({ name, city, trade, page: 0 }); }}>
           <label className="sr-only" htmlFor="dir-name">Business name</label>
           <input id="dir-name" className={field} placeholder="Business name" value={name} maxLength={60} onChange={e => setName(e.target.value)} />
           <label className="sr-only" htmlFor="dir-city">City</label>
@@ -49,7 +49,7 @@ export default function Directory() {
             : !data?.rows.length ? <p className="rounded-fx-md bg-fx-soft p-6 text-fx-secondary">No business matches this search. Try a shorter name or another city.</p>
             : <>
               <p className="mb-3 text-sm text-fx-muted">About {data.total.toLocaleString("en-CA")} businesses</p>
-              <ul className="grid gap-3">
+              <ul className="flex flex-col gap-3">
                 {data.rows.map(row => (
                   <li key={row.id}>
                     <Link to={`/business/${row.slug}`} className="flex items-center justify-between gap-4 rounded-fx-md border border-fx-line bg-white p-4 hover:border-primary">
