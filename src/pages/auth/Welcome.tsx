@@ -68,9 +68,9 @@ export default function Welcome() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-white from-40% to-[hsl(var(--fx-hero-to))]">
       {error && (
-        <div className="bg-destructive px-4 py-3"><p className="text-sm text-destructive-foreground">{error}</p></div>
+        <div role="alert" className="bg-[hsl(var(--fx-danger-banner))] px-gutter py-4"><p className="text-lg leading-snug text-white">{error}</p></div>
       )}
       <div className="pt-5 pb-4 text-center"><Brand /></div>
       <div className="flex flex-1 flex-col justify-center px-gutter pb-12">
@@ -81,7 +81,7 @@ export default function Welcome() {
           </div>
           <form onSubmit={handleSubmit} className="space-y-5">
             <label htmlFor="welcome-email" className="sr-only">Email</label>
-            <Input id="welcome-email" type="email" autoComplete="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)}
+            <Input id="welcome-email" type="email" autoComplete="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)}
               className="h-[58px] rounded-fx-xs border-fx-muted px-5 text-base" required autoFocus />
             <Button type="submit" disabled={loading || !email.trim()} className="h-[50px] w-full rounded-fx-xs text-base shadow-fx-button">
               {loading ? "Sending…" : "Send my sign-in link"}

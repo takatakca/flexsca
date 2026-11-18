@@ -26,19 +26,19 @@ Signed: Claude (Claude Code cloud). Last updated 2026-11-18 (part 2). Source of 
 | --- | --- | --- | --- |
 | 1 | Homepage (565:2) | `/` | **Done**, compared with the frame at 440 px. Live categories from the database. Differences are the deliberate ones above |
 | 2 | Welcome slide 1 (631:2) | `/auth/welcome` | **Done**, compared |
-| 3 | Welcome slide 2 (633:178) | `/auth/welcome` | Built as slide 2 of the same carousel. Frame not read: wording is FLEXS's own |
-| 4 | Welcome slide 3 (633:192) | `/auth/welcome` | Built as slide 3. Frame not read |
-| 5 | Send Email (633:209) | `/auth/welcome` after the slides | Works (sends a sign-in link). Frame not read: restyled with tokens only |
-| 6 | Email Send Failed (633:232) | error state of `/auth/welcome` | Works. Frame not read |
-| 7 | Email To Login (633:246) | `/auth/check-email` | Works. Frame not read: tokens only |
+| 3 | Welcome slide 2 (633:178) | `/auth/welcome` | **Done**, read and compared: Skip, title, sub-line, three dots, Continue. FLEXS wording |
+| 4 | Welcome slide 3 (633:192) | `/auth/welcome` | **Done**, read and compared |
+| 5 | Send Email (633:209) | `/auth/welcome` after the slides | **Done**, read and compared: heading, hint, "Email address" field, full-width button, soft gradient at the foot. The button says "Send my sign-in link" |
+| 6 | Email Send Failed (633:232) | error state of `/auth/welcome` | **Done**, read and compared: coral band across the top with the message (token `--fx-danger-banner`) |
+| 7 | Email To Login (633:246) | `/auth/check-email` | **Done**, read and compared: blue back arrow, heading, address in blue, paper plane, Send another link, OR, Sign in with a password, soft gradient |
 | 8 | Login (634:553) | `/auth/login` | **Done**, compared. "Keep me signed in" is functional. The other 7 Login variants were not read |
-| 9 | Loading Screen (568:26669) | loading step inside the wizard | Works. Frame not read |
+| 9 | Loading Screen (568:26669) | loading step of the wizard | **Done**, read and compared: white card, thin ring, "Please wait..." |
 | 10 | Search results 1 (568:13658) | wizard question step on `/services/:slug` | **Done**, compared at 440 px on live data. Small difference: the "Other" text field appears after choosing Other, not before |
-| 11 | Search results 2–16 (568:14316 … 574:1330) | later wizard steps | Same component, driven by each category's questions. Frames not read |
+| 11 | Search results 2–16 (568:14316, 568:15103, 568:16161, 568:16549, 568:16930, 697:4606, 568:17659, 568:18035, 568:18412, 568:18782, 697:6897, 697:7205, 697:7516, 572:997, 574:1330) | wizard steps on `/services/:slug` and `/post-job/:slug` | All 15 **read**. They are: seven question steps (single choice, multiple choice, Other field, Show more), loading, location, "matches found", email, phone, name, and "Describe your request in detail" after posting. `/post-job/:slug` question card rebuilt to match (progress bar and close on one row, 22 px question, Back and Continue). **Open**: the contact steps on `/post-job/contact` are still one form, not one field per step as in the frames; the modal on `/services/:slug` already has those steps. Next: merge both into the single wizard component |
 | 12 | Buyer Dashboard (576:2007) | `/my-requests` | **Done**, compared with live data. Keeps filters, paging and support/notification shortcuts that the frame does not show |
 | 13 | Search Page (569:2) | `/post-job` | **Done**, read and compared at 440 px: hero with the two questions, intro, three numbered steps, call to action, Popular Categories, All services as chips by group. FLEXS wording; live categories |
 | 14 | Categories (610:1588) | `/help/new`, `/help/professionals`, `/help/customers` | **Done**, read and compared. The frame is the help centre's category page (breadcrumb, three tabs, article list, Get in touch), not a service list |
-| 15 | Submit a Request (609:843, 610:988, 610:1295) | `/post-job/:slug`, `/post-job/contact`, `/post-job/success` | Works. Frames not read: tokens only |
+| 15 | Submit a Request (609:843, 610:988, 610:1295) | `/support` | **Done**, read and compared. The frames are the help centre's support request form, not the service request: breadcrumb, "Submit a request", topic, email, subject, details, Submit. No rich-text toolbar and no attachments (tickets are plain text); credit refunds are sent from the request itself, and the form says so |
 | 16 | Category landing pages (602:53, 644:2 and about 60 more) | `/services/:slug` | Group categories now use the landing layout of 617:2419 (see row 19). Leaf categories keep the existing page with the wizard. Individual frames not read one by one: same template |
 | 17 | Read Guide (609:2) | — | **Missing**: no guide content exists |
 | 18 | Profile (617:824) | `/directory` | **Done**, read and compared. The frame is a list of professional cards (name, distance, categories, View profile, Request quote). Built as the directory result cards in PR #14. No photo or stars for unclaimed businesses: FLEXS has none to show |
@@ -51,7 +51,7 @@ Signed: Claude (Claude Code cloud). Last updated 2026-11-18 (part 2). Source of 
 | 25 | Terms (615:123) | — | **Missing**: needs FLEXS's own legal text from the owner |
 | 26 | Cookies (616:711) | `/cookies` | **Done**, read and compared: centred title, section headings, body text. **Owner: the wording of this policy needs a legal review**; it describes analytics and advertising tools FLEXS may not use |
 | 27 | Privacy (617:430) | `/help/privacy` | Partial: explains deletion and data requests; a full policy needs the owner's legal text |
-| 28 | Request wizard frames (about 250, e.g. 716:280, 716:557, 674:2, 695:530) | wizard steps | One component covers them. Frames not read; questions come from the database, not from the file |
+| 28 | Request wizard frames (about 250, e.g. 716:280, 716:557, 674:2, 695:530) | wizard steps | Not read one by one. The 15 frames of row 11 give every step type; each category's questions come from the database (`service_categories.questions`), which is the data-driven source. Copying the other company's 250 question sets into FLEXS is not done: FLEXS questions are written per category |
 | 29 | Desktop frames (441, 1440 px) | all routes | Not started. Current screens are responsive, not matched to the desktop frames |
 
 ## Verification after the redesign (2026-11-18)
@@ -72,6 +72,11 @@ Read one frame at a time (never page 0:1 whole): 569:2, 610:1588, 617:2419, 617:
 Several frame names do not say what the frame is: "Profile" is a list of professionals, "business Page" is a category landing page,
 "Categories" and "Contact us" are help-centre pages. Routes were mapped to what each frame shows.
 Checks: typecheck, lint (0 errors), 99 tests, build, 29 browser scenarios; 440 px and 1440 px screenshots without overflow.
+
+## Groups B, C and D (2026-11-18)
+
+Read: 633:178, 633:192, 633:209, 633:232, 633:246, 568:26669 (B); 609:843, 610:988, 610:1295 (C); the 15 search-result frames (D).
+Checks after these groups: typecheck, lint (0 errors), unit tests, build, browser scenarios.
 
 ## Frames still needed to finish
 

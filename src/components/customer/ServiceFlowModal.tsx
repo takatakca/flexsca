@@ -369,14 +369,11 @@ export default function ServiceFlowModal({
   };
 
   // ── Loading spinner modal ──
+  // Frame 568:26669: white card over the dimmed page, thin ring, "Please wait...".
   const renderLoading = () => (
-    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 p-12 flex flex-col items-center">
-      {/* Animated spinner ring */}
-      <div className="relative h-16 w-16 mb-6">
-        <div className="absolute inset-0 border-4 border-fx-line rounded-full" />
-        <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-      <p className="text-xl font-semibold text-fx-ink">Please Wait...</p>
+    <div role="status" className="mx-4 flex w-full max-w-[340px] flex-col items-center rounded-fx-xs bg-white px-10 py-12 shadow-2xl">
+      <div className="mb-7 size-16 animate-spin rounded-full border-[3px] border-fx-sunken border-t-primary" aria-hidden="true" />
+      <p className="text-xl text-fx-ink">Please wait...</p>
     </div>
   );
 

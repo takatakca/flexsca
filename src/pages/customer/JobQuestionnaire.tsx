@@ -171,7 +171,7 @@ export default function JobQuestionnaire() {
   const renderRadioOptions = () => {
     const selected = answers[question.id] as string;
     return (
-      <div className="border border-border rounded-lg overflow-hidden bg-white">
+      <div className="overflow-hidden rounded-fx-xs border border-fx-muted bg-white">
         {question.options.map((opt, idx) => (
           <button
             key={opt}
@@ -239,7 +239,7 @@ export default function JobQuestionnaire() {
   const renderCheckboxOptions = () => {
     const selected = (answers[question.id] as string[]) || [];
     return (
-      <div className="border border-border rounded-lg overflow-hidden bg-white">
+      <div className="overflow-hidden rounded-fx-xs border border-fx-muted bg-white">
         {question.options.map((opt, idx) => {
           const isChecked = selected.includes(opt);
           return (
@@ -307,7 +307,7 @@ export default function JobQuestionnaire() {
 
   const renderTextarea = () => {
     return (
-      <div className="border border-border rounded-lg overflow-hidden bg-white">
+      <div className="overflow-hidden rounded-fx-xs border border-fx-muted bg-white">
         <textarea
           value={(answers[question.id] as string) || ""}
           onChange={(e) => handleTextChange(e.target.value)}
@@ -321,7 +321,7 @@ export default function JobQuestionnaire() {
 
   const renderLocation = () => {
     return (
-      <div className="border border-border rounded-lg overflow-hidden bg-white">
+      <div className="overflow-hidden rounded-fx-xs border border-fx-muted bg-white">
         <div className="flex items-center gap-3 px-4 py-4">
           <MapPin className="h-5 w-5 text-fx-muted flex-shrink-0" />
           <input
@@ -350,60 +350,30 @@ export default function JobQuestionnaire() {
     }
   };
 
+  // Wizard step card, frames 568:13658 to 568:18782: progress bar and close on one row, question, options, Back and Continue.
   return (
     <div className="min-h-screen bg-fx-sunken flex flex-col">
-      {/* Progress bar at very top */}
-      <div className="h-1.5 bg-fx-sunken">
-        <div
-          className="h-full bg-primary transition-all duration-300"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-
-      {/* Modal card */}
-      <div className="flex-1 flex items-start justify-center p-4 pt-6 md:pt-12">
-        <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Close button */}
-          <div className="flex justify-end px-4 pt-4">
-            <button
-              onClick={() => navigate("/post-job")}
-              className="text-fx-muted hover:text-fx-secondary transition-colors"
-            >
-              <X className="h-5 w-5" />
+      <div className="flex-1 flex items-start justify-center px-2.5 pt-6 md:pt-12">
+        <div className="w-full max-w-lg rounded-fx-xs bg-white px-5 pb-5 pt-5 shadow-xl">
+          <div className="flex items-center gap-4">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-fx-pill bg-fx-line" role="progressbar" aria-label="Request progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
+              <div className="h-full rounded-fx-pill bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+            </div>
+            <button onClick={() => navigate("/post-job")} aria-label="Close" className="text-fx-muted transition-colors hover:text-fx-secondary">
+              <X className="h-4 w-4" />
             </button>
           </div>
 
-          {/* Question */}
-          <div className="px-6 pb-4">
-            <h2 className="text-xl font-bold text-fx-ink text-center mb-1">
-              {question.label}
-            </h2>
-            {question.subtitle && (
-              <p className="text-sm text-fx-secondary text-center">
-                {question.subtitle}
-              </p>
-            )}
+          <div className="pb-5 pt-6">
+            <h2 className="text-center text-[22px] leading-[1.45] text-fx-ink">{question.label}</h2>
+            {question.subtitle && <p className="mt-2 text-center text-sm text-fx-secondary">{question.subtitle}</p>}
           </div>
 
-          {/* Options */}
-          <div className="px-6 pb-6">{renderQuestion()}</div>
+          <div className="pb-6">{renderQuestion()}</div>
 
-          {/* Footer navigation */}
-          <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-fx-soft">
-            {currentQ > 0 ? (
-              <Button variant="outline" onClick={handleBack} className="px-6">
-                Back
-              </Button>
-            ) : (
-              <div />
-            )}
-            <Button
-              onClick={handleNext}
-              disabled={!isAnswered()}
-              className="px-6 bg-primary hover:bg-primary/90"
-            >
-              Continue
-            </Button>
+          <div className="flex items-center justify-between">
+            <Button variant="outline" onClick={handleBack} className="h-9 rounded-fx-xs border-fx-muted px-7 text-xs text-fx-secondary">Back</Button>
+            <Button onClick={handleNext} disabled={!isAnswered()} className="h-9 rounded-fx-xs px-7 text-xs shadow-fx-button">Continue</Button>
           </div>
         </div>
       </div>

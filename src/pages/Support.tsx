@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Input } from '@/components/ui/input';
+import SiteHeader from '@/components/fx/SiteHeader';
+import SiteFooter from '@/components/fx/SiteFooter';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -11,7 +12,10 @@ import { formatDistanceToNow } from 'date-fns';
 
 export default function Support(){
   const {id}=useParams();
-  return <main className="max-w-4xl mx-auto px-5 py-8 space-y-6"><nav className="flex gap-5 text-sm text-primary"><Link to="/">FLEXS</Link><Link to="/help">Help centre</Link><Link to="/support">My support tickets</Link></nav>{id ? <SupportThread id={id} /> : <SupportInbox />}</main>;
+  // Frames 609:843, 610:988, 610:1295: header, breadcrumb, then the request form or the conversation.
+  return <div className="min-h-screen bg-background"><SiteHeader /><main className="mx-auto max-w-3xl space-y-6 px-gutter py-8">
+    <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-3 text-[13px] text-fx-ink"><Link to="/help" className="hover:text-primary">Help centre</Link><span aria-hidden="true">/</span>{id ? <><Link to="/support" className="hover:text-primary">My support tickets</Link><span aria-hidden="true">/</span><span aria-current="page">Conversation</span></> : <span aria-current="page">Submit a request</span>}</nav>
+    {id ? <SupportThread id={id} /> : <SupportInbox />}</main><SiteFooter /></div>;
 }
 function SupportInbox(){
   const {user}=useAuth();const navigate=useNavigate();
@@ -29,14 +33,19 @@ function SupportInbox(){
       if(error || !data)throw error;toast.success('Support ticket created.');navigate(`/support/${data}`);
     }catch{toast.error('Unable to submit your support request. Please try again shortly.');}finally{setSaving(false);}
   };
-  return <><h1 className="text-3xl font-bold">Support</h1><p className="text-muted-foreground">Ask about your account, credits, or a marketplace issue. Tickets are private to your account and the FLEXS support team.</p>
-    <form onSubmit={create} className="border rounded-xl p-5 space-y-3"><h2 className="font-semibold">Create a support ticket</h2><label htmlFor="support-subject" className="block text-sm font-medium">Subject</label><Input id="support-subject" required minLength={3} maxLength={120} value={subject} onChange={e=>setSubject(e.target.value)} />
-      <label htmlFor="support-category" className="block text-sm font-medium">Topic</label><select id="support-category" value={category} onChange={e=>setCategory(e.target.value)} className="border rounded-lg bg-background p-2"><option value="general">General help</option><option value="credits">Credits and billing</option><option value="account">Account access</option><option value="privacy">Account deletion or data request</option></select>
-      <label htmlFor="support-message" className="block text-sm font-medium">Describe your issue</label><Textarea id="support-message" required minLength={10} maxLength={4000} value={message} onChange={e=>setMessage(e.target.value)} />
-      {category==='privacy' && <p className="text-xs text-muted-foreground">The team will review your request. Creating a ticket does not delete your account or data.</p>}
-      <Button type="submit" disabled={saving || subject.trim().length<3 || message.trim().length<10}>{saving ? 'Submitting…' : 'Submit support ticket'}</Button>
+  const field='h-[42px] w-full rounded-fx-xs border border-fx-secondary bg-white px-4 text-sm text-fx-ink focus:border-primary focus:outline-none';
+  return <><h1 className="pt-6 text-[28px] text-fx-ink">Submit a request</h1><p className="text-sm text-fx-secondary">Tickets are private to your account and the FLEXS support team.</p>
+    <form onSubmit={create} className="space-y-6">
+      <div><p id="support-topic-label" className="mb-3 text-fx-ink">What is your issue or question regarding?</p>
+        <select id="support-category" aria-label="Topic" value={category} onChange={e=>setCategory(e.target.value)} className={field}><option value="general">I need help with something else</option><option value="credits">Credits, billing or a credit refund</option><option value="account">Account access</option><option value="privacy">Account deletion or data request</option></select></div>
+      {category==='credits' && <p className="text-sm text-fx-muted">To ask for credits back on a request you unlocked, open that request and use its refund form: the team then sees the request directly. <Link to="/help/credit-refunds" className="text-primary">How credit refunds work</Link></p>}
+      <div><p className="mb-3 text-fx-ink">Your email address</p><p className={`${field} flex items-center bg-fx-soft text-fx-secondary`}>{user?.email}</p></div>
+      <div><label htmlFor="support-subject" className="mb-3 block text-fx-ink">Subject</label><input id="support-subject" required minLength={3} maxLength={120} value={subject} onChange={e=>setSubject(e.target.value)} className={field} /></div>
+      <div><label htmlFor="support-message" className="mb-3 block text-lg text-fx-ink">Describe your issue</label><textarea id="support-message" required minLength={10} maxLength={4000} rows={9} value={message} onChange={e=>setMessage(e.target.value)} className="w-full rounded-fx-xs border border-fx-secondary bg-white px-4 py-3 text-sm text-fx-ink focus:border-primary focus:outline-none" />
+        <p className="mt-2 text-sm text-fx-muted">{category==='privacy' ? 'The team will review your request. Creating a ticket does not delete your account or data.' : 'Give as much detail as you can. You can add more in the conversation afterwards.'}</p></div>
+      <Button type="submit" className="h-11 rounded-fx-xs px-8 shadow-fx-button" disabled={saving || subject.trim().length<3 || message.trim().length<10}>{saving ? 'Submitting…' : 'Submit support ticket'}</Button>
     </form>
-    <section className="space-y-3"><h2 className="text-xl font-semibold">Your tickets</h2>{isLoading ? <p role="status">Loading tickets…</p> : error ? <div role="alert"><p>{error.message}</p><Button onClick={()=>void refetch()}>Retry tickets</Button></div> : data?.tickets.length ? data.tickets.map(ticket=><Link key={ticket.id} to={`/support/${ticket.id}`} className="block border rounded-xl p-4 hover:border-primary"><p className="font-medium">{ticket.subject}</p><p className="text-sm text-muted-foreground mt-1">{ticket.status==='open' ? 'Open' : 'Closed'} · {ticket.category} · Updated {formatDistanceToNow(new Date(ticket.updated_at),{addSuffix:true})}</p></Link>) : <p className="text-muted-foreground">No support tickets yet.</p>}
+    <section className="space-y-3 border-t border-fx-line pt-8"><h2 className="text-xl text-fx-ink">Your tickets</h2>{isLoading ? <p role="status">Loading tickets…</p> : error ? <div role="alert"><p>{error.message}</p><Button onClick={()=>void refetch()}>Retry tickets</Button></div> : data?.tickets.length ? data.tickets.map(ticket=><Link key={ticket.id} to={`/support/${ticket.id}`} className="block border rounded-xl p-4 hover:border-primary"><p className="font-medium">{ticket.subject}</p><p className="text-sm text-muted-foreground mt-1">{ticket.status==='open' ? 'Open' : 'Closed'} · {ticket.category} · Updated {formatDistanceToNow(new Date(ticket.updated_at),{addSuffix:true})}</p></Link>) : <p className="text-muted-foreground">No support tickets yet.</p>}
       {data && data.total>20 && <nav aria-label="Support ticket pages" className="flex justify-center gap-4"><Button variant="outline" disabled={page===0} onClick={()=>setPage(v=>v-1)}>Previous tickets</Button><span className="self-center text-sm">Page {page+1} of {Math.ceil(data.total/20)}</span><Button variant="outline" disabled={(page+1)*20>=data.total} onClick={()=>setPage(v=>v+1)}>Next tickets</Button></nav>}
     </section>
   </>;

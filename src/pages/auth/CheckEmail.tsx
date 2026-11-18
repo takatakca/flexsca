@@ -74,15 +74,15 @@ export default function CheckEmail() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col px-6 bg-background">
+    <div className="flex min-h-screen flex-col px-gutter bg-gradient-to-b from-white from-40% to-[hsl(var(--fx-hero-from))]">
       {/* Back arrow */}
       <div className="pt-4">
-        <button onClick={() => navigate("/auth/welcome")} className="text-foreground">
+        <button onClick={() => navigate("/auth/welcome")} aria-label="Back" className="text-primary">
           <ArrowLeft className="h-6 w-6" />
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center">
+      <div className="flex-1 flex flex-col items-center pt-10 md:justify-center md:pt-0">
         <div className="w-full max-w-sm space-y-8 text-center">
           <div className="space-y-4">
             <h1 className="text-[28px] leading-snug text-fx-ink">Check your email to sign in</h1>
