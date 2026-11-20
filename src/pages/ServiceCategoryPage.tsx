@@ -38,6 +38,7 @@ export default function ServiceCategoryPage() {
   const [where, setWhere] = useState("");
   const [showFlow, setShowFlow] = useState(false);
   const [cityListings, setCityListings] = useState<{ city: string; rows: Listing[] }[]>([]);
+  const [reviews, setReviews] = useState<{ id: string; rating: number; review_text: string | null; reviewer_name: string | null }[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -66,6 +67,15 @@ export default function ServiceCategoryPage() {
       .then(result => { if (active) setCityListings(result.filter(item => item.rows.length > 0)); });
     return () => { active = false; };
   }, [slug]);
+
+  // Verified reviews only: written by customers who accepted a professional's quote. The section is hidden while there are none.
+  useEffect(() => {
+    let active = true;
+    supabase.from("provider_reviews_public").select("id,rating,review_text,reviewer_name").eq("verified", true).order("created_at", { ascending: false }).limit(3)
+      .then(({ data }) => { if (active) setReviews((data ?? []).filter(r => r.id && r.rating) as typeof reviews); });
+    return () => { active = false; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => { if (category) document.title = `${category.name} professionals near you | FLEXS`; }, [category]);
 
@@ -157,6 +167,24 @@ export default function ServiceCategoryPage() {
             ))}
           </ul>
         </section>
+
+        {reviews.length > 0 && (
+          <section className="bg-fx-soft px-gutter py-14" aria-labelledby="reviews-title">
+            <div className="mx-auto max-w-5xl">
+              <h2 id="reviews-title" className="text-[28px] md:text-[36px]">Reviews</h2>
+              <p className="mt-2 text-sm text-fx-muted">From customers who hired a professional through FLEXS.</p>
+              <div className="mt-6 grid gap-5 md:grid-cols-3">
+                {reviews.map(review => (
+                  <figure key={review.id} className="bg-white p-5">
+                    <p aria-label={`${review.rating} out of 5`} className="text-[hsl(var(--fx-warning))]">{"★".repeat(Math.round(review.rating))}<span className="text-fx-line">{"★".repeat(5 - Math.round(review.rating))}</span></p>
+                    {review.review_text && <blockquote className="mt-3 text-sm leading-6 text-fx-ink">{review.review_text}</blockquote>}
+                    <figcaption className="mt-3 text-sm text-fx-muted">{review.reviewer_name || "FLEXS customer"} · Verified</figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {related.length > 0 && (
           <section className="mx-auto max-w-5xl px-gutter pb-14" aria-labelledby="related-title">
