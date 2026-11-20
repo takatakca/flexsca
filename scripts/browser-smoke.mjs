@@ -245,15 +245,20 @@ try {
   assert.equal(searches.at(-1).p_page,1);
   await page.getByRole('button',{name:'Filter requests',exact:true}).click();
   await page.getByRole('textbox',{name:'Search keywords'}).fill('Toronto');
-  await page.getByRole('button',{name:'Apply filter',exact:true}).click();
+  await page.getByRole('button',{name:'Apply Filter',exact:true}).click();
   await page.getByText('1 Matching lead',{exact:true}).waitFor();
   assert.equal(searches.at(-1).p_page,0);
   assert.equal(searches.at(-1).p_filters.keyword,'Toronto');
   const archiveSearch=page.waitForResponse(r=>r.url().endsWith('/rpc/search_marketplace_leads') && r.request().postDataJSON().p_filters.archived===true);
-  await page.getByRole('button',{name:'Archived',exact:true}).click();
+  await page.getByRole('button',{name:'Show archived requests',exact:true}).click();
   await archiveSearch;
   await page.getByText('Your archived requests',{exact:true}).waitFor();
   assert.equal(searches.at(-1).p_filters.archived,true);
+  // List / Map switch: the map shows one marker per town and the same cards in a carousel.
+  await page.getByRole('button',{name:'Map',exact:true}).click();
+  await page.getByRole('application',{name:'Map of request areas'}).waitFor();
+  await page.getByRole('button',{name:'List',exact:true}).click();
+  await page.getByText('Your archived requests',{exact:true}).waitFor();
   console.log('PASS marketplace pagination, server filters, and archive views');
   failSearch=true;
   await page.reload();

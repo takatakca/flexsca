@@ -55,6 +55,8 @@ interface FiltersSheetProps {
   customStatuses: CustomStatus[];
   leads: LeadForCounts[];
   remoteOptions?: { services: string[]; credits: number[] };
+  /** Number of requests matching the filters currently applied (shown as "Filtered result: N"). */
+  resultCount?: number;
 }
 
 const TIME_RANGES = [
@@ -88,6 +90,7 @@ export default function FiltersSheet({
   customStatuses,
   leads,
   remoteOptions,
+  resultCount,
 }: FiltersSheetProps) {
   const [draft, setDraft] = useState<LeadsFilters>(value);
 
@@ -193,10 +196,10 @@ export default function FiltersSheet({
           {/* Filtered results count */}
           <div className="pt-5 pb-4">
             <h3 className="text-xl font-bold text-foreground">
-              {remoteOptions ? "Find the right opportunities" : `Filtered results: ${filteredCount}`}
+              {typeof resultCount === "number" ? `Filtered result: ${resultCount}` : remoteOptions ? "Find the right opportunities" : `Filtered result: ${filteredCount}`}
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              {remoteOptions ? "Apply filters to search all available requests." : `${leads.length} leads matching your Lead Settings`}
+              {typeof resultCount === "number" ? `${resultCount} lead${resultCount === 1 ? "" : "s"} matching your lead settings` : remoteOptions ? "Apply filters to search all available requests." : `${leads.length} leads matching your Lead Settings`}
             </p>
           </div>
 
@@ -394,13 +397,13 @@ export default function FiltersSheet({
         {/* ── Apply button (sticky bottom) ── */}
         <div className="sticky bottom-0 bg-background border-t p-4 shrink-0">
           <Button
-            className="w-full rounded-xl h-12 text-base font-semibold"
+            className="h-[60px] w-full rounded-fx-xs text-base shadow-fx-button"
             onClick={() => {
               onChange(draft);
               onClose();
             }}
           >
-            Apply filter
+            Apply Filter
           </Button>
         </div>
       </SheetContent>

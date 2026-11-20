@@ -125,6 +125,13 @@ export default function Settings() {
       <div className="px-4"><Separator /></div>
 
       <SettingsRow
+        title="Pricing"
+        description="Describe your services and prices to improve your profile"
+        onClick={() => navigate("/app/settings/profile", { state: { section: "services" } })}
+      />
+      <div className="px-4"><Separator /></div>
+
+      <SettingsRow
         title="Account details"
         description="Manage your account name, sign-in email, and password"
         onClick={() => navigate("/app/settings/account")}
