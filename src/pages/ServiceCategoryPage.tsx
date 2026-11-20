@@ -97,7 +97,7 @@ export default function ServiceCategoryPage() {
       <main>
         <section className="relative isolate overflow-hidden bg-gradient-to-br from-[hsl(var(--fx-ink))] to-[hsl(var(--fx-ink-secondary))] px-gutter py-16 md:py-24">
           {category.hero_image && <img src={category.hero_image} alt="" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 -z-10 size-full object-cover" />}
-          <h1 className="mx-auto w-fit max-w-3xl bg-fx-ink/55 px-4 py-1 text-center text-4xl leading-[1.25] text-white md:text-[44px]">Find {name} professionals near you</h1>
+          <h1 className="mx-auto w-fit max-w-full bg-fx-ink/55 px-4 py-1 text-center text-[32px] leading-[1.25] text-white [overflow-wrap:anywhere] md:max-w-3xl md:text-[44px]">Find {name} professionals near you</h1>
           <form className="mx-auto mt-6 max-w-[440px] rounded-fx-xs border border-primary bg-white p-5" onSubmit={e => { e.preventDefault(); start(); }}>
             <label htmlFor="service-where" className="block text-lg">Where do you need {name}?</label>
             <div className="mt-3 flex gap-2">
@@ -119,7 +119,7 @@ export default function ServiceCategoryPage() {
             <p>Not sure where to start? Tell us what you need and professionals who can do it reply to you. There is no pressure to hire: compare profiles, read verified reviews and ask questions before you decide.</p>
             <p>Posting a request is free.</p>
           </div>
-          <Button onClick={start} className="mt-6 h-11 rounded-fx-xs px-5 shadow-fx-button">Find {article(name)} {name} professional today</Button>
+          <Button onClick={start} className="mt-6 h-auto min-h-11 whitespace-normal rounded-fx-xs px-5 py-2.5 shadow-fx-button">Find {article(name)} {name} professional today</Button>
         </section>
 
         <section className="bg-fx-soft px-gutter py-10">
@@ -132,7 +132,7 @@ export default function ServiceCategoryPage() {
               </li>
             ))}
           </ol>
-          <p className="mx-auto mt-7 max-w-5xl text-center"><Button onClick={start} className="h-11 rounded-fx-xs px-5 shadow-fx-button">Get quotes from {name} professionals near you</Button></p>
+          <p className="mx-auto mt-7 max-w-5xl text-center"><Button onClick={start} className="h-auto min-h-11 whitespace-normal rounded-fx-xs px-5 py-2.5 shadow-fx-button">Get quotes from {name} professionals near you</Button></p>
         </section>
 
         <section className="mx-auto max-w-5xl px-gutter py-14" aria-labelledby="cities-title">

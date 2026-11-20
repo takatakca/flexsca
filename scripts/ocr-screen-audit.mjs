@@ -33,7 +33,13 @@ for (const route of sessionFile ? SIGNED_IN : PUBLIC) {
   const name = (sessionFile ? 'app' : 'public') + (route === '/' ? '-home' : route.replace(/\//g, '-'));
   const shot = `${out}/${name}.png`;
   await page.screenshot({ path: shot, fullPage: true });
-  const dom = await page.locator('body').innerText();
+  // Closed drop-down lists are not on screen: leave their options out, keep only the chosen one.
+  const dom = await page.evaluate(() => {
+    const copy = document.body.cloneNode(true);
+    copy.querySelectorAll('select').forEach(sel => { sel.replaceWith(document.createTextNode(' ' + (sel.selectedOptions?.[0]?.textContent ?? '') + ' ')); });
+    document.body.appendChild(copy); copy.style.cssText = 'position:absolute;left:-99999px;top:0;width:' + innerWidth + 'px';
+    const text = copy.innerText; copy.remove(); return text;
+  });
   const facts = await page.evaluate(() => ({
     finalPath: location.pathname,
     overflow: document.documentElement.scrollWidth - window.innerWidth,

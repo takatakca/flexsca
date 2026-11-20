@@ -52,7 +52,7 @@ export default function PostJob({ scope }: { scope?: { name: string; slug: strin
       <SiteHeader />
       <main>
         <section className="bg-gradient-to-br from-[hsl(var(--fx-ink))] to-[hsl(var(--fx-ink-secondary))] px-gutter py-16 md:py-24">
-          <h1 className="mx-auto w-fit max-w-3xl bg-fx-ink/55 px-4 py-1 text-center text-4xl leading-[1.28] text-white md:text-[52px]">Find {scope ? `${scope.name} ` : ""}professionals near you</h1>
+          <h1 className="mx-auto w-fit max-w-full bg-fx-ink/55 px-4 py-1 text-center text-[32px] leading-[1.28] text-white [overflow-wrap:anywhere] md:max-w-3xl md:text-[52px]">Find {scope ? `${scope.name} ` : ""}professionals near you</h1>
           <form className="mx-auto mt-7 max-w-[312px] rounded-fx-xs border border-primary bg-white p-5 md:max-w-[500px] md:p-7" onSubmit={e => { e.preventDefault(); if (filtered.length === 1) open(filtered[0].slug); else document.getElementById("services")?.scrollIntoView({ behavior: "smooth" }); }}>
             <label htmlFor="service-search" className="block text-base md:text-xl">What service do you need?</label>
             <input id="service-search" className={`${field} mt-2`} placeholder="Search for a service..." value={search} maxLength={100} onChange={e => setSearch(e.target.value)} />
@@ -80,7 +80,7 @@ export default function PostJob({ scope }: { scope?: { name: string; slug: strin
                 </li>
               ))}
             </ol>
-            <div className="mx-auto mt-6 max-w-5xl md:text-center"><a href="#services" className="inline-flex h-11 items-center rounded-fx-xs bg-primary px-5 text-sm text-primary-foreground shadow-fx-button">Get quotes from professionals near you</a></div>
+            <div className="mx-auto mt-6 max-w-5xl md:text-center"><a href="#services" className="inline-flex min-h-11 items-center rounded-fx-xs bg-primary px-5 py-2.5 text-sm text-primary-foreground shadow-fx-button">Get quotes from professionals near you</a></div>
           </section>
         </>}
 
