@@ -22,7 +22,7 @@ export default function CookiesPage() {
             Website in order to improve your experience when you browse the Website.
           </p>
           <p>
-            This cookie policy should be read with <Link to="/help/privacy" className="text-primary underline">how FLEXS handles your data</Link>.
+            This cookie policy should be read with <Link to="/privacy" className="text-primary underline">the FLEXS privacy policy</Link>.
           </p>
 
           <h2 className="text-lg leading-snug text-fx-ink">Cookies and similar technologies: what are they?</h2>

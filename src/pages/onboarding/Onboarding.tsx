@@ -323,7 +323,7 @@ export default function Onboarding() {
 
             <p className="text-xs text-muted-foreground text-center">
               By continuing, you confirm your agreement to our{" "}
-              <a href="#" className="text-primary hover:underline">Terms & Conditions</a>
+              <a href="/terms?for=professionals" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Terms & Conditions</a>
             </p>
           </div>
         </div>

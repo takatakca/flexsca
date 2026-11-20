@@ -475,7 +475,7 @@ export default function ServiceFlowModal({
 
           <p className="text-xs text-fx-muted text-center mt-4">
             By continuing, you confirm your agreement to our{" "}
-            <a href="#" className="text-primary hover:underline">Terms & Conditions</a>
+            <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Terms & Conditions</a>
           </p>
         </div>
       </div>
@@ -483,71 +483,32 @@ export default function ServiceFlowModal({
   };
 
   // ── Describe your request in detail ──
+  // Last step (frame 24:5974). The request is sent from here, so the badge says what is left to do.
   const renderDetails = () => (
-    <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
-      <div className="px-6 pt-6 pb-6">
-        {/* Green success badge */}
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="h-5 w-5 rounded-full bg-success flex items-center justify-center">
-            <Check className="h-3 w-3 text-white" />
-          </div>
-          <span className="text-sm text-fx-secondary">Complete your request</span>
+    <div className="mx-2.5 w-full max-w-lg rounded-fx-xs bg-white px-5 pb-5 pt-5 shadow-2xl md:max-w-[700px] md:px-8 md:pb-7">
+      <div className="mb-4 flex items-center justify-center gap-2">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-success"><Check className="h-3 w-3 text-white" aria-hidden="true" /></span>
+        <span className="text-sm text-fx-ink">Almost done</span>
+      </div>
+      <h2 className="text-center text-[22px] leading-snug text-fx-ink md:text-[28px]">Describe your request in detail</h2>
+      <p className="mb-5 mt-2 text-center text-sm text-fx-muted">Add more details to get faster and more accurate quotes</p>
+      <textarea value={detailsText} onChange={(e) => setDetailsText(e.target.value)} maxLength={2000} placeholder="Tell professionals exactly what you need..." rows={5}
+        className="mb-3 w-full resize-none rounded-fx-xs border border-fx-muted px-4 py-3 text-sm text-fx-ink outline-none placeholder:text-fx-muted focus:border-primary" />
+      <p className="mb-4 text-xs text-fx-muted">Protected under our <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">privacy policy</a>. You can add photos or files to your request after it is sent.</p>
+      <div className="mb-4">
+        <h3 className="mb-2 text-xl text-fx-ink">Quality score</h3>
+        <div className="h-1.5 overflow-hidden rounded-fx-pill bg-fx-line">
+          <div className={cn("h-full rounded-fx-pill transition-all duration-500", qualityScore < 80 ? "bg-[hsl(var(--fx-warning))]" : "bg-success")} style={{ width: `${qualityScore}%` }} />
         </div>
-
-        <h2 className="text-2xl font-bold text-fx-ink text-center mb-2">Describe your request in detail</h2>
-        <p className="text-sm text-fx-secondary text-center mb-6">
-          Add more details to get faster and more accurate quotes
-        </p>
-
-        <textarea
-          value={detailsText}
-          onChange={(e) => setDetailsText(e.target.value)}
-          placeholder="Tell professionals exactly what you need..."
-          rows={5}
-          className="w-full border border-fx-line rounded-lg px-4 py-3 text-sm text-fx-ink outline-none resize-none placeholder:text-fx-muted focus:border-primary mb-4"
-        />
-
-
-
-        <p className="text-xs text-fx-muted mb-4">
-          Protected under our <a href="#" className="text-primary hover:underline">privacy policy</a>
-        </p>
-
-        {/* Quality score */}
-        <div className="mb-4">
-          <h3 className="text-sm font-semibold text-fx-ink mb-2">Quality score</h3>
-          <div className="h-2 bg-fx-sunken rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${qualityScore}%`,
-                background: qualityScore < 50 ? "#F97316" : qualityScore < 80 ? "#F59E0B" : "#22C55E",
-              }}
-            />
-          </div>
-          {qualityScore < 80 && (
-            <p className="text-xs text-orange-500 mt-1">This will improve your response</p>
-          )}
-        </div>
-
-        {/* ASAP checkbox - orange gradient */}
-        <label className="flex items-center gap-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-lg px-4 py-3 cursor-pointer mb-6">
-          <Checkbox
-            checked={contactAsap}
-            onCheckedChange={(c) => setContactAsap(c === true)}
-            className="border-white data-[state=checked]:bg-success data-[state=checked]:border-emerald-500"
-          />
-          <span className="text-sm font-medium">Let professionals know I want to be contacted ASAP</span>
-        </label>
-
-        <div className="flex justify-end">
-          <Button
-            onClick={() => setStep("loading-submit")}
-            className="px-8 bg-success hover:bg-success text-white"
-          >
-            Submit request
-          </Button>
-        </div>
+        {qualityScore < 80 && <p className="mt-2 text-xs text-[hsl(30_90%_40%)]">Add more detail to improve your request</p>}
+      </div>
+      <label className="mb-5 flex cursor-pointer items-center gap-3 rounded-fx-xs bg-gradient-to-r from-[hsl(var(--fx-warning)/0.55)] to-[hsl(var(--fx-warning))] px-4 py-3 text-fx-ink">
+        <Checkbox checked={contactAsap} onCheckedChange={(c) => setContactAsap(c === true)} className="border-fx-ink bg-white data-[state=checked]:border-success data-[state=checked]:bg-success" />
+        <span className="text-sm">Let professionals know I want to be contacted ASAP</span>
+      </label>
+      <div className="flex items-center justify-between">
+        <Button type="button" variant="outline" onClick={() => setStep("welcome-back")} className="h-9 rounded-fx-xs border-fx-muted px-7 text-xs text-fx-secondary">Back</Button>
+        <Button onClick={() => setStep("loading-submit")} className="h-10 rounded-fx-xs bg-success px-8 text-white hover:bg-success/90">Submit request</Button>
       </div>
     </div>
   );
