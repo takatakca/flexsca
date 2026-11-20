@@ -34,6 +34,7 @@ const BuyerDashboard = lazy(() => import("@/pages/customer/BuyerDashboard"));
 const JobSuccess = lazy(() => import("@/pages/customer/JobSuccess"));
 const ServiceCategoryPage = lazy(() => import("@/pages/ServiceCategoryPage"));
 const AboutPage = lazy(() => import("@/pages/AboutPage"));
+const ServicesIndex = lazy(() => import("@/pages/ServicesIndex"));
 const PrivacyPage = lazy(() => import("@/pages/legal/PrivacyPage"));
 const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
 const PressPage = lazy(() => import("@/pages/legal/PressPage"));
@@ -87,6 +88,7 @@ const App = () => (
             <Route path="/my-requests/:id" element={<ProtectedRoute><CustomerRequest /></ProtectedRoute>} />
 
             {/* Public marketing pages */}
+            <Route path="/services" element={<ServicesIndex />} />
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
             <Route path="/directory" element={<Directory />} />
             <Route path="/business/:slug" element={<BusinessListing />} />

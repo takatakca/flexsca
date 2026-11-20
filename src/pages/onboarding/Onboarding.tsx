@@ -1,4 +1,4 @@
-import { Brand } from "@/components/fx/SiteHeader";
+import SiteHeader from "@/components/fx/SiteHeader";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, CheckCircle2, PenLine, BellRing, Clock, Check, AlertCircle, ChevronDown, Star, MapPin } from "lucide-react";
@@ -159,24 +159,19 @@ export default function Onboarding() {
   // ── Location phase ──
   if (phase === "location") {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-          <div className="flex h-14 items-center justify-between px-4">
-            <Brand />
-            <div className="h-6 w-6" />
-          </div>
-        </header>
+      <div className="flex min-h-screen flex-col bg-fx-soft">
+        <SiteHeader />
 
-        <div className="flex-1 flex flex-col items-center px-6 pt-16">
-          <h1 className="text-2xl font-bold text-foreground text-center mb-2">
+        <div className="flex flex-1 flex-col items-center px-gutter pb-12 pt-16">
+          <h1 className="mx-auto max-w-[300px] text-center text-[22px] leading-snug text-fx-ink mb-2">
             Where would you like to see leads from?
           </h1>
-          <p className="text-sm text-muted-foreground text-center mb-10">
+          <p className="mx-auto mb-8 max-w-[280px] text-center text-xs text-fx-muted">
             Tell us the area you cover so we can show you leads for your location
           </p>
 
-          <div className="w-full max-w-sm border border-fx-line rounded-fx-md p-6 space-y-5">
-            <h2 className="text-xl font-bold text-foreground">I serve customers within</h2>
+          <div className="w-full max-w-[400px] space-y-5 rounded-fx-xs border border-fx-line bg-white p-6">
+            <h2 className="text-xl text-fx-muted">I serve customers within</h2>
 
             <select
               value={radius}
@@ -190,8 +185,8 @@ export default function Onboarding() {
 
             <p className="text-sm text-muted-foreground">From</p>
 
-            <div className="flex items-center gap-3 border border-fx-line rounded-fx-md px-4 py-3">
-              <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
+            <div className="flex h-[50px] items-center gap-3 rounded-fx-xs border border-fx-line px-4">
+              <MapPin className="h-5 w-5 flex-shrink-0 fill-fx-ink text-white" />
               <input
                 type="text"
                 value={locationPostcode}
@@ -205,7 +200,7 @@ export default function Onboarding() {
               <MapPin className="h-3 w-3" /> You can change your location at any time
             </p>
 
-            <Button onClick={handleLocationNext} className="px-8 h-[50px] rounded-fx-xs">
+            <Button onClick={handleLocationNext} className="h-11 rounded-fx-xs px-8 shadow-fx-button">
               Next
             </Button>
           </div>
@@ -217,25 +212,20 @@ export default function Onboarding() {
   // ── Details phase ──
   if (phase === "details") {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-          <div className="flex h-14 items-center justify-between px-4">
-            <Brand />
-            <div className="h-6 w-6" />
-          </div>
-        </header>
+      <div className="flex min-h-screen flex-col bg-fx-soft">
+        <SiteHeader />
 
-        <div className="flex-1 flex flex-col items-center px-6 pt-10">
-          <h1 className="text-2xl font-bold text-foreground text-center mb-2">
+        <div className="flex flex-1 flex-col items-center px-gutter pb-12 pt-10">
+          <h1 className="mx-auto max-w-[300px] text-center text-[22px] leading-snug text-fx-ink mb-2">
             Some details about you
           </h1>
-          <p className="text-sm text-primary text-center mb-8">
+          <p className="mx-auto mb-6 max-w-[320px] text-center text-xs text-fx-muted">
             You're just a few steps away from viewing our leads
           </p>
 
-          <div className="w-full max-w-sm border border-fx-line rounded-fx-md p-6 space-y-5">
+          <div className="w-full max-w-[400px] space-y-5 rounded-fx-xs border border-fx-line bg-white p-6">
             <div>
-              <label className="text-sm font-semibold text-foreground mb-1.5 block">Your name</label>
+              <label className="mb-2 block text-base text-fx-ink">Your name</label>
               <Input
                 value={yourName}
                 onChange={(e) => setYourName(e.target.value)}
@@ -245,7 +235,7 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-foreground mb-1.5 block">Company name</label>
+              <label className="mb-2 block text-base text-fx-ink">Company name</label>
               <Input
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
@@ -258,7 +248,7 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-foreground mb-1.5 block">Email address</label>
+              <label className="mb-2 block text-base text-fx-ink">Email address</label>
               <Input
                 type="email"
                 value={emailAddress}
@@ -269,7 +259,7 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-foreground mb-1.5 block">Phone number</label>
+              <label className="mb-2 block text-base text-fx-ink">Phone number</label>
               <Input
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
@@ -279,14 +269,14 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-foreground mb-2 block">Does your company have a website?</label>
+              <label className="mb-2 block text-base text-fx-ink">Does your company have a website?</label>
               <div className="flex gap-2">
                 {(["yes", "no"] as const).map((v) => (
                   <button
                     key={v}
                     onClick={() => setHasWebsite(v)}
-                    className={`px-5 py-2 rounded-full border text-sm font-medium transition-colors ${
-                      hasWebsite === v ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary"
+                    className={`rounded-fx-pill border px-4 py-1.5 text-xs transition-colors ${
+                      hasWebsite === v ? "bg-primary text-primary-foreground border-primary" : "border-fx-line text-fx-ink hover:border-primary"
                     }`}
                   >
                     {v === "yes" ? "Yes" : "No"}
@@ -296,14 +286,14 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <label className="text-sm font-semibold text-foreground mb-2 block">Company size, employees</label>
+              <label className="mb-2 block text-base text-fx-ink">Company size, employees</label>
               <div className="flex flex-wrap gap-2">
                 {COMPANY_SIZE_OPTIONS.map((size) => (
                   <button
                     key={size}
                     onClick={() => setCompanySize(size)}
-                    className={`px-4 py-2 rounded-full border text-sm font-medium transition-colors ${
-                      companySize === size ? "bg-primary text-primary-foreground border-primary" : "border-border text-foreground hover:border-primary"
+                    className={`rounded-fx-pill border px-4 py-1.5 text-xs transition-colors ${
+                      companySize === size ? "bg-primary text-primary-foreground border-primary" : "border-fx-line text-fx-ink hover:border-primary"
                     }`}
                   >
                     {size}
@@ -313,10 +303,10 @@ export default function Onboarding() {
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <Button variant="outline" onClick={() => setPhase("location")} className="px-8 h-[50px] rounded-fx-xs">
+              <Button variant="outline" onClick={() => setPhase("location")} className="h-11 rounded-fx-xs border-fx-muted px-7 text-fx-secondary">
                 Back
               </Button>
-              <Button onClick={handleDetailsNext} className="px-8 h-[50px] rounded-fx-xs">
+              <Button onClick={handleDetailsNext} className="h-11 rounded-fx-xs px-8 shadow-fx-button">
                 Next
               </Button>
             </div>

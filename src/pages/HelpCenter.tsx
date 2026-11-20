@@ -12,7 +12,7 @@ const GROUPS: { id: GroupId; title: string; blurb: string; icon: typeof Sparkles
   { id: "customers", title: "Customers", blurb: "Posting a request and getting quotes", icon: Users },
 ];
 
-const articles: { group: GroupId; slug: string; title: string; body: string; to: string; label: string }[] = [
+const articles: { group: GroupId; slug: string; title: string; body: string; to: string; label: string; sections?: [string, string][] }[] = [
   {group:'new',slug:'takatak',title:'How does FLEXS connect with TakaTak?',body:'FLEXS is an independent marketplace. Its server integration queues opaque attribution events for requests with a confirmed-email owner and a TakaTak click reference. The event includes identifiers and a timestamp, not names, contact details, messages, or documents. Administrators can inspect delivery history and retry exhausted events. A recorded delivery is not proof of current connectivity. Shared login, CRM synchronization, and private document transfer are separate features that are not enabled by this connection.',to:'/help',label:'Browse help topics'},
   {group:'customers',slug:'post-request',title:'How do I request quotes?',body:'Choose a service, answer the questions, and submit your contact details and location. Posting a request is free. Sign in with the same email and confirm it to see your request, compare quotes, and speak privately with professionals.',to:'/post-job',label:'Post a request'},
   {group:'customers',slug:'customer-responses',title:'How do I manage my request?',body:'Open My requests to view an existing request. You can reply to professionals who unlocked your contact, compare their quotes, accept one quote, or close the request. Closing stops new contact unlocks while keeping existing conversations available.',to:'/my-requests',label:'My requests'},
@@ -23,6 +23,20 @@ const articles: { group: GroupId; slug: string; title: string; body: string; to:
   {group:'new',slug:'account-access',title:'How do I reset my password or change my email?',body:'Use Forgot your password on the login page to request an email reset link. Choose a new password using that link; your sessions are signed out after the change. Account settings let you update your account name and request a confirmed email change. Your public business email is managed separately in your profile.',to:'/auth/forgot-password',label:'Reset your password'},
   {group:'new',slug:'contact-support',title:'How do I contact FLEXS support?',body:'Sign in and create a private support ticket. You can follow the conversation, reply, and close or reopen your ticket. Only your account and authorized FLEXS administrators can read it. Include the request or transaction reference when it helps explain your issue. Response times depend on the team’s availability.',to:'/support',label:'Create a support ticket'},
   {group:'customers',slug:'privacy',title:'How do I delete my account or request my data?',body:'To delete your account, sign in and open Settings, Account details, then Delete my account. Deletion is permanent: your profile, requests, messages, quotes, uploaded files and unused credits are removed. Payment records are kept by our payment processor as the law requires. To request a copy of your data, or if the delete button reports that your sign-in is used by another service, create a support ticket and choose Account deletion or data request.',to:'/app/settings/account',label:'Open account settings'},
+  { group: 'new', slug: 'conversation-rules', title: 'Keeping conversations safe and professional', body: 'Messages on FLEXS exist so that a customer and a professional can agree on a job. These rules apply to everyone.', to: '/support', label: 'Report a conversation', sections: [
+    ['Using messages the right way', 'Use messages to ask about the request, give a quote, agree on a time and share what is needed to do the job. Be polite and reply honestly, even when the answer is no.'],
+    ['What is not allowed', 'Insults, threats, harassment or discrimination; advertising something unrelated to the request; asking for passwords, card numbers or identity documents; pretending to be someone else; sending the same message to many people.'],
+    ['Protect your own information', 'Share only what the job needs. Never send card details, banking passwords or copies of identity documents in a message. A professional needs your address only once you have agreed to hire them.'],
+    ['Paying for work', 'FLEXS does not handle payment between a customer and a professional. Agree on price and payment terms in writing before work starts, and be careful with any request to pay in full in advance.'],
+    ['Reporting a problem', 'Open a support ticket and say which request and which person it concerns. Describe what happened in your own words. The FLEXS team reviews each report.'],
+    ['What happens when the rules are broken', 'Depending on how serious it is, FLEXS can warn the account, remove content, or suspend or close the account, as set out in the Terms & Conditions.'],
+  ] },
+  { group: 'new', slug: 'review-rules', title: 'Which reviews are allowed on FLEXS?', body: 'A review on FLEXS comes from a customer who accepted a professional\'s quote. That is what "verified" means on a profile.', to: '/terms', label: 'Read the terms', sections: [
+    ['Who can leave a review', 'Only the customer who posted a request, signed in with a confirmed email, and only for the professional whose quote they accepted. One review per request.'],
+    ['What a review should contain', 'Your own experience of the work: quality, punctuality, communication and price compared with the quote. A rating and a few honest sentences are enough.'],
+    ['What is not allowed', 'Reviews written by the professional, their staff or relatives; reviews given in exchange for a discount or payment; insults, discrimination or threats; personal details such as an address or a phone number; comments about anything other than the job.'],
+    ['If you disagree with a review', 'Professionals can open a support ticket to report a review that breaks these rules, saying which rule and why. FLEXS does not remove a review only because it is negative.'],
+  ] },
 ];
 
 /** Soft gradient band with the help search, shared by every help screen. */
@@ -148,7 +162,19 @@ export default function HelpCenter() {
           <div className="order-1 flex flex-col md:order-none">
             <article>
               <h1 className="text-[28px] leading-tight text-fx-ink md:text-[36px]">{selected.title}</h1>
-              <p className="mt-4 leading-relaxed text-fx-secondary">{selected.body}</p>
+              {selected.sections && (
+                <nav aria-label="In this article" className="mt-6">
+                  <h2 className="text-xl text-fx-ink">In this article</h2>
+                  <ul className="mt-2 space-y-1.5">{selected.sections.map(([heading], index) => <li key={heading}><a href={`#section-${index + 1}`} className="text-sm text-primary hover:underline">{heading}</a></li>)}</ul>
+                </nav>
+              )}
+              <p className="mt-6 leading-relaxed text-fx-secondary">{selected.body}</p>
+              {selected.sections?.map(([heading, text], index) => (
+                <section key={heading} id={`section-${index + 1}`} className="mt-8 scroll-mt-24">
+                  <h2 className="text-xl text-fx-ink">{heading}</h2>
+                  <p className="mt-2 leading-relaxed text-fx-secondary">{text}</p>
+                </section>
+              ))}
               <Button asChild className="mt-6 h-11 rounded-fx-xs px-6"><Link to={selected.to}>{selected.label}<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Link></Button>
             </article>
             <div className="mt-10 border-t border-fx-secondary pt-10">

@@ -5,7 +5,7 @@ Owner's order, 2026-11-18: every Quebec business should already have a basic pag
 
 ## What is live
 
-- `public.business_listings`: 155,637 businesses in 1,876 municipalities on 2026-11-18: 49,252 contractors (RBQ), 43,116 from OpenStreetMap (every category, province-wide), 23,233 tourism businesses and tourist homes (SIT Québec), 20,596 Montréal street-level businesses, 11,449 Montréal food establishments, 7,991 car dealers, gyms and travel agencies (OPC). The database is at 146 MB; the Supabase free plan stops at 500 MB.
+- `public.business_listings`: 153,272 businesses listed in 1,876 municipalities on 2026-11-20 (155,637 imported; 2,365 identical name, town and borough repeats are hidden, migration 20261120110000). Sources: contractors (RBQ), OpenStreetMap, tourism (SIT Québec), Montréal street-level businesses and food establishments, OPC permit holders. Default order uses `sort_name` (migration 20261120100000).
 - Pages: `/directory` (search by name, city, trade), `/business/:slug`, `/business/:slug/claim`.
 - Admin screen: "Business claims to verify".
 
