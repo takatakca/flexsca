@@ -39,7 +39,11 @@ export default function BuyerDashboard(){
     <a href="#customer-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-white focus:p-3">Skip to requests</a>
     <SiteHeader />
     <main id="customer-content" className="mx-auto max-w-6xl px-gutter pb-16 pt-16">
-      <h1 className="text-center text-4xl">Your requests</h1>
+      {/* Desktop frame 25:6315: title left, "Place new request" right. */}
+      <div className="md:flex md:items-center md:justify-between">
+        <h1 className="text-center text-4xl md:text-left md:text-[52px]">Your requests</h1>
+        <Link to="/post-job" className="hidden rounded-fx-xs bg-accent px-5 py-3 text-sm text-primary md:inline-block">Place new request</Link>
+      </div>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <div role="group" aria-label="Filter customer requests" className="inline-flex rounded-fx-xs bg-card p-1 shadow-fx-card">{(['all','open','resolved'] as const).map(value=><button key={value} aria-pressed={filter===value} onClick={()=>changeFilter(value)} className={`rounded-fx-xs px-4 py-2 text-xs ${filter===value ? 'bg-primary text-primary-foreground' : 'text-fx-secondary hover:bg-fx-sunken'}`}>{value==='all' ? 'All projects' : value==='open' ? 'Open' : 'Resolved'}{!isLoading && !error && data ? <span aria-hidden="true"> ({data.counts[value]})</span> : null}</button>)}</div>
         <button type="button" aria-label="Refresh customer requests" disabled={isFetching} onClick={()=>void refetch()} className="grid size-9 place-items-center rounded-fx-xs bg-card text-fx-secondary shadow-fx-card"><RefreshCw className={`size-4 ${isFetching ? 'animate-spin' : ''}`} /></button>
@@ -63,7 +67,7 @@ export default function BuyerDashboard(){
           })}</div>
           : <div className="rounded-fx-xs bg-card p-10 text-center shadow-fx-card"><ClipboardList className="mx-auto mb-4 size-10 text-fx-muted" /><h2 className="text-xl">{filter==='all' ? 'Your next project starts here.' : `No ${filter} requests.`}</h2><p className="mb-5 mt-2 text-sm text-fx-muted">{filter==='all' ? 'Tell us what you need to start receiving professional responses.' : 'Try another filter to view your other projects.'}</p>{filter!=='all' && <Button variant="outline" onClick={()=>changeFilter('all')}>Show all projects</Button>}</div>}
         {data && data.total>pageSize && <nav aria-label="Customer request pages" className="mt-6 flex flex-wrap items-center justify-center gap-4"><Button variant="outline" disabled={page===0} onClick={()=>setPage(v=>v-1)}>Previous requests</Button><span className="text-xs text-fx-muted">Page {page+1} of {Math.ceil(data.total/pageSize)}</span><Button variant="outline" disabled={(page+1)*pageSize>=data.total} onClick={()=>setPage(v=>v+1)}>Next requests</Button></nav>}
-        <p className="mt-10 text-center"><Link to="/post-job" className="inline-block rounded-fx-xs bg-accent px-5 py-2.5 text-xs text-primary">Place new request</Link></p>
+        <p className="mt-10 text-center md:hidden"><Link to="/post-job" className="inline-block rounded-fx-xs bg-accent px-5 py-2.5 text-xs text-primary">Place new request</Link></p>
       </section>
 
       <section className="pt-20" aria-labelledby="also-need">

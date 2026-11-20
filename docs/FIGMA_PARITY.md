@@ -39,7 +39,7 @@ Signed: Claude (Claude Code cloud). Last updated 2026-11-18 (part 2). Source of 
 | 13 | Search Page (569:2) | `/post-job` | **Done**, read and compared at 440 px: hero with the two questions, intro, three numbered steps, call to action, Popular Categories, All services as chips by group. FLEXS wording; live categories |
 | 14 | Categories (610:1588) | `/help/new`, `/help/professionals`, `/help/customers` | **Done**, read and compared. The frame is the help centre's category page (breadcrumb, three tabs, article list, Get in touch), not a service list |
 | 15 | Submit a Request (609:843, 610:988, 610:1295) | `/support` | **Done**, read and compared. The frames are the help centre's support request form, not the service request: breadcrumb, "Submit a request", topic, email, subject, details, Submit. No rich-text toolbar and no attachments (tickets are plain text); credit refunds are sent from the request itself, and the form says so |
-| 16 | Category landing pages (602:53, 644:2 and about 60 more) | `/services/:slug` | Group categories now use the landing layout of 617:2419 (see row 19). Leaf categories keep the existing page with the wizard. Individual frames not read one by one: same template |
+| 16 | Category landing pages (644:2 phone, 28:49 desktop, and about 60 more of the same template) | `/services/:slug` | **Done**, read and compared at 440 px and 1440 px. Single services: photo hero with the "where" question, breadcrumb, intro, three numbered steps, Popular cities, Related services, closing call-out. Popular cities shows real businesses from the directory for the first three cities when the service matches a directory trade. Removed from the old page: guide and price-guide cards that led nowhere, and a list of Ontario cities. Groups use row 19's layout |
 | 17 | Read Guide (609:2) | — | **Missing**: no guide content exists |
 | 18 | Profile (617:824) | `/directory` | **Done**, read and compared. The frame is a list of professional cards (name, distance, categories, View profile, Request quote). Built as the directory result cards in PR #14. No photo or stars for unclaimed businesses: FLEXS has none to show |
 | 19 | business Page (617:2419) | `/services/:slug` for group categories (for example `/services/event-and-travel-services`) | **Done**, read and compared. The frame is the "Business" category landing page, not the professionals page: hero form, breadcrumb, intro, three steps, popular categories, every service of the group as full-width rows |
@@ -52,7 +52,7 @@ Signed: Claude (Claude Code cloud). Last updated 2026-11-18 (part 2). Source of 
 | 26 | Cookies (616:711) | `/cookies` | **Done**, read and compared: centred title, section headings, body text. **Owner: the wording of this policy needs a legal review**; it describes analytics and advertising tools FLEXS may not use |
 | 27 | Privacy (617:430) | `/help/privacy` | Partial: explains deletion and data requests; a full policy needs the owner's legal text |
 | 28 | Request wizard frames (about 250, e.g. 716:280, 716:557, 674:2, 695:530) | wizard steps | Not read one by one. The 15 frames of row 11 give every step type; each category's questions come from the database (`service_categories.questions`), which is the data-driven source. Copying the other company's 250 question sets into FLEXS is not done: FLEXS questions are written per category |
-| 29 | Desktop frames (441 frames, 158 distinct screens at 1440 px) | all routes | **Started.** Listed by a small read-only script. Compared and adjusted so far: Homepage (2:2), Help (39:2435), Search results 1 (19:828), Join as a Professional (424:2), plus the shared header. Read, not yet compared: Buyer Dashboard (25:6315), Submit a Request (39:1939). Not read yet: Search Page (4:546), business Page (102:1433), Categories (39:2642), Contact us (37:1525), Cookies (73:2590), Profile (75:3138), Search results 2–16 (19:1155 to 24:5974), Loading (568:19137), Terms (72:1751), Privacy (74:2941), Press (62:1423), Read Guide (36:869), articles (818:303), Banned Reviews Policy (818:482), About us (39:2786), affiliate (62:755), and about 130 category landing and flow frames that share those templates |
+| 29 | Desktop frames (441 frames, 158 distinct screens at 1440 px) | all routes | **Compared and adjusted:** Homepage (2:2), Help (39:2435), Help category (39:2642), Help article (37:1525), Search Page (4:546), Category landing (28:49), Professionals list (75:3138), Cookies (73:2590), Buyer Dashboard (25:6315), Submit a Request (39:1939), Search results 1 (19:828), Join as a Professional (424:2), shared header with a signed-in state. **Not read yet:** Search results 2–16 (19:1155 to 24:5974), Loading (568:19137), Terms (72:1751), Privacy (74:2941), Press (62:1423), Read Guide (36:869), articles (818:303), Banned Reviews Policy (818:482), About us (39:2786), affiliate (62:755), and about 130 category and flow frames that reuse these templates |
 
 ## Verification after the redesign (2026-11-18)
 
@@ -86,6 +86,15 @@ Checks after these groups: typecheck, lint (0 errors), unit tests, build, browse
 - Wizard: 700 px card and 34 px question on desktop.
 - Professional page (frame 424:2): headline, service field with GO, popular services, three benefit columns with bullet points, a facts block. The frame's rating badge, daily-lead and revenue figures, customer stories and client logos are not used: FLEXS has none of them. The facts block shows two live numbers from the database (businesses listed, services).
 - Checks: typecheck, lint (0 errors), unit tests, build, browser scenarios, OCR audit; 440 px and 1440 px screenshots without overflow.
+
+## Desktop pass 2 and full screen sweep (2026-11-20)
+
+- Category page for a single service rebuilt to frames 644:2 and 28:49 (row 16).
+- Help article: two columns on desktop with the section's articles on the left; related articles.
+- Search page scaled for desktop. Dashboard title row. Shared header shows the account and Sign out when signed in.
+- Directory: default order ignores leading punctuation and puts numbered companies last (database column `sort_name`); towns written in capitals fixed; borough shown on cards.
+- Sweep of every public route at 440 px and 1440 px (18 routes, no sideways overflow) and of the signed-in screens through the mocked scenarios (29 checkpoints). Fixed from the sweep: not-found page rebuilt with header and footer; request-submitted page no longer says professionals are being matched; customer request page has the site header; cookies page links to the privacy help page; group heading grammar.
+- Checks: typecheck, lint (0 errors), 102 tests, build, 29 browser scenarios, OCR audit.
 
 ## Frames still needed to finish
 

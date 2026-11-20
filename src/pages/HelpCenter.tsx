@@ -114,7 +114,7 @@ export default function HelpCenter() {
     </>;
   } else if (group) {
     content = <>
-      <section className="mx-auto max-w-3xl px-gutter py-8">
+      <section className="mx-auto max-w-5xl px-gutter py-8">
         <Crumbs items={[["Help centre", "/help"], [group.title]]} />
         <h2 className="mt-10 text-2xl text-fx-ink">Categories</h2>
         <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-b border-fx-secondary pb-8">
@@ -132,33 +132,49 @@ export default function HelpCenter() {
     const position = siblings.indexOf(selected);
     const previous = siblings[position - 1], next = siblings[position + 1];
     const parent = GROUPS.find(g => g.id === selected.group)!;
-    content = (
-      <section className="mx-auto max-w-3xl px-gutter py-8">
+    const others = articles.filter(article => article.group !== selected.group).slice(0, 5);
+    // Desktop (frame 37:1525): the section's article list sits in a left column with a rule; on phones it follows the article.
+    content = <>
+      <section className="mx-auto max-w-5xl px-gutter py-8">
         <Crumbs items={[["Help centre", "/help"], [parent.title, `/help/${parent.id}`], [selected.title]]} />
-        <article className="mt-10">
-          <h1 className="text-[28px] leading-tight text-fx-ink">{selected.title}</h1>
-          <p className="mt-4 leading-relaxed text-fx-secondary">{selected.body}</p>
-          <Button asChild className="mt-6 h-11 rounded-fx-xs px-6"><Link to={selected.to}>{selected.label}<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Link></Button>
-        </article>
-        <h2 className="mt-12 text-lg text-fx-ink">Articles in this section</h2>
-        <ul className="mt-3 space-y-3 pl-5">
-          {siblings.map(article => <li key={article.slug}><Link to={`/help/${article.slug}`} aria-current={article === selected ? "page" : undefined} className={article === selected ? "text-primary" : "text-fx-ink hover:text-primary"}>{article.title}</Link></li>)}
-        </ul>
-        <div className="mt-10 border-t border-fx-secondary pt-10">
-          <h2 className="text-[28px] leading-tight text-fx-ink">Contact FLEXS customer support</h2>
-          <Link to="/support" className="mt-6 flex items-center gap-5 border-b border-fx-line pb-6">
-            <Mail className="size-12 shrink-0 text-primary" strokeWidth={1.5} aria-hidden="true" />
-            <span><span className="block text-xl text-primary">Open a support ticket</span><span className="block text-fx-ink">A private conversation with the FLEXS team</span></span>
-          </Link>
-          <Link to="/help/credit-refunds" className="mt-6 flex items-center gap-5 border-b border-fx-line pb-6">
-            <MessageSquareText className="size-12 shrink-0 text-primary" strokeWidth={1.5} aria-hidden="true" />
-            <span><span className="block text-xl text-primary">Request a credit refund</span><span className="block text-fx-ink">Reviewed one by one by the team</span></span>
-          </Link>
+        <div className="mt-8 flex flex-col md:grid md:grid-cols-[230px_1fr] md:gap-10">
+          <aside className="order-2 mt-12 md:order-none md:mt-0 md:border-r md:border-fx-secondary md:pr-6">
+            <h2 className="text-lg text-fx-ink">Articles in this section</h2>
+            <ul className="mt-3 space-y-3 pl-3">
+              {siblings.map(article => <li key={article.slug}><Link to={`/help/${article.slug}`} aria-current={article === selected ? "page" : undefined} className={article === selected ? "text-primary" : "text-fx-ink hover:text-primary"}>{article.title}</Link></li>)}
+            </ul>
+            <Link to="/support" className="mt-6 inline-flex rounded-fx-xs bg-primary px-4 py-3 text-sm text-primary-foreground">Contact FLEXS customer support</Link>
+          </aside>
+          <div className="order-1 flex flex-col md:order-none">
+            <article>
+              <h1 className="text-[28px] leading-tight text-fx-ink md:text-[36px]">{selected.title}</h1>
+              <p className="mt-4 leading-relaxed text-fx-secondary">{selected.body}</p>
+              <Button asChild className="mt-6 h-11 rounded-fx-xs px-6"><Link to={selected.to}>{selected.label}<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Link></Button>
+            </article>
+            <div className="mt-10 border-t border-fx-secondary pt-10">
+              <h2 className="text-[28px] leading-tight text-fx-ink">Contact FLEXS customer support</h2>
+              <Link to="/support" className="mt-6 flex items-center gap-5 border-b border-fx-line pb-6">
+                <Mail className="size-12 shrink-0 text-primary" strokeWidth={1.5} aria-hidden="true" />
+                <span><span className="block text-xl text-primary">Open a support ticket</span><span className="block text-fx-ink">A private conversation with the FLEXS team</span></span>
+              </Link>
+              <Link to="/help/credit-refunds" className="mt-6 flex items-center gap-5 border-b border-fx-line pb-6">
+                <MessageSquareText className="size-12 shrink-0 text-primary" strokeWidth={1.5} aria-hidden="true" />
+                <span><span className="block text-xl text-primary">Request a credit refund</span><span className="block text-fx-ink">Reviewed one by one by the team</span></span>
+              </Link>
+            </div>
+            <div className="mt-8 flex flex-col gap-6 md:flex-row md:justify-between">
+              {previous ? <div><h2 className="text-lg font-bold text-fx-ink">Previous article</h2><Link to={`/help/${previous.slug}`} className="text-sm text-primary hover:underline">{previous.title}</Link></div> : <span className="hidden md:block" />}
+              {next && <div className="md:text-right"><h2 className="text-lg font-bold text-fx-ink">Next article</h2><Link to={`/help/${next.slug}`} className="text-sm text-primary hover:underline">{next.title}</Link></div>}
+            </div>
+            <div className="mt-10 border-t border-fx-line pt-8">
+              <h2 className="text-lg text-fx-ink">Related articles</h2>
+              <ul className="mt-3 space-y-3">{others.map(article => <li key={article.slug}><Link to={`/help/${article.slug}`} className="text-fx-ink hover:text-primary">{article.title}</Link></li>)}</ul>
+            </div>
+          </div>
         </div>
-        {previous && <div className="mt-8"><h2 className="text-lg font-bold text-fx-ink">Previous article</h2><Link to={`/help/${previous.slug}`} className="text-sm text-primary hover:underline">{previous.title}</Link></div>}
-        {next && <div className="mt-6"><h2 className="text-lg font-bold text-fx-ink">Next article</h2><Link to={`/help/${next.slug}`} className="text-sm text-primary hover:underline">{next.title}</Link></div>}
       </section>
-    );
+      <GetInTouch />
+    </>;
   } else {
     content = (
       <section className="mx-auto max-w-3xl space-y-4 px-gutter py-14">

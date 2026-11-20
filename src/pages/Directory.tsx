@@ -56,7 +56,7 @@ export default function Directory() {
                       <h2 className="min-w-0 break-words text-xl text-fx-ink">{row.other_name || row.name}</h2>
                       <span className={`shrink-0 rounded-fx-pill px-3 py-1 text-xs ${row.status === "claimed" ? "bg-success/10 text-success" : "bg-fx-soft text-fx-secondary"}`}>{row.status === "claimed" ? "On FLEXS" : "Not claimed"}</span>
                     </div>
-                    <p className="mt-3 flex items-center gap-2 text-fx-ink"><MapPin className="size-4 shrink-0" aria-hidden="true" />{row.city}, QC</p>
+                    <p className="mt-3 flex items-center gap-2 text-fx-ink"><MapPin className="size-4 shrink-0" aria-hidden="true" />{row.city}, QC{row.region && row.region !== row.city ? ` · ${row.region}` : ""}</p>
                     <p className="mt-3 text-fx-ink"><span className="font-bold">Category: </span>{row.trade}</p>
                     <div className="mt-5 flex items-center justify-between gap-3">
                       <Link to={`/business/${row.slug}`} className="text-lg text-primary hover:underline">View profile ›</Link>

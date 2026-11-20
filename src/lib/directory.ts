@@ -34,7 +34,8 @@ export async function searchListings(params: { name: string; city: string; trade
   if (city.length >= 2) query = query.ilike("city", `${city}%`);
   if ((TRADES as readonly string[]).includes(params.trade)) query = query.eq("trade", params.trade);
   const from = Math.max(0, params.page) * PAGE_SIZE;
-  const { data, error, count } = await query.order("name").range(from, from + PAGE_SIZE - 1);
+  // Businesses already on FLEXS first, then by name ignoring leading punctuation.
+  const { data, error, count } = await query.order("status").order("sort_name").range(from, from + PAGE_SIZE - 1);
   if (error) throw new Error("The directory could not be loaded. Try again.");
   return { rows: (data ?? []) as Listing[], total: count ?? 0 };
 }

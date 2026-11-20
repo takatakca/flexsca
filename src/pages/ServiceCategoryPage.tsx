@@ -1,501 +1,191 @@
-import PostJob from "@/pages/customer/PostJob";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import type { Tables } from "@/integrations/supabase/types";
+import { supabase } from "@/integrations/supabase/client";
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
-import type { Tables } from "@/integrations/supabase/types";
-import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Search, MapPin, ChevronRight, Menu, User, Loader2, FileText, CheckCircle, MessageSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import PostJob from "@/pages/customer/PostJob";
 import ServiceFlowModal from "@/components/customer/ServiceFlowModal";
+import { TRADES, searchListings, type Listing } from "@/lib/directory";
 
-interface Question {
-  id: string;
-  label: string;
-  subtitle?: string;
-  type: "radio" | "checkbox" | "textarea" | "location" | "select";
-  options: string[];
-  required: boolean;
-  hasOther?: boolean;
-  placeholder?: string;
-}
+interface Question { id: string; label: string; subtitle?: string; type: "radio" | "checkbox" | "textarea" | "location" | "select"; options: string[]; required: boolean; hasOther?: boolean; placeholder?: string }
+type Category = Omit<Tables<"service_categories">, "questions"> & { questions: Question[] };
 
-interface CategoryFull {
-  id: string;
-  name: string;
-  slug: string;
-  icon: string | null;
-  base_credit_cost: number;
-  questions: Question[];
-  hero_image: string | null;
-  parent_slug: string | null;
-}
-
-const fallbackImage = "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=400&fit=crop";
-
-const regionTabs = ["Ontario", "Quebec", "British Columbia", "Alberta", "Atlantic"];
-const regionsList: Record<string, string[]> = {
-  Ontario: ["Toronto", "Ottawa", "Mississauga", "Brampton", "Hamilton", "London", "Markham", "Vaughan", "Kitchener", "Windsor"],
-  Quebec: ["Montreal", "Quebec City", "Laval", "Gatineau", "Longueuil", "Sherbrooke", "Saguenay", "Lévis"],
-  "British Columbia": ["Vancouver", "Surrey", "Burnaby", "Richmond", "Kelowna", "Victoria", "Abbotsford", "Coquitlam"],
-  Alberta: ["Calgary", "Edmonton", "Red Deer", "Lethbridge", "St. Albert", "Medicine Hat", "Grande Prairie"],
-  Atlantic: ["Halifax", "Moncton", "Saint John", "Fredericton", "Charlottetown", "St. John's", "Sydney"],
+/** Largest Quebec cities, used for the links into the business directory. */
+const CITIES = ["Montréal", "Québec", "Laval", "Gatineau", "Longueuil", "Sherbrooke", "Lévis", "Saguenay", "Trois-Rivières", "Terrebonne"];
+/** Directory trade that matches a service category, when there is one. */
+const DIRECTORY_TRADE: Record<string, (typeof TRADES)[number]> = {
+  plumbing: "Plumbing", "electrical-work": "Electrical", "painting-decorating": "Construction and renovation",
+  "wedding-catering": "Caterer", "commercial-catering": "Caterer", "private-chef-services": "Caterer",
+  "personal-training": "Fitness and leisure", "event-and-travel-services": "Travel agency",
 };
 
-function PopularRegions() {
-  const [tab, setTab] = useState("Ontario");
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-foreground">Popular Regions</h2>
-        <Button variant="ghost" size="sm" className="text-primary gap-1">View All <ChevronRight className="h-4 w-4" /></Button>
-      </div>
-      <div className="flex gap-2 flex-wrap mb-4">
-        {regionTabs.map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${tab === t ? "bg-primary text-primary-foreground border-primary" : "bg-background text-muted-foreground border-border hover:border-primary hover:text-primary"}`}>
-            {t}
-          </button>
-        ))}
-      </div>
-      <div className="border border-border rounded-lg overflow-hidden">
-        {(regionsList[tab] || []).map((r) => (
-          <button key={r} className="w-full text-left px-4 py-3 text-sm text-foreground hover:bg-muted/50 border-b border-border last:border-b-0 transition-colors">{r}</button>
-        ))}
-      </div>
-    </div>
-  );
-}
+const article = (name: string) => (/^[aeiou]/i.test(name) ? "an" : "a");
 
-// Category-specific related content images
-const categoryRelatedImages: Record<string, { services: string[]; guides: string[]; priceGuides: string[] }> = {
-  default: {
-    services: [
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=400&h=250&fit=crop",
-    ],
-    guides: [
-      "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=400&h=250&fit=crop",
-    ],
-    priceGuides: [
-      "https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=250&fit=crop",
-    ],
-  },
-  financial: {
-    services: [
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&h=250&fit=crop",
-    ],
-    guides: [
-      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=250&fit=crop",
-    ],
-    priceGuides: [
-      "https://images.unsplash.com/photo-1553729459-afe8f2e2ed65?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&h=250&fit=crop",
-    ],
-  },
-  event: {
-    services: [
-      "https://images.unsplash.com/photo-1555244162-803834f70033?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=400&h=250&fit=crop",
-    ],
-    guides: [
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=250&fit=crop",
-    ],
-    priceGuides: [
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=250&fit=crop",
-    ],
-  },
-  legal: {
-    services: [
-      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=400&h=250&fit=crop",
-    ],
-    guides: [
-      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=250&fit=crop",
-    ],
-    priceGuides: [
-      "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=400&h=250&fit=crop",
-      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400&h=250&fit=crop",
-    ],
-  },
-};
-
-function getCategoryTheme(slug: string, parentSlug: string | null): string {
-  const s = parentSlug || slug;
-  if (s.includes("financial") || s.includes("tax") || s.includes("budget") || s.includes("valuation") || s.includes("pension") || s.includes("venture") || s.includes("accounting") || s.includes("bookkeep") || s.includes("invoice")) return "financial";
-  if (s.includes("event") || s.includes("catering") || s.includes("coach") || s.includes("venue") || s.includes("entertainment")) return "event";
-  if (s.includes("legal") || s.includes("lawyer") || s.includes("employment")) return "legal";
-  if (s.includes("advertis") || s.includes("media-buying") || s.includes("broadline") || s.includes("slogan") || s.includes("copywriting")) return "default";
-  if (s.includes("brand") || s.includes("logo") || s.includes("flyer") || s.includes("stationery") || s.includes("design")) return "default";
-  return "default";
-}
-
+/**
+ * Service category page. A group of services uses the search layout (frame 617:2419).
+ * A single service uses the landing layout of frames 644:2 (phone) and 28:49 (desktop):
+ * photo hero with the "where" question, intro, three steps, cities, related services.
+ */
 export default function ServiceCategoryPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const navigate = useNavigate();
-  const [category, setCategory] = useState<CategoryFull | null>(null);
-  const [parentCategory, setParentCategory] = useState<CategoryFull | null>(null);
-  const [grandparentCategory, setGrandparentCategory] = useState<CategoryFull | null>(null);
-  const [childCategories, setChildCategories] = useState<CategoryFull[]>([]);
-  const [siblingCategories, setSiblingCategories] = useState<CategoryFull[]>([]);
-  const [allCategories, setAllCategories] = useState<CategoryFull[]>([]);
+  const { slug = "" } = useParams<{ slug: string }>();
+  const [category, setCategory] = useState<Category | null>(null);
+  const [parent, setParent] = useState<Category | null>(null);
+  const [children, setChildren] = useState<Category[]>([]);
+  const [related, setRelated] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [serviceSearch, setServiceSearch] = useState("");
-  const [locationSearch, setLocationSearch] = useState("");
+  const [where, setWhere] = useState("");
   const [showFlow, setShowFlow] = useState(false);
-  const [showLoading, setShowLoading] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cityListings, setCityListings] = useState<{ city: string; rows: Listing[] }[]>([]);
 
   useEffect(() => {
-    setLoading(true);
-    setParentCategory(null);
-    setGrandparentCategory(null);
-    setSiblingCategories([]);
-
-    Promise.all([
-      supabase.from("service_categories").select("*").eq("slug", slug || "").eq("is_active", true).single(),
-      supabase.from("service_categories").select("*").eq("parent_slug", slug || "").eq("is_active", true).order("sort_order"),
-      supabase.from("service_categories").select("*").eq("is_active", true).order("sort_order"),
-    ]).then(async ([categoryRes, childRes, allRes]) => {
-      const mapCat = (c: Tables<"service_categories">): CategoryFull => ({ ...c, questions: (c.questions as unknown as Question[]) || [] });
-
-      if (categoryRes.data) {
-        const cat = mapCat(categoryRes.data);
-        setCategory(cat);
-        setServiceSearch(cat.name);
-
-        // Fetch parent category if this is a child
-        if (cat.parent_slug) {
-          const { data: parentData } = await supabase.from("service_categories").select("*").eq("slug", cat.parent_slug).eq("is_active", true).single();
-          if (parentData) {
-            const parent = mapCat(parentData);
-            setParentCategory(parent);
-            // Fetch grandparent if parent also has a parent
-            if (parent.parent_slug) {
-              const { data: gpData } = await supabase.from("service_categories").select("*").eq("slug", parent.parent_slug).eq("is_active", true).single();
-              if (gpData) setGrandparentCategory(mapCat(gpData));
-            }
-          }
-
-          // Fetch siblings
-          if (allRes.data) {
-            setSiblingCategories(allRes.data.filter((c) => c.parent_slug === cat.parent_slug).map(mapCat));
-          }
-        }
-      }
-      if (childRes.data) setChildCategories(childRes.data.map(mapCat));
-      if (allRes.data) setAllCategories(allRes.data.map(mapCat));
+    let active = true;
+    setLoading(true); setShowFlow(false);
+    supabase.from("service_categories").select("*").eq("is_active", true).order("sort_order").then(({ data }) => {
+      if (!active) return;
+      const all = (data ?? []).map(row => ({ ...row, questions: (row.questions as unknown as Question[]) || [] }));
+      const current = all.find(row => row.slug === slug) ?? null;
+      setCategory(current);
+      setChildren(all.filter(row => row.parent_slug === slug));
+      setParent(current?.parent_slug ? all.find(row => row.slug === current.parent_slug) ?? null : null);
+      // Services beside this one: same group, or the other top-level services.
+      setRelated(all.filter(row => row.slug !== slug && (current?.parent_slug ? row.parent_slug === current.parent_slug : !row.parent_slug)).slice(0, 12));
       setLoading(false);
     });
+    return () => { active = false; };
   }, [slug]);
 
-  const handleStartRequest = () => {
-    if (category) {
-      setShowLoading(true);
-      setTimeout(() => { setShowLoading(false); setShowFlow(true); }, 1500);
-    }
-  };
+  // Real businesses from the directory for the first three cities (frame 28:49, "Popular Cities").
+  useEffect(() => {
+    const trade = DIRECTORY_TRADE[slug];
+    setCityListings([]);
+    if (!trade) return;
+    let active = true;
+    void Promise.all(CITIES.slice(0, 3).map(city => searchListings({ name: "", city, trade, page: 0 }).then(result => ({ city, rows: result.rows.slice(0, 3) })).catch(() => ({ city, rows: [] }))))
+      .then(result => { if (active) setCityListings(result.filter(item => item.rows.length > 0)); });
+    return () => { active = false; };
+  }, [slug]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  useEffect(() => { if (category) document.title = `${category.name} professionals near you | FLEXS`; }, [category]);
 
+  if (loading) return <div className="flex min-h-screen items-center justify-center" role="status" aria-label="Loading service"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>;
   if (!category) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <p className="text-muted-foreground mb-4">Service category not found</p>
-        <Button onClick={() => navigate("/")}>Back to Home</Button>
-      </div>
+      <div className="min-h-screen bg-background"><SiteHeader />
+        <main className="mx-auto max-w-3xl px-gutter py-20 text-center">
+          <h1 className="text-[28px] text-fx-ink">Service not found</h1>
+          <p className="mt-3 text-fx-secondary">This service is not offered on FLEXS at the moment.</p>
+          <Button asChild className="mt-6 rounded-fx-xs"><Link to="/post-job">Browse all services</Link></Button>
+        </main><SiteFooter /></div>
     );
   }
+  if (children.length > 0) return <PostJob scope={{ name: category.name, slug: category.slug }} />;
 
   const name = category.name;
-  const isParent = childCategories.length > 0;
-  // A category that groups other services uses the landing layout of frame 617:2419.
-  if (childCategories.length > 0) return <PostJob scope={{ name: category.name, slug: category.slug }} />;
-  const isChild = !!category.parent_slug;
-  const theme = getCategoryTheme(category.slug, category.parent_slug);
-  const images = categoryRelatedImages[theme] || categoryRelatedImages.default;
-
-  // Build "All services" tags — for child categories show siblings, for parents show children
-  const tagCategories = isChild ? siblingCategories : isParent ? childCategories : allCategories.filter((c) => !c.parent_slug).slice(0, 12);
-
-  // Dynamic related services from siblings (excluding current)
-  const relatedFromSiblings = siblingCategories.filter((c) => c.slug !== slug).slice(0, 3);
-  const relatedServicesData = relatedFromSiblings.length > 0
-    ? relatedFromSiblings.map((c, i) => ({ title: c.name, image: c.hero_image || images.services[i] || fallbackImage, slug: c.slug }))
-    : [
-        { title: "Catering", image: images.services[0], slug: "catering" },
-        { title: "Wedding Catering", image: images.services[1], slug: "wedding-catering" },
-        { title: "Private Chef Services", image: images.services[2], slug: "private-chef-services" },
-      ];
-
-  // Breadcrumb
-  const breadcrumbParts: { label: string; to?: string }[] = [{ label: "Business", to: "/" }];
-  if (grandparentCategory) {
-    breadcrumbParts.push({ label: grandparentCategory.name, to: `/services/${grandparentCategory.slug}` });
-  }
-  if (parentCategory) {
-    breadcrumbParts.push({ label: parentCategory.name, to: `/services/${parentCategory.slug}` });
-  } else if (isChild && category.parent_slug) {
-    breadcrumbParts.push({ label: category.parent_slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()), to: `/services/${category.parent_slug}` });
-  }
-  breadcrumbParts.push({ label: name });
+  const trade = DIRECTORY_TRADE[category.slug];
+  const start = () => setShowFlow(true);
+  const steps: [string, string][] = [
+    ["What are you looking for?", `Answer a few questions about the ${name.toLowerCase()} work you need. It takes about a minute and it is free.`],
+    ["Get quotes", `Professionals who offer ${name.toLowerCase()} in your area see your request and reply with their quotes.`],
+    ["Choose your professional", "Compare the replies, read verified reviews and accept the quote that suits you. There is no obligation to hire."],
+  ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Loading Modal */}
-      {showLoading && (
-        <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center">
-          <div className="bg-card rounded-2xl p-12 shadow-xl flex flex-col items-center gap-4 min-w-[300px]">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="text-lg font-semibold text-foreground">Please wait...</p>
-          </div>
-        </div>
-      )}
-
-      {/* Flow Modal */}
-      {showFlow && category && (
-        <ServiceFlowModal
-          categoryId={category.id}
-          categoryName={category.name}
-          categorySlug={category.slug}
-          questions={category.questions}
-          heroImage={category.hero_image}
-          onClose={() => setShowFlow(false)}
-        />
-      )}
-
-      {/* Header */}
+    <div className="min-h-screen bg-background text-fx-ink">
       <SiteHeader />
-
-      {/* Hero */}
-      <section className="relative bg-primary text-primary-foreground">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: `url(${category.hero_image || fallbackImage})` }}
-        />
-        <div className="relative max-w-7xl mx-auto px-4 py-14 md:py-20">
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">
-            Find {name}<br className="sm:hidden" /> {isParent ? "professionals" : "experts"} near you
-          </h1>
-          <div className="max-w-xl mx-auto bg-card rounded-lg shadow-lg p-4 md:p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">What service do you need?</label>
-              <Input value={serviceSearch} onChange={(e) => setServiceSearch(e.target.value)} placeholder={name} className="w-full" />
+      <main>
+        <section className="relative isolate overflow-hidden bg-gradient-to-br from-[hsl(var(--fx-ink))] to-[hsl(var(--fx-ink-secondary))] px-gutter py-16 md:py-24">
+          {category.hero_image && <img src={category.hero_image} alt="" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 -z-10 size-full object-cover" />}
+          <h1 className="mx-auto w-fit max-w-3xl bg-fx-ink/55 px-4 py-1 text-center text-4xl leading-[1.25] text-white md:text-[44px]">Find {name} professionals near you</h1>
+          <form className="mx-auto mt-6 max-w-[440px] rounded-fx-xs border border-primary bg-white p-5" onSubmit={e => { e.preventDefault(); start(); }}>
+            <label htmlFor="service-where" className="block text-lg">Where do you need {name}?</label>
+            <div className="mt-3 flex gap-2">
+              <input id="service-where" value={where} onChange={e => setWhere(e.target.value)} maxLength={120} placeholder="Enter your postal code or town" className="h-11 min-w-0 flex-1 rounded-fx-xs border border-fx-line bg-white px-3 text-sm placeholder:text-fx-muted focus:border-primary focus:outline-none" />
+              <Button type="submit" className="h-11 rounded-fx-xs px-4 shadow-fx-button">GO</Button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Where do you need it?</label>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input value={locationSearch} onChange={(e) => setLocationSearch(e.target.value)} placeholder="Enter your postal code" className="w-full pl-10" />
-              </div>
-            </div>
-            <Button onClick={handleStartRequest} className="w-full bg-success hover:bg-success text-white font-semibold h-11">Continue</Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        <nav className="text-xs text-muted-foreground flex items-center flex-wrap gap-1">
-          {breadcrumbParts.map((part, i) => (
-            <span key={i} className="flex items-center gap-1">
-              {i > 0 && <span>/</span>}
-              {part.to ? (
-                <Link to={part.to} className="hover:text-foreground">{part.label}</Link>
-              ) : (
-                <span className="text-primary font-medium">{part.label}</span>
-              )}
-            </span>
-          ))}
-        </nav>
-      </div>
-
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* Description */}
-        <section className="mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-            Need help finding {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional?
-          </h2>
-          <p className="text-muted-foreground mb-4">
-            You can find the best {name} professionals on FLEXS. Start your search and get free quotes now!
-          </p>
-          <p className="text-muted-foreground mb-4 text-sm">
-            First time looking for {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional and not sure where to start? Tell us about your project and we'll send you a list of {name} professionals to review. There's no pressure to hire, so you can compare profiles, read previous reviews and ask for more information before you make your decision.
-          </p>
-          <p className="text-muted-foreground mb-6 text-sm">Best of all – it's completely free!</p>
-          <Button onClick={handleStartRequest} className="rounded-full px-6">
-            Find {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional today
-          </Button>
+          </form>
         </section>
 
-        {/* Popular Categories (parent pages with children) */}
-        {isParent && childCategories.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-8">Popular Categories</h2>
-            <div className="space-y-4">
-              {childCategories.map((child) => (
-                <button
-                  key={child.id}
-                  onClick={() => navigate(`/services/${child.slug}`)}
-                  className="group w-full text-left rounded-xl overflow-hidden border border-border hover:border-primary hover:shadow-lg transition-all"
-                >
-                  <div className="relative aspect-[16/7] sm:aspect-[16/5] overflow-hidden">
-                    <img
-                      src={child.hero_image || fallbackImage}
-                      alt={child.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-                      <h3 className="text-lg sm:text-xl font-bold text-white">{child.name}</h3>
-                    </div>
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span className="bg-primary text-primary-foreground text-xs font-medium px-3 py-1 rounded-full">Start here →</span>
-                    </div>
-                  </div>
-                </button>
+        <section className="mx-auto max-w-5xl px-gutter pb-14 pt-8">
+          <nav aria-label="Breadcrumb" className="flex flex-wrap gap-x-2 text-sm text-fx-muted">
+            <Link to="/post-job" className="hover:text-primary">All services</Link><span aria-hidden="true">/</span>
+            {parent && <><Link to={`/services/${parent.slug}`} className="hover:text-primary">{parent.name}</Link><span aria-hidden="true">/</span></>}
+            <span aria-current="page" className="text-fx-ink">{name}</span>
+          </nav>
+          <h2 className="mt-6 max-w-xl text-[28px] leading-[1.3] md:text-[40px]">Need help finding {article(name)} {name} professional?</h2>
+          <div className="mt-4 max-w-xl space-y-5 text-sm leading-6 text-fx-muted">
+            <p>Describe your project once and get quotes from {name} professionals on FLEXS.</p>
+            <p>Not sure where to start? Tell us what you need and professionals who can do it reply to you. There is no pressure to hire: compare profiles, read verified reviews and ask questions before you decide.</p>
+            <p>Posting a request is free.</p>
+          </div>
+          <Button onClick={start} className="mt-6 h-11 rounded-fx-xs px-5 shadow-fx-button">Find {article(name)} {name} professional today</Button>
+        </section>
+
+        <section className="bg-fx-soft px-gutter py-10">
+          <ol className="mx-auto grid max-w-5xl gap-5 md:grid-cols-3">
+            {steps.map(([title, text], index) => (
+              <li key={title} className="bg-white px-5 py-6">
+                <span className="grid size-9 place-items-center rounded-full bg-fx-sunken text-lg text-primary" aria-hidden="true">{index + 1}</span>
+                <h3 className="mt-6 text-2xl leading-tight">{title}</h3>
+                <p className="mt-3 text-sm leading-[26px] text-fx-muted">{text}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mx-auto mt-7 max-w-5xl text-center"><Button onClick={start} className="h-11 rounded-fx-xs px-5 shadow-fx-button">Get quotes from {name} professionals near you</Button></p>
+        </section>
+
+        <section className="mx-auto max-w-5xl px-gutter py-14" aria-labelledby="cities-title">
+          <h2 id="cities-title" className="text-[28px] md:text-[36px]">Popular cities</h2>
+          <p className="mt-2 text-sm text-fx-muted">{trade ? `${trade} businesses listed in the FLEXS directory, by city.` : "Businesses listed in the FLEXS directory, by city."}</p>
+          {cityListings.length > 0 && (
+            <div className="mt-6 grid gap-5 md:grid-cols-3">
+              {cityListings.map(({ city, rows }) => (
+                <article key={city} className="border border-fx-line bg-white p-4">
+                  <h3 className="text-2xl">{city}</h3>
+                  <ul className="mt-3 divide-y divide-fx-line">
+                    {rows.map(row => <li key={row.id}><Link to={`/business/${row.slug}`} className="block truncate py-3 text-sm text-fx-ink hover:text-primary">{row.other_name || row.name}</Link></li>)}
+                  </ul>
+                  <Button asChild className="mt-3 h-10 w-full rounded-fx-xs"><Link to={`/directory?${new URLSearchParams({ city, trade: trade! })}`}>Search {city}</Link></Button>
+                </article>
               ))}
             </div>
+          )}
+          <ul className="mt-5 flex flex-wrap gap-2.5">
+            {CITIES.map(city => (
+              <li key={city}><Link to={`/directory?${new URLSearchParams(trade ? { city, trade } : { city })}`} className="inline-flex items-center rounded-fx-xs bg-fx-soft px-3 py-2 text-sm text-primary hover:bg-primary hover:text-primary-foreground">{city}</Link></li>
+            ))}
+          </ul>
+        </section>
+
+        {related.length > 0 && (
+          <section className="mx-auto max-w-5xl px-gutter pb-14" aria-labelledby="related-title">
+            <h2 id="related-title" className="text-[28px] md:text-[36px]">Related services</h2>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+              {related.filter(item => item.hero_image).slice(0, 3).map(item => (
+                <Link key={item.id} to={`/services/${item.slug}`} className="group overflow-hidden border border-fx-line bg-card">
+                  <span className="relative block aspect-[380/232] bg-fx-sunken"><img src={item.hero_image!} alt="" loading="lazy" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" /></span>
+                  <span className="block px-[18px] py-4 text-lg leading-snug">{item.name}</span>
+                </Link>
+              ))}
+            </div>
+            <ul className="mt-6 flex flex-wrap gap-2.5">
+              {related.map(item => <li key={item.id}><Link to={`/services/${item.slug}`} className="inline-block rounded-fx-xs border border-primary px-3 py-2 text-sm text-primary hover:bg-primary hover:text-primary-foreground">{item.name}</Link></li>)}
+            </ul>
           </section>
         )}
 
-        {/* For leaf (child) categories, show all sections */}
-        {!isParent && (
-          <>
-            {/* 3-Step How It Works */}
-            <section className="mb-12">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-card border border-border rounded-xl p-6 text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><FileText className="h-6 w-6 text-primary" /></div>
-                  <h3 className="font-bold text-foreground mb-2">Tell us what you need</h3>
-                  <p className="text-sm text-muted-foreground">Tell FLEXS what {name} service you need. We'll help you find professionals who can do the work for you.</p>
-                </div>
-                <div className="bg-card border border-border rounded-xl p-6 text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><CheckCircle className="h-6 w-6 text-primary" /></div>
-                  <h3 className="font-bold text-foreground mb-2">Receive Free Quotes</h3>
-                  <p className="text-sm text-muted-foreground">You'll receive free quotes from the best professionals. Compare profiles, read reviews and ask for more information.</p>
-                </div>
-                <div className="bg-card border border-border rounded-xl p-6 text-center">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4"><MessageSquare className="h-6 w-6 text-primary" /></div>
-                  <h3 className="font-bold text-foreground mb-2">Choose your {name}</h3>
-                  <p className="text-sm text-muted-foreground">Pick the professional that's right for your needs. With access to reviews, profiles and pricing, find the perfect match.</p>
-                </div>
-              </div>
-              <div className="text-center mt-6">
-                <Button onClick={handleStartRequest} className="rounded-full px-6">Find {name.match(/^[aeiou]/i) ? "an" : "a"} {name} professional near you</Button>
-              </div>
-            </section>
-
-            {/* Popular Regions */}
-            <section className="mb-12"><PopularRegions /></section>
-
-            {/* Pick the best */}
-            <section className="mb-12 text-center">
-              <h2 className="text-2xl font-bold text-foreground mb-3">Pick the best</h2>
-              <p className="text-sm text-muted-foreground max-w-xl mx-auto mb-6">
-                Compare quotes from top {name} professionals near you on FLEXS. Get responses from trusted pros, read real reviews, compare prices and choose the best one.
-              </p>
-              <Button onClick={handleStartRequest} className="rounded-full px-8">Get quotes from {name} near you</Button>
-            </section>
-
-            {/* Related Services — dynamic from siblings */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related services</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedServicesData.map((s) => (
-                  <div
-                    key={s.title}
-                    onClick={() => s.slug && navigate(`/services/${s.slug}`)}
-                    className="rounded-xl overflow-hidden border border-border group cursor-pointer"
-                  >
-                    <div className="aspect-[16/10] overflow-hidden">
-                      <img src={s.image} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                    </div>
-                    <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{s.title}</h3></div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Related Service Guides */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related service guides</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[
-                  { title: `What to expect when hiring ${name.match(/^[aeiou]/i) ? "an" : "a"} ${name}`, image: images.guides[0] },
-                  { title: `How to find the best ${name} for your project`, image: images.guides[1] },
-                ].map((g) => (
-                  <div key={g.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
-                    <div className="aspect-[16/9] overflow-hidden"><img src={g.image} alt={g.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div>
-                    <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{g.title}</h3></div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Related Price Guides */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-foreground mb-6 underline decoration-1 underline-offset-4">Related price guides</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  { title: `How much does ${name} cost?`, image: images.priceGuides[0] },
-                  { title: `${name} pricing guide for businesses`, image: images.priceGuides[1] },
-                  { title: `Average ${name} rates in Canada`, image: images.priceGuides[2] },
-                ].map((p) => (
-                  <div key={p.title} className="rounded-xl overflow-hidden border border-border group cursor-pointer">
-                    <div className="aspect-[16/10] overflow-hidden"><img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" /></div>
-                    <div className="p-4"><h3 className="font-semibold text-foreground text-sm">{p.title}</h3></div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
-
-        {/* All services tags */}
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">All services</h2>
-          <div className="flex flex-wrap gap-2">
-            {tagCategories.map((cat) => (
-              <Link key={cat.id} to={`/services/${cat.slug}`} className={`px-4 py-2 border rounded-full text-sm transition-colors ${cat.slug === slug ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:border-primary hover:text-primary"}`}>
-                {cat.name}
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="text-center py-12 border-t">
-          <h2 className="text-2xl font-bold text-foreground mb-2">Get quotes from {name} near you</h2>
-          <p className="text-muted-foreground mb-6">Tell us about your project and we'll connect you with trusted professionals.</p>
-          <Button onClick={handleStartRequest} size="lg">Get Started</Button>
+        <section className="bg-[hsl(var(--fx-callout))] px-gutter py-12 text-center">
+          <h2 className="text-[28px] leading-tight">Get quotes from {name} professionals near you</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-fx-ink">Tell us about your project and professionals reply with their quotes.</p>
+          <Button onClick={start} className="mt-6 h-11 rounded-fx-xs px-8 shadow-fx-button">Get Started</Button>
         </section>
       </main>
-
-      {/* Footer */}
       <SiteFooter />
+      {showFlow && (
+        <ServiceFlowModal categoryId={category.id} categoryName={name} categorySlug={category.slug} questions={category.questions}
+          heroImage={category.hero_image} initialLocation={where} onClose={() => setShowFlow(false)} />
+      )}
     </div>
   );
 }
