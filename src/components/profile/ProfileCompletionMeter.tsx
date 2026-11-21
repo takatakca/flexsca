@@ -8,7 +8,7 @@ interface Props {
 export default function ProfileCompletionMeter({ completion }: Props) {
   const getColor = () => {
     if (completion >= 80) return "text-green-600";
-    return "text-warning";
+    return "text-[hsl(30_90%_32%)]";
   };
 
   return (
@@ -20,7 +20,7 @@ export default function ProfileCompletionMeter({ completion }: Props) {
 
       {/* Progress bar with checkmark indicator */}
       <div className="relative">
-        <Progress value={completion} className="h-2.5 bg-muted" />
+        <Progress value={completion} aria-label="Profile completion" className="h-2.5 bg-muted" />
         <div
           className="absolute top-1/2 -translate-y-1/2 transition-all duration-300"
           style={{ left: `calc(${Math.max(completion, 4)}% - 14px)` }}
@@ -33,7 +33,7 @@ export default function ProfileCompletionMeter({ completion }: Props) {
 
       {completion < 80 && (
         <>
-          <p className="text-sm font-medium text-warning">
+          <p className="text-sm font-medium text-[hsl(30_90%_32%)]">
             Take two minutes to improve your profile
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">

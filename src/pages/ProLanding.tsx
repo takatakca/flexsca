@@ -66,12 +66,12 @@ export default function ProLanding() {
               <p className="mt-4 text-xs text-fx-muted">Contact access uses credits. A customer request does not guarantee a job.</p>
             </div>
             <div className="rounded-fx-md bg-primary p-8 text-white sm:p-10">
-              <div className="flex items-center justify-between"><p className="text-xs uppercase tracking-[0.15em] text-white/70">Your working day, simplified</p><ShieldCheck className="size-5 text-white/80" aria-hidden="true" /></div>
+              <div className="flex items-center justify-between"><p className="text-xs uppercase tracking-[0.15em] text-white/90">Your working day, simplified</p><ShieldCheck className="size-5 text-white/90" aria-hidden="true" /></div>
               <h2 className="mb-6 mt-8 text-3xl leading-tight">One workspace.<br />A clearer next step.</h2>
               {PANEL.map(({ icon: Icon, title, text }) => (
                 <div key={title} className="flex gap-4 border-t border-white/15 py-5">
-                  <div className="grid size-10 shrink-0 place-items-center rounded-fx-sm bg-white/10"><Icon className="size-5 text-white/80" aria-hidden="true" /></div>
-                  <div><h3 className="text-sm">{title}</h3><p className="mt-2 text-xs leading-relaxed text-white/70">{text}</p></div>
+                  <div className="grid size-10 shrink-0 place-items-center rounded-fx-sm bg-white/10"><Icon className="size-5 text-white/90" aria-hidden="true" /></div>
+                  <div><h3 className="text-sm">{title}</h3><p className="mt-2 text-xs leading-relaxed text-white/90">{text}</p></div>
                 </div>
               ))}
             </div>

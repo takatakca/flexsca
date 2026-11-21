@@ -15,10 +15,10 @@
   --fx-weight-regular: 500; --fx-weight-medium: 600; --fx-weight-bold: 700; /* Urbanist runs lighter than Gordita, so each step is one weight up */
 
   /* Colour (H S L triplets so Tailwind can add opacity) */
-  --fx-blue: 216 87% 56%;          /* #2D7AF1 primary */
+  --fx-blue: 216 87% 45%;            /* #0f5fd6: the frame blue (#2d7bf0) darkened until white text on it reads at 4.5:1 */
   --fx-ink: 232 53% 14%;           /* #111637 text */
-  --fx-ink-secondary: 232 15% 50%; /* #6C7191 */
-  --fx-ink-muted: 233 15% 67%;     /* #A0A3B8 */
+  --fx-ink-secondary: 232 18% 40%; /* #545978: darker than the frames, for readable secondary text */
+  --fx-ink-muted: 233 13% 46%;     /* #666a85: the frame grey (#A0A3B8) fails the 4.5:1 reading contrast on white */
   --fx-surface: 0 0% 100%;         /* #FFFFFF */
   --fx-surface-soft: 240 9% 98%;   /* #F9F9FA */
   --fx-surface-sunken: 240 14% 96%;/* #F3F3F6 */
@@ -33,7 +33,7 @@
   --fx-success-bright: 89 85% 44%; /* #73CF11 */
   --fx-success-soft: 163 47% 47%;  /* #3FAF8E */
   --fx-warning: 39 91% 65%;        /* #F7BF53 */
-  --fx-danger: 0 72% 51%;
+  --fx-danger: 0 72% 43%;           /* darkened so white text on it reads at 4.5:1 */
   --fx-danger-soft: 351 100% 94%;
   --fx-danger-banner: 348 83% 66%; /* error band, frame 633:232 */
 

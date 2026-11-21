@@ -1921,7 +1921,9 @@
   "Also send them by email": "Les envoyer aussi par courriel",
   "Email notifications": "Notifications par courriel",
   "Create a follow-up reminder from a request or the Reminders screen. Due reminders and unread updates refresh while the professional app is open. You can turn message and reminder notifications on or off in Settings. Existing notices stay available. FLEXS also emails you about new requests in your trade, quotes and updates; you can turn these emails off in Settings. SMS and device push are not currently enabled.": "Créez un rappel de suivi à partir d'une demande ou de l'écran Rappels. Les rappels échus et les nouveautés non lues s'actualisent lorsque l'application professionnelle est ouverte. Vous pouvez activer ou désactiver les notifications de messages et de rappels dans Paramètres. Les avis existants restent disponibles. FLEXS vous écrit aussi par courriel pour les nouvelles demandes dans votre métier, les soumissions et les nouveautés; vous pouvez désactiver ces courriels dans Paramètres. Les textos et les notifications poussées ne sont pas activés pour le moment.",
-  "Your company": "Votre entreprise"
+  "Your company": "Votre entreprise",
+  "Profile completion": "Progression du profil",
+  "Dismiss": "Fermer"
  },
  "patterns": [
   [

@@ -1,4 +1,4 @@
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createHash } from 'node:crypto';
 import { chromium } from 'playwright-core';
 import { spawn } from 'node:child_process';
@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 
 // UI integration fixtures: never submit real leads or send emails/payments.
 const server = spawn('npm', ['run','dev','--','--host','127.0.0.1','--port','4173','--strictPort'], { stdio: 'ignore', detached: true });
+const axeSource=readFileSync('node_modules/axe-core/axe.min.js','utf8');
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : chromium.executablePath()), headless: true, args: ['--no-sandbox'] });
 const leadId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const userId = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
@@ -452,6 +453,7 @@ try {
   assert.equal(await page.getByRole('button',{name:'Delete imported review',exact:true}).count(),0);
   assert.equal(await page.getByRole('link',{name:'View public profile',exact:true}).getAttribute('href'),`/profile/${userId}`);
   console.log('PASS review settings open the requested section and protect verified feedback');
+  const accessibility=new Set();
   // Every signed-in screen must fit a phone and a desktop window. SWEEP_DIR keeps a picture of each for review.
   for (const width of [440,1440]) {
     await page.setViewportSize({width,height:width>500?900:956});
@@ -463,10 +465,14 @@ try {
       assert.ok(extra<=0,`${route} overflows sideways by ${extra}px at ${width}px`);
       assert.ok((await page.locator('body').innerText()).trim().length>40,`${route} is almost empty at ${width}px`);
       if (process.env.SWEEP_DIR) await page.screenshot({path:`${process.env.SWEEP_DIR}/${width}${route.replace(/\//g,'_')}.png`,fullPage:true});
+      // Accessibility: no serious or critical WCAG A/AA failure on any signed-in screen.
+      await page.evaluate(axeSource);
+      for (const failure of await page.evaluate(async()=>(await window.axe.run(document,{runOnly:['wcag2a','wcag2aa']})).violations.filter(v=>v.impact==='critical'||v.impact==='serious').map(v=>`${v.id}: ${v.nodes[0].html.slice(0,140)}`))) accessibility.add(`${route} @${width} ${failure}`);
     }
   }
   await page.setViewportSize({width:390,height:844});
-  console.log('PASS thirteen signed-in screens fit a phone and a desktop window');
+  assert.deepEqual([...accessibility],[],'Accessibility failures on signed-in screens');
+  console.log('PASS thirteen signed-in screens fit a phone and a desktop window and pass the accessibility rules');
   // The same signed-in screens in French: they must fit, and what stays in English is listed for review.
   await page.evaluate(()=>localStorage.setItem('flexs.lang','fr'));
   const untranslated=new Set();
