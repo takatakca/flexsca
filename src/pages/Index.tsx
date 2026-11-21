@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { servicePhoto } from "@/lib/service-photo";
 import { useSeo } from '@/lib/seo';
 import { matchServices } from '@/lib/service-search';
 import { Link, useNavigate } from 'react-router-dom';
@@ -92,7 +93,7 @@ export default function Index() {
           <section aria-label="Featured services" className="flex snap-x snap-mandatory gap-[18px] overflow-x-auto px-gutter pb-2 [scrollbar-width:none]">
             {leaves.slice(0, 8).map(c => (
               <Link key={c.id} to={`/services/${c.slug}`} className="relative h-[137px] w-[202px] shrink-0 snap-center overflow-hidden rounded-fx-xs bg-fx-sunken">
-                {c.hero_image && <img src={c.hero_image} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />}
+                {c.hero_image && <img src={servicePhoto(c.hero_image)} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />}
                 <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-2 pb-2 pt-8 text-xs text-white">{c.name}</span>
               </Link>
             ))}

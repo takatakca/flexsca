@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { servicePhoto } from "@/lib/service-photo";
 import { matchServices } from "@/lib/service-search";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -100,7 +101,7 @@ export default function PostJob({ scope }: { scope?: { name: string; slug: strin
               {popular.map(cat => (
                 <button key={cat.id} onClick={() => open(cat.slug)} className="group overflow-hidden border border-fx-line bg-card text-left">
                   <span className="relative block aspect-[380/232] bg-fx-sunken">
-                    <img src={cat.hero_image!} alt="" loading="lazy" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+                    <img src={servicePhoto(cat.hero_image)} alt="" loading="lazy" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
                   </span>
                   <span className="block px-[18px] py-4 text-lg leading-snug">{cat.name}</span>
                 </button>
