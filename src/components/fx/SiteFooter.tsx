@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 const GROUPS: { title: string; links: [string, string][] }[] = [
-  { title: "For Customers", links: [["/post-job", "Find a Professional"], ["/services", "All services"], ["/directory", "Business directory"], ["/about", "How it works"], ["/auth/login", "Login"], ["/open-in-app", "Mobile App"]] },
+  { title: "For Customers", links: [["/post-job", "Find a Professional"], ["/directory", "Business directory"], ["/about", "How it works"], ["/auth/login", "Login"], ["/open-in-app", "Mobile App"]] },
   { title: "For Professionals", links: [["/pro", "How it works"], ["/help/credits", "Pricing"], ["/auth/welcome", "Join as a Professional"], ["/directory", "Claim your business"], ["/help", "Help centre"], ["/open-in-app", "Mobile App"]] },
-  { title: "About", links: [["/about", "About FLEXS"], ["/affiliates", "Affiliates"], ["/press", "Press"]] },
+  { title: "About", links: [["/about", "About FLEXS"], ["/affiliates", "Affiliates"]] },
 ];
 
 /** Shared footer. Only links to pages that exist; no third-party ratings or press marks. */
@@ -26,7 +26,7 @@ export default function SiteFooter() {
       </div>
       <div className="mx-auto max-w-6xl px-gutter">
         <div className="border-t border-fx-line py-7 text-center text-xs text-fx-muted space-y-3">
-          <p><Link to="/terms" className="hover:text-fx-ink">Terms &amp; Conditions</Link> / <Link to="/cookies" className="hover:text-fx-ink">Cookie policy</Link> / <Link to="/privacy" className="hover:text-fx-ink">Privacy policy</Link></p>
+          <p><Link to="/terms" className="hover:text-fx-ink">Terms of use</Link> / <Link to="/privacy" className="hover:text-fx-ink">Privacy policy</Link> / <Link to="/cookies" className="hover:text-fx-ink">Cookie policy</Link> / <Link to="/help/privacy" className="hover:text-fx-ink">Privacy and your data</Link></p>
           <p>© {new Date().getFullYear()} FLEXS. Part of GROUPE TAKATAK, Montréal.</p>
         </div>
       </div>

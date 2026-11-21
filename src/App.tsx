@@ -35,8 +35,6 @@ const JobSuccess = lazy(() => import("@/pages/customer/JobSuccess"));
 const ServiceCategoryPage = lazy(() => import("@/pages/ServiceCategoryPage"));
 const AboutPage = lazy(() => import("@/pages/AboutPage"));
 const ServicesIndex = lazy(() => import("@/pages/ServicesIndex"));
-const PrivacyPage = lazy(() => import("@/pages/legal/PrivacyPage"));
-const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
 const PressPage = lazy(() => import("@/pages/legal/PressPage"));
 const Directory = lazy(() => import("./pages/Directory"));
 const BusinessListing = lazy(() => import("./pages/BusinessListing"));
@@ -45,6 +43,8 @@ const AffiliatePage = lazy(() => import("@/pages/AffiliatePage"));
 const Support = lazy(() => import("@/pages/Support"));
 const HelpCenter = lazy(() => import("@/pages/HelpCenter"));
 const CookiesPage = lazy(() => import("@/pages/CookiesPage"));
+const TermsPage = lazy(() => import("@/pages/TermsPage"));
+const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
 const Credits = lazy(() => import("@/pages/app/Credits"));
 const AccountSettings = lazy(() => import("@/pages/app/AccountSettings"));
 const Dashboard = lazy(() => import("@/pages/app/Dashboard"));
@@ -94,11 +94,11 @@ const App = () => (
             <Route path="/business/:slug" element={<BusinessListing />} />
             <Route path="/business/:slug/claim" element={<ProtectedRoute><ClaimBusiness /></ProtectedRoute>} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
             <Route path="/press" element={<PressPage />} />
             <Route path="/affiliates" element={<AffiliatePage />} />
             <Route path="/cookies" element={<CookiesPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
             <Route path="/support/:id" element={<ProtectedRoute><Support /></ProtectedRoute>} />
             <Route path="/help" element={<HelpCenter />} />
