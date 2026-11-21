@@ -1,9 +1,12 @@
 // Shared rules for calls placed through the phone provider. Pure functions, covered by src/test/calls.test.ts.
 
+/** Area codes that share the +1 prefix but are Caribbean, Atlantic or Pacific destinations, billed at international rates. */
+const OUTSIDE_CANADA_AND_US = new Set("242 246 264 268 284 340 345 441 473 649 658 664 670 671 684 721 758 767 784 787 809 829 849 868 869 876 939".split(" "));
+
 /**
  * Accepts only ordinary Canadian and US numbers and returns them as +1XXXXXXXXXX.
- * Premium-rate (900, 976) and special prefixes are refused, so a call can never be
- * sent to a number that bills by the minute.
+ * Premium-rate (900, 976), special prefixes and +1 destinations outside Canada and the
+ * United States are refused, so a call can never be sent to a number that bills at a high rate.
  */
 export function northAmericanNumber(input: unknown): string | null {
   if (typeof input !== "string") return null;
@@ -14,6 +17,7 @@ export function northAmericanNumber(input: unknown): string | null {
   if (!/^[2-9]\d{2}$/.test(area) || !/^[2-9]\d{2}$/.test(exchange)) return null;
   if (area === "900" || area === "976" || exchange === "976" || /^(\d)\1\1$/.test(area) && area !== "888" && area !== "877" && area !== "866" && area !== "855" && area !== "844" && area !== "833") return null;
   if (area[1] === "1" && area[2] === "1") return null; // 211, 311, 411, 911…
+  if (OUTSIDE_CANADA_AND_US.has(area)) return null;
   return `+1${national}`;
 }
 
