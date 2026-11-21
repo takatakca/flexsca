@@ -587,8 +587,8 @@ export default function ServiceFlowModal({
   const stepField = "h-[52px] w-full rounded-fx-xs border border-fx-muted bg-white px-4 text-base text-fx-ink outline-none placeholder:text-fx-secondary focus:border-primary";
 
   const renderLocationStep = () => stepCard("location-step", <>
-    <h2 className={stepTitle}>Where do you need the {categoryName}?</h2>
-    <p className="mb-5 mt-2 text-center text-sm leading-6 text-fx-secondary">The postal code or town for the address where you want the {categoryName}.</p>
+    <h2 className={stepTitle}>{`Where do you need the ${categoryName}?`}</h2>
+    <p className="mb-5 mt-2 text-center text-sm leading-6 text-fx-secondary">{`The postal code or town for the address where you want the ${categoryName}.`}</p>
     <div className="relative">
       <MapPin className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-fx-ink" aria-hidden="true" />
       <input type="text" aria-label="Postal code or town" value={location} onChange={e => setLocation(e.target.value)} maxLength={120} placeholder="Enter postal code or city" className={cn(stepField, "pl-11")} autoFocus />

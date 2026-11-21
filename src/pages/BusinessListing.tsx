@@ -24,7 +24,7 @@ export default function BusinessListing() {
           : !listing ? <div className="mt-6 rounded-fx-md bg-fx-soft p-6"><h1 className="text-2xl text-fx-ink">Business not found</h1><p className="mt-2 text-fx-secondary">This listing does not exist or was removed at the owner's request.</p></div>
           : <>
             <header className="mt-4">
-              <h1 className="text-[28px] leading-tight text-fx-ink md:text-[36px]">{title}</h1>
+              <h1 translate="no" className="text-[28px] leading-tight text-fx-ink md:text-[36px]">{title}</h1>
               {listing.other_name && <p className="mt-1 text-sm text-fx-muted">Registered as {listing.name}</p>}
               <dl className="mt-5 grid gap-3 text-fx-secondary">
                 <div className="flex items-center gap-3"><Wrench className="size-5 text-fx-muted" aria-hidden="true" /><dt className="sr-only">Trade</dt><dd>{listing.trade}{listing.activity && listing.activity.toLowerCase() !== listing.trade.toLowerCase() ? ` · ${listing.activity}` : ""}</dd></div>

@@ -4,6 +4,7 @@
  * Components keep their English text. When the language is French, every text node and
  * every `placeholder`, `aria-label`, `title` and `alt` attribute is looked up in
  * `src/i18n/fr.json` and replaced in place; a MutationObserver keeps up with React.
+ * Entries of `patterns` are regular expressions for sentences that contain a number or a service name.
  * Text that is not in the dictionary stays as it is, so names of businesses, towns and
  * customers are never changed. Mark an element `translate="no"` to leave it alone.
  */
@@ -44,7 +45,13 @@ export function translate(value: string): string {
     for (const [pattern, replacement] of patterns) {
       if (pattern.test(core)) {
         // A captured group that is itself a known phrase (a service name, a status) is translated too.
-        result = core.replace(pattern, (...args) => replacement.replace(/\$(\d)/g, (_, n) => { const part = String(args[Number(n)] ?? ""); return dictionary!.strings[part] ?? part; }));
+        result = core.replace(pattern, (...args) => replacement.replace(/\$(l?)(\d)/g, (_, lower, n) => {
+          const part = String(args[Number(n)] ?? "");
+          // Captured text is looked up as written, then as a capitalised phrase ("plumbing" is stored as "Plumbing").
+          const word = dictionary!.strings[part] ?? dictionary!.strings[part.charAt(0).toUpperCase() + part.slice(1)] ?? part;
+          // "$l1" starts the inserted phrase with a small letter: "professionnels en plomberie".
+          return lower ? word.charAt(0).toLowerCase() + word.slice(1) : word;
+        }));
         break;
       }
     }

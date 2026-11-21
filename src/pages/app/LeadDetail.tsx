@@ -248,6 +248,7 @@ export default function LeadDetail() {
             phone={lead.customer_phone}
             email={lead.customer_email}
             isContacted={true}
+            leadId={lead.id}
           />
         )}
 
