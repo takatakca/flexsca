@@ -11,11 +11,27 @@ import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function Support(){
-  const {id}=useParams();
+  const {id}=useParams();const {user,loading}=useAuth();
+  // Public page: a logged-out customer, or a business asking to correct or remove a listing, must reach support.
+  if(!id && !loading && !user)return <div className="min-h-screen bg-background"><SiteHeader /><main className="mx-auto max-w-3xl space-y-6 px-gutter py-8"><PublicContact /></main><SiteFooter /></div>;
   // Frames 609:843, 610:988, 610:1295: header, breadcrumb, then the request form or the conversation.
   return <div className="min-h-screen bg-background"><SiteHeader /><main className="mx-auto max-w-3xl space-y-6 px-gutter py-8">
     <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-3 text-[13px] text-fx-ink"><Link to="/help" className="hover:text-primary">Help centre</Link><span aria-hidden="true">/</span>{id ? <><Link to="/support" className="hover:text-primary">My support tickets</Link><span aria-hidden="true">/</span><span aria-current="page">Conversation</span></> : <span aria-current="page">Submit a request</span>}</nav>
     {id ? <SupportThread id={id} /> : <SupportInbox />}</main><SiteFooter /></div>;
+}
+function PublicContact(){
+  return <section aria-labelledby="contact-title" className="space-y-5 pt-6">
+    <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-3 text-[13px] text-fx-ink"><Link to="/help" className="hover:text-primary">Help centre</Link><span aria-hidden="true">/</span><span aria-current="page">Contact us</span></nav>
+    <h1 id="contact-title" className="text-[28px] text-fx-ink">Contact FLEXS</h1>
+    <p className="text-sm text-fx-secondary">Write to us at <a href="mailto:support@takatak.ca" className="text-primary underline">support@takatak.ca</a>. We answer in French or English.</p>
+    <ul className="list-disc space-y-2 pl-5 text-sm text-fx-ink">
+      <li>To correct, claim or remove a business listing, include the business name, its town and the address of its FLEXS page.</li>
+      <li>For a request you posted, include the email address you used.</li>
+      <li>For privacy or data requests, write "Privacy" in the subject.</li>
+    </ul>
+    <p className="text-sm text-fx-secondary">Already have an account? <Link to="/auth/login?next=%2Fsupport" className="text-primary underline">Sign in</Link> to open a support ticket and follow its replies.</p>
+    <div className="flex flex-wrap gap-3"><Button asChild className="h-11 rounded-fx-xs px-8 shadow-fx-button"><a href="mailto:support@takatak.ca">Email support</a></Button><Button asChild variant="outline" className="h-11 rounded-fx-xs px-8"><Link to="/help">Browse the help centre</Link></Button></div>
+  </section>;
 }
 function SupportInbox(){
   const {user}=useAuth();const navigate=useNavigate();

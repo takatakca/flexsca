@@ -650,11 +650,11 @@ export default function ServiceFlowModal({
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Post a service request" className="fixed inset-0 z-[60] flex items-start justify-center pt-8 md:pt-16">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
-      {/* Modal content */}
-      <div className="relative z-10 flex items-start justify-center w-full">
+    <div role="dialog" aria-modal="true" aria-label="Post a service request" className="fixed inset-0 z-[60] overflow-y-auto overscroll-contain">
+      {/* Backdrop: fixed so it covers the window while the card scrolls */}
+      <div className="fixed inset-0 bg-black/50" onClick={handleClose} />
+      {/* Modal content: scrolls inside the dialog when taller than the window, so Continue stays reachable on short screens */}
+      <div className="relative z-10 flex min-h-full w-full items-start justify-center pb-8 pt-8 md:pt-16">
         {renderStep()}
       </div>
     </div>

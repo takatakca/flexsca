@@ -111,6 +111,11 @@ export default function Login() {
               <Link2 className="hidden size-4 lg:block" aria-hidden="true" />Email me a sign-in link
             </Button>
 
+            {/* No account yet: customers get one when they post a request; professionals start at the pro welcome. */}
+            <p className="text-center text-sm text-fx-secondary">
+              New to FLEXS? <a href="/post-job" className="text-primary underline">Post a request</a> to create your account, or <a href="/auth/welcome" className="text-primary underline">join as a professional</a>.
+            </p>
+
             {/* Show only providers explicitly enabled for this deployment. */}
             {import.meta.env.VITE_AUTH_APPLE === "true" && <Button
               disabled={loading}

@@ -99,7 +99,7 @@ const App = () => (
             <Route path="/cookies" element={<CookiesPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
+            <Route path="/support" element={<Support />} />
             <Route path="/support/:id" element={<ProtectedRoute><Support /></ProtectedRoute>} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/help/:slug" element={<HelpCenter />} />
