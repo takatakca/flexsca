@@ -42,6 +42,8 @@ const AffiliatePage = lazy(() => import("@/pages/AffiliatePage"));
 const Support = lazy(() => import("@/pages/Support"));
 const HelpCenter = lazy(() => import("@/pages/HelpCenter"));
 const CookiesPage = lazy(() => import("@/pages/CookiesPage"));
+const TermsPage = lazy(() => import("@/pages/TermsPage"));
+const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
 const Credits = lazy(() => import("@/pages/app/Credits"));
 const AccountSettings = lazy(() => import("@/pages/app/AccountSettings"));
 const Dashboard = lazy(() => import("@/pages/app/Dashboard"));
@@ -92,6 +94,8 @@ const App = () => (
             <Route path="/about" element={<AboutPage />} />
             <Route path="/affiliates" element={<AffiliatePage />} />
             <Route path="/cookies" element={<CookiesPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
             <Route path="/support/:id" element={<ProtectedRoute><Support /></ProtectedRoute>} />
             <Route path="/help" element={<HelpCenter />} />
