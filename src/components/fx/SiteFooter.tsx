@@ -3,8 +3,8 @@ import LanguageSwitch from "@/components/fx/LanguageSwitch";
 import { Button } from "@/components/ui/button";
 
 const GROUPS: { title: string; links: [string, string][] }[] = [
-  { title: "For Customers", links: [["/post-job", "Find a Professional"], ["/directory", "Business directory"], ["/about", "How it works"], ["/auth/login", "Login"], ["/open-in-app", "Mobile App"]] },
-  { title: "For Professionals", links: [["/pro", "How it works"], ["/help/credits", "Pricing"], ["/auth/welcome", "Join as a Professional"], ["/directory", "Claim your business"], ["/help", "Help centre"], ["/open-in-app", "Mobile App"]] },
+  { title: "For Customers", links: [["/post-job", "Find a Professional"], ["/directory", "Business directory"], ["/about", "How it works"], ["/auth/login", "Login"]] },
+  { title: "For Professionals", links: [["/pro", "How it works"], ["/help/credits", "Pricing"], ["/auth/welcome", "Join as a Professional"], ["/directory", "Claim your business"], ["/help", "Help centre"]] },
   { title: "About", links: [["/about", "About FLEXS"], ["/affiliates", "Affiliates"]] },
 ];
 

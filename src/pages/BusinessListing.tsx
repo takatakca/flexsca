@@ -5,7 +5,7 @@ import { BadgeCheck, MapPin, ShieldCheck, Wrench } from "lucide-react";
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
 import { Button } from "@/components/ui/button";
-import { SOURCES, getListing, getTrialTerms } from "@/lib/directory";
+import { SOURCES, getListing, getTrialTerms, quotable } from "@/lib/directory";
 
 /** One business from the directory. Shows what the public register shows; never a phone, email or address. */
 export default function BusinessListing() {
@@ -33,11 +33,11 @@ export default function BusinessListing() {
               </dl>
             </header>
 
-            <section className="mt-8 rounded-fx-md border border-fx-line bg-white p-5">
+            {quotable(listing.trade) && <section className="mt-8 rounded-fx-md border border-fx-line bg-white p-5">
               <h2 className="text-xl text-fx-ink">Looking for a professional in {listing.city}?</h2>
               <p className="mt-2 text-fx-secondary">Describe your project once. Professionals on FLEXS reply with quotes. Posting is free.</p>
               <Button asChild className="mt-4 h-[50px] rounded-fx-xs px-6 text-base"><Link to={listing.category_slug ? `/post-job/${listing.category_slug}` : "/post-job"}>Get quotes</Link></Button>
-            </section>
+            </section>}
 
             {listing.status === "claimed"
               ? <p className="mt-6 flex items-center gap-2 text-success"><BadgeCheck className="size-5" aria-hidden="true" />This business is on FLEXS.</p>

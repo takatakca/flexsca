@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { matchServices } from "@/lib/service-search";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import SiteHeader from "@/components/fx/SiteHeader";
@@ -41,7 +42,7 @@ export default function PostJob({ scope }: { scope?: { name: string; slug: strin
   const term = search.trim().toLowerCase();
   // On a category landing page (frame 617:2419) everything is limited to that category's services.
   const inScope = scope ? categories.filter(c => c.parent_slug === scope.slug) : categories;
-  const filtered = (scope && !term ? inScope : categories).filter(c => c.name.toLowerCase().includes(term));
+  const filtered = matchServices(scope && !term ? inScope : categories, term);
   const top = scope ? [] : categories.filter(c => !c.parent_slug);
   const groups = top.map(parent => ({ parent, children: categories.filter(c => c.parent_slug === parent.slug) })).filter(g => g.children.length > 0);
   const popular = inScope.filter(c => c.hero_image).slice(0, 9);

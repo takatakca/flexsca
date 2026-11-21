@@ -58,7 +58,7 @@ export default function JobQuestionnaire() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-fx-sunken">
-        <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        <div role="status" className="flex flex-col items-center gap-4"><div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin" aria-hidden="true" /><p className="text-sm text-fx-secondary">Loading the questions…</p></div>
       </div>
     );
   }

@@ -67,3 +67,7 @@ export async function adminDecideClaim(claimId: string, approve: boolean) {
   const { error } = await db.rpc("admin_decide_claim", { p_claim: claimId, p_approve: approve, p_note: null });
   if (error) throw new Error(error.message);
 }
+
+/** Trades where asking for a quote makes no sense: places people visit, not services they hire. */
+const NOT_QUOTABLE = new Set(["Restaurant", "Bar", "Bakery and café", "Grocery and food shop", "Retail shop", "Hotel and venue", "Chalets and tourist homes", "Camping and outfitters", "Farm and local products", "Arts and culture", "Fitness and leisure"]);
+export const quotable = (trade: string) => !NOT_QUOTABLE.has(trade);

@@ -5,7 +5,7 @@ import { MapPin, Search } from "lucide-react";
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
 import { Button } from "@/components/ui/button";
-import { PAGE_SIZE, TRADES, searchListings } from "@/lib/directory";
+import { PAGE_SIZE, TRADES, quotable, searchListings } from "@/lib/directory";
 
 /** Public directory of Quebec businesses, including those that have not joined FLEXS yet. */
 export default function Directory() {
@@ -43,7 +43,7 @@ export default function Directory() {
           <Button type="submit" className="h-[50px] rounded-fx-xs px-6 text-base"><Search className="mr-2 size-4" aria-hidden="true" />Search</Button>
         </form>
 
-        <section aria-live="polite" className="mt-8">
+        <section aria-live="polite" className="mt-8 min-h-[70vh]">
           {error ? <p role="alert" className="text-destructive">{(error as Error).message}</p>
             : isLoading ? <p role="status" className="text-fx-muted">Loading businesses…</p>
             : !data?.rows.length ? <p className="rounded-fx-md bg-fx-soft p-6 text-fx-secondary">No business matches this search. Try a shorter name or another city.</p>
@@ -60,7 +60,7 @@ export default function Directory() {
                     <p className="mt-3 text-fx-ink"><span className="font-bold">Category: </span>{row.trade}</p>
                     <div className="mt-5 flex items-center justify-between gap-3">
                       <Link to={`/business/${row.slug}`} className="text-lg text-primary hover:underline">View profile ›</Link>
-                      <Button asChild className="h-11 rounded-fx-xs px-6 shadow-fx-button"><Link to={row.category_slug ? `/post-job/${row.category_slug}` : "/post-job"}>Request quote</Link></Button>
+                      {quotable(row.trade) && <Button asChild className="h-11 rounded-fx-xs px-6 shadow-fx-button"><Link to={row.category_slug ? `/post-job/${row.category_slug}` : "/post-job"}>Request quote</Link></Button>}
                     </div>
                   </li>
                 ))}

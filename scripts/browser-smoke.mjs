@@ -188,11 +188,12 @@ try {
   await page.goto('http://127.0.0.1:4173/?ttclid=dddddddd-dddd-4ddd-8ddd-dddddddddddd');
   await page.getByLabel('What do you need?',{exact:true}).fill('House Cleaning');
   await page.getByLabel('Where is your project?',{exact:true}).fill('Toronto, M1A1A1');
+  // The home search suggests services while typing, in French as well, and one clear match opens its questions directly.
+  await page.getByLabel('What do you need?',{exact:true}).fill('ménage');
+  await page.getByRole('option',{name:'House Cleaning'}).waitFor();
+  await page.getByLabel('What do you need?',{exact:true}).fill('House Cleaning');
   await page.getByRole('button',{name:'Search',exact:true}).click();
-  await page.getByPlaceholder('Search for a service...').waitFor();
-  assert.equal(await page.getByPlaceholder('Search for a service...').inputValue(),'House Cleaning');
-
-  await page.getByRole('button',{name:/House Cleaning/}).click();
+  await page.waitForURL('**/post-job/house-cleaning?location=*');
   // One wizard for both entry points: question, where, nearly ready, email, phone, name, review, details.
   const postDialog = page.getByRole('dialog',{name:'Post a service request'});
   await postDialog.getByRole('button',{name:'Kitchen',exact:true}).click();
