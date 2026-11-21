@@ -32,6 +32,9 @@ DirectoryIndex index.html
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
   Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
 
+  # Only this site's own scripts run. Data goes to the FLEXS backend only; map tiles and video previews are the only outside content.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://ysghtkallwuoodwqgkjm.supabase.co wss://ysghtkallwuoodwqgkjm.supabase.co; frame-src https://www.youtube.com https://www.youtube-nocookie.com; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+
   # Fingerprinted build files never change; the app shell is always re-checked.
   <FilesMatch "\.(js|css|woff2?|png|jpe?g|webp|svg|ico)$">
     Header set Cache-Control "public, max-age=604800"
