@@ -4,6 +4,11 @@ Updated 2026-10-16. The order can change only with a documented reason. Track ea
 
 | Priority | Status | Task | Done when |
 | --- | --- | --- | --- |
+| P0 | queued 2026-11-21 (live audit, issue #26) | Request wizard modal must scroll: Continue unreachable at 1107×666 on /post-job/:slug | Wizard completes at 1280×600, 1366×650 and 390×700 |
+| P0 | queued 2026-11-21 (issue #26) | /support public for logged-out visitors (today redirects to /auth/welcome pro onboarding) | Logged-out customer reaches a contact form or support@takatak.ca |
+| P0 | queued 2026-11-21 (issue #26) | Live site = main: deploy after PR #25 (live has lovable.app sitemap, no headers) | flexs.ca sitemap lists flexs.ca, security headers present |
+| P0 | queued 2026-11-21 (issue #26) | French version fr-CA (Québec; Bill 96) with language toggle and FR search synonyms | Every public page available in French |
+| P1 | queued 2026-11-21 (issue #26) | Search autocomplete, faster wizard load, Canadian wording, image alt text + broken Unsplash image, /open-in-app store links, sign-up link on login, directory clean-up | See docs/LIVE_AUDIT_2026-11-21.md items 4–15 |
 | P0 | superseded 2026-11-13 (ALKAO) | Verify FLEXS Supabase project membership and securely configure GitHub environment `production` secrets `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` | Read-only readiness can access the *correct* project, with no credentials committed |
 | P0 | superseded 2026-11-13 (ALKAO) | Check restore point, remote migration history and required server-side secrets | `backend-readiness.py` succeeds; inspect drift and explicitly confirm backup recovery |
 | P0 | superseded 2026-11-13 (ALKAO) | Deploy existing backend SQL migrations and all four Edge Functions from `main` | GitHub backend deployment is successful, functions ACTIVE, privileged RPC checks pass |
