@@ -84,3 +84,9 @@ That is what `flexs.ca` answers today. It means Apache finds no `index.html` in 
 - Supabase already accepts `https://flexs.ca/**` and `https://www.flexs.ca/**` as sign-in return addresses.
 - Submit `https://flexs.ca/sitemap.xml` in Google Search Console.
 - Choose one host only: Coolify (Docker, section above) or Apache. Both serve the same build.
+
+### Checking the live site
+
+`npm run check:live` (or `node scripts/live-check.mjs https://flexs.ca`) opens 17 public pages in a real browser, confirms that private pages ask for sign-in, that the directory lists businesses and that the request wizard opens. It is read-only. `.github/workflows/live-check.yml` runs it every morning and after each website deployment.
+
+**Live result on 2026-11-21:** all checks passed on `https://flexs.ca`. In addition, one marked test request was sent through the live wizard (stored, success page shown) and then deleted. Still missing on the host until this pull request's `.htaccess` is deployed: a missing build file answers 200 with the app page instead of 404, `www.flexs.ca` is not redirected, and no security headers are sent.
