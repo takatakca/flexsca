@@ -1,4 +1,5 @@
 import NotificationPreferences from "@/components/NotificationPreferences";
+import LanguageSwitch from "@/components/fx/LanguageSwitch";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -200,6 +201,7 @@ export default function Settings() {
 
       {/* Version */}
       <p className="text-center text-sm text-muted-foreground pb-4">
+        <LanguageSwitch className="mb-3 block w-full text-center text-sm text-primary" />
         v1.0.0
       </p>
     </div>

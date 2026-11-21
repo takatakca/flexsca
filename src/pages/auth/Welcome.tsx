@@ -1,4 +1,5 @@
 import { errorMessage } from "@/lib/errors";
+import LanguageSwitch from "@/components/fx/LanguageSwitch";
 import { callbackUrl, customerReturnPath } from "@/lib/auth-navigation";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -75,7 +76,7 @@ export default function Welcome() {
       {error && (
         <div role="alert" className="bg-[hsl(var(--fx-danger-banner))] px-gutter py-4"><p className="text-lg leading-snug text-white">{error}</p></div>
       )}
-      <div className="pt-5 pb-4 text-center"><Brand /></div>
+      <div className="pt-5 pb-4 text-center"><Brand /><LanguageSwitch className="absolute right-5 top-6 text-sm text-fx-secondary" /></div>
       <div className="flex flex-1 flex-col justify-center px-gutter pb-12">
         <div className="mx-auto w-full max-w-[380px] space-y-8">
           <div className="space-y-3">

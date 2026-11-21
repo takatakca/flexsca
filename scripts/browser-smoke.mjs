@@ -35,6 +35,8 @@ async function captureVisual(path){
   visualCaptures.push({path,route:new URL(page.url()).pathname,viewport:page.viewportSize(),capturedAt:new Date().toISOString(),sha256:createHash('sha256').update(pixels).digest('hex'),text:await page.locator('body').innerText()});
 }
 page.on('pageerror', e => errors.push(e.message));
+// I18N_COLLECT=<file>: run in French and keep a list of every text shown without a French translation.
+if (process.env.I18N_COLLECT) await page.addInitScript(() => { localStorage.setItem('flexs.lang','fr'); setInterval(() => { try { const seen=new Set(JSON.parse(localStorage.getItem('flexs.untranslated')||'[]')); for (const text of (window.__flexsUntranslated?.()||[])) seen.add(text); localStorage.setItem('flexs.untranslated',JSON.stringify([...seen])); } catch {} }, 250); });
 await page.route('https://images.unsplash.com/**', route => route.abort());
 await page.route('**/auth/v1/**',route=>{ errors.push(`Unexpected auth fixture route: ${new URL(route.request().url()).pathname}`); return route.fulfill({status:500,json:{message:'Unmocked auth request'}}); });
 await page.route('**/auth/v1/user**', route => { if(route.request().method()==='PUT') { const input=route.request().postDataJSON(); if(input.password) updatedPassword=input; if(input.email) emailChange=input; } return route.fulfill({status:200,json:{id:userId,email:'customer@example.test',app_metadata:{},user_metadata:{},aud:'authenticated',email_confirmed_at:new Date().toISOString()}}); });
@@ -531,6 +533,7 @@ try {
   writeFileSync('/tmp/flexsca-visual-manifest.json',JSON.stringify({completed:true,fixtureData:true,captures:visualCaptures},null,2));
   console.log('PASS mobile layout and no uncaught browser errors');
 } finally {
+  if (process.env.I18N_COLLECT) { await page.waitForTimeout(400); const list=await page.evaluate(()=>localStorage.getItem('flexs.untranslated')||'[]').catch(()=>'[]'); writeFileSync(process.env.I18N_COLLECT,list); }
   await browser.close();
   try {process.kill(-server.pid,'SIGTERM');} catch {}
 }

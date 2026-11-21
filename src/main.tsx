@@ -2,7 +2,9 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { enforceSessionChoice } from "./lib/session-choice";
+import { initLanguage } from "./lib/i18n";
 
 enforceSessionChoice();
 
-createRoot(document.getElementById("root")!).render(<App />);
+// The French dictionary is loaded before the first paint, so the page never flashes in English.
+void initLanguage().catch(() => undefined).then(() => createRoot(document.getElementById("root")!).render(<App />));
