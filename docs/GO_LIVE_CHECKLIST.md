@@ -61,3 +61,17 @@ Merge the launch pull request, then in GitHub **Settings › Secrets and variabl
 - **French version: built.** The site opens in French for French browsers and has a language switch. The French text was written by Claude and should be read once by a French speaker, the legal pages above all: the French Terms of Use and Privacy Policy are translations of the owner's English text and have not been reviewed by a lawyer. The sign-in emails sent by Supabase are still in English (shared with the ticketing site).
 - Final wording of the professionals' terms (`/terms?for=professionals`, marked as a draft).
 - Apple and Google developer accounts for the store apps; a Mac for the iOS build.
+
+## How the backend was verified without real keys
+
+Three scripts play the whole journey on the real database inside a transaction that is always rolled back (they end with an error that carries the result; nothing is left behind). Paste one into the Supabase SQL editor to replay it.
+
+- `scripts/live-journey-check.sql`: sign-up (profile and 20 credits), request, contact hidden until unlocked, unlock charged once, quote, call authorised, acceptance, review, emails queued.
+- `scripts/live-claim-check.sql`: claiming a listing, self-approval refused, administrator approval, 30-day trial and 20 credits.
+- `scripts/live-payment-check.sql`: what the Stripe webhook does: paid purchase credited once, replay ignored, wrong amounts refused, refund removes credits, dispute freezes the wallet.
+
+Last run on 2026-11-21: every line true. What these cannot prove: that Stripe, the mail service and the phone service accept the keys. Each needs one real test after its key is entered (steps 1, 2, 2b and 5b).
+
+## Errors on the live site
+
+A screen that fails shows a recovery page, and the failure appears under **Administration › Errors on the site** (message, page, count; no personal data).
