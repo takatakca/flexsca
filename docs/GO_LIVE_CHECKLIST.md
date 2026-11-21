@@ -25,6 +25,16 @@ Note: the Stripe account has a second webhook whose address is a Coolify setting
 3. Supabase › **Authentication › Rate limits**: raise "emails sent" from 2 to at least 100 per hour.
 4. Test: on flexs.ca choose **Sign in**, enter a new address, and check that the link arrives and opens flexs.ca.
 
+## 2b. Notification emails (new request, quote, updates)
+
+Built and live in the database; nothing is sent until the mail key exists. These emails do not go through Supabase's sign-in mailer, so they need their own key:
+
+1. Create an account at resend.com, add the domain `flexs.ca` and the DNS records it shows (they prove the domain is yours).
+2. Supabase › Edge Functions › Secrets: add `RESEND_API_KEY`. Optional: `EMAIL_FROM` (default `FLEXS <no-reply@flexs.ca>`).
+3. The same Resend account can serve step 2 above: Resend gives SMTP settings for Supabase's sign-in emails.
+
+What is sent, each in French then English: confirmation to the customer when a request is posted; an alert to professionals whose listed service matches; a note to the customer when a quote arrives; a copy of each in-app notice. No customer contact detail or message text is ever in an email. Each person can turn the emails off in Settings.
+
 ## 3. First administrator — prepared
 
 `takatak.ca@gmail.com` is invited. Sign up on flexs.ca with that address and confirm it: the account becomes administrator at that first sign-in, and **Administration** shows the owner overview (revenue, credits, requests, accounts, directory, claims, tickets, calls). Nothing else to do.

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { servicePhoto } from "@/lib/service-photo";
+import { useSeo } from "@/lib/seo";
 import { Link, useParams } from "react-router-dom";
 import type { Tables } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,6 +80,11 @@ export default function ServiceCategoryPage() {
   }, []);
 
   useEffect(() => { if (category) document.title = `${category.name} professionals near you | FLEXS`; }, [category]);
+  useSeo({
+    path: `/services/${slug}`,
+    description: category ? `Get quotes from ${category.name} professionals near you in Quebec. Describe your project once on FLEXS; posting a request is free.` : undefined,
+    data: category ? { "@context": "https://schema.org", "@type": "Service", serviceType: category.name, url: `https://flexs.ca/services/${slug}`, provider: { "@type": "Organization", name: "FLEXS", url: "https://flexs.ca" }, areaServed: { "@type": "AdministrativeArea", name: "Québec" } } : null,
+  });
 
   if (loading) return <div className="flex min-h-screen items-center justify-center" role="status" aria-label="Loading service"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>;
   if (!category) {
@@ -106,7 +113,7 @@ export default function ServiceCategoryPage() {
       <SiteHeader />
       <main>
         <section className="relative isolate overflow-hidden bg-gradient-to-br from-[hsl(var(--fx-ink))] to-[hsl(var(--fx-ink-secondary))] px-gutter py-16 md:py-24">
-          {category.hero_image && <img src={category.hero_image} alt="" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 -z-10 size-full object-cover" />}
+          {category.hero_image && <img src={servicePhoto(category.hero_image)} alt="" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 -z-10 size-full object-cover" />}
           <h1 className="mx-auto w-fit max-w-full bg-fx-ink/55 px-4 py-1 text-center text-[32px] leading-[1.25] text-white [overflow-wrap:anywhere] md:max-w-3xl md:text-[44px]">{`Find ${name} professionals near you`}</h1>
           <form className="mx-auto mt-6 max-w-[440px] rounded-fx-xs border border-primary bg-white p-5" onSubmit={e => { e.preventDefault(); start(); }}>
             <label htmlFor="service-where" className="block text-lg">{`Where do you need ${name}?`}</label>
@@ -192,7 +199,7 @@ export default function ServiceCategoryPage() {
             <div className="mt-5 grid gap-5 sm:grid-cols-2 md:grid-cols-3">
               {related.filter(item => item.hero_image).slice(0, 3).map(item => (
                 <Link key={item.id} to={`/services/${item.slug}`} className="group overflow-hidden border border-fx-line bg-card">
-                  <span className="relative block aspect-[380/232] bg-fx-sunken"><img src={item.hero_image!} alt="" loading="lazy" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" /></span>
+                  <span className="relative block aspect-[380/232] bg-fx-sunken"><img src={servicePhoto(item.hero_image)} alt="" loading="lazy" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" /></span>
                   <span className="block px-[18px] py-4 text-lg leading-snug">{item.name}</span>
                 </Link>
               ))}

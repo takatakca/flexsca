@@ -18,7 +18,8 @@
     "mobile:sync": "vite build && cap sync",
     "mobile:android": "npm run mobile:sync && cap open android",
     "mobile:ios": "npm run mobile:sync && cap open ios",
-    "check:live": "node scripts/live-check.mjs"
+    "check:live": "node scripts/live-check.mjs",
+    "build:sitemaps": "node scripts/build-sitemaps.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^8.6.2",

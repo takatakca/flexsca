@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { servicePhoto } from "@/lib/service-photo";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { X, MapPin, Check, Plus } from "lucide-react";
@@ -47,6 +48,12 @@ type FlowStep =
   | "loading-submit"
   | "success"
   | "quit-confirm";
+
+// One frame for every step: the card never exceeds the window, its middle scrolls, its buttons stay in view.
+const CARD = "flex max-h-[calc(100dvh-24px)] w-full max-w-[460px] flex-col overflow-hidden rounded-fx-sm bg-white shadow-2xl md:max-h-[calc(100dvh-48px)] md:max-w-[640px]";
+const SCROLL = "min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-5 pt-6 md:px-8";
+const FOOTER = "flex shrink-0 items-center justify-between gap-3 border-t border-fx-line px-5 py-4 md:px-8";
+const ENTER = "animate-in fade-in slide-in-from-right-3 duration-200 motion-reduce:animate-none";
 
 export default function ServiceFlowModal({
   categoryId,
@@ -142,10 +149,21 @@ export default function ServiceFlowModal({
     return !!(answer as string)?.trim() || (otherChecked[question.id] && !!otherText[question.id]?.trim());
   };
 
+  // While the wizard is open the page behind it does not scroll.
+  useEffect(() => { const previous = document.body.style.overflow; document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = previous; }; }, []);
+  const advancing = useRef<number | null>(null);
+  useEffect(() => () => { if (advancing.current) window.clearTimeout(advancing.current); }, []);
   const handleRadioSelect = (value: string) => {
-    if (!question) return;
-    setAnswers((prev) => ({ ...prev, [question.id]: value }));
+    if (!question || advancing.current) return;
+    const next = { ...answers, [question.id]: value };
+    setAnswers(next);
     setOtherChecked((prev) => ({ ...prev, [question.id]: false }));
+    // A single choice needs no Continue: the answer shows as selected for a moment, then the next step opens.
+    advancing.current = window.setTimeout(() => {
+      advancing.current = null;
+      setAnswers(next);
+      if (currentQ < questions.length - 1) setCurrentQ((p) => p + 1); else setStep("location-step");
+    }, 240);
   };
 
   const handleCheckboxToggle = (value: string) => {
@@ -228,13 +246,16 @@ export default function ServiceFlowModal({
     if (!question) return null;
     const selected = answers[question.id] as string;
     return (
-      <div className="border border-fx-muted rounded-fx-sm overflow-hidden bg-white">
+      <div role="radiogroup" aria-label={question.label} className="border border-fx-muted rounded-fx-sm overflow-hidden bg-white">
         {question.options.map((opt, idx) => (
           <button
             key={opt}
+            type="button"
+            role="radio"
+            aria-checked={selected === opt}
             onClick={() => handleRadioSelect(opt)}
             className={cn(
-              "w-full flex items-center gap-3 px-4 py-4 text-left transition-colors",
+              "w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors focus-visible:outline-none focus-visible:bg-fx-soft",
               idx > 0 && "border-t border-fx-line",
               selected === opt ? "bg-accent" : "hover:bg-fx-soft"
             )}
@@ -245,7 +266,7 @@ export default function ServiceFlowModal({
             )}>
               {selected === opt && <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
             </div>
-            <span className="text-base text-fx-muted">{opt}</span>
+            <span className={cn("text-base", selected === opt ? "text-fx-ink" : "text-fx-secondary")}>{opt}</span>
           </button>
         ))}
         {question.hasOther && (
@@ -386,35 +407,33 @@ export default function ServiceFlowModal({
     if (!question) return null;
     const progress = ((currentQ + 1) / (questions.length + 2)) * 100;
     return (
-      <div className="bg-white rounded-fx-xs shadow-2xl max-w-[420px] md:max-w-[700px] w-full mx-2.5 overflow-hidden">
-        {/* Photo strip with close button */}
-        <div className="relative h-24 bg-fx-sunken md:h-36">
-          {heroImage && <img src={heroImage} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover" />}
-          <button onClick={handleClose} aria-label="Close" className="absolute right-4 top-4 grid size-[30px] place-items-center rounded-full bg-white/90 text-fx-secondary hover:text-fx-ink">
-            <X className="h-4 w-4" />
-          </button>
+      <div className={CARD}>
+        {/* Photo strip: left out on short screens, where the room is needed for the answers */}
+        <div className="relative hidden h-24 shrink-0 bg-fx-sunken [@media(min-height:760px)]:block md:h-28">
+          {heroImage && <img src={servicePhoto(heroImage)} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover" />}
         </div>
 
-        {/* Progress */}
-        <div className="mx-5 mt-5 h-1.5 overflow-hidden rounded-full bg-fx-sunken" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)} aria-label="Request progress">
-          <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+        {/* Progress and close */}
+        <div className="flex shrink-0 items-center gap-4 px-5 pt-5 md:px-8">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-fx-sunken" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)} aria-label="Request progress">
+            <div className="h-full rounded-full bg-primary transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
+          </div>
+          <button type="button" onClick={handleClose} aria-label="Close" className="grid size-8 shrink-0 place-items-center rounded-full text-fx-muted hover:bg-fx-soft hover:text-fx-ink"><X className="h-4 w-4" /></button>
         </div>
 
-        {/* Question */}
-        <div className="px-5 pt-6 pb-6">
-          <h2 className="text-[22px] leading-snug text-fx-ink text-center mb-4 md:text-[34px]">{question.label}</h2>
-          <p className="text-sm text-fx-muted text-center">{question.subtitle || `Get quotes for ${categoryName.toLowerCase()} today`}</p>
+        {/* Question and answers: this part scrolls when the list is long */}
+        <div key={question.id} className={`${SCROLL} ${ENTER}`}>
+          <h2 className="mb-2 text-center text-[22px] leading-snug text-fx-ink md:text-[28px]">{question.label}</h2>
+          <p className="mb-5 text-center text-sm text-fx-muted">{question.subtitle || `Get quotes for ${categoryName.toLowerCase()} today`}</p>
+          {renderQuestionContent()}
         </div>
-
-        {/* Options */}
-        <div className="px-5 pb-6">{renderQuestionContent()}</div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 pb-5 pt-2">
+        <div className={FOOTER}>
           {currentQ > 0 ? (
-            <Button variant="outline" onClick={handleQuestionBack} className="h-9 rounded-fx-xs px-[30px] text-xs">Back</Button>
+            <Button variant="outline" onClick={handleQuestionBack} className="h-10 rounded-fx-xs px-[30px] text-sm">Back</Button>
           ) : <div />}
-          <Button onClick={handleQuestionNext} disabled={!isAnswered()} className="h-9 rounded-fx-xs px-[30px] text-xs shadow-fx-button">
+          <Button onClick={handleQuestionNext} disabled={!isAnswered()} className="h-10 rounded-fx-xs px-[30px] text-sm shadow-fx-button">
             Continue
           </Button>
         </div>
@@ -428,7 +447,7 @@ export default function ServiceFlowModal({
       ? ((questions.length) / (questions.length + 2)) * 100
       : 85;
     return (
-      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+      <div className={cn(CARD, "block overflow-y-auto")}>
         {/* Progress bar - fills most of the width */}
         <div className="h-1.5 bg-fx-sunken">
           <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
@@ -485,14 +504,15 @@ export default function ServiceFlowModal({
   // ── Describe your request in detail ──
   // Last step (frame 24:5974). The request is sent from here, so the badge says what is left to do.
   const renderDetails = () => (
-    <div className="mx-2.5 w-full max-w-lg rounded-fx-xs bg-white px-5 pb-5 pt-5 shadow-2xl md:max-w-[700px] md:px-8 md:pb-7">
+    <div className={CARD}>
+      <div className={`${SCROLL} ${ENTER}`}>
       <div className="mb-4 flex items-center justify-center gap-2">
         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-success"><Check className="h-3 w-3 text-white" aria-hidden="true" /></span>
         <span className="text-sm text-fx-ink">Almost done</span>
       </div>
       <h2 className="text-center text-[22px] leading-snug text-fx-ink md:text-[28px]">Describe your request in detail</h2>
       <p className="mb-5 mt-2 text-center text-sm text-fx-muted">Add more details to get faster and more accurate quotes</p>
-      <textarea value={detailsText} onChange={(e) => setDetailsText(e.target.value)} maxLength={2000} placeholder="Tell professionals exactly what you need..." rows={5}
+      <textarea value={detailsText} onChange={(e) => setDetailsText(e.target.value)} maxLength={2000} placeholder="Tell professionals exactly what you need..." rows={4}
         className="mb-3 w-full resize-none rounded-fx-xs border border-fx-muted px-4 py-3 text-sm text-fx-ink outline-none placeholder:text-fx-muted focus:border-primary" />
       <p className="mb-4 text-xs text-fx-muted">Protected under our <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">privacy policy</a>. You can add photos or files to your request after it is sent.</p>
       <div className="mb-4">
@@ -502,12 +522,13 @@ export default function ServiceFlowModal({
         </div>
         {qualityScore < 80 && <p className="mt-2 text-xs text-[hsl(30_90%_40%)]">Add more detail to improve your request</p>}
       </div>
-      <label className="mb-5 flex cursor-pointer items-center gap-3 rounded-fx-xs bg-gradient-to-r from-[hsl(var(--fx-warning)/0.55)] to-[hsl(var(--fx-warning))] px-4 py-3 text-fx-ink">
+      <label className="flex cursor-pointer items-center gap-3 rounded-fx-xs bg-gradient-to-r from-[hsl(var(--fx-warning)/0.55)] to-[hsl(var(--fx-warning))] px-4 py-3 text-fx-ink">
         <Checkbox checked={contactAsap} onCheckedChange={(c) => setContactAsap(c === true)} className="border-fx-ink bg-white data-[state=checked]:border-success data-[state=checked]:bg-success" />
         <span className="text-sm">Let professionals know I want to be contacted ASAP</span>
       </label>
-      <div className="flex items-center justify-between">
-        <Button type="button" variant="outline" onClick={() => setStep("welcome-back")} className="h-9 rounded-fx-xs border-fx-muted px-7 text-xs text-fx-secondary">Back</Button>
+      </div>
+      <div className={FOOTER}>
+        <Button type="button" variant="outline" onClick={() => setStep("welcome-back")} className="h-10 rounded-fx-xs border-fx-muted px-7 text-sm text-fx-secondary">Back</Button>
         <Button onClick={() => setStep("loading-submit")} className="h-10 rounded-fx-xs bg-success px-8 text-white hover:bg-success/90">Submit request</Button>
       </div>
     </div>
@@ -568,22 +589,22 @@ export default function ServiceFlowModal({
     const total = questions.length + CONTACT_STEPS.length + 1;
     const progress = ((questions.length + CONTACT_STEPS.indexOf(current) + 1) / total) * 100;
     return (
-      <form onSubmit={e => { e.preventDefault(); if (opts.canContinue !== false) opts.onNext(); }} className={cn("mx-2.5 w-full max-w-lg rounded-fx-xs px-5 pb-5 pt-5 shadow-2xl md:max-w-[700px] md:px-8 md:pb-7", opts.tint ? "bg-[hsl(var(--fx-mint))]" : "bg-white")}>
-        <div className="flex items-center gap-4">
+      <form onSubmit={e => { e.preventDefault(); if (opts.canContinue !== false) opts.onNext(); }} className={cn(CARD, opts.tint && "bg-[hsl(var(--fx-mint))]")}>
+        <div className="flex shrink-0 items-center gap-4 px-5 pt-5 md:px-8">
           <div className="h-1.5 flex-1 overflow-hidden rounded-fx-pill bg-fx-line" role="progressbar" aria-label="Request progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress)}>
-            <div className="h-full rounded-fx-pill bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
+            <div className="h-full rounded-fx-pill bg-primary transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
           </div>
-          <button type="button" onClick={handleClose} aria-label="Close" className="text-fx-muted hover:text-fx-secondary"><X className="h-4 w-4" /></button>
+          <button type="button" onClick={handleClose} aria-label="Close" className="grid size-8 shrink-0 place-items-center rounded-full text-fx-muted hover:bg-fx-soft hover:text-fx-ink"><X className="h-4 w-4" /></button>
         </div>
-        <div className="pb-6 pt-6">{body}</div>
-        <div className={cn("flex items-center justify-between", opts.tint && "-mx-0 rounded-fx-xs bg-white p-4")}>
-          {opts.onBack ? <Button type="button" variant="outline" onClick={opts.onBack} className="h-9 rounded-fx-xs border-fx-muted px-7 text-xs text-fx-secondary">Back</Button> : <span />}
-          <Button type="submit" disabled={opts.canContinue === false} className="h-9 rounded-fx-xs px-7 text-xs shadow-fx-button">Continue</Button>
+        <div key={current} className={`${SCROLL} ${ENTER}`}>{body}</div>
+        <div className={cn(FOOTER, opts.tint && "bg-white")}>
+          {opts.onBack ? <Button type="button" variant="outline" onClick={opts.onBack} className="h-10 rounded-fx-xs border-fx-muted px-7 text-sm text-fx-secondary">Back</Button> : <span />}
+          <Button type="submit" disabled={opts.canContinue === false} className="h-10 rounded-fx-xs px-7 text-sm shadow-fx-button">Continue</Button>
         </div>
       </form>
     );
   };
-  const stepTitle = "text-center text-[22px] leading-[1.45] text-fx-ink md:text-[34px] md:leading-[1.3]";
+  const stepTitle = "text-center text-[22px] leading-[1.4] text-fx-ink md:text-[28px] md:leading-[1.3]";
   const stepField = "h-[52px] w-full rounded-fx-xs border border-fx-muted bg-white px-4 text-base text-fx-ink outline-none placeholder:text-fx-secondary focus:border-primary";
 
   const renderLocationStep = () => stepCard("location-step", <>
@@ -650,11 +671,10 @@ export default function ServiceFlowModal({
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Post a service request" className="fixed inset-0 z-[60] overflow-y-auto overscroll-contain">
-      {/* Backdrop: fixed so it covers the window while the card scrolls */}
-      <div className="fixed inset-0 bg-black/50" onClick={handleClose} />
-      {/* Modal content: scrolls inside the dialog when taller than the window, so Continue stays reachable on short screens */}
-      <div className="relative z-10 flex min-h-full w-full items-start justify-center pb-8 pt-8 md:pt-16">
+    <div role="dialog" aria-modal="true" aria-label="Post a service request" className="fixed inset-0 z-[60] flex items-center justify-center p-3 md:p-6">
+      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
+      {/* Every card is at most as tall as the window; a long step scrolls inside its card */}
+      <div className="relative z-10 flex max-h-full w-full justify-center overflow-y-auto overscroll-contain">
         {renderStep()}
       </div>
     </div>

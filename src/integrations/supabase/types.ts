@@ -28,9 +28,9 @@ export type Database = {
       }
 
       notification_preferences: {
-        Row: { user_id: string; messages: boolean; reminders: boolean }
-        Insert: { user_id: string; messages?: boolean; reminders?: boolean }
-        Update: { messages?: boolean; reminders?: boolean }
+        Row: { user_id: string; messages: boolean; reminders: boolean; email: boolean }
+        Insert: { user_id: string; messages?: boolean; reminders?: boolean; email?: boolean }
+        Update: { messages?: boolean; reminders?: boolean; email?: boolean }
         Relationships: []
       }
       notifications: {

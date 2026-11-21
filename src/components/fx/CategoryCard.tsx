@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { servicePhoto } from "@/lib/service-photo";
 
 export interface CategoryCardData { id: string; name: string; slug: string; icon: string | null; hero_image: string | null }
 
@@ -8,7 +9,7 @@ export default function CategoryCard({ category, badge }: { category: CategoryCa
     <Link to={`/services/${category.slug}`} className="group block overflow-hidden rounded-fx-xs border border-fx-line bg-card">
       <div className="relative aspect-[380/232] bg-fx-sunken">
         {category.hero_image
-          ? <img src={category.hero_image} alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+          ? <img src={servicePhoto(category.hero_image)} alt="" loading="lazy" onError={(e) => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
           : <span aria-hidden="true" className="absolute inset-0 grid place-items-center text-5xl">{category.icon ?? "🛠️"}</span>}
         {badge && <span className="absolute right-2.5 top-2.5 rounded-fx-pill bg-primary px-3 py-1.5 text-[11px] text-primary-foreground">{badge}</span>}
       </div>
