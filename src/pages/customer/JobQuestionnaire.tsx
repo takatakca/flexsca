@@ -52,6 +52,8 @@ export default function JobQuestionnaire() {
       });
   }, [slug]);
 
+  useEffect(() => { if (category) document.title = `${category.name}: request quotes | FLEXS`; }, [category]);
+
 
   if (loading) {
     return (
@@ -64,7 +66,7 @@ export default function JobQuestionnaire() {
   if (!category) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-fx-sunken p-4">
-        <p className="text-muted-foreground mb-4">Service not found</p>
+        <h1 className="mb-4 text-xl text-fx-ink">Service not found</h1>
         <Button onClick={() => navigate("/post-job")}>Back to services</Button>
       </div>
     );
@@ -73,6 +75,7 @@ export default function JobQuestionnaire() {
   // One wizard for every entry point: the same component the service pages open.
   return (
     <div className="min-h-screen bg-fx-sunken">
+      <h1 className="sr-only">Request quotes for {category.name}</h1>
       <ServiceFlowModal
         categoryId={category.id}
         categoryName={category.name}
