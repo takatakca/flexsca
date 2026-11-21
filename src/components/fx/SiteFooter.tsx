@@ -26,7 +26,7 @@ export default function SiteFooter() {
       </div>
       <div className="mx-auto max-w-6xl px-gutter">
         <div className="border-t border-fx-line py-7 text-center text-xs text-fx-muted space-y-3">
-          <p><Link to="/cookies" className="hover:text-fx-ink">Cookie policy</Link> / <Link to="/help/privacy" className="hover:text-fx-ink">Privacy and your data</Link></p>
+          <p><Link to="/terms" className="hover:text-fx-ink">Terms of use</Link> / <Link to="/privacy" className="hover:text-fx-ink">Privacy policy</Link> / <Link to="/cookies" className="hover:text-fx-ink">Cookie policy</Link> / <Link to="/help/privacy" className="hover:text-fx-ink">Privacy and your data</Link></p>
           <p>© {new Date().getFullYear()} FLEXS. Part of GROUPE TAKATAK, Montréal.</p>
         </div>
       </div>
