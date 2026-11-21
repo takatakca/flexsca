@@ -20,6 +20,7 @@ let patterns: [RegExp, string][] = [];
 let observer: MutationObserver | null = null;
 const translatedText = new WeakMap<Node, string>();
 const missing = new Set<string>();
+let french = new Set<string>();
 
 export function getLanguage(): Language {
   try {
@@ -56,7 +57,7 @@ export function translate(value: string): string {
       }
     }
   }
-  if (result === undefined) { missing.add(core); return value; }
+  if (result === undefined) { if (!french.has(core)) missing.add(core); return value; }
   return value.replace(core, () => result!);
 }
 
@@ -102,6 +103,7 @@ export async function initLanguage(): Promise<Language> {
   if (language !== "fr" || observer) return language;
   const loaded = (await import("@/i18n/fr.json")).default as unknown as Dictionary;
   dictionary = loaded;
+  french = new Set(Object.values(loaded.strings));
   patterns = loaded.patterns.map(([source, replacement]) => [new RegExp(source, "u"), replacement]);
   observer = new MutationObserver(records => {
     for (const record of records) {

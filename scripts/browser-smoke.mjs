@@ -466,6 +466,26 @@ try {
   }
   await page.setViewportSize({width:390,height:844});
   console.log('PASS thirteen signed-in screens fit a phone and a desktop window');
+  // The same signed-in screens in French: they must fit, and what stays in English is listed for review.
+  await page.evaluate(()=>localStorage.setItem('flexs.lang','fr'));
+  const untranslated=new Set();
+  for (const width of [440,1440]) {
+    await page.setViewportSize({width,height:width>500?900:956});
+    for (const route of ['/app/dashboard','/app/leads','/app/responses','/app/reminders','/app/notifications','/app/settings','/app/settings/account','/app/settings/credits','/app/settings/statuses','/app/settings/profile','/my-requests','/customer-notifications','/support','/app/admin']) {
+      await page.goto('http://127.0.0.1:4173'+route);
+      await page.waitForLoadState('networkidle').catch(()=>{});
+      await page.waitForTimeout(400);
+      assert.equal(await page.evaluate(()=>document.documentElement.lang),'fr-CA',`${route} is not in French`);
+      const extra=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+      assert.ok(extra<=0,`${route} overflows sideways by ${extra}px in French at ${width}px`);
+      for (const text of await page.evaluate(()=>window.__flexsUntranslated?.()||[])) untranslated.add(text);
+      if (process.env.SWEEP_DIR) await page.screenshot({path:`${process.env.SWEEP_DIR}/fr-${width}${route.replace(/\//g,'_')}.png`,fullPage:true});
+    }
+  }
+  if (process.env.SWEEP_DIR) writeFileSync(`${process.env.SWEEP_DIR}/fr-untranslated.json`,JSON.stringify([...untranslated],null,1));
+  await page.evaluate(()=>localStorage.removeItem('flexs.lang'));
+  await page.setViewportSize({width:390,height:844});
+  console.log(`PASS signed-in screens fit a phone and a desktop window in French (${untranslated.size} texts left as written)`);
   await page.goto('http://127.0.0.1:4173/app/settings');
   await page.getByRole('button').filter({hasText:'Account details'}).click();
   await page.waitForURL('**/app/settings/account');

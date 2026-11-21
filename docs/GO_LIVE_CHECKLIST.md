@@ -6,7 +6,7 @@ Supabase project: **ALKAO** (`ysghtkallwuoodwqgkjm`). Function secrets live unde
 
 ## 1. Payments (credits cannot be bought until this is done)
 
-Stripe account connected: **takatak.ca**, live mode. It has no FLEXS webhook yet.
+Stripe account connected: **takatak.ca**, live mode. It has no FLEXS webhook yet. The Stripe connection Claude has is read-only, so the webhook below must be added by the owner.
 
 1. Stripe › **Developers › API keys**: copy the secret key (or create a restricted key with write access to Checkout Sessions and read access to Charges and Disputes).
 2. Supabase › Edge Functions › Secrets: add `STRIPE_SECRET_KEY` with that value.
@@ -25,23 +25,22 @@ Note: the Stripe account has a second webhook whose address is a Coolify setting
 3. Supabase › **Authentication › Rate limits**: raise "emails sent" from 2 to at least 100 per hour.
 4. Test: on flexs.ca choose **Sign in**, enter a new address, and check that the link arrives and opens flexs.ca.
 
-## 3. First administrator (nobody can approve a business claim today)
+## 3. First administrator — prepared
 
-1. Sign up on flexs.ca with the owner's email and confirm it.
-2. Tell Claude which email it is. Claude adds it to `platform_admins` (one database row). No key is needed.
+`takatak.ca@gmail.com` is invited. Sign up on flexs.ca with that address and confirm it: the account becomes administrator at that first sign-in, and **Administration** shows the owner overview (revenue, credits, requests, accounts, directory, claims, tickets, calls). Nothing else to do.
 
-## 4. Sign-up hardening (these settings are shared with the ticketing site)
+## 4. Sign-up hardening — done on 2026-11-21
 
-Supabase › **Authentication › Sign In / Providers › Email** and **Attack Protection**:
-
-- minimum password length: 8 or more (today 6);
-- leaked-password protection: on (today off);
-- captcha on sign-up: on, with Cloudflare Turnstile (today off). The site needs a small code change for this; tell Claude before turning it on.
+Minimum password length is 8 and leaked-password protection is on (both also apply to the ticketing site, which shares the sign-in system). Still open: captcha on sign-up (Cloudflare Turnstile); it needs a site key from the owner and a small code change.
 
 ## 5. Assistant and TAKATAK link (optional for launch)
 
 - Supabase secret `ANTHROPIC_API_KEY`: turns on the drafting assistant for professionals.
 - TAKATAK tokens: see `docs/DEPLOYMENT.md`.
+
+## 5b. Calls between professionals and customers (MIMT / Twilio)
+
+The feature is built and deployed but stays hidden until three Supabase secrets exist: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` (the MIMT line, a Canadian or US number in the form +15145550100). Once they are set, an unlocked request shows **Call through FLEXS**: the service rings the professional first, then connects the customer, who sees the FLEXS number. Only Canadian and US numbers are called, premium numbers are refused, a call lasts 30 minutes at most, nothing is recorded, and each professional is limited to 3 calls per customer per hour and 40 per day. Twilio bills each call to the account that owns the keys.
 
 ## 6. Keep the site up to date
 
@@ -49,6 +48,6 @@ Merge the launch pull request, then in GitHub **Settings › Secrets and variabl
 
 ## Decisions still open
 
-- **French version.** The site is in English only. Quebec's Charter of the French language requires a commercial website serving Quebec customers to be available in French. This is the largest remaining piece of work.
+- **French version: built.** The site opens in French for French browsers and has a language switch. The French text was written by Claude and should be read once by a French speaker, the legal pages above all: the French Terms of Use and Privacy Policy are translations of the owner's English text and have not been reviewed by a lawyer. The sign-in emails sent by Supabase are still in English (shared with the ticketing site).
 - Final wording of the professionals' terms (`/terms?for=professionals`, marked as a draft).
 - Apple and Google developer accounts for the store apps; a Mac for the iOS build.
