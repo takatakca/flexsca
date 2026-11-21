@@ -130,14 +130,21 @@ export default function HelpCenter() {
     content = <>
       <section className="mx-auto max-w-5xl px-gutter py-8">
         <Crumbs items={[["Help centre", "/help"], [group.title]]} />
-        <h2 className="mt-10 text-2xl text-fx-ink">Categories</h2>
-        <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-b border-fx-secondary pb-8">
-          {GROUPS.map(g => <Link key={g.id} to={`/help/${g.id}`} aria-current={g.id === group.id ? "page" : undefined} className={g.id === group.id ? "text-primary underline underline-offset-4" : "text-fx-ink hover:text-primary"}>{g.title}</Link>)}
+        {/* Desktop (frame 39:2642): categories in a left column with a rule, the section's articles on the right. */}
+        <div className="md:mt-8 md:grid md:grid-cols-[230px_1fr] md:gap-10">
+          <div className="md:border-r md:border-fx-secondary md:pr-6">
+            <h2 className="mt-10 text-2xl text-fx-ink md:mt-0">Categories</h2>
+            <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 border-b border-fx-secondary pb-8 md:flex-col md:gap-y-4 md:border-b-0 md:pb-0">
+              {GROUPS.map(g => <Link key={g.id} to={`/help/${g.id}`} aria-current={g.id === group.id ? "page" : undefined} className={g.id === group.id ? "text-primary underline underline-offset-4" : "text-fx-ink hover:text-primary"}>{g.title}</Link>)}
+            </div>
+          </div>
+          <div>
+            <h1 className="mt-8 text-[28px] text-fx-ink md:mt-0 md:text-[32px]">{group.title}</h1>
+            <ul className="mt-4 list-disc space-y-4 pl-5 text-fx-ink">
+              {articles.filter(article => article.group === group.id).map(article => <li key={article.slug}><Link to={`/help/${article.slug}`} className="hover:text-primary">{article.title}</Link></li>)}
+            </ul>
+          </div>
         </div>
-        <h1 className="mt-8 text-[28px] text-fx-ink">{group.title}</h1>
-        <ul className="mt-4 list-disc space-y-4 pl-5 text-fx-ink">
-          {articles.filter(article => article.group === group.id).map(article => <li key={article.slug}><Link to={`/help/${article.slug}`} className="hover:text-primary">{article.title}</Link></li>)}
-        </ul>
       </section>
       <GetInTouch />
     </>;

@@ -163,39 +163,44 @@ export default function Onboarding() {
         <SiteHeader />
 
         <div className="flex flex-1 flex-col items-center px-gutter pb-12 pt-16">
-          <h1 className="mx-auto max-w-[300px] text-center text-[22px] leading-snug text-fx-ink mb-2">
+          <h1 className="mx-auto mb-2 max-w-[300px] text-center text-[22px] leading-snug text-fx-ink lg:mb-4 lg:max-w-none lg:text-[32px]">
             Where would you like to see leads from?
           </h1>
-          <p className="mx-auto mb-8 max-w-[280px] text-center text-xs text-fx-muted">
+          <p className="mx-auto mb-8 max-w-[280px] text-center text-xs text-fx-muted lg:max-w-none lg:text-lg">
             Tell us the area you cover so we can show you leads for your location
           </p>
 
-          <div className="w-full max-w-[400px] space-y-5 rounded-fx-xs border border-fx-line bg-white p-6">
-            <h2 className="text-xl text-fx-muted">I serve customers within</h2>
+          <div className="w-full max-w-[400px] space-y-5 rounded-fx-sm border border-fx-line bg-white p-6 lg:max-w-[940px] lg:space-y-6 lg:p-[30px]">
+            <h2 className="text-xl text-fx-muted lg:text-2xl">I serve customers within</h2>
 
-            <select
-              value={radius}
-              onChange={(e) => setRadius(e.target.value)}
-              className="w-full h-[50px] border border-fx-line rounded-fx-xs px-4 text-sm text-foreground bg-background"
-            >
-              {RADIUS_OPTIONS.map((r) => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
+            <div className="space-y-5 lg:flex lg:items-center lg:gap-5 lg:space-y-0">
+              <select
+                aria-label="Distance you travel"
+                value={radius}
+                onChange={(e) => setRadius(e.target.value)}
+                className="h-[50px] w-full rounded-fx-xs border border-fx-line bg-background px-4 text-sm text-foreground lg:h-[58px] lg:flex-1 lg:text-lg"
+              >
+                {RADIUS_OPTIONS.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
 
-            <p className="text-sm text-muted-foreground">From</p>
+              <p className="text-sm text-muted-foreground lg:text-lg">From</p>
 
-            <div className="flex h-[50px] items-center gap-3 rounded-fx-xs border border-fx-line px-4">
-              <MapPin className="h-5 w-5 flex-shrink-0 fill-fx-ink text-white" />
-              <input
-                type="text"
-                value={locationPostcode}
-                onChange={(e) => setLocationPostcode(e.target.value)}
-                placeholder="Enter your postal code or city"
-                className="flex-1 text-sm text-foreground outline-none bg-transparent placeholder:text-muted-foreground"
-              />
+              <div className="flex h-[50px] items-center gap-3 rounded-fx-xs border border-fx-line px-4 lg:h-[58px] lg:flex-1">
+                <MapPin className="h-5 w-5 flex-shrink-0 fill-fx-ink text-white" />
+                <input
+                  type="text"
+                  aria-label="Postal code or city"
+                  value={locationPostcode}
+                  onChange={(e) => setLocationPostcode(e.target.value)}
+                  placeholder="Enter your postal code or city"
+                  className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground lg:text-lg"
+                />
+              </div>
             </div>
 
+            <div className="space-y-5 lg:flex lg:items-center lg:justify-between lg:space-y-0">
             <p className="text-xs text-muted-foreground flex items-center gap-1">
               <MapPin className="h-3 w-3" /> You can change your location at any time
             </p>
@@ -203,6 +208,7 @@ export default function Onboarding() {
             <Button onClick={handleLocationNext} className="h-11 rounded-fx-xs px-8 shadow-fx-button">
               Next
             </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -216,31 +222,31 @@ export default function Onboarding() {
         <SiteHeader />
 
         <div className="flex flex-1 flex-col items-center px-gutter pb-12 pt-10">
-          <h1 className="mx-auto max-w-[300px] text-center text-[22px] leading-snug text-fx-ink mb-2">
+          <h1 className="mx-auto mb-2 max-w-[300px] text-center text-[22px] leading-snug text-fx-ink lg:mb-4 lg:max-w-none lg:text-[32px]">
             Some details about you
           </h1>
-          <p className="mx-auto mb-6 max-w-[320px] text-center text-xs text-fx-muted">
+          <p className="mx-auto mb-6 max-w-[320px] text-center text-xs text-fx-muted lg:mb-8 lg:max-w-none lg:text-lg">
             You're just a few steps away from viewing our leads
           </p>
 
-          <div className="w-full max-w-[400px] space-y-5 rounded-fx-xs border border-fx-line bg-white p-6">
+          <div className="w-full max-w-[400px] space-y-5 rounded-fx-sm border border-fx-line bg-white p-6 lg:max-w-[940px] lg:space-y-6 lg:p-[30px]">
             <div>
-              <label className="mb-2 block text-base text-fx-ink">Your name</label>
+              <label className="mb-2 block text-base text-fx-ink lg:text-xl">Your name</label>
               <Input
                 value={yourName}
                 onChange={(e) => setYourName(e.target.value)}
                 placeholder="Your full name"
-                className="h-[50px] rounded-fx-xs"
+                className="h-[50px] rounded-fx-xs lg:h-[58px] lg:text-lg"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-base text-fx-ink">Company name</label>
+              <label className="mb-2 block text-base text-fx-ink lg:text-xl">Company name</label>
               <Input
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="Company name"
-                className="h-[50px] rounded-fx-xs"
+                className="h-[50px] rounded-fx-xs lg:h-[58px] lg:text-lg"
               />
               <p className="text-xs text-muted-foreground mt-1">
                 If you aren't a business or don't have this information, you can leave this blank
@@ -248,34 +254,34 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <label className="mb-2 block text-base text-fx-ink">Email address</label>
+              <label className="mb-2 block text-base text-fx-ink lg:text-xl">Email address</label>
               <Input
                 type="email"
                 value={emailAddress}
                 onChange={(e) => setEmailAddress(e.target.value)}
                 placeholder="your@email.com"
-                className="h-[50px] rounded-fx-xs"
+                className="h-[50px] rounded-fx-xs lg:h-[58px] lg:text-lg"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-base text-fx-ink">Phone number</label>
+              <label className="mb-2 block text-base text-fx-ink lg:text-xl">Phone number</label>
               <Input
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 placeholder="Optional"
-                className="h-[50px] rounded-fx-xs"
+                className="h-[50px] rounded-fx-xs lg:h-[58px] lg:text-lg"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-base text-fx-ink">Does your company have a website?</label>
+              <label className="mb-2 block text-base text-fx-ink lg:text-xl">Does your company have a website?</label>
               <div className="flex gap-2">
                 {(["yes", "no"] as const).map((v) => (
                   <button
                     key={v}
                     onClick={() => setHasWebsite(v)}
-                    className={`rounded-fx-pill border px-4 py-1.5 text-xs transition-colors ${
+                    className={`rounded-fx-pill border px-4 py-1.5 text-xs transition-colors lg:px-6 lg:py-2.5 lg:text-lg ${
                       hasWebsite === v ? "bg-primary text-primary-foreground border-primary" : "border-fx-line text-fx-ink hover:border-primary"
                     }`}
                   >
@@ -286,13 +292,13 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <label className="mb-2 block text-base text-fx-ink">Company size, employees</label>
+              <label className="mb-2 block text-base text-fx-ink lg:text-xl">Company size, employees</label>
               <div className="flex flex-wrap gap-2">
                 {COMPANY_SIZE_OPTIONS.map((size) => (
                   <button
                     key={size}
                     onClick={() => setCompanySize(size)}
-                    className={`rounded-fx-pill border px-4 py-1.5 text-xs transition-colors ${
+                    className={`rounded-fx-pill border px-4 py-1.5 text-xs transition-colors lg:px-6 lg:py-2.5 lg:text-lg ${
                       companySize === size ? "bg-primary text-primary-foreground border-primary" : "border-fx-line text-fx-ink hover:border-primary"
                     }`}
                   >

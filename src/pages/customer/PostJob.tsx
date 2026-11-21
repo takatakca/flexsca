@@ -109,9 +109,9 @@ export default function PostJob({ scope }: { scope?: { name: string; slug: strin
             <h2 className="mt-16 text-[28px] md:text-[44px]">All services</h2>
             {(scope ? [{ parent: { id: scope.slug, name: scope.name, slug: scope.slug }, children: inScope }] : groups.length ? groups : [{ parent: { id: "all", name: "", slug: "" }, children: categories }]).map(group => (
               <div key={group.parent.id} className="mt-6">
-                {group.parent.name && <h3 className="text-2xl text-primary">{group.parent.name}</h3>}
-                <ul className={scope ? "mt-4 grid gap-3 md:grid-cols-2" : "mt-4 flex flex-wrap gap-2.5"}>
-                  {group.children.map(cat => <li key={cat.id}><button onClick={() => open(cat.slug)} className={`rounded-fx-xs border border-primary px-3 py-2 text-left text-sm text-primary hover:bg-primary hover:text-primary-foreground ${scope ? "w-full py-3 text-base" : ""}`}>{cat.name}</button></li>)}
+                {group.parent.name && !scope && <h3 className="text-2xl text-primary">{group.parent.name}</h3>}
+                <ul className="mt-4 flex flex-wrap gap-2.5">
+                  {group.children.map(cat => <li key={cat.id}><button onClick={() => open(cat.slug)} className={`rounded-fx-xs border border-primary px-3 py-2 text-left text-sm text-primary hover:bg-primary hover:text-primary-foreground`}>{cat.name}</button></li>)}
                 </ul>
               </div>
             ))}

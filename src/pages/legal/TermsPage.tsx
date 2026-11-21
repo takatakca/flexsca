@@ -25,10 +25,22 @@ const CUSTOMERS: LegalSection[] = [
 ];
 
 const PROFESSIONALS: LegalSection[] = [
+  { title: "Definitions", body: ["In these terms, the following words have these meanings:"], terms: [
+    ["FLEXS, we, us", "the FLEXS website and applications, operated by GROUPE TAKATAK, Montréal."],
+    ["You, the Professional", "the person or business offering services to customers through FLEXS."],
+    ["Customer", "a person or business that posts a request on FLEXS."],
+    ["Request", "a job described by a customer, shown to professionals in the matching trade and area."],
+    ["Unlock", "spending credits to see the contact details attached to a request."],
+    ["Credits", "units bought in packs, or granted as a trial or bonus, that are spent to unlock requests."],
+    ["Trial", "the free period and free credits granted when a business listing is claimed and approved."],
+    ["Listing", "the public page of a business in the FLEXS directory, whether or not the business has joined."],
+    ["Claim", "a request by a professional to take over the listing of the business they represent."],
+    ["Quote", "the professional's own offer to a customer, made through FLEXS."],
+  ] },
   { title: "The service", body: ["FLEXS shows you customer requests in your trade and area. You choose which requests to unlock and quote on. A request does not guarantee a job."] },
   { title: "Your profile and claiming a business", body: ["Your profile must describe your real business. If you claim a directory listing, you confirm that you are authorised to represent that business. FLEXS may ask for proof and may reverse a claim that was made wrongly."] },
   { title: "Credits", body: [
-    "Unlocking a customer's contact details costs credits. The cost is shown before you unlock. Unlocking the same request twice is not charged twice.",
+    "Signing up and a basic listing are free. Unlocking a customer's contact details costs credits. The cost is shown before you unlock. Unlocking the same request twice is not charged twice.",
     "Credits are bought in packs, priced in Canadian dollars, and paid through Stripe. Trial or bonus credits have no cash value. If a payment is refunded or disputed, the credits it bought are removed, and a disputed payment pauses purchases and unlocking until it is resolved.",
     "You can ask for credits back on a request, for example when the contact details are wrong. Each request is reviewed; an approved one returns the credits to your wallet. It is not a cash refund.",
   ] },
@@ -37,14 +49,37 @@ const PROFESSIONALS: LegalSection[] = [
   ...SHARED_END,
 ];
 
-/** Terms page (frame 72:1751): two tabs, Customers and Professionals. */
+/** Shown on the professionals' terms until the owner supplies the final legal text. */
+const DRAFT_NOTICE = (
+  <p role="note" className="mt-6 rounded-fx-xs border border-fx-line bg-[hsl(var(--fx-callout))] px-4 py-3 text-sm leading-6 text-fx-ink lg:mt-8 lg:px-6 lg:py-5 lg:text-lg">
+    <strong className="font-medium">Draft awaiting the owner.</strong> This page is a working draft written for FLEXS. It has not yet been reviewed by a lawyer or approved by the owner, and the final text will replace it.
+  </p>
+);
+
+const ABOUT_US = (
+  <section className="mt-8 lg:mt-12">
+    <h2 className="text-center text-lg leading-snug lg:text-left lg:text-[32px]">About us</h2>
+    <div className="mt-3 space-y-3 text-sm leading-6 text-fx-secondary lg:mt-5 lg:text-xl lg:leading-[1.7]">
+      <p>FLEXS is operated by GROUPE TAKATAK, Montréal, Quebec, Canada. You can contact us:</p>
+      <ul className="list-disc space-y-1.5 pl-5">
+        <li>by opening a <Link to="/support" className="text-fx-ink underline-offset-2 hover:underline">support ticket</Link>;</li>
+        <li>through the <Link to="/help" className="text-fx-ink underline-offset-2 hover:underline">Help centre</Link>.</li>
+      </ul>
+    </div>
+  </section>
+);
+
+/** Terms page. Customers: frame 72:1751. Professionals: frames 831:1370 (440 px) and 819:1415 (1440 px). */
 export default function TermsPage() {
   const [params] = useSearchParams();
   const pro = params.get("for") === "professionals";
-  const tab = (active: boolean) => `border-b-2 px-4 py-3 text-sm ${active ? "border-primary text-fx-ink" : "border-transparent text-fx-muted hover:text-fx-ink"}`;
+  const tab = (active: boolean) => `rounded-t-fx-xs px-6 py-4 text-base lg:px-8 lg:py-6 lg:text-xl ${active ? "bg-background text-fx-ink" : "text-fx-ink hover:bg-background/60"}`;
   return <LegalPage
-    title={pro ? "Terms & Conditions for Professionals" : "Terms & Conditions for Customers"} updated="20 November 2026" sections={pro ? PROFESSIONALS : CUSTOMERS}
-    tabs={<nav aria-label="Terms for" className="mb-8 flex justify-center gap-2 border-b border-fx-line">
+    title={pro ? "Terms & Conditions for Professionals" : "Terms & Conditions for Customers"} updated="21 November 2026" sections={pro ? PROFESSIONALS : CUSTOMERS}
+    notice={pro ? DRAFT_NOTICE : undefined}
+    intro={pro ? "These terms apply to the services FLEXS makes available to professionals. They are an agreement between you and FLEXS. Read them before you create a professional account, claim a business listing or buy credits; by doing any of these you agree to them." : undefined}
+    lead={pro ? ABOUT_US : undefined}
+    tabs={<nav aria-label="Terms for" className="flex justify-center">
       <Link to="/terms" aria-current={pro ? undefined : "page"} className={tab(!pro)}>Customers</Link>
       <Link to="/terms?for=professionals" aria-current={pro ? "page" : undefined} className={tab(pro)}>Professionals</Link>
     </nav>} />;

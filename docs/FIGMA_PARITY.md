@@ -102,6 +102,34 @@ Checks after these groups: typecheck, lint (0 errors), unit tests, build, browse
 - Sweep of every public route at 440 px and 1440 px (18 routes, no sideways overflow) and of the signed-in screens through the mocked scenarios (29 checkpoints). Fixed from the sweep: not-found page rebuilt with header and footer; request-submitted page no longer says professionals are being matched; customer request page has the site header; cookies page links to the privacy help page; group heading grammar.
 - Checks: typecheck, lint (0 errors), 102 tests, build, 29 browser scenarios, OCR audit.
 
-## Frames still needed to finish
+## BRIEF 5 (2026-11-21)
 
-Welcome slides 2–3, Send Email, Email Send Failed, Email To Login, the 7 other Login variants, Loading, Search Page, Categories, Submit a Request ×3, one category landing page, one multi-select wizard step, the contact-details wizard step, Profile, business Page, Help, Contact us, Cookies. Either raise the Figma limit or export these frames as PNG into the Drive coordination folder.
+Frames opened one at a time: 908:532, 682:213, 438:2, 438:386, 438:464, 222:3980, 831:1370, 819:1415, 102:595, 102:1433, 39:2435, 39:1939, 39:2105, 39:2246, 73:2590, 74:2941, 36:869, 818:303, 818:482, 39:2642, 19:828, 24:5974.
+
+| Frame | Route | Result |
+| --- | --- | --- |
+| Responses, empty (908:532) | `/app/responses` | **Changed.** Full-width amber status bar under the title, dark label, 8 px corners. The list it opens is headed Pending, Hired, Archived. Empty state: larger heading and text, blue "View Leads" link |
+| Professional page at 440 px (682:213) | `/pro` | **Compared, no change.** The frame only draws the headline, service field with GO and the popular services; the rest of the frame is blank. FLEXS has all three, with its own headline |
+| Pro sign-up, area (438:2) | `/onboarding` | **Changed.** On desktop: 940 px card, distance and town side by side with "From" between, hint on the left and Next on the right, 32 px heading. Kilometres and postal code, not miles and postcode |
+| Pro sign-up, details (438:386, 438:464) | `/onboarding` | **Changed.** On desktop: 940 px card, 58 px fields, larger labels and choice pills. The two frames are identical |
+| Login (222:3980) | `/auth/login` | **Changed.** On desktop: 565 px bordered card, 60 px heading, icon in front of each field, key icon in the button, blue outlined sign-in-link button. Apple and Google stay hidden until enabled |
+| Terms for Professionals (831:1370, 819:1415) | `/terms?for=professionals` | **Changed.** Own layout: grey band with two tabs, 60 px centred title, date, About us, a Definitions section drawn as two grey cells per row, numbered sections in a 1,290 px column. **The text is a FLEXS draft and the page says so in a notice**; none of the frame's legal text is used. Awaiting the owner's text |
+| Group landing pages (102:595, 102:1433) | `/services/<group>` | **Compared, one fix.** Hero with the two fields, breadcrumb, introduction, three steps, Popular Categories, All services were already in place. Fixed: the service chips were stretched to full width |
+| Help centre home (39:2435) | `/help` | **Compared, no change** |
+| Submit a request, three states (39:1939, 39:2105, 39:2246) | `/support` | **Compared, no change.** Signed-in page, checked through the browser scenarios. The frame's rich-text toolbar and file attachment are not built: support tickets take plain text |
+| Cookies (73:2590) | `/cookies` | **Compared, no change** |
+| Privacy notice (74:2941) | `/privacy` | **Changed.** Same wide column and type sizes as the frame on desktop. FLEXS text |
+| Service guide (36:869) | none | **Not built.** A long editorial article with an author. FLEXS has no such articles; needs content from the owner |
+| Trust and safety articles (818:303, 818:482) | `/help/conversation-rules`, `/help/review-rules` | **Compared, no change.** Built in the previous pull request. No "found this helpful" counter |
+| Help category (39:2642) | `/help/<group>` | **Changed.** On desktop: categories in a left column with a rule, the articles on the right |
+| Wizard on desktop (19:828 … 24:5974) | `/post-job/<service>` | **Compared, no change.** Card over a dimmed page, photo strip, progress bar, bordered choice list, Continue on the right, final details step. Only the first and last frames of the range were opened: the node numbers in between are not known without reading the whole page, which is not allowed |
+
+Checks: typecheck, lint (0 errors), 103 tests, build, 29 browser scenarios, screen audit; changed pages at 440 px and 1440 px without sideways overflow.
+
+## What is actually left
+
+1. **Owner's text for Terms for Professionals.** The layout is ready; the wording is a draft with a visible notice.
+2. **Service guides (36:869).** Needs real articles; nothing to build until they exist.
+3. **Desktop wizard steps between 19:828 and 24:5974.** Send the node numbers of the middle frames and they will be compared one by one.
+4. **Signed-in desktop screens.** The professional app is designed at 440 px only; on desktop it uses the same layout, centred.
+5. **Frames deliberately not followed:** press logos, review-site score, testimonials, daily-lead and revenue figures, Apple and Google sign-in, "found this helpful" counts, Free Leads count, the frame's legal text.

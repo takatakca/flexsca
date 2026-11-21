@@ -135,7 +135,7 @@ export default function Responses() {
 
   // Determine the pill color and label
   const activeStatus = activeStatusId ? statusMap.get(activeStatusId) : null;
-  const pillColor = activeStatus?.color || defaultCategoryStatus?.color || "#F59E0B";
+  const pillColor = activeStatus?.color || defaultCategoryStatus?.color || "#F5A623";
   const pillLabel = activeStatus?.name || activeCategoryFilter.charAt(0).toUpperCase() + activeCategoryFilter.slice(1);
 
   // Filter leads by active status or by category
@@ -168,10 +168,11 @@ export default function Responses() {
   return (
     <div>
       {/* ── Full-width status pill ── */}
-      <div className="px-4 pt-3 pb-1 relative" ref={dropdownRef}>
+      <div className="relative px-2.5 pb-1 pt-2.5" ref={dropdownRef}>
         <button
           onClick={() => setShowStatusPicker(!showStatusPicker)}
-          className="w-full rounded-xl py-3.5 px-5 flex items-center justify-between text-white font-semibold text-base shadow-sm transition-transform active:scale-[0.98]"
+          aria-haspopup="listbox" aria-expanded={showStatusPicker}
+          className="flex h-[50px] w-full items-center justify-between rounded-fx-sm px-5 text-lg text-fx-ink transition-transform active:scale-[0.98]"
           style={{ backgroundColor: pillColor }}
         >
           <span>{pillLabel}</span>
@@ -191,7 +192,7 @@ export default function Responses() {
               {/* Pending */}
               {pending.length > 0 && (
                 <StatusFilterGroup
-                  title="Pending statuses"
+                  title="Pending"
                   statuses={pending}
                   activeStatusId={activeStatusId}
                   onSelect={(id) => {
@@ -213,7 +214,7 @@ export default function Responses() {
                 <>
                   <div className="border-t border-border" />
                   <StatusFilterGroup
-                    title="Hired statuses"
+                    title="Hired"
                     statuses={hired}
                     activeStatusId={activeStatusId}
                     onSelect={(id) => {
@@ -236,7 +237,7 @@ export default function Responses() {
                 <>
                   <div className="border-t border-border" />
                   <StatusFilterGroup
-                    title="Archived statuses"
+                    title="Archived"
                     statuses={archived}
                     activeStatusId={activeStatusId}
                     onSelect={(id) => {
@@ -366,17 +367,17 @@ function EmptyResponsesState({ onViewLeads }: { onViewLeads: () => void }) {
         <div className="absolute -top-1 -right-2 w-8 h-10 rounded bg-muted/40" />
       </div>
 
-      <h2 className="text-xl font-bold text-foreground mb-3">No responses</h2>
-      <p className="text-muted-foreground text-sm leading-relaxed max-w-[280px] mb-6">
+      <h2 className="mb-3 text-[26px] leading-tight text-fx-ink">No responses</h2>
+      <p className="mb-6 max-w-[360px] text-lg leading-[1.6] text-fx-ink">
         You haven't responded to any customers yet. When you do, you'll be able
         to contact and access their details here.
       </p>
 
       <button
         onClick={onViewLeads}
-        className="text-sm font-bold text-foreground"
+        className="text-lg text-primary hover:underline"
       >
-        View leads
+        View Leads
       </button>
     </div>
   );
