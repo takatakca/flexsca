@@ -449,6 +449,21 @@ try {
   assert.equal(await page.getByRole('button',{name:'Delete imported review',exact:true}).count(),0);
   assert.equal(await page.getByRole('link',{name:'View public profile',exact:true}).getAttribute('href'),`/profile/${userId}`);
   console.log('PASS review settings open the requested section and protect verified feedback');
+  // Every signed-in screen must fit a phone and a desktop window. SWEEP_DIR keeps a picture of each for review.
+  for (const width of [440,1440]) {
+    await page.setViewportSize({width,height:width>500?900:956});
+    for (const route of ['/app/dashboard','/app/leads','/app/responses','/app/reminders','/app/notifications','/app/settings','/app/settings/account','/app/settings/credits','/app/settings/statuses','/app/settings/profile','/my-requests','/customer-notifications','/support']) {
+      await page.goto('http://127.0.0.1:4173'+route);
+      await page.waitForLoadState('networkidle').catch(()=>{});
+      await page.waitForTimeout(400);
+      const extra=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+      assert.ok(extra<=0,`${route} overflows sideways by ${extra}px at ${width}px`);
+      assert.ok((await page.locator('body').innerText()).trim().length>40,`${route} is almost empty at ${width}px`);
+      if (process.env.SWEEP_DIR) await page.screenshot({path:`${process.env.SWEEP_DIR}/${width}${route.replace(/\//g,'_')}.png`,fullPage:true});
+    }
+  }
+  await page.setViewportSize({width:390,height:844});
+  console.log('PASS thirteen signed-in screens fit a phone and a desktop window');
   await page.goto('http://127.0.0.1:4173/app/settings');
   await page.getByRole('button').filter({hasText:'Account details'}).click();
   await page.waitForURL('**/app/settings/account');

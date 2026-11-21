@@ -1,0 +1,66 @@
+name: Deploy FLEXS website
+# Builds the website on every push to main and keeps the build as a downloadable file.
+# When the three hosting secrets are set, it also uploads the build to the Apache host (MochaHost / cPanel).
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'supabase/**', 'android/**', 'ios/**']
+  workflow_dispatch:
+concurrency:
+  group: deploy-website
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    env:
+      FTP_SERVER: ${{ secrets.MOCHAHOST_FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.MOCHAHOST_FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.MOCHAHOST_FTP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: Check the build holds what an Apache host needs
+        run: |
+          test -f dist/index.html
+          test -f dist/.htaccess
+          test -f dist/sitemap.xml
+          ! grep -rl "lovable.app" dist/robots.txt dist/sitemap.xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flexs-website
+          path: dist
+          include-hidden-files: true
+          retention-days: 30
+      - name: Is the host configured?
+        id: host
+        run: |
+          if [ -n "$FTP_SERVER" ] && [ -n "$FTP_USERNAME" ] && [ -n "$FTP_PASSWORD" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; else echo "ready=false" >> "$GITHUB_OUTPUT"; echo "::notice::Hosting secrets are not set: the build was kept as the 'flexs-website' file, nothing was uploaded."; fi
+      - name: Upload to the host
+        if: steps.host.outputs.ready == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ env.FTP_SERVER }}
+          username: ${{ env.FTP_USERNAME }}
+          password: ${{ env.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: dist/
+          server-dir: ${{ vars.MOCHAHOST_FTP_DIR || 'public_html/' }}
+      - name: Check the live site
+        if: steps.host.outputs.ready == 'true'
+        run: |
+          sleep 10
+          url="${{ vars.WEBSITE_URL || 'https://flexs.ca' }}"
+          code=$(curl -s -o /tmp/home.html -w '%{http_code}' -L "$url/")
+          echo "$url/ answered $code"
+          test "$code" = "200"
+          grep -q "FLEXS" /tmp/home.html
+          test "$(curl -s -o /dev/null -w '%{http_code}' -L "$url/services/plumbing")" = "200"

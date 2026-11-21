@@ -51,3 +51,36 @@ The owner chose Coolify for the flexs.ca website. The repository root now has a 
 5. The backend was deployed and verified on 2026-11-13, so the website can be deployed now. Older sections of this file that name project `vcaphsvudlseemkalawz` describe the abandoned Lovable backend.
 
 Verified on 2026-11-13 in a container: nginx stage serves `/`, deep route `/app/leads`, `/manifest.webmanifest`, icons and `/healthz` with status 200 and a missing asset with 404. The npm build stage was not run inside Docker in the agent sandbox (its network proxy blocks npm inside containers); the same `npm ci && npm run build` passes outside Docker. No Coolify deployment has been made by an agent: no Coolify access is connected.
+
+## Website hosting on MochaHost or any Apache / cPanel host (added 2026-11-21)
+
+The website is a static build: no Node process runs on the host. Two files make it work on Apache and are part of the build: `.htaccess` (single-page-app fallback, HTTPS and no-www redirect, security headers, caching) and `index.html`.
+
+**Tested on 2026-11-21 under Apache 2.4 in a container:** `/`, `/app/leads` and `/services/plumbing` answer 200; a missing `/assets/` file answers 404; plain HTTP and `www` redirect with 301; security and cache headers are present; build files are compressed. Not tested on MochaHost itself.
+
+### Automatic (recommended)
+
+`.github/workflows/deploy-website.yml` builds the site on every push to `main`.
+
+1. In cPanel, create an FTP account whose folder is the document root of `flexs.ca` (usually `public_html`).
+2. In GitHub: **Settings › Secrets and variables › Actions › New repository secret**, three secrets: `MOCHAHOST_FTP_SERVER` (for example `ftp.flexs.ca`), `MOCHAHOST_FTP_USERNAME`, `MOCHAHOST_FTP_PASSWORD`.
+3. Only if the FTP account does not open directly in the document root: add a repository **variable** `MOCHAHOST_FTP_DIR` (for example `public_html/`, with the final slash).
+4. **Actions › Deploy FLEXS website › Run workflow.** The last step opens `https://flexs.ca/` and a deep page and fails if either does not answer 200.
+
+Without the secrets the workflow still succeeds and keeps the build as a file named `flexs-website`.
+
+### By hand
+
+1. **Actions › Deploy FLEXS website ›** latest run **› Artifacts › flexs-website**: download and unzip.
+2. In cPanel **File Manager**, turn on **Settings › Show hidden files**, open the document root of `flexs.ca`, and upload everything, including `.htaccess`.
+3. In cPanel **SSL/TLS Status**, run AutoSSL for `flexs.ca` and `www.flexs.ca`.
+
+### If the site answers 403 Forbidden
+
+That is what `flexs.ca` answers today. It means Apache finds no `index.html` in the document root (or the domain points at an empty folder). Check in cPanel **Domains** which folder `flexs.ca` uses and upload there.
+
+### After the site is up
+
+- Supabase already accepts `https://flexs.ca/**` and `https://www.flexs.ca/**` as sign-in return addresses.
+- Submit `https://flexs.ca/sitemap.xml` in Google Search Console.
+- Choose one host only: Coolify (Docker, section above) or Apache. Both serve the same build.
