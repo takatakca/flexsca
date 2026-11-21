@@ -1923,7 +1923,18 @@
   "Create a follow-up reminder from a request or the Reminders screen. Due reminders and unread updates refresh while the professional app is open. You can turn message and reminder notifications on or off in Settings. Existing notices stay available. FLEXS also emails you about new requests in your trade, quotes and updates; you can turn these emails off in Settings. SMS and device push are not currently enabled.": "Créez un rappel de suivi à partir d'une demande ou de l'écran Rappels. Les rappels échus et les nouveautés non lues s'actualisent lorsque l'application professionnelle est ouverte. Vous pouvez activer ou désactiver les notifications de messages et de rappels dans Paramètres. Les avis existants restent disponibles. FLEXS vous écrit aussi par courriel pour les nouvelles demandes dans votre métier, les soumissions et les nouveautés; vous pouvez désactiver ces courriels dans Paramètres. Les textos et les notifications poussées ne sont pas activés pour le moment.",
   "Your company": "Votre entreprise",
   "Profile completion": "Progression du profil",
-  "Dismiss": "Fermer"
+  "Dismiss": "Fermer",
+  "Something went wrong on this page": "Un problème est survenu sur cette page",
+  "The problem has been reported to our team. Reload the page, or go back to the home page.": "Le problème a été signalé à notre équipe. Rechargez la page ou revenez à l'accueil.",
+  "Reload the page": "Recharger la page",
+  "Home page": "Accueil",
+  "Errors on the site": "Erreurs sur le site",
+  "What went wrong in visitors' browsers in the last 7 days. No personal data is recorded.": "Ce qui a mal fonctionné dans les navigateurs des visiteurs au cours des 7 derniers jours. Aucune donnée personnelle n'est enregistrée.",
+  "Loading errors…": "Chargement des erreurs…",
+  "Unable to load the error log.": "Impossible de charger le journal des erreurs.",
+  "Retry error log": "Recharger le journal des erreurs",
+  "No error recorded.": "Aucune erreur enregistrée.",
+  "Technical details": "Détails techniques"
  },
  "patterns": [
   [
