@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { useSeo } from '@/lib/seo';
 import { matchServices } from '@/lib/service-search';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -14,6 +15,14 @@ const POPULAR_PAGE = 3;
 
 export default function Index() {
   const navigate = useNavigate();
+  useSeo({
+    path: "/",
+    description: "Describe your project and get quotes from local professionals across Quebec. Browse the business directory, or join FLEXS as a professional.",
+    data: { "@context": "https://schema.org", "@graph": [
+      { "@type": "Organization", name: "FLEXS", url: "https://flexs.ca", logo: "https://flexs.ca/icons/icon-512.png", parentOrganization: { "@type": "Organization", name: "Groupe TAKATAK inc." }, areaServed: { "@type": "AdministrativeArea", name: "Québec" } },
+      { "@type": "WebSite", name: "FLEXS", url: "https://flexs.ca", inLanguage: ["fr-CA", "en-CA"], potentialAction: { "@type": "SearchAction", target: "https://flexs.ca/post-job?q={search_term_string}", "query-input": "required name=search_term_string" } },
+    ] },
+  });
   const [service, setService] = useState('');
   const [location, setLocation] = useState('');
   const [popularPage, setPopularPage] = useState(0);

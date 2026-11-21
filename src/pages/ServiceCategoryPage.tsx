@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSeo } from "@/lib/seo";
 import { Link, useParams } from "react-router-dom";
 import type { Tables } from "@/integrations/supabase/types";
 import { supabase } from "@/integrations/supabase/client";
@@ -78,6 +79,11 @@ export default function ServiceCategoryPage() {
   }, []);
 
   useEffect(() => { if (category) document.title = `${category.name} professionals near you | FLEXS`; }, [category]);
+  useSeo({
+    path: `/services/${slug}`,
+    description: category ? `Get quotes from ${category.name} professionals near you in Quebec. Describe your project once on FLEXS; posting a request is free.` : undefined,
+    data: category ? { "@context": "https://schema.org", "@type": "Service", serviceType: category.name, url: `https://flexs.ca/services/${slug}`, provider: { "@type": "Organization", name: "FLEXS", url: "https://flexs.ca" }, areaServed: { "@type": "AdministrativeArea", name: "Québec" } } : null,
+  });
 
   if (loading) return <div className="flex min-h-screen items-center justify-center" role="status" aria-label="Loading service"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>;
   if (!category) {

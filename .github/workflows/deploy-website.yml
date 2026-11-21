@@ -28,12 +28,14 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Add the business directory to the sitemap
+        run: npm run build:sitemaps
       - name: Check the build holds what an Apache host needs
         run: |
           test -f dist/index.html
           test -f dist/.htaccess
           test -f dist/sitemap.xml
-          ! grep -rl "lovable.app" dist/robots.txt dist/sitemap.xml
+          ! grep -rl "lovable.app" dist/robots.txt dist/sitemap.xml dist/sitemaps
       - uses: actions/upload-artifact@v4
         with:
           name: flexs-website
