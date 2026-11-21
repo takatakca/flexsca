@@ -1,0 +1,53 @@
+# FLEXS go-live checklist (owner)
+
+State on 2026-11-21: **the website is online at https://flexs.ca** and passes the live check. The request wizard works end to end on the live site. The items below are settings only the owner can make. Each takes a few minutes. Never paste a key in a chat or a document: put it straight into the page named here.
+
+Supabase project: **ALKAO** (`ysghtkallwuoodwqgkjm`). Function secrets live under **Edge Functions › Secrets**.
+
+## 1. Payments (credits cannot be bought until this is done)
+
+Stripe account connected: **takatak.ca**, live mode. It has no FLEXS webhook yet. The Stripe connection Claude has is read-only, so the webhook below must be added by the owner.
+
+1. Stripe › **Developers › API keys**: copy the secret key (or create a restricted key with write access to Checkout Sessions and read access to Charges and Disputes).
+2. Supabase › Edge Functions › Secrets: add `STRIPE_SECRET_KEY` with that value.
+3. Stripe › **Developers › Webhooks › Add endpoint**:
+   - URL: `https://ysghtkallwuoodwqgkjm.supabase.co/functions/v1/stripe-webhook`
+   - Events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`
+4. Open the new endpoint, reveal its **signing secret**, and add it in Supabase as `STRIPE_WEBHOOK_SECRET`.
+5. Test: sign in on flexs.ca as a professional, open **Credits and billing**, buy the smallest pack, and check that the balance goes up.
+
+Note: the Stripe account has a second webhook whose address is a Coolify settings page (`coolify.takatak.ca/project/…/environment-variables`). It cannot work and looks like a paste mistake; delete it.
+
+## 2. Sign-up email (only 2 emails per hour go out today)
+
+1. Choose a mail service (the one already used for TAKATAK is fine) and get its SMTP host, port, user and password.
+2. Supabase › **Authentication › Emails › SMTP Settings**: turn on custom SMTP, fill the four values, sender `no-reply@flexs.ca`, name `FLEXS`.
+3. Supabase › **Authentication › Rate limits**: raise "emails sent" from 2 to at least 100 per hour.
+4. Test: on flexs.ca choose **Sign in**, enter a new address, and check that the link arrives and opens flexs.ca.
+
+## 3. First administrator — prepared
+
+`takatak.ca@gmail.com` is invited. Sign up on flexs.ca with that address and confirm it: the account becomes administrator at that first sign-in, and **Administration** shows the owner overview (revenue, credits, requests, accounts, directory, claims, tickets, calls). Nothing else to do.
+
+## 4. Sign-up hardening — done on 2026-11-21
+
+Minimum password length is 8 and leaked-password protection is on (both also apply to the ticketing site, which shares the sign-in system). Still open: captcha on sign-up (Cloudflare Turnstile); it needs a site key from the owner and a small code change.
+
+## 5. Assistant and TAKATAK link (optional for launch)
+
+- Supabase secret `ANTHROPIC_API_KEY`: turns on the drafting assistant for professionals.
+- TAKATAK tokens: see `docs/DEPLOYMENT.md`.
+
+## 5b. Calls between professionals and customers (MIMT / Twilio)
+
+The feature is built and deployed but stays hidden until three Supabase secrets exist: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` (the MIMT line, a Canadian or US number in the form +15145550100). Once they are set, an unlocked request shows **Call through FLEXS**: the service rings the professional first, then connects the customer, who sees the FLEXS number. Only Canadian and US numbers are called, premium numbers are refused, a call lasts 30 minutes at most, nothing is recorded, and each professional is limited to 3 calls per customer per hour and 40 per day. Twilio bills each call to the account that owns the keys.
+
+## 6. Keep the site up to date
+
+Merge the launch pull request, then in GitHub **Settings › Secrets and variables › Actions** add `MOCHAHOST_FTP_SERVER`, `MOCHAHOST_FTP_USERNAME`, `MOCHAHOST_FTP_PASSWORD`. From then on every merge to `main` updates flexs.ca, and a check of the live site runs every morning.
+
+## Decisions still open
+
+- **French version: built.** The site opens in French for French browsers and has a language switch. The French text was written by Claude and should be read once by a French speaker, the legal pages above all: the French Terms of Use and Privacy Policy are translations of the owner's English text and have not been reviewed by a lawyer. The sign-in emails sent by Supabase are still in English (shared with the ticketing site).
+- Final wording of the professionals' terms (`/terms?for=professionals`, marked as a draft).
+- Apple and Google developer accounts for the store apps; a Mac for the iOS build.

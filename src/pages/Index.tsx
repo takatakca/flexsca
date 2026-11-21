@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { matchServices } from '@/lib/service-search';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, ArrowRight, MapPin } from 'lucide-react';
@@ -25,8 +26,17 @@ export default function Index() {
     const result = await supabase.from('provider_reviews_public').select('id,rating,review_text,reviewer_name').eq('verified', true).order('created_at', { ascending: false }).limit(3);
     if (result.error) throw new Error('Unable to load reviews.'); return result.data;
   } });
+  // Suggestions while typing: services people can request directly (groups of services are left to the search page).
+  const all = categories.data ?? [];
+  const requestable = all.filter(c => !all.some(other => other.parent_slug === c.slug));
+  const suggestions = service.trim().length >= 2 ? matchServices(requestable, service).slice(0, 6) : [];
+  const [suggesting, setSuggesting] = useState(false);
+  const openService = (slug: string) => navigate(`/post-job/${slug}${location.trim() ? `?${new URLSearchParams({ location: location.trim() })}` : ''}`);
   const start = (event: React.FormEvent) => {
-    event.preventDefault(); const query = new URLSearchParams();
+    event.preventDefault();
+    // One clear match goes straight to its questions; anything else shows the search page.
+    if (suggestions.length === 1) { openService(suggestions[0].slug); return; }
+    const query = new URLSearchParams();
     if (service.trim()) query.set('q', service.trim()); if (location.trim()) query.set('location', location.trim());
     navigate(`/post-job${query.size ? `?${query}` : ''}`);
   };
@@ -48,8 +58,15 @@ export default function Index() {
         <p className="mt-3 text-lg text-fx-muted">Free quotes from local professionals</p>
         <form onSubmit={start} className="mt-5 grid gap-5 md:grid-cols-[1fr_auto] md:items-start">
           <div className="grid grid-cols-[1.85fr_1fr] rounded-fx-xs border border-fx-line shadow-[inset_0_1px_2px_hsl(var(--fx-ink)/0.06)]">
-            <div><label htmlFor="home-service" className="sr-only">What do you need?</label>
-              <input id="home-service" value={service} onChange={e => setService(e.target.value)} maxLength={100} placeholder="What do you need?" className="h-9 w-full bg-transparent px-2.5 text-xs text-fx-ink placeholder:text-fx-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-l-fx-xs" /></div>
+            <div className="relative"><label htmlFor="home-service" className="sr-only">What do you need?</label>
+              <input id="home-service" value={service} onChange={e => { setService(e.target.value); setSuggesting(true); }} onFocus={() => setSuggesting(true)} onBlur={() => window.setTimeout(() => setSuggesting(false), 150)}
+                role="combobox" aria-expanded={suggesting && suggestions.length > 0} aria-controls="home-service-suggestions" aria-autocomplete="list" autoComplete="off"
+                maxLength={100} placeholder="What do you need?" className="h-9 w-full bg-transparent px-2.5 text-xs text-fx-ink placeholder:text-fx-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-l-fx-xs" />
+              {suggesting && suggestions.length > 0 && (
+                <ul id="home-service-suggestions" role="listbox" aria-label="Matching services" className="absolute left-0 right-0 top-full z-30 mt-1 overflow-hidden rounded-fx-xs border border-fx-line bg-background shadow-fx-card">
+                  {suggestions.map(item => <li key={item.id} role="option" aria-selected="false"><button type="button" onMouseDown={event => event.preventDefault()} onClick={() => openService(item.slug)} className="block w-full px-3 py-2.5 text-left text-sm text-fx-ink hover:bg-fx-soft focus-visible:bg-fx-soft focus-visible:outline-none">{item.name}</button></li>)}
+                </ul>
+              )}</div>
             <div className="relative border-l border-fx-line"><label htmlFor="home-location" className="sr-only">Where is your project?</label>
               <MapPin aria-hidden="true" className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 fill-fx-ink text-background" />
               <input id="home-location" value={location} onChange={e => setLocation(e.target.value)} maxLength={120} placeholder="Postal code" className="h-9 w-full bg-transparent pl-8 pr-2 text-xs text-fx-ink placeholder:text-fx-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-r-fx-xs" /></div>

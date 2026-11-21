@@ -111,10 +111,7 @@ export default function CookiesPage() {
 
           <h2 className="text-lg leading-snug text-fx-ink">Do we use web analytics and interest-based advertising?</h2>
           <p>
-            We may use web analytics services on our websites, such as those of Google Analytics, Google AdSense or Meta. The service providers
-            that administer these services use technologies such as cookies to help us analyse how visitors use the site. The information collected
-            through these means (including IP address) is disclosed to, or collected directly by these service providers, who use this information to
-            evaluate use of the website, or for advertising purposes, as described below.
+            No. FLEXS does not use web analytics or advertising cookies today, and does not share browsing data with advertising networks. The only storage it uses keeps you signed in and remembers your choices, such as your language. If this changes, this page will be updated first and you will be asked for your consent before any such cookie is set.
           </p>
 
           <h2 className="text-lg leading-snug text-fx-ink">How to turn off cookies?</h2>

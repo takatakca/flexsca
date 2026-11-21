@@ -1,4 +1,5 @@
 import { errorMessage } from "@/lib/errors";
+import LanguageSwitch from "@/components/fx/LanguageSwitch";
 import { callbackUrl, customerReturnPath } from "@/lib/auth-navigation";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -19,7 +20,10 @@ export default function Welcome() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [slide, setSlide] = useState(0);
+  // A customer sent here from "My requests" or support is not shown the professionals' introduction.
+  const next = customerReturnPath(new URLSearchParams(location.search).get("next"));
+  const forCustomer = !!next && !next.endsWith("/claim");
+  const [slide, setSlide] = useState(forCustomer ? SLIDES.length : 0);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,12 +76,12 @@ export default function Welcome() {
       {error && (
         <div role="alert" className="bg-[hsl(var(--fx-danger-banner))] px-gutter py-4"><p className="text-lg leading-snug text-white">{error}</p></div>
       )}
-      <div className="pt-5 pb-4 text-center"><Brand /></div>
+      <div className="pt-5 pb-4 text-center"><Brand /><LanguageSwitch className="absolute right-5 top-6 text-sm text-fx-secondary" /></div>
       <div className="flex flex-1 flex-col justify-center px-gutter pb-12">
         <div className="mx-auto w-full max-w-[380px] space-y-8">
           <div className="space-y-3">
-            <h1 className="text-4xl leading-[1.25] text-fx-ink">Create your professional account</h1>
-            <p className="text-base text-fx-muted">Enter your email and we will send you a sign-in link.</p>
+            <h1 className="text-4xl leading-[1.25] text-fx-ink">{forCustomer ? "Sign in to see your requests" : "Create your professional account"}</h1>
+            <p className="text-base text-fx-muted">{forCustomer ? "Enter the email you used for your request and we will send you a sign-in link." : "Enter your email and we will send you a sign-in link."}</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-5">
             <label htmlFor="welcome-email" className="sr-only">Email</label>

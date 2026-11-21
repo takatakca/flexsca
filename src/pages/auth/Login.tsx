@@ -1,4 +1,5 @@
 import { errorMessage } from "@/lib/errors";
+import LanguageSwitch from "@/components/fx/LanguageSwitch";
 import { callbackUrl, customerReturnPath } from "@/lib/auth-navigation";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -30,6 +31,8 @@ export default function Login() {
       });
       if (error) throw error;
       rememberSessionChoice(keepSignedIn);
+      // An invited owner becomes an administrator on first sign-in; for everyone else this does nothing.
+      await supabase.rpc("accept_admin_invite" as never).then(() => undefined, () => undefined);
       navigate(customerReturnPath(new URLSearchParams(location.search).get("next")) ?? "/app/dashboard");
     } catch (err: unknown) {
       toast.error(errorMessage(err, "Invalid credentials. Please try again."));
@@ -72,7 +75,7 @@ export default function Login() {
 
   return (
     <div className="flex min-h-screen flex-col bg-fx-soft">
-      <div className="pt-5 pb-10 text-center"><Brand /></div>
+      <div className="pt-5 pb-10 text-center"><Brand /><LanguageSwitch className="absolute right-5 top-6 text-sm text-fx-secondary" /></div>
       <div className="flex-1 px-2.5 pb-12 pt-[130px] md:pt-16">
         <div className="mx-auto w-full max-w-[420px] lg:max-w-[565px]">
           <div className="space-y-5 rounded-fx-xs bg-card px-5 pb-4 pt-4 lg:rounded-fx-md lg:border lg:border-fx-line lg:px-10 lg:pb-10 lg:pt-7">
@@ -110,6 +113,11 @@ export default function Login() {
             <Button variant="outline" onClick={handleMagicLink} disabled={loading} className="h-[50px] w-full gap-2 rounded-fx-xs text-base lg:border-primary lg:text-primary">
               <Link2 className="hidden size-4 lg:block" aria-hidden="true" />Email me a sign-in link
             </Button>
+
+            {/* No account yet: customers get one when they post a request; professionals start at the pro welcome. */}
+            <p className="text-center text-sm text-fx-secondary">
+              New to FLEXS? <a href="/post-job" className="text-primary underline">Post a request</a> to create your account, or <a href="/auth/welcome" className="text-primary underline">join as a professional</a>.
+            </p>
 
             {/* Show only providers explicitly enabled for this deployment. */}
             {import.meta.env.VITE_AUTH_APPLE === "true" && <Button

@@ -107,9 +107,9 @@ export default function ServiceCategoryPage() {
       <main>
         <section className="relative isolate overflow-hidden bg-gradient-to-br from-[hsl(var(--fx-ink))] to-[hsl(var(--fx-ink-secondary))] px-gutter py-16 md:py-24">
           {category.hero_image && <img src={category.hero_image} alt="" onError={e => { e.currentTarget.style.display = "none"; }} className="absolute inset-0 -z-10 size-full object-cover" />}
-          <h1 className="mx-auto w-fit max-w-full bg-fx-ink/55 px-4 py-1 text-center text-[32px] leading-[1.25] text-white [overflow-wrap:anywhere] md:max-w-3xl md:text-[44px]">Find {name} professionals near you</h1>
+          <h1 className="mx-auto w-fit max-w-full bg-fx-ink/55 px-4 py-1 text-center text-[32px] leading-[1.25] text-white [overflow-wrap:anywhere] md:max-w-3xl md:text-[44px]">{`Find ${name} professionals near you`}</h1>
           <form className="mx-auto mt-6 max-w-[440px] rounded-fx-xs border border-primary bg-white p-5" onSubmit={e => { e.preventDefault(); start(); }}>
-            <label htmlFor="service-where" className="block text-lg">Where do you need {name}?</label>
+            <label htmlFor="service-where" className="block text-lg">{`Where do you need ${name}?`}</label>
             <div className="mt-3 flex gap-2">
               <input id="service-where" value={where} onChange={e => setWhere(e.target.value)} maxLength={120} placeholder="Enter your postal code or town" className="h-11 min-w-0 flex-1 rounded-fx-xs border border-fx-line bg-white px-3 text-sm placeholder:text-fx-muted focus:border-primary focus:outline-none" />
               <Button type="submit" className="h-11 rounded-fx-xs px-4 shadow-fx-button">GO</Button>
@@ -123,13 +123,13 @@ export default function ServiceCategoryPage() {
             {parent && <><Link to={`/services/${parent.slug}`} className="hover:text-primary">{parent.name}</Link><span aria-hidden="true">/</span></>}
             <span aria-current="page" className="text-fx-ink">{name}</span>
           </nav>
-          <h2 className="mt-6 max-w-xl text-[28px] leading-[1.3] md:text-[40px]">Need help finding {article(name)} {name} professional?</h2>
+          <h2 className="mt-6 max-w-xl text-[28px] leading-[1.3] md:text-[40px]">{`Need help finding ${article(name)} ${name} professional?`}</h2>
           <div className="mt-4 max-w-xl space-y-5 text-sm leading-6 text-fx-muted">
-            <p>Describe your project once and get quotes from {name} professionals on FLEXS.</p>
+            <p>{`Describe your project once and get quotes from ${name} professionals on FLEXS.`}</p>
             <p>Not sure where to start? Tell us what you need and professionals who can do it reply to you. There is no pressure to hire: compare profiles, read verified reviews and ask questions before you decide.</p>
             <p>Posting a request is free.</p>
           </div>
-          <Button onClick={start} className="mt-6 h-auto min-h-11 whitespace-normal rounded-fx-xs px-5 py-2.5 shadow-fx-button">Find {article(name)} {name} professional today</Button>
+          <Button onClick={start} className="mt-6 h-auto min-h-11 whitespace-normal rounded-fx-xs px-5 py-2.5 shadow-fx-button">{`Find ${article(name)} ${name} professional today`}</Button>
         </section>
 
         <section className="bg-fx-soft px-gutter py-10">
@@ -142,7 +142,7 @@ export default function ServiceCategoryPage() {
               </li>
             ))}
           </ol>
-          <p className="mx-auto mt-7 max-w-5xl text-center"><Button onClick={start} className="h-auto min-h-11 whitespace-normal rounded-fx-xs px-5 py-2.5 shadow-fx-button">Get quotes from {name} professionals near you</Button></p>
+          <p className="mx-auto mt-7 max-w-5xl text-center"><Button onClick={start} className="h-auto min-h-11 whitespace-normal rounded-fx-xs px-5 py-2.5 shadow-fx-button">{`Get quotes from ${name} professionals near you`}</Button></p>
         </section>
 
         <section className="mx-auto max-w-5xl px-gutter py-14" aria-labelledby="cities-title">
@@ -154,9 +154,9 @@ export default function ServiceCategoryPage() {
                 <article key={city} className="border border-fx-line bg-white p-4">
                   <h3 className="text-2xl">{city}</h3>
                   <ul className="mt-3 divide-y divide-fx-line">
-                    {rows.map(row => <li key={row.id}><Link to={`/business/${row.slug}`} className="block truncate py-3 text-sm text-fx-ink hover:text-primary">{row.other_name || row.name}</Link></li>)}
+                    {rows.map(row => <li key={row.id}><Link translate="no" to={`/business/${row.slug}`} className="block truncate py-3 text-sm text-fx-ink hover:text-primary">{row.other_name || row.name}</Link></li>)}
                   </ul>
-                  <Button asChild className="mt-3 h-10 w-full rounded-fx-xs"><Link to={`/directory?${new URLSearchParams({ city, trade: trade! })}`}>Search {city}</Link></Button>
+                  <Button asChild className="mt-3 h-10 w-full rounded-fx-xs"><Link to={`/directory?${new URLSearchParams({ city, trade: trade! })}`}>{`Search ${city}`}</Link></Button>
                 </article>
               ))}
             </div>
@@ -204,7 +204,7 @@ export default function ServiceCategoryPage() {
         )}
 
         <section className="bg-[hsl(var(--fx-callout))] px-gutter py-12 text-center">
-          <h2 className="text-[28px] leading-tight">Get quotes from {name} professionals near you</h2>
+          <h2 className="text-[28px] leading-tight">{`Get quotes from ${name} professionals near you`}</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-fx-ink">Tell us about your project and professionals reply with their quotes.</p>
           <Button onClick={start} className="mt-6 h-11 rounded-fx-xs px-8 shadow-fx-button">Get Started</Button>
         </section>

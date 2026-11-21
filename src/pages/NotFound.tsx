@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 
 /** Shown for any address that is not a FLEXS page. */
 export default function NotFound() {
-  useEffect(() => { document.title = "Page not found | FLEXS"; }, []);
+  useEffect(() => {
+    document.title = "Page not found | FLEXS";
+    // The host answers 200 for every address, so search engines are told here not to index unknown pages.
+    const robots = document.createElement("meta"); robots.name = "robots"; robots.content = "noindex";
+    document.head.appendChild(robots);
+    return () => robots.remove();
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />

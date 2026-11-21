@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import RouteTitle from "@/components/RouteTitle";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AppLayout from "@/components/AppLayout";
@@ -72,6 +73,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <NativeAppBridge />
+          <RouteTitle />
           <Suspense fallback={<div role="status" className="p-8 text-center text-muted-foreground">Loading…</div>}>
           <Routes>
             {/* Public landing */}
@@ -99,7 +101,7 @@ const App = () => (
             <Route path="/cookies" element={<CookiesPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/support" element={<ProtectedRoute><Support /></ProtectedRoute>} />
+            <Route path="/support" element={<Support />} />
             <Route path="/support/:id" element={<ProtectedRoute><Support /></ProtectedRoute>} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/help/:slug" element={<HelpCenter />} />

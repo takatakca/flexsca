@@ -35,6 +35,8 @@ async function captureVisual(path){
   visualCaptures.push({path,route:new URL(page.url()).pathname,viewport:page.viewportSize(),capturedAt:new Date().toISOString(),sha256:createHash('sha256').update(pixels).digest('hex'),text:await page.locator('body').innerText()});
 }
 page.on('pageerror', e => errors.push(e.message));
+// I18N_COLLECT=<file>: run in French and keep a list of every text shown without a French translation.
+if (process.env.I18N_COLLECT) await page.addInitScript(() => { localStorage.setItem('flexs.lang','fr'); setInterval(() => { try { const seen=new Set(JSON.parse(localStorage.getItem('flexs.untranslated')||'[]')); for (const text of (window.__flexsUntranslated?.()||[])) seen.add(text); localStorage.setItem('flexs.untranslated',JSON.stringify([...seen])); } catch {} }, 250); });
 await page.route('https://images.unsplash.com/**', route => route.abort());
 await page.route('**/auth/v1/**',route=>{ errors.push(`Unexpected auth fixture route: ${new URL(route.request().url()).pathname}`); return route.fulfill({status:500,json:{message:'Unmocked auth request'}}); });
 await page.route('**/auth/v1/user**', route => { if(route.request().method()==='PUT') { const input=route.request().postDataJSON(); if(input.password) updatedPassword=input; if(input.email) emailChange=input; } return route.fulfill({status:200,json:{id:userId,email:'customer@example.test',app_metadata:{},user_metadata:{},aud:'authenticated',email_confirmed_at:new Date().toISOString()}}); });
@@ -186,11 +188,12 @@ try {
   await page.goto('http://127.0.0.1:4173/?ttclid=dddddddd-dddd-4ddd-8ddd-dddddddddddd');
   await page.getByLabel('What do you need?',{exact:true}).fill('House Cleaning');
   await page.getByLabel('Where is your project?',{exact:true}).fill('Toronto, M1A1A1');
+  // The home search suggests services while typing, in French as well, and one clear match opens its questions directly.
+  await page.getByLabel('What do you need?',{exact:true}).fill('ménage');
+  await page.getByRole('option',{name:'House Cleaning'}).waitFor();
+  await page.getByLabel('What do you need?',{exact:true}).fill('House Cleaning');
   await page.getByRole('button',{name:'Search',exact:true}).click();
-  await page.getByPlaceholder('Search for a service...').waitFor();
-  assert.equal(await page.getByPlaceholder('Search for a service...').inputValue(),'House Cleaning');
-
-  await page.getByRole('button',{name:/House Cleaning/}).click();
+  await page.waitForURL('**/post-job/house-cleaning?location=*');
   // One wizard for both entry points: question, where, nearly ready, email, phone, name, review, details.
   const postDialog = page.getByRole('dialog',{name:'Post a service request'});
   await postDialog.getByRole('button',{name:'Kitchen',exact:true}).click();
@@ -449,6 +452,41 @@ try {
   assert.equal(await page.getByRole('button',{name:'Delete imported review',exact:true}).count(),0);
   assert.equal(await page.getByRole('link',{name:'View public profile',exact:true}).getAttribute('href'),`/profile/${userId}`);
   console.log('PASS review settings open the requested section and protect verified feedback');
+  // Every signed-in screen must fit a phone and a desktop window. SWEEP_DIR keeps a picture of each for review.
+  for (const width of [440,1440]) {
+    await page.setViewportSize({width,height:width>500?900:956});
+    for (const route of ['/app/dashboard','/app/leads','/app/responses','/app/reminders','/app/notifications','/app/settings','/app/settings/account','/app/settings/credits','/app/settings/statuses','/app/settings/profile','/my-requests','/customer-notifications','/support']) {
+      await page.goto('http://127.0.0.1:4173'+route);
+      await page.waitForLoadState('networkidle').catch(()=>{});
+      await page.waitForTimeout(400);
+      const extra=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+      assert.ok(extra<=0,`${route} overflows sideways by ${extra}px at ${width}px`);
+      assert.ok((await page.locator('body').innerText()).trim().length>40,`${route} is almost empty at ${width}px`);
+      if (process.env.SWEEP_DIR) await page.screenshot({path:`${process.env.SWEEP_DIR}/${width}${route.replace(/\//g,'_')}.png`,fullPage:true});
+    }
+  }
+  await page.setViewportSize({width:390,height:844});
+  console.log('PASS thirteen signed-in screens fit a phone and a desktop window');
+  // The same signed-in screens in French: they must fit, and what stays in English is listed for review.
+  await page.evaluate(()=>localStorage.setItem('flexs.lang','fr'));
+  const untranslated=new Set();
+  for (const width of [440,1440]) {
+    await page.setViewportSize({width,height:width>500?900:956});
+    for (const route of ['/app/dashboard','/app/leads','/app/responses','/app/reminders','/app/notifications','/app/settings','/app/settings/account','/app/settings/credits','/app/settings/statuses','/app/settings/profile','/my-requests','/customer-notifications','/support','/app/admin']) {
+      await page.goto('http://127.0.0.1:4173'+route);
+      await page.waitForLoadState('networkidle').catch(()=>{});
+      await page.waitForTimeout(400);
+      assert.equal(await page.evaluate(()=>document.documentElement.lang),'fr-CA',`${route} is not in French`);
+      const extra=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+      assert.ok(extra<=0,`${route} overflows sideways by ${extra}px in French at ${width}px`);
+      for (const text of await page.evaluate(()=>window.__flexsUntranslated?.()||[])) untranslated.add(text);
+      if (process.env.SWEEP_DIR) await page.screenshot({path:`${process.env.SWEEP_DIR}/fr-${width}${route.replace(/\//g,'_')}.png`,fullPage:true});
+    }
+  }
+  if (process.env.SWEEP_DIR) writeFileSync(`${process.env.SWEEP_DIR}/fr-untranslated.json`,JSON.stringify([...untranslated],null,1));
+  await page.evaluate(()=>localStorage.removeItem('flexs.lang'));
+  await page.setViewportSize({width:390,height:844});
+  console.log(`PASS signed-in screens fit a phone and a desktop window in French (${untranslated.size} texts left as written)`);
   await page.goto('http://127.0.0.1:4173/app/settings');
   await page.getByRole('button').filter({hasText:'Account details'}).click();
   await page.waitForURL('**/app/settings/account');
@@ -516,6 +554,7 @@ try {
   writeFileSync('/tmp/flexsca-visual-manifest.json',JSON.stringify({completed:true,fixtureData:true,captures:visualCaptures},null,2));
   console.log('PASS mobile layout and no uncaught browser errors');
 } finally {
+  if (process.env.I18N_COLLECT) { await page.waitForTimeout(400); const list=await page.evaluate(()=>localStorage.getItem('flexs.untranslated')||'[]').catch(()=>'[]'); writeFileSync(process.env.I18N_COLLECT,list); }
   await browser.close();
   try {process.kill(-server.pid,'SIGTERM');} catch {}
 }

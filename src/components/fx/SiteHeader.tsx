@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
+import LanguageSwitch from "@/components/fx/LanguageSwitch";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { X, UserRound } from "lucide-react";
@@ -25,6 +26,7 @@ export default function SiteHeader({ tone = "plain" }: { tone?: "plain" | "soft"
             {LINKS.slice(0, 3).map(([to, label]) => <Link key={to} to={to} className="hover:text-primary">{label}</Link>)}
             <Link to="/directory" className="hover:text-primary">Directory</Link>
             <span className="flex-1" />
+            <LanguageSwitch />
             {user ? (
               // Signed in (frame 25:6315): initial in a circle, then the account name.
               <>
@@ -51,6 +53,7 @@ export default function SiteHeader({ tone = "plain" }: { tone?: "plain" | "soft"
         <nav id="mobile-navigation" aria-label="Mobile navigation" className="md:hidden border-b border-fx-line/60 bg-background px-gutter py-5 grid gap-4 text-lg text-fx-ink">
           {LINKS.filter(([to]) => !(user && to === "/auth/login")).map(([to, label]) => <Link key={to} to={to} onClick={() => setOpen(false)}>{label}</Link>)}
           <Link to="/directory" onClick={() => setOpen(false)}>Business directory</Link>
+          <LanguageSwitch className="text-left" />
           {user && <><Link to="/app/settings/account" onClick={() => setOpen(false)}>My account</Link><button type="button" className="text-left" onClick={() => { setOpen(false); void signOut(); }}>Sign out</button></>}
         </nav>
       )}

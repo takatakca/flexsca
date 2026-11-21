@@ -5,7 +5,7 @@ import { MapPin, Search } from "lucide-react";
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
 import { Button } from "@/components/ui/button";
-import { PAGE_SIZE, TRADES, searchListings } from "@/lib/directory";
+import { PAGE_SIZE, TRADES, quotable, searchListings } from "@/lib/directory";
 
 /** Public directory of Quebec businesses, including those that have not joined FLEXS yet. */
 export default function Directory() {
@@ -43,24 +43,24 @@ export default function Directory() {
           <Button type="submit" className="h-[50px] rounded-fx-xs px-6 text-base"><Search className="mr-2 size-4" aria-hidden="true" />Search</Button>
         </form>
 
-        <section aria-live="polite" className="mt-8">
+        <section aria-live="polite" className="mt-8 min-h-[70vh]">
           {error ? <p role="alert" className="text-destructive">{(error as Error).message}</p>
             : isLoading ? <p role="status" className="text-fx-muted">Loading businesses…</p>
             : !data?.rows.length ? <p className="rounded-fx-md bg-fx-soft p-6 text-fx-secondary">No business matches this search. Try a shorter name or another city.</p>
             : <>
-              <p className="mb-3 text-sm text-fx-muted">About {data.total.toLocaleString("en-CA")} businesses</p>
+              <p className="mb-3 text-sm text-fx-muted">{`About ${data.total.toLocaleString("en-CA")} businesses`}</p>
               <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {data.rows.map(row => (
                   <li key={row.id} className="min-w-0 rounded-fx-xs border border-fx-line bg-white p-5 shadow-fx-card">
                     <div className="flex items-start justify-between gap-3">
-                      <h2 className="min-w-0 break-words text-xl text-fx-ink">{row.other_name || row.name}</h2>
+                      <h2 translate="no" className="min-w-0 break-words text-xl text-fx-ink">{row.other_name || row.name}</h2>
                       <span className={`shrink-0 rounded-fx-pill px-3 py-1 text-xs ${row.status === "claimed" ? "bg-success/10 text-success" : "bg-fx-soft text-fx-secondary"}`}>{row.status === "claimed" ? "On FLEXS" : "Not claimed"}</span>
                     </div>
                     <p className="mt-3 flex items-center gap-2 text-fx-ink"><MapPin className="size-4 shrink-0" aria-hidden="true" />{row.city}, QC{row.region && row.region !== row.city ? ` · ${row.region}` : ""}</p>
                     <p className="mt-3 text-fx-ink"><span className="font-bold">Category: </span>{row.trade}</p>
                     <div className="mt-5 flex items-center justify-between gap-3">
                       <Link to={`/business/${row.slug}`} className="text-lg text-primary hover:underline">View profile ›</Link>
-                      <Button asChild className="h-11 rounded-fx-xs px-6 shadow-fx-button"><Link to={row.category_slug ? `/post-job/${row.category_slug}` : "/post-job"}>Request quote</Link></Button>
+                      {quotable(row.trade) && <Button asChild className="h-11 rounded-fx-xs px-6 shadow-fx-button"><Link to={row.category_slug ? `/post-job/${row.category_slug}` : "/post-job"}>Request quote</Link></Button>}
                     </div>
                   </li>
                 ))}

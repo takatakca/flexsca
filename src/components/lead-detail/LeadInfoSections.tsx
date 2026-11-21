@@ -1,3 +1,4 @@
+import CallCustomer from "@/components/lead-detail/CallCustomer";
 import {
   ChevronsLeft,
   Bell,
@@ -104,12 +105,15 @@ interface MaskedContactDetailsProps {
   phone: string | null;
   email: string | null;
   isContacted: boolean;
+  /** When given on an unlocked request, offers a call through the FLEXS phone service. */
+  leadId?: string;
 }
 
 export function ContactDetailsSection({
   phone,
   email,
   isContacted,
+  leadId,
 }: MaskedContactDetailsProps) {
   if (!phone && !email) return null;
 
@@ -156,6 +160,7 @@ export function ContactDetailsSection({
           </div>
         )}
       </div>
+      {isContacted && phone && leadId && <CallCustomer leadId={leadId} />}
     </div>
   );
 }

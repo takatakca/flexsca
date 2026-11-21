@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
+import LanguageSwitch from "@/components/fx/LanguageSwitch";
 import { Button } from "@/components/ui/button";
 
 const GROUPS: { title: string; links: [string, string][] }[] = [
-  { title: "For Customers", links: [["/post-job", "Find a Professional"], ["/directory", "Business directory"], ["/about", "How it works"], ["/auth/login", "Login"], ["/open-in-app", "Mobile App"]] },
-  { title: "For Professionals", links: [["/pro", "How it works"], ["/help/credits", "Pricing"], ["/auth/welcome", "Join as a Professional"], ["/directory", "Claim your business"], ["/help", "Help centre"], ["/open-in-app", "Mobile App"]] },
+  { title: "For Customers", links: [["/post-job", "Find a Professional"], ["/directory", "Business directory"], ["/about", "How it works"], ["/auth/login", "Login"]] },
+  { title: "For Professionals", links: [["/pro", "How it works"], ["/help/credits", "Pricing"], ["/auth/welcome", "Join as a Professional"], ["/directory", "Claim your business"], ["/help", "Help centre"]] },
   { title: "About", links: [["/about", "About FLEXS"], ["/affiliates", "Affiliates"]] },
 ];
 
@@ -21,7 +22,7 @@ export default function SiteFooter() {
         <div className="grid gap-5 content-start">
           <h2 className="text-[22px] text-fx-ink">Need help?</h2>
           <Button asChild className="h-[58px] rounded-fx-xs text-xl shadow-fx-button"><Link to="/support">Contact us</Link></Button>
-          <p className="rounded-fx-xs bg-fx-soft px-5 py-4 text-xl text-fx-ink text-left"><span aria-hidden="true" className="mr-3">🇨🇦</span>Canada</p>
+          <p className="rounded-fx-xs bg-fx-soft px-5 py-4 text-xl text-fx-ink text-left"><span aria-hidden="true" className="mr-3">🇨🇦</span>Canada<LanguageSwitch className="float-right text-base text-primary" /></p>
         </div>
       </div>
       <div className="mx-auto max-w-6xl px-gutter">

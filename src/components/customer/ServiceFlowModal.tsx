@@ -587,8 +587,8 @@ export default function ServiceFlowModal({
   const stepField = "h-[52px] w-full rounded-fx-xs border border-fx-muted bg-white px-4 text-base text-fx-ink outline-none placeholder:text-fx-secondary focus:border-primary";
 
   const renderLocationStep = () => stepCard("location-step", <>
-    <h2 className={stepTitle}>Where do you need the {categoryName}?</h2>
-    <p className="mb-5 mt-2 text-center text-sm leading-6 text-fx-secondary">The postal code or town for the address where you want the {categoryName}.</p>
+    <h2 className={stepTitle}>{`Where do you need the ${categoryName}?`}</h2>
+    <p className="mb-5 mt-2 text-center text-sm leading-6 text-fx-secondary">{`The postal code or town for the address where you want the ${categoryName}.`}</p>
     <div className="relative">
       <MapPin className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-fx-ink" aria-hidden="true" />
       <input type="text" aria-label="Postal code or town" value={location} onChange={e => setLocation(e.target.value)} maxLength={120} placeholder="Enter postal code or city" className={cn(stepField, "pl-11")} autoFocus />
@@ -650,11 +650,11 @@ export default function ServiceFlowModal({
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Post a service request" className="fixed inset-0 z-[60] flex items-start justify-center pt-8 md:pt-16">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
-      {/* Modal content */}
-      <div className="relative z-10 flex items-start justify-center w-full">
+    <div role="dialog" aria-modal="true" aria-label="Post a service request" className="fixed inset-0 z-[60] overflow-y-auto overscroll-contain">
+      {/* Backdrop: fixed so it covers the window while the card scrolls */}
+      <div className="fixed inset-0 bg-black/50" onClick={handleClose} />
+      {/* Modal content: scrolls inside the dialog when taller than the window, so Continue stays reachable on short screens */}
+      <div className="relative z-10 flex min-h-full w-full items-start justify-center pb-8 pt-8 md:pt-16">
         {renderStep()}
       </div>
     </div>

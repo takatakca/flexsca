@@ -16,6 +16,8 @@ export default function AuthCallback() {
         if (error) throw error;
 
         if (session) {
+          // An invited owner becomes an administrator on first sign-in; for everyone else this does nothing.
+          await supabase.rpc("accept_admin_invite" as never).then(() => undefined, () => undefined);
           const next = customerReturnPath(new URLSearchParams(location.search).get("next"));
           if (next) { navigate(next, { replace: true }); return; }
           // Check if user has completed onboarding
