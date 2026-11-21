@@ -35,7 +35,6 @@ const TITLES: [RegExp, string][] = [
   [/^\/app\/settings/, "Settings"],
   [/^\/app\/admin/, "Administration"],
   [/^\/app/, "Workspace"],
-  [/^\/merchant/, "Merchant"],
 ];
 
 export default function RouteTitle() {

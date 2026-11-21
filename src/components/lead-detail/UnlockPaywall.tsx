@@ -1,4 +1,5 @@
 import { Lock, Coins, Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -97,12 +98,7 @@ export default function UnlockPaywall({
       {!hasEnough && (
         <p className="text-xs text-muted-foreground">
           You need {cost - (balance ?? 0)} more credits.{" "}
-          <button
-            className="text-primary font-medium hover:underline"
-            onClick={() => toast.info("Credit purchasing coming soon!")}
-          >
-            Buy credits
-          </button>
+          <Link to="/app/settings/credits" className="text-primary font-medium hover:underline">Buy credits</Link>
         </p>
       )}
     </div>

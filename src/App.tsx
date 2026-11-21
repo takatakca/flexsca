@@ -9,7 +9,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AppLayout from "@/components/AppLayout";
 import { captureAttribution } from "@/lib/lead-intake";
-import MerchantLayout from "@/components/MerchantLayout";
 import NativeAppBridge from "@/components/NativeAppBridge";
 
 const Admin = lazy(() => import("@/pages/app/Admin"));
@@ -53,12 +52,6 @@ const CustomerRequest = lazy(() => import("@/pages/customer/CustomerRequest"));
 const Index = lazy(() => import("@/pages/Index"));
 const PublicProfile = lazy(() => import("@/pages/PublicProfile"));
 const ProLanding = lazy(() => import("@/pages/ProLanding"));
-const MerchantHome = lazy(() => import("@/pages/merchant/MerchantHome"));
-const MerchantOptimization = lazy(() => import("@/pages/merchant/MerchantOptimization"));
-const MerchantMarketplace = lazy(() => import("@/pages/merchant/MerchantMarketplace"));
-const MerchantMessages = lazy(() => import("@/pages/merchant/MerchantMessages"));
-const MerchantNotifications = lazy(() => import("@/pages/merchant/MerchantNotifications"));
-const MerchantMenu = lazy(() => import("@/pages/merchant/MerchantMenu"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 captureAttribution(window.location.search);
@@ -150,22 +143,8 @@ const App = () => (
               <Route path="settings/profile" element={<ProfileSetup />} />
             </Route>
 
-            {/* Merchant dashboard */}
-            <Route
-              path="/merchant"
-              element={
-                <ProtectedRoute>
-                  <MerchantLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<MerchantHome />} />
-              <Route path="optimization" element={<MerchantOptimization />} />
-              <Route path="marketplace" element={<MerchantMarketplace />} />
-              <Route path="messages" element={<MerchantMessages />} />
-              <Route path="notifications" element={<MerchantNotifications />} />
-              <Route path="menu" element={<MerchantMenu />} />
-            </Route>
+            {/* The unfinished merchant area was removed; old links land on the professional workspace. */}
+            <Route path="/merchant/*" element={<Navigate to="/app/dashboard" replace />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
