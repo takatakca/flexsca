@@ -68,3 +68,15 @@ describe("payment hardening", () => {
     expect(sql).toMatch(/file_size_limit = 5242880, allowed_mime_types = ARRAY\['image\/jpeg','image\/png','image\/webp'\]/);
   });
 });
+
+describe("lead cards", () => {
+  it("formats the age of a request the short way", async () => {
+    const { shortAgo, highHiringIntent } = await import("@/components/leads/LeadCard");
+    const now = Date.parse("2026-11-20T12:00:00Z");
+    expect(shortAgo("2026-11-20T11:00:00Z", now)).toBe("1h Ago");
+    expect(shortAgo("2026-11-19T19:00:00Z", now)).toBe("17h Ago");
+    expect(shortAgo("2026-11-17T12:00:00Z", now)).toBe("3d Ago");
+    expect(highHiringIntent({ decision: "I'm ready to hire now" })).toBe(true);
+    expect(highHiringIntent({ decision: "I'm planning and researching" })).toBe(false);
+  });
+});

@@ -1,10 +1,16 @@
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
+import { useSearchParams } from "react-router-dom";
+import ProTermsPage, { TermsTabs } from "@/pages/legal/ProTermsPage";
 
 export default function TermsPage() {
+  const [params] = useSearchParams();
+  // The text below is the owner's Terms of Use (merged in PR #24) and is not edited here.
+  if (params.get("for") === "professionals") return <ProTermsPage />;
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
+      <div className="bg-fx-soft px-gutter pt-5 lg:pt-4"><TermsTabs pro={false} /></div>
 
       <main className="max-w-4xl mx-auto px-4 py-10">
         <h1 className="mb-10 text-center text-4xl text-fx-ink">Terms of Use</h1>

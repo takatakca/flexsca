@@ -17,6 +17,12 @@ export default function CategoryCard({ category, badge }: { category: CategoryCa
   );
 }
 
-export function SectionTitle({ children, id }: { children: React.ReactNode; id?: string }) {
-  return <h2 id={id} className="text-center text-[28px] leading-tight text-fx-ink">{children}</h2>;
+/** Section heading. Centred on phones; on desktop it sits left with an optional action on the right (frame 2:2). */
+export function SectionTitle({ children, id, action, center }: { children: React.ReactNode; id?: string; action?: React.ReactNode; center?: boolean }) {
+  return (
+    <div className={center ? "text-center" : "text-center md:flex md:items-end md:justify-between md:text-left"}>
+      <h2 id={id} className="text-[28px] leading-tight text-fx-ink">{children}</h2>
+      {action && <div className="hidden md:block">{action}</div>}
+    </div>
+  );
 }

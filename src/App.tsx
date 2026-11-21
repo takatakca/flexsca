@@ -30,11 +30,12 @@ const ProfileSetup = lazy(() => import("@/pages/app/ProfileSetup"));
 const OpenInApp = lazy(() => import("@/pages/app/OpenInApp"));
 const PostJob = lazy(() => import("@/pages/customer/PostJob"));
 const JobQuestionnaire = lazy(() => import("@/pages/customer/JobQuestionnaire"));
-const JobContact = lazy(() => import("@/pages/customer/JobContact"));
 const BuyerDashboard = lazy(() => import("@/pages/customer/BuyerDashboard"));
 const JobSuccess = lazy(() => import("@/pages/customer/JobSuccess"));
 const ServiceCategoryPage = lazy(() => import("@/pages/ServiceCategoryPage"));
 const AboutPage = lazy(() => import("@/pages/AboutPage"));
+const ServicesIndex = lazy(() => import("@/pages/ServicesIndex"));
+const PressPage = lazy(() => import("@/pages/legal/PressPage"));
 const Directory = lazy(() => import("./pages/Directory"));
 const BusinessListing = lazy(() => import("./pages/BusinessListing"));
 const ClaimBusiness = lazy(() => import("./pages/ClaimBusiness"));
@@ -79,7 +80,7 @@ const App = () => (
 
             {/* Customer lead posting flow (no auth required) */}
             <Route path="/post-job" element={<PostJob />} />
-            <Route path="/post-job/contact" element={<JobContact />} />
+            <Route path="/post-job/contact" element={<Navigate to="/post-job" replace />} />
             <Route path="/post-job/success" element={<JobSuccess />} />
             <Route path="/post-job/:slug" element={<JobQuestionnaire />} />
             <Route path="/my-requests" element={<ProtectedRoute><BuyerDashboard /></ProtectedRoute>} />
@@ -87,11 +88,13 @@ const App = () => (
             <Route path="/my-requests/:id" element={<ProtectedRoute><CustomerRequest /></ProtectedRoute>} />
 
             {/* Public marketing pages */}
+            <Route path="/services" element={<ServicesIndex />} />
             <Route path="/services/:slug" element={<ServiceCategoryPage />} />
             <Route path="/directory" element={<Directory />} />
             <Route path="/business/:slug" element={<BusinessListing />} />
             <Route path="/business/:slug/claim" element={<ProtectedRoute><ClaimBusiness /></ProtectedRoute>} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/press" element={<PressPage />} />
             <Route path="/affiliates" element={<AffiliatePage />} />
             <Route path="/cookies" element={<CookiesPage />} />
             <Route path="/terms" element={<TermsPage />} />

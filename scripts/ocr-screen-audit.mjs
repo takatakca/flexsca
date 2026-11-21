@@ -8,7 +8,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 const [base, out, sessionFile] = process.argv.slice(2);
 mkdirSync(out, { recursive: true });
-const PUBLIC = ['/', '/directory', '/services/house-cleaning', '/about', '/affiliates', '/pro', '/help', '/help/credits', '/cookies', '/services/plumbing', '/post-job', '/post-job/plumbing', '/auth/login', '/auth/welcome', '/auth/forgot-password', '/open-in-app', '/this-page-does-not-exist'];
+const PUBLIC = ['/', '/services', '/help/conversation-rules', '/privacy', '/terms', '/press', '/directory', '/services/house-cleaning', '/about', '/affiliates', '/pro', '/help', '/help/credits', '/cookies', '/services/plumbing', '/post-job', '/post-job/plumbing', '/auth/login', '/auth/welcome', '/auth/forgot-password', '/open-in-app', '/this-page-does-not-exist'];
 const SIGNED_IN = ['/app/dashboard', '/app/leads', '/app/responses', '/app/reminders', '/app/notifications', '/app/settings', '/app/settings/profile', '/app/settings/account', '/app/credits', '/my-requests', '/support'];
 const BANNED = [/headquarters in London|Founded in London/, /postcode/i, /£/, /lorem ipsum/i, /\bundefined\b/, /\bNaN\b/, /\[object /, /FLEX'S/, /\bBark\b/i, /Trustpilot/i, /\bCBC\b/, /Globe\s*&\s*Mail/i, /Toronto Star/i, /Maclean/i, /Daily Mail/i, /theguardian|The Guardian/i, /BAZAAR/, /As seen (in|on)/i, /\bTODO\b/, /4\.89\/560/];
 const words = t => (t.toLowerCase().match(/[a-zà-ÿ]{4,}/g) ?? []);
@@ -33,7 +33,13 @@ for (const route of sessionFile ? SIGNED_IN : PUBLIC) {
   const name = (sessionFile ? 'app' : 'public') + (route === '/' ? '-home' : route.replace(/\//g, '-'));
   const shot = `${out}/${name}.png`;
   await page.screenshot({ path: shot, fullPage: true });
-  const dom = await page.locator('body').innerText();
+  // Closed drop-down lists are not on screen: leave their options out, keep only the chosen one.
+  const dom = await page.evaluate(() => {
+    const copy = document.body.cloneNode(true);
+    copy.querySelectorAll('select').forEach(sel => { sel.replaceWith(document.createTextNode(' ' + (sel.selectedOptions?.[0]?.textContent ?? '') + ' ')); });
+    document.body.appendChild(copy); copy.style.cssText = 'position:absolute;left:-99999px;top:0;width:' + innerWidth + 'px';
+    const text = copy.innerText; copy.remove(); return text;
+  });
   const facts = await page.evaluate(() => ({
     finalPath: location.pathname,
     overflow: document.documentElement.scrollWidth - window.innerWidth,

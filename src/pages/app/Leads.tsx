@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from "react";
+import { lazy, Suspense, useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, SlidersHorizontal } from "lucide-react";
+import { List, ListFilter, Loader2, Map as MapIcon, PencilLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Json } from "@/integrations/supabase/types";
 import { errorMessage } from "@/lib/errors";
@@ -11,6 +11,9 @@ import { toast } from "sonner";
 import FiltersSheet, { type LeadsFilters, defaultFilters } from "@/components/leads/FiltersSheet";
 import ReminderModal from "@/components/leads/ReminderModal";
 import LeadCard from "@/components/leads/LeadCard";
+
+// The map library is only downloaded when the map view is opened.
+const LeadsMap = lazy(() => import("@/components/leads/LeadsMap"));
 
 interface Lead {
   id: string;
@@ -52,6 +55,8 @@ export default function Leads() {
   const [filters, setFilters] = useState<LeadsFilters>(defaultFilters);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [reminderLead, setReminderLead] = useState<Lead | null>(null);
+  const [view, setView] = useState<"list" | "map">("list");
+  const [mapSelected, setMapSelected] = useState<string | null>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { statuses } = useCustomStatuses();
@@ -121,72 +126,59 @@ export default function Leads() {
     ].filter(Boolean).length;
   }, [filters]);
 
+  // "2 services • 1 location": what the list is currently limited to.
+  const towns = new Set(leads.map(l => l.city).filter(Boolean));
+  const scopeLine = `${(filters.services.length || options.services.length)} service${(filters.services.length || options.services.length) === 1 ? "" : "s"} • ${towns.size} location${towns.size === 1 ? "" : "s"}`;
+
   return (
     <div className="max-w-7xl mx-auto pb-8 md:p-4 lg:p-6">
-      {/* ── Header bar ── */}
-      <div className="mx-4 mt-4 rounded-2xl bg-white border border-border px-4 py-3 flex items-center gap-3">
-        {/* Count */}
-        <div className="flex-1 min-w-0">
-          <p className="text-base font-bold text-foreground">
-            {total} Matching lead{total !== 1 ? "s" : ""}
-          </p>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {showArchived ? "Your archived requests" : "Available requests"}
-          </p>
-        </div>
-
-        {/* Filter button */}
-        <button
-          aria-label="Filter requests"
-          onClick={() => setFiltersOpen(true)}
-          className={`relative flex items-center justify-center h-10 w-10 rounded-full border transition-colors ${
-            activeFilterCount > 0
-              ? "border-primary bg-primary/10 text-primary"
-              : "border-border bg-background text-muted-foreground hover:bg-muted"
-          }`}
-        >
-          <SlidersHorizontal className="h-4.5 w-4.5" />
-          {activeFilterCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">
-              {activeFilterCount}
-            </span>
-          )}
-        </button>
-
-        <Button variant="outline" onClick={() => { setShowArchived(v => !v); setPage(0); }}>
-          {showArchived ? "Available" : "Archived"}
-        </Button>
-      </div>
-
-      {/* ── Lead cards ── */}
-      <div className="px-4 mt-4 grid lg:grid-cols-2 gap-4">
-        {loading ? (
-          <div role="status" className="flex justify-center gap-2 py-8"><Loader2 className="h-5 w-5 animate-spin" /> Loading requests…</div>
-        ) : error ? (
-          <div role="alert" className="rounded-xl border p-5 text-center space-y-3">
-            <p>{error}</p><Button onClick={() => setRefresh(v => v + 1)}>Try again</Button>
+      {/* ── Header (frame 909:1102): count with the active scope, filter, then the List / Map switch ── */}
+      <div className="mx-4 mt-4 flex items-center gap-2.5">
+        <div className="flex min-w-0 flex-1 items-center gap-3 rounded-fx-pill bg-white py-2 pl-5 pr-2 shadow-fx-card">
+          <PencilLine className="size-6 shrink-0 text-primary" aria-hidden="true" />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-base text-fx-ink">{total} Matching lead{total !== 1 ? "s" : ""}</p>
+            <p className="truncate text-sm text-fx-secondary">{showArchived ? "Your archived requests" : scopeLine}</p>
           </div>
-        ) : leads.length === 0 ? (
-          <p className="text-center text-muted-foreground text-sm py-8">
-            No leads match your filters.
-          </p>
-        ) : (
-          leads.map((lead) => {
-            const state = agentStates.get(lead.id);
-            return (
-              <LeadCard
-                key={lead.id}
-                lead={lead}
-                state={state ?? null}
-                showArchived={showArchived}
-                onNavigate={() => navigate(`/app/leads/${lead.id}`)}
-                onRestore={handleRestore}
-                onLongPress={() => setReminderLead(lead)}
-              />
-            );
-          })
-        )}
+          <button aria-label="Filter requests" onClick={() => setFiltersOpen(true)}
+            className={`relative grid size-11 shrink-0 place-items-center rounded-full border transition-colors ${activeFilterCount > 0 ? "border-primary bg-primary/10 text-primary" : "border-fx-line bg-white text-fx-ink hover:bg-fx-soft"}`}>
+            <ListFilter className="size-5" aria-hidden="true" />
+            {activeFilterCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground">{activeFilterCount}</span>}
+          </button>
+        </div>
+        <button type="button" aria-pressed={view === "map"} onClick={() => setView(v => (v === "map" ? "list" : "map"))}
+          className="flex h-[52px] shrink-0 items-center gap-2 rounded-fx-pill bg-white px-5 text-base text-fx-ink shadow-fx-card">
+          {view === "map" ? <><List className="size-4" aria-hidden="true" />List</> : <><MapIcon className="size-4" aria-hidden="true" />Map</>}
+        </button>
       </div>
+      <p className="mx-4 mt-2 text-right"><button type="button" className="text-sm text-primary hover:underline" onClick={() => { setShowArchived(v => !v); setPage(0); }}>{showArchived ? "Show available requests" : "Show archived requests"}</button></p>
+
+      {loading ? (
+        <div role="status" className="flex justify-center gap-2 py-8"><Loader2 className="h-5 w-5 animate-spin" /> Loading requests…</div>
+      ) : error ? (
+        <div role="alert" className="mx-4 mt-4 space-y-3 rounded-fx-sm border p-5 text-center"><p>{error}</p><Button onClick={() => setRefresh(v => v + 1)}>Try again</Button></div>
+      ) : leads.length === 0 ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">No leads match your filters.</p>
+      ) : view === "map" ? (
+        <div className="mt-3">
+          <Suspense fallback={<div role="status" className="py-10 text-center text-sm text-fx-muted">Loading the map…</div>}>
+            <LeadsMap leads={leads} selectedId={mapSelected} onSelect={id => { setMapSelected(id); document.getElementById(`map-card-${id}`)?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" }); }}>
+              {leads.map(lead => (
+                <div key={lead.id} id={`map-card-${lead.id}`} className="w-[min(390px,88vw)] shrink-0 snap-center" onFocus={() => setMapSelected(lead.id)} onMouseEnter={() => setMapSelected(lead.id)}>
+                  <LeadCard lead={lead} state={agentStates.get(lead.id) ?? null} showArchived={showArchived} onNavigate={() => navigate(`/app/leads/${lead.id}`)} onRestore={handleRestore} onLongPress={() => setReminderLead(lead)} />
+                </div>
+              ))}
+            </LeadsMap>
+          </Suspense>
+        </div>
+      ) : (
+        <div className="mt-3 grid gap-4 px-2.5 lg:grid-cols-2">
+          {leads.map(lead => (
+            <LeadCard key={lead.id} lead={lead} state={agentStates.get(lead.id) ?? null} showArchived={showArchived}
+              onNavigate={() => navigate(`/app/leads/${lead.id}`)} onRestore={handleRestore} onLongPress={() => setReminderLead(lead)} />
+          ))}
+        </div>
+      )}
 
       {!loading && !error && total > 0 && (
         <nav aria-label="Request pages" className="flex items-center justify-center gap-4 px-4 mt-6">
@@ -202,6 +194,7 @@ export default function Leads() {
         value={filters}
         onChange={(next) => { setFilters(next); setPage(0); }}
         remoteOptions={options}
+        resultCount={total}
         customStatuses={statuses}
         leads={leads}
       />

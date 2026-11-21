@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { KeyRound, Link2, Lock, User } from "lucide-react";
 import { Brand } from "@/components/fx/SiteHeader";
 import { rememberSessionChoice } from "@/lib/session-choice";
 
@@ -73,20 +74,20 @@ export default function Login() {
     <div className="flex min-h-screen flex-col bg-fx-soft">
       <div className="pt-5 pb-10 text-center"><Brand /></div>
       <div className="flex-1 px-2.5 pb-12 pt-[130px] md:pt-16">
-        <div className="mx-auto w-full max-w-[420px]">
-          <div className="space-y-5 rounded-fx-xs bg-card px-5 pb-4 pt-4">
-            <h1 className="text-2xl text-fx-ink">Login</h1>
+        <div className="mx-auto w-full max-w-[420px] lg:max-w-[565px]">
+          <div className="space-y-5 rounded-fx-xs bg-card px-5 pb-4 pt-4 lg:rounded-fx-md lg:border lg:border-fx-line lg:px-10 lg:pb-10 lg:pt-7">
+            <h1 className="text-2xl text-fx-ink lg:text-6xl">Login</h1>
 
             <form onSubmit={handleLogin} className="space-y-5">
               <div>
                 <label htmlFor="login-email" className="sr-only">Email</label>
-                <Input id="login-email" type="email" autoComplete="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  className="h-[58px] rounded-fx-xs border-fx-muted px-5 text-base placeholder:text-fx-ink" required autoFocus={!initialEmail} />
+                <div className="relative"><span className="pointer-events-none absolute inset-y-px left-px hidden w-[42px] items-center justify-center rounded-l-fx-xs bg-fx-soft text-fx-secondary lg:flex"><User className="size-4" aria-hidden="true" /></span><Input id="login-email" type="email" autoComplete="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+                  className="h-[58px] rounded-fx-xs border-fx-muted px-5 lg:pl-[58px] text-base placeholder:text-fx-ink" required autoFocus={!initialEmail} /></div>
               </div>
               <div>
                 <label htmlFor="login-password" className="sr-only">Password</label>
-                <Input id="login-password" type="password" autoComplete="current-password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}
-                  className="h-[58px] rounded-fx-xs border-fx-muted px-5 text-base placeholder:text-fx-ink" required autoFocus={!!initialEmail} />
+                <div className="relative"><span className="pointer-events-none absolute inset-y-px left-px hidden w-[42px] items-center justify-center rounded-l-fx-xs bg-fx-soft text-fx-secondary lg:flex"><Lock className="size-4" aria-hidden="true" /></span><Input id="login-password" type="password" autoComplete="current-password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}
+                  className="h-[58px] rounded-fx-xs border-fx-muted px-5 lg:pl-[58px] text-base placeholder:text-fx-ink" required autoFocus={!!initialEmail} /></div>
               </div>
               <label className="flex items-center gap-3 py-2 text-sm text-fx-ink">
                 <input type="checkbox" checked={keepSignedIn} onChange={(e) => setKeepSignedIn(e.target.checked)}
@@ -94,7 +95,7 @@ export default function Login() {
                 Keep me signed in
               </label>
               <Button type="submit" disabled={loading || !email.trim() || !password} className="h-[50px] w-full rounded-fx-xs text-base shadow-fx-button">
-                {loading ? "Logging in…" : "Login"}
+                <KeyRound className="hidden size-4 lg:block" aria-hidden="true" />{loading ? "Logging in…" : "Login"}
               </Button>
             </form>
 
@@ -106,8 +107,8 @@ export default function Login() {
               <div className="h-px flex-1 bg-fx-line" /><span className="text-xs uppercase text-fx-muted">or</span><div className="h-px flex-1 bg-fx-line" />
             </div>
 
-            <Button variant="outline" onClick={handleMagicLink} disabled={loading} className="h-[50px] w-full rounded-fx-xs text-base">
-              Email me a sign-in link
+            <Button variant="outline" onClick={handleMagicLink} disabled={loading} className="h-[50px] w-full gap-2 rounded-fx-xs text-base lg:border-primary lg:text-primary">
+              <Link2 className="hidden size-4 lg:block" aria-hidden="true" />Email me a sign-in link
             </Button>
 
             {/* Show only providers explicitly enabled for this deployment. */}

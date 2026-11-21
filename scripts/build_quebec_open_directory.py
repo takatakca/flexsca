@@ -57,6 +57,7 @@ def main(src, out):
 
     def add(source, ref, name, city, region, trade, activity, email):
         name, city = clean(name, 200), clean(city, 120)
+        if city.isupper(): city = city.title()  # some sources write towns in capitals
         ref = re.sub(r'[^0-9A-Za-z-]', '', ref)[:40]
         if len(name) < 2 or not city or len(ref) < 4: skipped['incomplete'] += 1; return
         key = (slugify(name), slugify(city))

@@ -1,3 +1,5 @@
+import SiteHeader from "@/components/fx/SiteHeader";
+import SiteFooter from "@/components/fx/SiteFooter";
 import CustomerReview from "@/components/customer/CustomerReview";
 import RequestAttachments from "@/components/customer/RequestAttachments";
 import { useQueryClient } from "@tanstack/react-query";
@@ -57,7 +59,7 @@ export default function CustomerRequest() {
     else { toast.success('Request closed. Existing conversations remain available.'); await refetch(); }
   };
   const thread = data?.messages.filter(m => m.agent_id === selectedPro || m.agent_id === null) ?? [];
-  return <div className="max-w-6xl mx-auto px-4 py-6 md:py-10">
+  return <div className="min-h-screen bg-background"><SiteHeader /><div className="max-w-6xl mx-auto px-gutter py-6 md:py-10">
     <Link to="/my-requests" className="inline-flex items-center gap-2 text-primary text-sm mb-6"><ArrowLeft className="h-4 w-4" />My requests</Link>
     {isLoading ? <p role="status">Loading your request…</p> : error ? <div role="alert" className="space-y-4"><p>{error.message}</p><Button onClick={() => void refetch()}>Try again</Button></div> : data && <>
       <div className="flex flex-wrap justify-between gap-4 mb-8"><div><p className="text-sm text-muted-foreground mb-2">{data.request.archived ? 'Closed request' : 'Open request'} · {formatDistanceToNow(new Date(data.request.created_at), { addSuffix: true })}</p><h1 className="text-3xl font-bold">{data.request.category}</h1><p className="text-muted-foreground mt-2">{data.request.location_text}</p></div>
@@ -72,5 +74,5 @@ export default function CustomerRequest() {
         <section className="p-4 md:p-6"><h2 className="font-semibold mb-5">Conversation</h2>{selectedPro ? <><Link to={`/profile/${selectedPro}`} className="text-primary text-sm">View professional profile</Link><div aria-live="polite" className="space-y-3 my-5 max-h-[480px] overflow-y-auto">{thread.map(message => <div key={message.id} className={`p-4 rounded-xl max-w-[90%] ${message.sender_type === 'customer' ? 'ml-auto bg-primary/10' : 'bg-muted'}`}><p className="text-xs font-medium mb-1">{message.sender_type === 'customer' ? 'You' : message.sender_type === 'system' ? 'FLEXS' : 'Professional'}</p><p className="text-sm whitespace-pre-wrap">{message.message}</p><time className="block text-xs text-muted-foreground mt-2" dateTime={message.created_at}>{formatDistanceToNow(new Date(message.created_at), { addSuffix: true })}</time></div>)}</div><form onSubmit={send} className="space-y-3"><label htmlFor="customer-message" className="text-sm font-medium">Your message</label><Textarea id="customer-message" maxLength={4000} value={text} onChange={e => setText(e.target.value)} placeholder="Discuss your needs or ask about a quote…" /><Button disabled={sending || !text.trim()} type="submit"><Send className="h-4 w-4 mr-2" />{sending ? 'Sending…' : 'Send message'}</Button></form></> : <div className="py-12 text-center text-muted-foreground"><MessageSquare className="h-8 w-8 mx-auto mb-3" /><p>Select a professional to start a conversation.</p></div>}</section>
       </div>
     </>}
-  </div>;
+  </div><SiteFooter /></div>;
 }

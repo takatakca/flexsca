@@ -43,8 +43,8 @@ export default function Index() {
     <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:bg-white focus:p-3">Skip to content</a>
     <SiteHeader />
     <main id="main-content">
-      <section className="mx-auto max-w-6xl px-gutter pt-12 pb-10">
-        <h1 className="text-4xl leading-[1.28] md:text-5xl md:leading-tight">Find a professional for your project</h1>
+      <section className="mx-auto max-w-6xl px-gutter pt-12 pb-10 md:pt-20">
+        <h1 className="text-4xl leading-[1.28] md:max-w-2xl md:text-[60px] md:leading-[1.15]">Find a professional for your project</h1>
         <p className="mt-3 text-lg text-fx-muted">Free quotes from local professionals</p>
         <form onSubmit={start} className="mt-5 grid gap-5 md:grid-cols-[1fr_auto] md:items-start">
           <div className="grid grid-cols-[1.85fr_1fr] rounded-fx-xs border border-fx-line shadow-[inset_0_1px_2px_hsl(var(--fx-ink)/0.06)]">
@@ -73,7 +73,7 @@ export default function Index() {
           </section>
 
           {groups.length > 0 && <section className="pt-20" aria-labelledby="discover-title">
-            <SectionTitle id="discover-title"><span className="text-[32px]">Discover</span></SectionTitle>
+            <SectionTitle id="discover-title" center><span className="text-[32px] md:text-[44px]">Discover</span></SectionTitle>
             <div className="mt-7 flex snap-x gap-8 overflow-x-auto px-gutter pb-2 [scrollbar-width:none] md:justify-center">
               {groups.map(({ parent }) => (
                 <button key={parent.id} type="button" onClick={() => sections.current[parent.slug]?.scrollIntoView({ behavior: 'smooth', block: 'start' })} className="grid shrink-0 snap-center justify-items-center gap-6 text-center">
@@ -86,9 +86,9 @@ export default function Index() {
 
           {groups.map(({ parent, children }) => (
             <section key={parent.id} ref={node => { sections.current[parent.slug] = node; }} className="mx-auto max-w-6xl scroll-mt-24 px-gutter pt-20" aria-labelledby={`group-${parent.slug}`}>
-              <SectionTitle id={`group-${parent.slug}`}>{parent.name}</SectionTitle>
+              <SectionTitle id={`group-${parent.slug}`} action={<Link to={`/services/${parent.slug}`} className="text-base text-fx-muted hover:text-fx-ink">View All</Link>}>{parent.name}</SectionTitle>
               <div className="mt-8 grid gap-5 md:grid-cols-3">{children.slice(0, 3).map(c => <CategoryCard key={c.id} category={c} />)}</div>
-              <p className="mt-9 text-center"><Link to={`/services/${parent.slug}`} className="text-lg text-fx-muted hover:text-fx-ink">View All</Link></p>
+              <p className="mt-9 text-center md:hidden"><Link to={`/services/${parent.slug}`} className="text-lg text-fx-muted hover:text-fx-ink">View All</Link></p>
             </section>
           ))}
 

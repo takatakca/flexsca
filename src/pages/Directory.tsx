@@ -27,7 +27,7 @@ export default function Directory() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main className="mx-auto max-w-4xl px-gutter py-8">
+      <main className="mx-auto max-w-6xl px-gutter py-8">
         <h1 className="text-[28px] leading-tight text-fx-ink md:text-[36px]">Quebec business directory</h1>
         <p className="mt-2 text-fx-secondary">Restaurants, shops, hotels, garages, services and licensed contractors across the province. Find one near you, or claim your own business for free.</p>
         <form className="mt-6 flex flex-col gap-3 md:grid md:grid-cols-[1fr_1fr_1fr_auto]" onSubmit={e => { e.preventDefault(); go({ name, city, trade, page: 0 }); }}>
@@ -49,14 +49,14 @@ export default function Directory() {
             : !data?.rows.length ? <p className="rounded-fx-md bg-fx-soft p-6 text-fx-secondary">No business matches this search. Try a shorter name or another city.</p>
             : <>
               <p className="mb-3 text-sm text-fx-muted">About {data.total.toLocaleString("en-CA")} businesses</p>
-              <ul className="grid gap-5 md:grid-cols-2">
+              <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {data.rows.map(row => (
                   <li key={row.id} className="min-w-0 rounded-fx-xs border border-fx-line bg-white p-5 shadow-fx-card">
                     <div className="flex items-start justify-between gap-3">
                       <h2 className="min-w-0 break-words text-xl text-fx-ink">{row.other_name || row.name}</h2>
                       <span className={`shrink-0 rounded-fx-pill px-3 py-1 text-xs ${row.status === "claimed" ? "bg-success/10 text-success" : "bg-fx-soft text-fx-secondary"}`}>{row.status === "claimed" ? "On FLEXS" : "Not claimed"}</span>
                     </div>
-                    <p className="mt-3 flex items-center gap-2 text-fx-ink"><MapPin className="size-4 shrink-0" aria-hidden="true" />{row.city}, QC</p>
+                    <p className="mt-3 flex items-center gap-2 text-fx-ink"><MapPin className="size-4 shrink-0" aria-hidden="true" />{row.city}, QC{row.region && row.region !== row.city ? ` · ${row.region}` : ""}</p>
                     <p className="mt-3 text-fx-ink"><span className="font-bold">Category: </span>{row.trade}</p>
                     <div className="mt-5 flex items-center justify-between gap-3">
                       <Link to={`/business/${row.slug}`} className="text-lg text-primary hover:underline">View profile ›</Link>

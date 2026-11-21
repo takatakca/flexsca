@@ -1,6 +1,6 @@
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export default function CookiesPage() {
@@ -22,7 +22,7 @@ export default function CookiesPage() {
             Website in order to improve your experience when you browse the Website.
           </p>
           <p>
-            This cookie policy should be read in conjunction with our website privacy policy available at flexs.ca/privacy-policy.
+            This cookie policy should be read with <Link to="/privacy" className="text-primary underline">the FLEXS privacy policy</Link>.
           </p>
 
           <h2 className="text-lg leading-snug text-fx-ink">Cookies and similar technologies: what are they?</h2>

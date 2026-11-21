@@ -6,7 +6,7 @@ Sources (both CC BY 4.0, https://donnees.montreal.ca):
   - "Locaux commerciaux et statuts d'occupation" (occupation-commerciale-<year>.csv): street-level businesses.
 
 Only the name, municipality, borough, kind of business and the source's record number are
-kept. Street addresses and coordinates are read to remove duplicates and are never written out.
+kept. Street addresses and coordinates are never read into a listing.
 
 Usage: python3 -I scripts/build_montreal_directory.py <businesses.csv> <occupation-commerciale.csv> <outDir>
 Then run the batch-*.sql files with a service connection, then finish.sql.
@@ -71,9 +71,9 @@ def place(raw):
     full = re.sub(r'\bSte-', 'Sainte-', re.sub(r'\bSt-', 'Saint-', raw))
     return ('Montréal', full) if raw in BOROUGHS else (full, None if raw == 'Montréal' else 'Montréal')
 
-def dedupe_key(name, address):
-    number = re.match(r'\s*(\d+)', address or '')
-    return (slugify(name), number.group(1) if number else '')
+def dedupe_key(name, place_name):
+    """One listing per name and borough: branches without an address cannot be told apart on the page."""
+    return (slugify(name), slugify(place_name or ''))
 
 def main(food_csv, shops_csv, out):
     os.makedirs(out, exist_ok=True)
@@ -84,7 +84,7 @@ def main(food_csv, shops_csv, out):
             if not trade: skipped['food_closed_or_other'] += 1; continue
             name = tidy_name(r['name']); city, region = place(r['city'])
             if len(name) < 2 or not city or not r['business_id'].isdigit(): skipped['incomplete'] += 1; continue
-            key = dedupe_key(name, r['address'])
+            key = dedupe_key(name, r['city'])
             if key in seen: skipped['duplicate'] += 1; continue
             seen.add(key)
             rows.append({'source': 'mtl_food', 'source_ref': r['business_id'], 'name': name, 'city': city, 'region': region, 'trade': trade,
@@ -96,7 +96,7 @@ def main(food_csv, shops_csv, out):
             name = tidy_name(r['NOM_ETAB']); city, region = place(r['ARRONDISSEMENT'])
             ref = re.sub(r'[^0-9a-z-]', '', r['ID'].lower()).strip('-')[:40]
             if not trade or len(name) < 2 or name.upper() in ('N/A', 'ND', 'INCONNU') or not city or len(ref) < 6: skipped['incomplete'] += 1; continue
-            key = dedupe_key(name, r['CIVIQUE'])
+            key = dedupe_key(name, r['ARRONDISSEMENT'])
             if key in seen: skipped['duplicate'] += 1; continue
             seen.add(key)
             rows.append({'source': 'mtl_shops', 'source_ref': ref, 'name': name, 'city': city, 'region': region, 'trade': trade,
