@@ -97,10 +97,10 @@ export default function LeadHeader({
                 {timeAgo} ago
               </Badge>
             </div>
-            <p className="text-sm text-white/70 mt-0.5">
+            <p className="text-sm text-white/90 mt-0.5">
               {lead.location_text}
             </p>
-            <p className="text-sm text-white/70">
+            <p className="text-sm text-white/90">
               {lead.category}
             </p>
           </div>

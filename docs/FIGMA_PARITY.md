@@ -133,3 +133,7 @@ Checks: typecheck, lint (0 errors), 103 tests, build, 29 browser scenarios, scre
 3. **Desktop wizard steps between 19:828 and 24:5974.** Send the node numbers of the middle frames and they will be compared one by one.
 4. **Signed-in desktop screens.** The professional app is designed at 440 px only; on desktop it uses the same layout, centred.
 5. **Frames deliberately not followed:** press logos, review-site score, testimonials, daily-lead and revenue figures, Apple and Google sign-in, "found this helpful" counts, Free Leads count, the frame's legal text.
+
+## Departures for readability (2026-11-21)
+
+An automated accessibility audit (WCAG 2 A and AA) runs on every public page and every signed-in screen. To pass it, three colours are darker than in the frames: the blue (`#2D7AF1` → `#0F5FD6`, so white text on it reaches 4.5:1), secondary text (`#6C7191` → `#545978`) and muted text (`#A0A3B8` → `#666A85`). The danger red is darker for the same reason. Layout and type are unchanged.

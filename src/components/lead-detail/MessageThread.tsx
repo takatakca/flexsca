@@ -40,7 +40,7 @@ export default function MessageThread({ messages }: MessageThreadProps) {
             <p
               className={`text-xs mt-1 ${
                 msg.sender_type === "pro"
-                  ? "text-primary-foreground/70"
+                  ? "text-primary-foreground/90"
                   : "text-muted-foreground"
               }`}
             >

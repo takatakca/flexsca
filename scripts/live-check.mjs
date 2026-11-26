@@ -12,7 +12,7 @@ const failures = [];
 const fail = (what, why) => { failures.push(`${what}: ${why}`); console.log(`FAIL ${what}: ${why}`); };
 
 // 1. Every public page answers, shows one heading, fits the window and throws no script error.
-const pages = ['/', '/post-job', '/services', '/services/plumbing', '/directory', '/pro', '/about', '/help', '/help/credits', '/terms', '/privacy', '/cookies', '/press', '/affiliates', '/auth/login', '/auth/welcome', '/auth/forgot-password'];
+const pages = ['/', '/support', '/post-job', '/services', '/services/plumbing', '/directory', '/pro', '/about', '/help', '/help/credits', '/terms', '/privacy', '/cookies', '/press', '/affiliates', '/auth/login', '/auth/welcome', '/auth/forgot-password'];
 for (const route of pages) {
   const page = await context.newPage();
   const errors = [];
@@ -31,7 +31,7 @@ for (const route of pages) {
 }
 
 // 2. Signed-out visitors are sent to sign-in, never shown a private page.
-for (const route of ['/my-requests', '/app/leads', '/support']) {
+for (const route of ['/my-requests', '/app/leads', '/app/admin']) {
   const page = await context.newPage();
   await page.goto(base + route, { waitUntil: 'networkidle', timeout: 60000 });
   if (!new URL(page.url()).pathname.startsWith('/auth/')) fail(route, `signed-out visitor stays on ${page.url()}`); else console.log(`OK   ${route} asks to sign in`);

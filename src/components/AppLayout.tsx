@@ -25,20 +25,20 @@ export default function AppLayout(){
   return <div className="min-h-screen flex flex-col bg-fx-soft">
     <a href="#workspace-content" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:bg-white focus:p-3">Skip to workspace</a>
     <aside className="hidden md:flex fixed inset-y-0 left-0 w-64 bg-[#142449] text-white flex-col z-40">
-      <Link to="/" className="px-7 h-24 flex items-center gap-2 text-3xl font-extrabold tracking-tight">FLEXS<span className="text-primary-foreground/80">.</span></Link>
-      <div className="px-5 mb-7"><div className="rounded-xl border border-white/15 bg-white/5 px-4 py-3"><p className="text-sm font-semibold">Professional workspace</p><p className="mt-1 text-xs text-white/55">Your business. Your next move.</p></div></div>
+      <Link to="/" className="px-7 h-24 flex items-center gap-2 text-3xl font-extrabold tracking-tight">FLEXS<span className="text-primary-foreground/90">.</span></Link>
+      <div className="px-5 mb-7"><div className="rounded-xl border border-white/15 bg-white/5 px-4 py-3"><p className="text-sm font-semibold">Professional workspace</p><p className="mt-1 text-xs text-white/90">Your business. Your next move.</p></div></div>
       <nav aria-label="Professional navigation" className="px-4 space-y-1.5">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/45 px-4 pb-3">Manage your work</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-white/90 px-4 pb-3">Manage your work</p>
         {tabs.map(({path,label,icon:Icon})=>{
           const active=location.pathname.startsWith(path);
-          return <button key={path} onClick={()=>navigate(path)} aria-current={active ? 'page' : undefined} aria-label={path==='/app/notifications' && unread>0 ? `${label}, ${unread} unread` : label} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors ${active ? 'bg-white text-primary font-semibold shadow-sm' : 'text-white/70 hover:text-white hover:bg-white/10'}`}><Icon className="size-[18px]" /><span>{label}</span>{path==='/app/notifications' && unread>0 && <span aria-hidden="true" className={`ml-auto px-2 py-0.5 rounded-md text-[10px] ${active ? 'bg-primary/10 text-primary' : 'bg-white/15 text-white'}`}>{unread>99 ? '99+' : unread}</span>}</button>;
+          return <button key={path} onClick={()=>navigate(path)} aria-current={active ? 'page' : undefined} aria-label={path==='/app/notifications' && unread>0 ? `${label}, ${unread} unread` : label} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors ${active ? 'bg-white text-primary font-semibold shadow-sm' : 'text-white/90 hover:text-white hover:bg-white/10'}`}><Icon className="size-[18px]" /><span>{label}</span>{path==='/app/notifications' && unread>0 && <span aria-hidden="true" className={`ml-auto px-2 py-0.5 rounded-md text-[10px] ${active ? 'bg-primary/10 text-primary' : 'bg-white/15 text-white'}`}>{unread>99 ? '99+' : unread}</span>}</button>;
         })}
       </nav>
       <div className="mt-auto p-4 space-y-1.5 border-t border-white/10">
-        <Link to="/app/settings/credits" className="flex gap-3 items-center px-4 py-3 text-sm text-white/70 hover:bg-white/10 rounded-xl"><Coins className="size-[18px]" />Credits & billing</Link>
-        <Link to="/support" className="flex gap-3 items-center px-4 py-3 text-sm text-white/70 hover:bg-white/10 rounded-xl"><HelpCircle className="size-[18px]" />Support</Link>
-        <Link to="/app/settings" className="flex gap-3 items-center px-4 py-3 text-sm text-white/70 hover:bg-white/10 rounded-xl"><Settings className="size-[18px]" />Settings</Link>
-        <div className="px-4 pt-5 pb-2 text-[10px] text-white/40">FLEXS · Independent marketplace</div>
+        <Link to="/app/settings/credits" className="flex gap-3 items-center px-4 py-3 text-sm text-white/90 hover:bg-white/10 rounded-xl"><Coins className="size-[18px]" />Credits & billing</Link>
+        <Link to="/support" className="flex gap-3 items-center px-4 py-3 text-sm text-white/90 hover:bg-white/10 rounded-xl"><HelpCircle className="size-[18px]" />Support</Link>
+        <Link to="/app/settings" className="flex gap-3 items-center px-4 py-3 text-sm text-white/90 hover:bg-white/10 rounded-xl"><Settings className="size-[18px]" />Settings</Link>
+        <div className="px-4 pt-5 pb-2 text-[10px] text-white/90">FLEXS · Independent marketplace</div>
       </div>
     </aside>
     <header className="sticky top-0 z-30 md:ml-64 flex h-20 items-center justify-between gap-4 border-b bg-white/95 backdrop-blur-xl px-4 md:px-8">

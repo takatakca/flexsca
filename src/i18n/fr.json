@@ -1916,7 +1916,25 @@
   "To correct, claim or remove a business listing, include the business name, its town and the address of its FLEXS page.": "Pour corriger, réclamer ou retirer une fiche d'entreprise, indiquez le nom de l'entreprise, sa ville et l'adresse de sa page FLEXS.",
   "For a request you posted, include the email address you used.": "Pour une demande que vous avez publiée, indiquez le courriel utilisé.",
   "For privacy or data requests, write \"Privacy\" in the subject.": "Pour une demande liée à la vie privée ou à vos données, écrivez « Confidentialité » dans l'objet.",
-  "Loading the questions…": "Chargement des questions…"
+  "Loading the questions…": "Chargement des questions…",
+  "Choose which new updates appear in FLEXS, and whether they are also sent to you by email. Existing notifications remain available. Due reminders are collected while the app is open; SMS and device push are not enabled.": "Choisissez les nouveautés qui apparaissent dans FLEXS et si elles vous sont aussi envoyées par courriel. Les notifications existantes restent disponibles. Les rappels échus sont recueillis lorsque l'application est ouverte; les textos et les notifications poussées ne sont pas activés.",
+  "Also send them by email": "Les envoyer aussi par courriel",
+  "Email notifications": "Notifications par courriel",
+  "Create a follow-up reminder from a request or the Reminders screen. Due reminders and unread updates refresh while the professional app is open. You can turn message and reminder notifications on or off in Settings. Existing notices stay available. FLEXS also emails you about new requests in your trade, quotes and updates; you can turn these emails off in Settings. SMS and device push are not currently enabled.": "Créez un rappel de suivi à partir d'une demande ou de l'écran Rappels. Les rappels échus et les nouveautés non lues s'actualisent lorsque l'application professionnelle est ouverte. Vous pouvez activer ou désactiver les notifications de messages et de rappels dans Paramètres. Les avis existants restent disponibles. FLEXS vous écrit aussi par courriel pour les nouvelles demandes dans votre métier, les soumissions et les nouveautés; vous pouvez désactiver ces courriels dans Paramètres. Les textos et les notifications poussées ne sont pas activés pour le moment.",
+  "Your company": "Votre entreprise",
+  "Profile completion": "Progression du profil",
+  "Dismiss": "Fermer",
+  "Something went wrong on this page": "Un problème est survenu sur cette page",
+  "The problem has been reported to our team. Reload the page, or go back to the home page.": "Le problème a été signalé à notre équipe. Rechargez la page ou revenez à l'accueil.",
+  "Reload the page": "Recharger la page",
+  "Home page": "Accueil",
+  "Errors on the site": "Erreurs sur le site",
+  "What went wrong in visitors' browsers in the last 7 days. No personal data is recorded.": "Ce qui a mal fonctionné dans les navigateurs des visiteurs au cours des 7 derniers jours. Aucune donnée personnelle n'est enregistrée.",
+  "Loading errors…": "Chargement des erreurs…",
+  "Unable to load the error log.": "Impossible de charger le journal des erreurs.",
+  "Retry error log": "Recharger le journal des erreurs",
+  "No error recorded.": "Aucune erreur enregistrée.",
+  "Technical details": "Détails techniques"
  },
  "patterns": [
   [

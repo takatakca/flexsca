@@ -61,7 +61,7 @@ export default function BuyerDashboard(){
             return <article key={request.id} className="rounded-fx-xs bg-card px-[15px] pb-[30px] pt-7 text-center shadow-fx-card">
               <h2 className="text-xl">{request.category}</h2>
               <p className="mt-3 text-sm text-fx-muted">{formatDistanceToNow(new Date(request.created_at),{addSuffix:true})} · {request.location_text}</p>
-              <div className={`mt-4 rounded-fx-xs px-4 py-3 text-xs leading-5 ${resolved ? 'bg-fx-sunken text-fx-secondary' : 'bg-success/10 text-success'}`}><p className="font-bold">{status}</p><p>{detail}</p></div>
+              <div className={`mt-4 rounded-fx-xs px-4 py-3 text-xs leading-5 ${resolved ? 'bg-fx-sunken text-fx-secondary' : 'bg-success/10 text-[hsl(146_64%_22%)]'}`}><p className="font-bold">{status}</p><p>{detail}</p></div>
               <Button className="mt-5 h-9 rounded-fx-xs px-[30px] text-xs shadow-fx-button" onClick={()=>navigate(`/my-requests/${request.id}`)}>View request</Button>
             </article>;
           })}</div>

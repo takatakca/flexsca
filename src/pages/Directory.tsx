@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSeo } from "@/lib/seo";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Search } from "lucide-react";
@@ -9,6 +10,7 @@ import { PAGE_SIZE, TRADES, quotable, searchListings } from "@/lib/directory";
 
 /** Public directory of Quebec businesses, including those that have not joined FLEXS yet. */
 export default function Directory() {
+  useSeo({ path: "/directory", description: "Directory of Quebec businesses: restaurants, shops, hotels, garages, services and licensed contractors across the province. Find one near you or claim your own business for free." });
   const [params, setParams] = useSearchParams();
   const applied = { name: params.get("q") ?? "", city: params.get("city") ?? "", trade: params.get("trade") ?? "", page: Math.max(0, Number(params.get("page")) || 0) };
   const [name, setName] = useState(applied.name);

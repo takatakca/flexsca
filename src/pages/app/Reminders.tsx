@@ -186,7 +186,7 @@ export default function Reminders() {
         <div className="mx-4 mt-4 rounded-xl bg-accent border border-primary/10 p-4 relative">
           <button
             onClick={() => setShowTip(false)}
-            className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+            aria-label="Dismiss" className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </button>
@@ -358,7 +358,7 @@ function ReminderCard({
   return (
     <Card
       className={`p-4 cursor-pointer hover:shadow-md transition-shadow active:scale-[0.98] transition-transform ${
-        isDone ? "opacity-60" : ""
+        isDone ? "bg-muted/40" : ""
       } ${dueInfo?.isOverdue ? "border-destructive/50" : ""}`}
       onClick={onClick}
     >

@@ -19,7 +19,7 @@ export default function AboutPage() {
         <section className="bg-primary text-primary-foreground">
           <div className="max-w-4xl mx-auto px-5 py-16 md:py-24 text-center space-y-4">
             <h1 className="text-3xl md:text-5xl font-bold">Local projects. Independent professionals.</h1>
-            <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
+            <p className="text-lg text-primary-foreground/90 max-w-2xl mx-auto">
               FLEXS is a Canadian marketplace where people post a service request and compare quotes from local professionals, and where professionals find new customers.
             </p>
           </div>

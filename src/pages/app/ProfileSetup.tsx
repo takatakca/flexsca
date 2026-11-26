@@ -134,7 +134,7 @@ export default function ProfileSetup() {
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center">
         <button
           onClick={() => navigate(-1)}
-          className="p-1 -ml-1 text-primary"
+          aria-label="Back" className="p-1 -ml-1 text-primary"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
@@ -222,7 +222,7 @@ function SectionDetail({
     <div className="pb-8">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background border-b border-border px-4 py-3 flex items-center">
-        <button onClick={onBack} className="p-1 -ml-1 text-primary">
+        <button onClick={onBack} aria-label="Back" className="p-1 -ml-1 text-primary">
           <ArrowLeft className="h-5 w-5" />
         </button>
         <h1 className="flex-1 text-center text-base font-semibold text-foreground">

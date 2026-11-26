@@ -22,3 +22,6 @@ verify_jwt = false
 
 [functions.lead-call-status]
 verify_jwt = false
+
+[functions.send-emails]
+verify_jwt = false

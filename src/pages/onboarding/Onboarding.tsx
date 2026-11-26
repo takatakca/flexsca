@@ -453,8 +453,8 @@ function ReminderLongPressVisual() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-sm font-semibold text-foreground">Barnabas</p>
-            <p className="text-xs text-muted-foreground">Camden Town, NW1</p>
+            <p className="text-sm font-semibold text-foreground">Customer</p>
+            <p className="text-xs text-muted-foreground">Montréal, QC</p>
           </div>
           <div className="ml-auto h-4 w-12 rounded bg-muted" />
         </div>
@@ -499,13 +499,7 @@ function CustomStatusesVisual() {
           <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-[hsl(180,60%,50%)] to-[hsl(240,60%,60%)] flex items-center justify-center shadow-sm">
             <span className="text-2xl font-bold text-white">F</span>
           </div>
-          <p className="text-sm font-bold text-foreground">ACME Inc.</p>
-          <div className="flex items-center gap-0.5">
-            {[1, 2, 3, 4].map((i) => (
-              <Star key={i} className="h-4 w-4 fill-[#F59E0B] text-[#F59E0B]" />
-            ))}
-            <Star className="h-4 w-4 fill-[#F59E0B]/40 text-[#F59E0B]" />
-          </div>
+          <p className="text-sm font-bold text-foreground">Your company</p>
         </div>
 
         {/* Status flow with dotted lines */}

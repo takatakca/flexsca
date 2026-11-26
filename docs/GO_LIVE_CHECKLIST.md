@@ -25,6 +25,16 @@ Note: the Stripe account has a second webhook whose address is a Coolify setting
 3. Supabase › **Authentication › Rate limits**: raise "emails sent" from 2 to at least 100 per hour.
 4. Test: on flexs.ca choose **Sign in**, enter a new address, and check that the link arrives and opens flexs.ca.
 
+## 2b. Notification emails (new request, quote, updates)
+
+Built and live in the database; nothing is sent until the mail key exists. These emails do not go through Supabase's sign-in mailer, so they need their own key:
+
+1. Create an account at resend.com, add the domain `flexs.ca` and the DNS records it shows (they prove the domain is yours).
+2. Supabase › Edge Functions › Secrets: add `RESEND_API_KEY`. Optional: `EMAIL_FROM` (default `FLEXS <no-reply@flexs.ca>`).
+3. The same Resend account can serve step 2 above: Resend gives SMTP settings for Supabase's sign-in emails.
+
+What is sent, each in French then English: confirmation to the customer when a request is posted; an alert to professionals whose listed service matches; a note to the customer when a quote arrives; a copy of each in-app notice. No customer contact detail or message text is ever in an email. Each person can turn the emails off in Settings.
+
 ## 3. First administrator — prepared
 
 `takatak.ca@gmail.com` is invited. Sign up on flexs.ca with that address and confirm it: the account becomes administrator at that first sign-in, and **Administration** shows the owner overview (revenue, credits, requests, accounts, directory, claims, tickets, calls). Nothing else to do.
@@ -51,3 +61,17 @@ Merge the launch pull request, then in GitHub **Settings › Secrets and variabl
 - **French version: built.** The site opens in French for French browsers and has a language switch. The French text was written by Claude and should be read once by a French speaker, the legal pages above all: the French Terms of Use and Privacy Policy are translations of the owner's English text and have not been reviewed by a lawyer. The sign-in emails sent by Supabase are still in English (shared with the ticketing site).
 - Final wording of the professionals' terms (`/terms?for=professionals`, marked as a draft).
 - Apple and Google developer accounts for the store apps; a Mac for the iOS build.
+
+## How the backend was verified without real keys
+
+Three scripts play the whole journey on the real database inside a transaction that is always rolled back (they end with an error that carries the result; nothing is left behind). Paste one into the Supabase SQL editor to replay it.
+
+- `scripts/live-journey-check.sql`: sign-up (profile and 20 credits), request, contact hidden until unlocked, unlock charged once, quote, call authorised, acceptance, review, emails queued.
+- `scripts/live-claim-check.sql`: claiming a listing, self-approval refused, administrator approval, 30-day trial and 20 credits.
+- `scripts/live-payment-check.sql`: what the Stripe webhook does: paid purchase credited once, replay ignored, wrong amounts refused, refund removes credits, dispute freezes the wallet.
+
+Last run on 2026-11-21: every line true. What these cannot prove: that Stripe, the mail service and the phone service accept the keys. Each needs one real test after its key is entered (steps 1, 2, 2b and 5b).
+
+## Errors on the live site
+
+A screen that fails shows a recovery page, and the failure appears under **Administration › Errors on the site** (message, page, count; no personal data).

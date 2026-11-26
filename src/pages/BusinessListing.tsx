@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useSeo } from "@/lib/seo";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { BadgeCheck, MapPin, ShieldCheck, Wrench } from "lucide-react";
@@ -14,6 +15,12 @@ export default function BusinessListing() {
   const { data: terms } = useQuery({ queryKey: ["trial-terms"], queryFn: getTrialTerms, staleTime: 3_600_000 });
   const title = listing ? listing.other_name || listing.name : "";
   useEffect(() => { if (title) document.title = `${title}, ${listing?.city} | FLEXS`; }, [title, listing?.city]);
+  // Only what the page itself shows: name, trade, town. No contact detail is published.
+  useSeo({
+    path: `/business/${slug}`,
+    description: listing ? `${title}: ${listing.trade} in ${listing.city}, Quebec. Business listing in the FLEXS directory.` : undefined,
+    data: listing ? { "@context": "https://schema.org", "@type": "LocalBusiness", name: title, description: listing.trade, url: `https://flexs.ca/business/${slug}`, address: { "@type": "PostalAddress", addressLocality: listing.city, addressRegion: "QC", addressCountry: "CA" } } : null,
+  });
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
