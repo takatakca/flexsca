@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { matchServices } from "@/lib/service-search";
 import { Plus, Trash2, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +19,18 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  // The services customers can request. A title chosen from this list is what links a professional to requests.
+  const [catalogue, setCatalogue] = useState<{ name: string; slug: string }[]>([]);
+  useEffect(() => {
+    let active = true;
+    void supabase.from("service_categories").select("name, slug, parent_slug").eq("is_active", true).order("name").then(({ data }) => {
+      if (!active || !data) return;
+      setCatalogue(data.filter(row => !data.some(other => other.parent_slug === row.slug)).map(row => ({ name: row.name, slug: row.slug })));
+    });
+    return () => { active = false; };
+  }, []);
+  const matched = catalogue.some(item => item.name.toLowerCase() === title.trim().toLowerCase());
+  const suggestions = adding && title.trim().length >= 2 && !matched ? matchServices(catalogue, title).slice(0, 6) : [];
 
   const handleAdd = async () => {
     if (!title.trim()) return;
@@ -60,7 +74,7 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
   return (
     <div className="space-y-3">
       <p className="text-xs text-muted-foreground">
-        Add the services you offer. FLEXS matches leads based on your services — put your most important one first.
+        Add the services you offer, chosen from the FLEXS list. Your request feed and your email alerts follow these services.
       </p>
 
       {services.map((service) => (
@@ -101,11 +115,24 @@ export default function ServicesSection({ services, onAdd, onRemove }: Props) {
               id="service-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Service Type"
+              placeholder="Start typing: plumbing, ménage, peinture…"
               className="rounded-xl"
               maxLength={100}
               autoFocus
+              autoComplete="off"
+              role="combobox"
+              aria-expanded={suggestions.length > 0}
+              aria-controls="service-suggestions"
+              aria-autocomplete="list"
             />
+            {suggestions.length > 0 && (
+              <ul id="service-suggestions" role="listbox" aria-label="Matching services" className="overflow-hidden rounded-xl border bg-card">
+                {suggestions.map(item => <li key={item.slug} role="option" aria-selected="false"><button type="button" onClick={() => setTitle(item.name)} className="block w-full px-3 py-2.5 text-left text-sm text-foreground hover:bg-muted">{item.name}</button></li>)}
+              </ul>
+            )}
+            <p className="text-xs text-muted-foreground">
+              {matched ? "This is a FLEXS service: you will be shown and emailed its new requests." : "Choose a service from the list to receive its requests. A title of your own is shown on your profile only."}
+            </p>
           </div>
 
           <div className="space-y-1.5">

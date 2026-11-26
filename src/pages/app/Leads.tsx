@@ -61,6 +61,26 @@ export default function Leads() {
   const { user } = useAuth();
   const { statuses } = useCustomStatuses();
 
+  // First visit of the session: the feed starts on the services the professional offers.
+  // They can widen it at any time with the filter; the choice is then theirs for the session.
+  const [scoped, setScoped] = useState(() => { try { return window.sessionStorage.getItem("flexs.feed-scoped") === "1"; } catch { return false; } });
+  useEffect(() => {
+    if (!user || scoped) return;
+    let active = true;
+    void Promise.all([
+      supabase.from("provider_services").select("title").eq("user_id", user.id),
+      supabase.from("service_categories").select("name").eq("is_active", true),
+    ]).then(([mine, catalogue]) => {
+      if (!active) return;
+      const names = new Map((catalogue.data ?? []).map(row => [row.name.toLowerCase(), row.name]));
+      const offered = [...new Set((mine.data ?? []).map(row => names.get(row.title.trim().toLowerCase())).filter((name): name is string => !!name))];
+      if (offered.length > 0) setFilters(current => (current.services.length === 0 ? { ...current, services: offered } : current));
+      try { window.sessionStorage.setItem("flexs.feed-scoped", "1"); } catch { /* the feed is simply scoped again next time */ }
+      setScoped(true);
+    }, () => setScoped(true));
+    return () => { active = false; };
+  }, [user, scoped]);
+
   useEffect(() => {
     if (!user) return;
     let active = true;
