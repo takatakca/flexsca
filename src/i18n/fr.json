@@ -1939,7 +1939,14 @@
   "Start typing: plumbing, ménage, peinture…": "Commencez à écrire : plomberie, ménage, peinture…",
   "This is a FLEXS service: you will be shown and emailed its new requests.": "C'est un service FLEXS : ses nouvelles demandes vous seront montrées et envoyées par courriel.",
   "Choose a service from the list to receive its requests. A title of your own is shown on your profile only.": "Choisissez un service dans la liste pour recevoir ses demandes. Un titre de votre choix apparaît seulement sur votre profil.",
-  "Add the services you offer, chosen from the FLEXS list. Your request feed and your email alerts follow these services.": "Ajoutez les services que vous offrez, choisis dans la liste FLEXS. Votre fil de demandes et vos alertes par courriel suivent ces services."
+  "Add the services you offer, chosen from the FLEXS list. Your request feed and your email alerts follow these services.": "Ajoutez les services que vous offrez, choisis dans la liste FLEXS. Votre fil de demandes et vos alertes par courriel suivent ces services.",
+  "Write to us at": "Écrivez-nous à",
+  ". We answer in French or English.": ". Nous répondons en français ou en anglais.",
+  "Already have an account?": "Vous avez déjà un compte?",
+  "to open a support ticket and follow its replies.": "pour ouvrir une demande d'assistance et suivre les réponses.",
+  "New to FLEXS?": "Nouveau sur FLEXS?",
+  "to create your account, or": "pour créer votre compte, ou",
+  "join as a professional": "inscrivez-vous comme professionnel"
  },
  "patterns": [
   [
