@@ -52,9 +52,15 @@ Minimum password length is 8 and leaked-password protection is on (both also app
 
 The feature is built and deployed but stays hidden until three Supabase secrets exist: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` (the MIMT line, a Canadian or US number in the form +15145550100). Once they are set, an unlocked request shows **Call through FLEXS**: the service rings the professional first, then connects the customer, who sees the FLEXS number. Only Canadian and US numbers are called, premium numbers are refused, a call lasts 30 minutes at most, nothing is recorded, and each professional is limited to 3 calls per customer per hour and 40 per day. Twilio bills each call to the account that owns the keys.
 
-## 6. Keep the site up to date
+## 6. Hosting: one setting in Coolify
 
-Merge the launch pull request, then in GitHub **Settings › Secrets and variables › Actions** add `MOCHAHOST_FTP_SERVER`, `MOCHAHOST_FTP_USERNAME`, `MOCHAHOST_FTP_PASSWORD`. From then on every merge to `main` updates flexs.ca, and a check of the live site runs every morning.
+Since 2026-11-26 flexs.ca is served by Coolify (nginx) and updates by itself a few minutes after each merge to `main`. It currently uses Coolify's default static setup, so the site has **no security headers**, a missing file answers as if it existed, the hidden `.htaccess` is readable, and the sitemap does not list the business pages.
+
+Fix, once: in Coolify open the FLEXS application › **General** › **Build Pack** and choose **Dockerfile** (Dockerfile location `/Dockerfile`, port `80`, health check path `/healthz`), then **Deploy**. The repository's `Dockerfile` and `deploy/nginx.conf` then apply: security headers and content security policy on every response, real 404s, hidden files blocked, long caching for build files, and all business pages in the sitemap.
+
+`npm run check:live` (and the daily **Live site check** in GitHub) fails on the "host" line until this is done, and passes after.
+
+The Apache files (`public/.htaccess`, the FTP deploy workflow) remain for an Apache host and are not used by Coolify.
 
 ## Decisions still open
 
