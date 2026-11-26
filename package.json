@@ -18,6 +18,8 @@
     "mobile:sync": "vite build && cap sync",
     "mobile:android": "npm run mobile:sync && cap open android",
     "mobile:ios": "npm run mobile:sync && cap open ios",
+    "mobile:apk": "npm run mobile:sync && cd android && ./gradlew assembleDebug",
+    "mobile:bundle": "npm run mobile:sync && cd android && ./gradlew bundleRelease",
     "check:live": "node scripts/live-check.mjs",
     "build:sitemaps": "node scripts/build-sitemaps.mjs"
   },
@@ -91,7 +93,7 @@
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react-swc": "^3.11.0",
+    "@vitejs/plugin-react-swc": "^4.3.3",
     "autoprefixer": "^10.4.21",
     "axe-core": "^4.14.1",
     "eslint": "^9.32.0",
@@ -105,7 +107,12 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
-    "vite": "^5.4.19",
-    "vitest": "^3.2.4"
+    "vite": "^7.3.8",
+    "vitest": "^5.1.2"
+  },
+  "overrides": {
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "^6.1.6"
+    }
   }
 }

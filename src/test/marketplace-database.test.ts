@@ -48,6 +48,22 @@ beforeAll(async () => {
 afterAll(async () => { await db.close(); });
 
 describe('marketplace database release integrity', () => {
+  it('public views are read-only: no visitor or member can write through them', async () => {
+    const views = ['provider_profiles_public', 'provider_reviews_public', 'leads_safe', 'lead_last_message'];
+    for (const role of ['anon', 'authenticated']) {
+      await asRole(role, role === 'authenticated' ? other : '');
+      for (const view of views) {
+        await expect(db.query(`DELETE FROM ${view}`), `${role} delete ${view}`).rejects.toThrow();
+      }
+      await expect(db.query(`UPDATE provider_profiles_public SET company_name='x'`)).rejects.toThrow();
+      await expect(db.query(`INSERT INTO provider_reviews_public(user_id,rating,verified,reviewer_name,review_text,source) VALUES ('${pro}',5,true,'Fake','Fake','flexs')`)).rejects.toThrow();
+    }
+    await db.exec('RESET ROLE');
+    const writable = await db.query(`SELECT c.relname, g.grantee, g.privilege_type FROM pg_class c JOIN information_schema.role_table_grants g ON g.table_schema='public' AND g.table_name=c.relname
+      WHERE c.relnamespace='public'::regnamespace AND c.relkind='v' AND g.grantee IN ('anon','authenticated','PUBLIC') AND g.privilege_type IN ('INSERT','UPDATE','DELETE','TRUNCATE')`);
+    expect(writable.rows, 'every view in public must be read-only for visitors and members').toEqual([]);
+  });
+
   it('requires authentication for marketplace browsing', async () => {
     await asRole('anon');
     await expect(db.query('SELECT * FROM leads_safe')).rejects.toThrow();

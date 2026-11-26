@@ -1,0 +1,63 @@
+name: Android app build
+# Run by hand: Actions > Android app build > Run workflow. Produces an installable test APK and,
+# when the four signing secrets exist, a signed bundle for Play Console. See docs/MOBILE_APPS.md.
+on:
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: "Version code (whole number, higher than the last Play upload)"
+        default: "1"
+      version_name:
+        description: "Version name shown in the store"
+        default: "1.0"
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VERSION_CODE: ${{ inputs.version_code }}
+      VERSION_NAME: ${{ inputs.version_name }}
+      KEYSTORE_BASE64: ${{ secrets.FLEXS_KEYSTORE_BASE64 }}
+      FLEXS_KEYSTORE_PASSWORD: ${{ secrets.FLEXS_KEYSTORE_PASSWORD }}
+      FLEXS_KEY_ALIAS: ${{ secrets.FLEXS_KEY_ALIAS }}
+      FLEXS_KEY_PASSWORD: ${{ secrets.FLEXS_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Check the version inputs
+        run: |
+          [[ "$VERSION_CODE" =~ ^[0-9]+$ ]] || { echo "Version code must be a whole number"; exit 1; }
+          [[ "$VERSION_NAME" =~ ^[0-9A-Za-z.-]+$ ]] || { echo "Version name: digits, letters, dots and dashes only"; exit 1; }
+      - run: npm ci --no-audit --no-fund
+      - run: npm run mobile:sync
+      - name: Test APK (installs on any Android phone)
+        working-directory: android
+        run: ./gradlew assembleDebug "-PversionCode=$VERSION_CODE" "-PversionName=$VERSION_NAME"
+      - name: Store bundle
+        working-directory: android
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            export FLEXS_KEYSTORE_FILE="$RUNNER_TEMP/upload.jks"
+            echo "Signing secrets found: the bundle will be signed."
+          else
+            echo "No signing secrets: the bundle is unsigned and Play Console will refuse it."
+          fi
+          ./gradlew bundleRelease "-PversionCode=$VERSION_CODE" "-PversionName=$VERSION_NAME"
+          rm -f "$RUNNER_TEMP/upload.jks"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flexs-android
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+          retention-days: 14

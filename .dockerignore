@@ -6,5 +6,6 @@ android
 ios
 docs
 supabase
-scripts
+scripts/*
+!scripts/build-sitemaps.mjs
 *.md

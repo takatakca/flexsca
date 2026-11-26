@@ -1,392 +1,1250 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://flexs.ca/</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://flexs.ca/post-job</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/post-job"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/post-job?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/post-job"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/post-job?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/post-job"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/post-job?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/post-job"/>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services"/>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://flexs.ca/directory</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/directory"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/directory?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/directory"/>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/directory?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/directory"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/directory?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/directory"/>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://flexs.ca/pro</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/pro"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/pro?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/pro"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/pro?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/pro"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/pro?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/pro"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/about</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/about"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/about?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/about?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/about"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/about?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/about"/>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help"/>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/new</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/new"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/new?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/new"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/new?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/new"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/new?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/new"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/customers</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/customers"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/customers?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/customers"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/customers?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/customers"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/customers?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/customers"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/professionals</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/professionals"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/professionals?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/professionals"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/professionals?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/professionals"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/professionals?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/professionals"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/affiliates</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/affiliates"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/affiliates?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/affiliates"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/affiliates?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/affiliates"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/affiliates?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/affiliates"/>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://flexs.ca/press</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/press"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/press?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/press"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/press?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/press"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/press?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/press"/>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://flexs.ca/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/terms"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/terms?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/terms"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/terms?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/terms"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/terms?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/terms"/>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://flexs.ca/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/privacy"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/privacy?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/privacy"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/privacy?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/privacy"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/privacy?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/privacy"/>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://flexs.ca/cookies</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/cookies"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/cookies?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/cookies"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/cookies?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/cookies"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/cookies?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/cookies"/>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/accounting-software</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/accounting-software"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/accounting-software?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/accounting-software"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/accounting-software?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/accounting-software"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/accounting-software?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/accounting-software"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/advertising-agency</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/advertising-agency"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/advertising-agency?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/advertising-agency"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/advertising-agency?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/advertising-agency"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/advertising-agency?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/advertising-agency"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/advertising-and-media-buying</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/advertising-and-media-buying"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/advertising-and-media-buying?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/advertising-and-media-buying"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/advertising-and-media-buying?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/advertising-and-media-buying"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/advertising-and-media-buying?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/advertising-and-media-buying"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/advertising-copywriting</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/advertising-copywriting"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/advertising-copywriting?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/advertising-copywriting"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/advertising-copywriting?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/advertising-copywriting"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/advertising-copywriting?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/advertising-copywriting"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/branding</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/branding"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/branding?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/branding"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/branding?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/branding"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/branding?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/branding"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/broadlines-and-slogans</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/broadlines-and-slogans"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/broadlines-and-slogans?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/broadlines-and-slogans"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/broadlines-and-slogans?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/broadlines-and-slogans"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/broadlines-and-slogans?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/broadlines-and-slogans"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/budgeting-forecasting-services</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/budgeting-forecasting-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/budgeting-forecasting-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/budgeting-forecasting-services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/budgeting-forecasting-services?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/budgeting-forecasting-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/budgeting-forecasting-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/budgeting-forecasting-services"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/business</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/business"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/business?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/business"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/business?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/business"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/business?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/business"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/business-accounting-services</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/business-accounting-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/business-accounting-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/business-accounting-services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/business-accounting-services?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/business-accounting-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/business-accounting-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/business-accounting-services"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/business-financial-planning</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/business-financial-planning"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/business-financial-planning?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/business-financial-planning"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/business-financial-planning?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/business-financial-planning"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/business-financial-planning?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/business-financial-planning"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/business-modelling-services</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/business-modelling-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/business-modelling-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/business-modelling-services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/business-modelling-services?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/business-modelling-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/business-modelling-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/business-modelling-services"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/card-processing</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/card-processing"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/card-processing?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/card-processing"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/card-processing?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/card-processing"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/card-processing?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/card-processing"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/commercial-catering</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/commercial-catering"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/commercial-catering?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/commercial-catering"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/commercial-catering?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/commercial-catering"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/commercial-catering?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/commercial-catering"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/commercial-event-planning</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/commercial-event-planning"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/commercial-event-planning?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/commercial-event-planning"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/commercial-event-planning?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/commercial-event-planning"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/commercial-event-planning?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/commercial-event-planning"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/corporate-coach-minibus-hire</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/corporate-coach-minibus-hire"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/corporate-coach-minibus-hire?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/corporate-coach-minibus-hire"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/corporate-coach-minibus-hire?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/corporate-coach-minibus-hire"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/corporate-coach-minibus-hire?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/corporate-coach-minibus-hire"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/corporate-event-entertainment</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/corporate-event-entertainment"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/corporate-event-entertainment?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/corporate-event-entertainment"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/corporate-event-entertainment?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/corporate-event-entertainment"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/corporate-event-entertainment?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/corporate-event-entertainment"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/corporate-event-photography</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/corporate-event-photography"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/corporate-event-photography?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/corporate-event-photography"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/corporate-event-photography?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/corporate-event-photography"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/corporate-event-photography?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/corporate-event-photography"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/corporate-event-venue-hire</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/corporate-event-venue-hire"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/corporate-event-venue-hire?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/corporate-event-venue-hire"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/corporate-event-venue-hire?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/corporate-event-venue-hire"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/corporate-event-venue-hire?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/corporate-event-venue-hire"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/design-and-media</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/design-and-media"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/design-and-media?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/design-and-media"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/design-and-media?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/design-and-media"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/design-and-media?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/design-and-media"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/dog-walking</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/dog-walking"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/dog-walking?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/dog-walking"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/dog-walking?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/dog-walking"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/dog-walking?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/dog-walking"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/electrical-work</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/electrical-work"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/electrical-work?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/electrical-work"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/electrical-work?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/electrical-work"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/electrical-work?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/electrical-work"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/email-template-design</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/email-template-design"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/email-template-design?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/email-template-design"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/email-template-design?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/email-template-design"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/email-template-design?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/email-template-design"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/employment-lawyer</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/employment-lawyer"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/employment-lawyer?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/employment-lawyer"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/employment-lawyer?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/employment-lawyer"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/employment-lawyer?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/employment-lawyer"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/event-and-travel-services</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/event-and-travel-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/event-and-travel-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/event-and-travel-services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/event-and-travel-services?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/event-and-travel-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/event-and-travel-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/event-and-travel-services"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/financial-and-accounting</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/financial-and-accounting"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/financial-and-accounting?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/financial-and-accounting"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/financial-and-accounting?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/financial-and-accounting"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/financial-and-accounting?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/financial-and-accounting"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/financial-and-tax</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/financial-and-tax"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/financial-and-tax?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/financial-and-tax"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/financial-and-tax?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/financial-and-tax"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/financial-and-tax?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/financial-and-tax"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/financial-planning</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/financial-planning"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/financial-planning?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/financial-planning"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/financial-planning?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/financial-planning"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/financial-planning?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/financial-planning"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/garden-maintenance</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/garden-maintenance"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/garden-maintenance?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/garden-maintenance"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/garden-maintenance?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/garden-maintenance"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/garden-maintenance?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/garden-maintenance"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/general-accounting</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/general-accounting"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/general-accounting?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/general-accounting"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/general-accounting?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/general-accounting"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/general-accounting?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/general-accounting"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/house-cleaning</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/house-cleaning"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/house-cleaning?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/house-cleaning"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/house-cleaning?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/house-cleaning"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/house-cleaning?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/house-cleaning"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/invoice-finance</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/invoice-finance"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/invoice-finance?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/invoice-finance"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/invoice-finance?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/invoice-finance"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/invoice-finance?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/invoice-finance"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/legal-services</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/legal-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/legal-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/legal-services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/legal-services?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/legal-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/legal-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/legal-services"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/online-media-buying</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/online-media-buying"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/online-media-buying?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/online-media-buying"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/online-media-buying?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/online-media-buying"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/online-media-buying?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/online-media-buying"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/painting-decorating</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/painting-decorating"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/painting-decorating?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/painting-decorating"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/painting-decorating?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/painting-decorating"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/painting-decorating?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/painting-decorating"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/pensions-and-incentives</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/pensions-and-incentives"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/pensions-and-incentives?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/pensions-and-incentives"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/pensions-and-incentives?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/pensions-and-incentives"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/pensions-and-incentives?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/pensions-and-incentives"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/personal-training</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/personal-training"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/personal-training?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/personal-training"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/personal-training?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/personal-training"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/personal-training?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/personal-training"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/photography</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/photography?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/photography"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/photography?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/photography"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/photography?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/photography"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/plumbing</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/plumbing"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/plumbing?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/plumbing"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/plumbing?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/plumbing"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/plumbing?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/plumbing"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/pos</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/pos"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/pos?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/pos"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/pos?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/pos"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/pos?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/pos"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/print-media-purchasing</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/print-media-purchasing"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/print-media-purchasing?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/print-media-purchasing"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/print-media-purchasing?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/print-media-purchasing"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/print-media-purchasing?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/print-media-purchasing"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/private-chef-services</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/private-chef-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/private-chef-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/private-chef-services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/private-chef-services?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/private-chef-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/private-chef-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/private-chef-services"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/radio-airtime-purchasing</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/radio-airtime-purchasing"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/radio-airtime-purchasing?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/radio-airtime-purchasing"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/radio-airtime-purchasing?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/radio-airtime-purchasing"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/radio-airtime-purchasing?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/radio-airtime-purchasing"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/removals</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/removals"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/removals?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/removals"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/removals?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/removals"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/removals?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/removals"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/security-guard-services</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/security-guard-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/security-guard-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/security-guard-services"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/security-guard-services?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/security-guard-services"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/security-guard-services?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/security-guard-services"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/small-business-loans</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/small-business-loans"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/small-business-loans?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/small-business-loans"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/small-business-loans?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/small-business-loans"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/small-business-loans?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/small-business-loans"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/tax-lawyer</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/tax-lawyer"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/tax-lawyer?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/tax-lawyer"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/tax-lawyer?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/tax-lawyer"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/tax-lawyer?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/tax-lawyer"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/tv-media-buying</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/tv-media-buying"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/tv-media-buying?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/tv-media-buying"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/tv-media-buying?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/tv-media-buying"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/tv-media-buying?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/tv-media-buying"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/valuations</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/valuations"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/valuations?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/valuations"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/valuations?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/valuations"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/valuations?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/valuations"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/venture-capital</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/venture-capital"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/venture-capital?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/venture-capital"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/venture-capital?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/venture-capital"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/venture-capital?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/venture-capital"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/web-design</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/web-design"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/web-design?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/web-design"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/web-design?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/web-design"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/web-design?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/web-design"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/services/wedding-catering</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/wedding-catering"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/wedding-catering?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/wedding-catering"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/services/wedding-catering?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/services/wedding-catering"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/services/wedding-catering?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/services/wedding-catering"/>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/takatak</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/takatak"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/takatak?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/takatak"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/takatak?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/takatak"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/takatak?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/takatak"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/post-request</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/post-request"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/post-request?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/post-request"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/post-request?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/post-request"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/post-request?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/post-request"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/customer-responses</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/customer-responses"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/customer-responses?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/customer-responses"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/customer-responses?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/customer-responses"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/customer-responses?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/customer-responses"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/credits</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/credits?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/credits"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/credits?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/credits"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/credits?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/credits"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/credit-refunds</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/credit-refunds"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/credit-refunds?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/credit-refunds"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/credit-refunds?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/credit-refunds"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/credit-refunds?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/credit-refunds"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/verified</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/verified"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/verified?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/verified"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/verified?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/verified"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/verified?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/verified"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/notifications</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/notifications"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/notifications?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/notifications"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/notifications?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/notifications"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/notifications?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/notifications"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/account-access</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/account-access"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/account-access?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/account-access"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/account-access?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/account-access"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/account-access?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/account-access"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/contact-support</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/contact-support"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/contact-support?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/contact-support"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/contact-support?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/contact-support"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/contact-support?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/contact-support"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/privacy"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/privacy?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/privacy"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/privacy?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/privacy"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/privacy?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/privacy"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/conversation-rules</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/conversation-rules"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/conversation-rules?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/conversation-rules"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/conversation-rules?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/conversation-rules"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/conversation-rules?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/conversation-rules"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>
   <url>
     <loc>https://flexs.ca/help/review-rules</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/review-rules"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/review-rules?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/review-rules"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://flexs.ca/help/review-rules?lang=fr</loc>
+    <xhtml:link rel="alternate" hreflang="en-CA" href="https://flexs.ca/help/review-rules"/>
+    <xhtml:link rel="alternate" hreflang="fr-CA" href="https://flexs.ca/help/review-rules?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flexs.ca/help/review-rules"/>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

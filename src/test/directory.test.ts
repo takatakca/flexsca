@@ -1,12 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { cleanTerm } from "@/lib/directory";
+import { cleanTerm, sourceInfo, SOURCES } from "@/lib/directory";
 import { customerReturnPath } from "@/lib/auth-navigation";
 
 const migration = readFileSync("supabase/migrations/20261118120000_business_directory.sql", "utf8");
 const importer = readFileSync("scripts/build_rbq_directory.py", "utf8");
 
 describe("business directory", () => {
+  it("credits every known source and never breaks on one it does not know yet", () => {
+    expect(sourceInfo("shb")).toBe(SOURCES.shb);
+    expect(SOURCES.shb.credit).toContain("CC0");
+    expect(sourceInfo("a_future_source")).toEqual({ credit: "public open data", register: "a public open-data source" });
+  });
+
   it("strips filter and pattern characters from search terms", () => {
     expect(cleanTerm("  plomb%erie_(mc),*  ")).toBe("plomb erie mc");
     expect(cleanTerm("a".repeat(200))).toHaveLength(60);

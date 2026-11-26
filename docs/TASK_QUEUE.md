@@ -1,36 +1,42 @@
-# FLEXS task queue — oldest unfinished blocker first
+# FLEXS task queue
 
-Updated 2026-10-16. The order can change only with a documented reason. Track each item as **done / active / blocked / queued**; passing fixture-based tests does not verify production.
+Updated 2026-11-26. One line per item, in order. **Owner** items need the owner's hands (a key, a setting, a decision); everything else can be picked up by any agent. Tick an item only when it is verified, and say how.
 
-| Priority | Status | Task | Done when |
-| --- | --- | --- | --- |
-| P0 | PR #27 (2026-11-21) | Request wizard modal must scroll: Continue unreachable at 1107×666 on /post-job/:slug | Wizard completes at 1280×600, 1366×650 and 390×700 |
-| P0 | PR #27 (2026-11-21) | /support public for logged-out visitors (today redirects to /auth/welcome pro onboarding) | Logged-out customer reaches a contact form or support@takatak.ca |
-| P0 | queued 2026-11-21 (issue #26) | Live site = main: deploy after PR #25 (live has lovable.app sitemap, no headers) | flexs.ca sitemap lists flexs.ca, security headers present |
-| P0 | queued 2026-11-21 (issue #26) | French version fr-CA (Québec; Bill 96) with language toggle and FR search synonyms | Every public page available in French |
-| P1 | queued 2026-11-21 (issue #26) | Search autocomplete, faster wizard load, Canadian wording, image alt text + broken Unsplash image, /open-in-app store links, sign-up link on login, directory clean-up | See docs/LIVE_AUDIT_2026-11-21.md items 4–15 |
-| P0 | superseded 2026-11-13 (ALKAO) | Verify FLEXS Supabase project membership and securely configure GitHub environment `production` secrets `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD` | Read-only readiness can access the *correct* project, with no credentials committed |
-| P0 | superseded 2026-11-13 (ALKAO) | Check restore point, remote migration history and required server-side secrets | `backend-readiness.py` succeeds; inspect drift and explicitly confirm backup recovery |
-| P0 | superseded 2026-11-13 (ALKAO) | Deploy existing backend SQL migrations and all four Edge Functions from `main` | GitHub backend deployment is successful, functions ACTIVE, privileged RPC checks pass |
-| P0 | blocked: access | Verify Stripe test-mode payments, Auth redirects/email, administrator bootstrap, worker schedule and tenant isolation | Real staging checks and signed acknowledgements recorded; no synthetic/live confusion |
-| P0 | blocked: hosting identification | Identify the actual frontend host, configure build delivery after backend readiness, SPA fallback, DNS and TLS | Live `flexs.ca` and deep routes serve the correct verified revision |
-| P0 | done 2026-11-13 | Backend in Supabase project ALKAO (`ysghtkallwuoodwqgkjm`): 50 migrations, 4 Edge Functions, Data API on `public`, live checks passed | Recorded in PROJECT_STATUS |
-| P0 | owner action | Set Edge Function secrets in ALKAO: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (webhook URL `https://ysghtkallwuoodwqgkjm.supabase.co/functions/v1/stripe-webhook`), later `TAKATAK_FLEXS_INTEGRATION_ID`, `TAKATAK_FLEXS_OPPORTUNITY_SECRET` | A test-mode credit purchase adds credits |
-| P0 | owner action | Custom SMTP sender for Auth email (built-in sender allows 2 emails per hour) and FLEXS-appropriate email templates | Sign-up confirmation arrives from a FLEXS address |
-| P0 | owner action | Create the first administrator: insert the owner's user id into `platform_admins` after they sign up | `/app/admin` opens for the owner |
-| P0 | code ready; owner action | Deploy the website on Coolify from the root `Dockerfile` and point flexs.ca DNS at it | flexs.ca and deep routes return the verified build over TLS |
-| P1 | Android compiles; not device-tested; iOS not built | Android and iOS apps with Capacitor (`docs/MOBILE_APPS.md`). In-app account deletion done 2026-11-13 | Signed builds tested on devices; store listings submitted |
-| P1 | deployed, switched off | AI quote drafting (`ai-assist`). Owner sets `ANTHROPIC_API_KEY` in ALKAO function secrets, then one real draft is checked by a person | A professional gets a sensible editable draft; daily limit and refusal paths confirmed with a real key |
-| P1 | owner action | TAKATAK-V1 attribution live: same `ADS_FLEXS_SERVICE_TOKEN` in `takatak-v1` hosting and ALKAO; `FLEXS_WORKER_TOKEN`, `TAKATAK_BASE_URL`; schedule `takatak-attribution-worker` | One real event accepted by TAKATAK with `{ok:true}` |
-| P1 | code pushed; current CI verification required | Bound TAKATAK signed-intake body size and test real HMAC authentication | 18 KB cap, UTF-8 rejection, eight signature and seven streaming tests pass on committed SHA and Deno typecheck is green |
-| P1 | queued | Complete GitHub issue #2: counterpart TAKATAK outbound sender and FLEXS professional lifecycle events (view/contact/respond/win/loss) | Agreed event contract; authenticated, tenant-scoped, idempotent callback outbox, retry tests and staging acceptance |
-| P1 | code complete for duplicate guard; CI green; live deploy blocked | Exact anonymous-request duplicate prevention and mailbox limit | 10-minute exact duplicate rejection and 3-per-15-minute quota passed PGlite CI #38624276910; requires real production rollout verification |
-| P1 | queued | CAPTCHA, independent spam signals and genuine phone verification | Safe server-side challenge verification, abuse controls and consent-aware phone OTP tests in staging |
-| P1 | code verified, production gated | Private service-area city/province preferences, opt-in server-side matching and RLS checks | CI #38735165455 green (78 tests + browser persistence); real Supabase deployment and staging RLS checks still needed; multi-city/radius, remote-work rules remain open |
-| P1 | code + CI green, production release blocked | Private customer attachments (PDF/JPEG/PNG) | #38944358593 passed 82 tests, browser upload/reload and Deno. Live Supabase policy acceptance, malware scan/quarantine, server file-count quotas, orphan cleanup, retention and audit remain required |
-| P2 | queued | External notification delivery, professional verification/disputes, data deletion/retention, subscriptions | Specific product requirements, migrations, permissions and integration tests |
-| P2 | partial: contact form CI green | Remaining mobile/a11y review, conversion metrics, worker alarms and representative load tests | Keyboard Enter submission, associated errors and Playwright smoke verified in CI #38624925575; other screens and monitoring remain |
+## Waiting on the owner (nothing else blocks launch)
 
-## Execution rules
+| # | Item | Done when |
+| --- | --- | --- |
+| O1 | Coolify: Build Pack **Dockerfile** (port 80, health check `/healthz`), then Deploy | `npm run check:live` passes its "host" line |
+| O2 | Stripe: `STRIPE_SECRET_KEY`, webhook, `STRIPE_WEBHOOK_SECRET` (steps in `docs/GO_LIVE_CHECKLIST.md`) | A professional buys the smallest pack and the balance goes up |
+| O3 | SMTP for sign-in emails; raise the email rate limit | A new address receives its sign-in link from a FLEXS sender |
+| O4 | Notification emails by SMTP (owner's rule: no Resend): function secrets `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` (port 465, not 587) | The queued confirmation for the first live request is delivered |
+| O5 | Twilio / MIMT: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` | One real call connects a professional and a customer |
+| O6 | Read the French text once; lawyer review of the legal pages (English and French); final wording of the professionals' terms | Owner's written OK |
+| O7 | Apple and Google developer accounts; a Mac for the iOS build; run the phone checklist in `docs/MOBILE_APPS.md` on the test APK | Store listings created; checklist result in `WORKLOG.md` |
+| O8 | Optional: `ANTHROPIC_API_KEY` (quote drafting), TAKATAK tokens, Cloudflare Turnstile key (captcha) | Each feature tested once |
 
-Choose an independent task while a P0 item is access-blocked. Avoid implementing TAKATAK lifecycle callbacks against a guessed endpoint or relaxing row-level authorization. Respect `AGENTS.md` and update `WORKLOG.md` and `AGENT_HANDOFF.md` in the same work session. Prefer CI on the specific commit before merging/deploying; document unresolved errors, do not force-push or forge successful production status.
+## Open work for agents, in order
+
+| # | Item | Done when |
+| --- | --- | --- |
+| A5b | Show the 2,470 Sherbrooke businesses once PR #31 is live (one UPDATE, in `docs/DIRECTORY.md` › Adding a source), check a page, rebuild sitemaps | A Sherbrooke business page opens on flexs.ca |
+| A6 | Service guides (Figma frame 36:869): needs articles from the owner | Blocked on content |
+| A7 | Desktop wizard frames between 19:828 and 24:5974: needs node numbers | Blocked on the scanner |
+
+## Done and verified (most recent first)
+
+- 2026-11-26 A8 Build and test tools upgraded (vite 5 → 7, vitest 3 → 5, React plugin 3 → 4, one pinned sub-dependency): `npm audit` went from 16 advisories (2 critical, 1 high, all in developer tools) to 0. Clean install, 136 tests, build, dev server and 33 browser scenarios pass. vite 8 is not used yet because the Lovable tagger plugin does not accept it.
+- 2026-11-26 SECURITY: the public views (`provider_profiles_public`, `provider_reviews_public`, `leads_safe`, `lead_last_message`) are now read-only. Before, an anonymous visitor could rename or delete professional profiles and reviews through them (proven in a rolled-back test; no profile or review existed, nothing was touched). Migration 20261126110000 applied live and re-tested as a visitor and as a member; a database test now fails if any view becomes writable again.
+- 2026-11-26 A5 Directory: Sherbrooke's open business directory (Entreprendre Sherbrooke, CC0 public domain). Importer and test in `scripts/`, licence in `docs/DIRECTORY.md`, 2,470 businesses loaded in the live database but **hidden until PR #31 is live** (the current live build crashed on them; hidden within minutes, live site checked normal).
+- 2026-11-26 A3 Customer request page: two or more quotes are shown side by side with the business name, price, availability, date and status; "Lowest price" is marked only when it is unambiguous; sort by price or date; accept, decline or message each professional from its card. Browser scenario with two quotes, French strings, checked at desktop and phone width.
+- 2026-11-26 A2 Android: release signing from an untracked key file or build secrets, version numbers on the command line, one-click "Android app build" on GitHub (test APK + bundle), phone backups off, back button closes an open form instead of leaving the page. Signed and unsigned builds verified in a cloud session with a throwaway key; **not yet run on a phone** (checklist in `docs/MOBILE_APPS.md`).
+- 2026-11-26 Notification emails switched from Resend to SMTP (owner's rule found in PR #33). Function redeployed; without the secrets it answers "not enabled" and leaves the queue alone.
+- 2026-11-26 Owner dashboard: account search (email, name, business) with credits, requests, unlocks and amount paid; request dates. Function checked on the live database as the administrator and refused without.
+- 2026-11-26 Store listing kit: `docs/store/LISTING.md` (both languages, lengths checked) and 20 screenshots at 1290 × 2796 and 1080 × 1920.
+- 2026-11-26 French pages reachable by address (`?lang=fr`), alternate-language tags, both languages in the page sitemap. Verified in a browser.
+- 2026-11-26 Coolify hosting configuration (PR #31). Tested under nginx; **not active on the live site until O1**.
+- 2026-11-26 Service matching, postal codes, town suggestions (PR #30). Verified on the live site.
+- 2026-11-21 Request wizard fits every window and advances by itself; email notifications; search engines; local photos; content security policy; intake limits; crash recovery and error log; accessibility; dependency fixes (PR #29). Wizard verified on the live site.
+- 2026-11-21 French version; calls (hidden until O5); owner overview; administrator invitation; live-audit fixes (PR #28).
+- 2026-11-21 Live database checks, rolled back: full journey, business claim, money path (`scripts/live-*-check.sql`).
+- 2026-11-21 Figma parity BRIEF 3 to 5 (PR #23). Directory of 153,164 Quebec businesses.

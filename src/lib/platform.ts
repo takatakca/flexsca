@@ -26,3 +26,17 @@ export function inAppPathFromUrl(value: string): string | null {
     return null;
   }
 }
+
+/**
+ * Android back button: when a dialog, sheet or menu is open, close it (as Escape would) instead of
+ * leaving the page underneath. Returns true when something was open.
+ */
+export function closeOpenLayer(doc: Document = document): boolean {
+  const open = doc.querySelector(
+    '[role="dialog"], [role="alertdialog"], [role="menu"][data-state="open"], [role="listbox"][data-state="open"]',
+  );
+  if (!open) return false;
+  const target = doc.activeElement && open.contains(doc.activeElement) ? doc.activeElement : open;
+  target.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", bubbles: true, cancelable: true }));
+  return true;
+}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderEmail } from "../../supabase/functions/_shared/emails";
+import { smtpSettings } from "../../supabase/functions/_shared/smtp";
 
 const lead = "11111111-2222-4333-8444-555555555555";
 
@@ -34,5 +35,20 @@ describe("notification emails", () => {
     expect(renderEmail({ kind: "something", lead_id: null, payload: {} })).toBeNull();
     expect(renderEmail({ kind: "notification", lead_id: null, payload: { title: "  " } })).toBeNull();
     expect(renderEmail({ kind: "quote_received", lead_id: "../admin", payload: {} })!.text).toContain("https://flexs.ca/my-requests\n");
+  });
+  it("reads the SMTP settings and refuses what cannot work", () => {
+    const env = (values: Record<string, string>) => (name: string) => values[name];
+    expect(smtpSettings(env({})).ok).toBe(false);
+    const good = smtpSettings(env({ SMTP_HOST: "mail.flexs.ca", SMTP_USER: "no-reply@flexs.ca", SMTP_PASSWORD: "x" }));
+    expect(good).toEqual({ ok: true, from: "FLEXS <no-reply@flexs.ca>", transport: { host: "mail.flexs.ca", port: 465, secure: true, auth: { user: "no-reply@flexs.ca", pass: "x" } } });
+    const alt = smtpSettings(env({ SMTP_HOST: "mail.flexs.ca", SMTP_USER: "u", SMTP_PASSWORD: "x", SMTP_PORT: "2525" }));
+    expect(alt.ok && alt.transport.secure).toBe(false);
+    for (const port of ["587", "25"]) {
+      const blocked = smtpSettings(env({ SMTP_HOST: "mail.flexs.ca", SMTP_USER: "u", SMTP_PASSWORD: "x", SMTP_PORT: port }));
+      expect(blocked.ok).toBe(false);
+      expect(blocked.ok === false ? blocked.reason : "").toContain("cannot be reached");
+    }
+    expect(smtpSettings(env({ SMTP_HOST: "mail.flexs.ca/evil", SMTP_USER: "u", SMTP_PASSWORD: "x" })).ok).toBe(false);
+    expect(smtpSettings(env({ SMTP_HOST: "mail.flexs.ca", SMTP_USER: "u", SMTP_PASSWORD: "x", EMAIL_FROM: "a\nBcc: b" })).ok).toBe(false);
   });
 });

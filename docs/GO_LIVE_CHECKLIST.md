@@ -27,11 +27,19 @@ Note: the Stripe account has a second webhook whose address is a Coolify setting
 
 ## 2b. Notification emails (new request, quote, updates)
 
-Built and live in the database; nothing is sent until the mail key exists. These emails do not go through Supabase's sign-in mailer, so they need their own key:
+Built and live in the database; nothing is sent until the SMTP secrets exist. By the owner's rule these emails go through **SMTP only** (no third-party mail API). They do not use Supabase's sign-in mailer settings, so the same SMTP account is entered a second time, as function secrets:
 
-1. Create an account at resend.com, add the domain `flexs.ca` and the DNS records it shows (they prove the domain is yours).
-2. Supabase › Edge Functions › Secrets: add `RESEND_API_KEY`. Optional: `EMAIL_FROM` (default `FLEXS <no-reply@flexs.ca>`).
-3. The same Resend account can serve step 2 above: Resend gives SMTP settings for Supabase's sign-in emails.
+Supabase › Edge Functions › Secrets:
+
+| Name | Value |
+| --- | --- |
+| `SMTP_HOST` | the mail server, for example `mail.flexs.ca` |
+| `SMTP_USER` | usually `no-reply@flexs.ca` |
+| `SMTP_PASSWORD` | its password |
+| `SMTP_PORT` | optional; `465` by default. **Not 587 or 25**: Supabase functions cannot reach those two ports. Use 465, or 2525 if the mail service offers it |
+| `EMAIL_FROM` | optional; `FLEXS <no-reply@flexs.ca>` by default |
+
+The DNS records of `docs/auth-emails/README.md` (SPF, DKIM, DMARC) serve both kinds of email.
 
 What is sent, each in French then English: confirmation to the customer when a request is posted; an alert to professionals whose listed service matches; a note to the customer when a quote arrives; a copy of each in-app notice. No customer contact detail or message text is ever in an email. Each person can turn the emails off in Settings.
 
@@ -52,9 +60,15 @@ Minimum password length is 8 and leaked-password protection is on (both also app
 
 The feature is built and deployed but stays hidden until three Supabase secrets exist: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` (the MIMT line, a Canadian or US number in the form +15145550100). Once they are set, an unlocked request shows **Call through FLEXS**: the service rings the professional first, then connects the customer, who sees the FLEXS number. Only Canadian and US numbers are called, premium numbers are refused, a call lasts 30 minutes at most, nothing is recorded, and each professional is limited to 3 calls per customer per hour and 40 per day. Twilio bills each call to the account that owns the keys.
 
-## 6. Keep the site up to date
+## 6. Hosting: one setting in Coolify
 
-Merge the launch pull request, then in GitHub **Settings › Secrets and variables › Actions** add `MOCHAHOST_FTP_SERVER`, `MOCHAHOST_FTP_USERNAME`, `MOCHAHOST_FTP_PASSWORD`. From then on every merge to `main` updates flexs.ca, and a check of the live site runs every morning.
+Since 2026-11-26 flexs.ca is served by Coolify (nginx) and updates by itself a few minutes after each merge to `main`. It currently uses Coolify's default static setup, so the site has **no security headers**, a missing file answers as if it existed, the hidden `.htaccess` is readable, and the sitemap does not list the business pages.
+
+Fix, once: in Coolify open the FLEXS application › **General** › **Build Pack** and choose **Dockerfile** (Dockerfile location `/Dockerfile`, port `80`, health check path `/healthz`), then **Deploy**. The repository's `Dockerfile` and `deploy/nginx.conf` then apply: security headers and content security policy on every response, real 404s, hidden files blocked, long caching for build files, and all business pages in the sitemap.
+
+`npm run check:live` (and the daily **Live site check** in GitHub) fails on the "host" line until this is done, and passes after.
+
+The Apache files (`public/.htaccess`, the FTP deploy workflow) remain for an Apache host and are not used by Coolify.
 
 ## Decisions still open
 
