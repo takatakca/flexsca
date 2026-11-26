@@ -18,7 +18,7 @@ Owner's order, 2026-11-18: every Quebec business should already have a basic pag
 | Office de la protection du consommateur, "Liste des permis et des exemptions en vigueur" (daily) | CC BY 4.0 | Imported (`opc`): vehicle dealers and recyclers, health studios, travel agents. Permits in a person's own name are left out |
 | Ministère du Tourisme, SIT Québec (13 files, daily) | CC BY 4.0 | Imported (`sit`): hotels, B&Bs, campgrounds, outfitters, restaurants, attractions, producers, transport. Parks, trails, beaches, monuments, info offices left out. The 13,751 chalets and tourist homes were added on the owner's decision (2026-11-18) under the trade "Chalets and tourist homes" |
 | Ville de Montréal, "Locaux commerciaux et statuts d'occupation" 2025 (annual) | CC BY 4.0 | Imported (`mtl_shops`) |
-| Entreprendre Sherbrooke, "Répertoire des locaux et entreprises du territoire de Sherbrooke" (Données Québec, every two years; file of 2024-10-21) | CC0 1.0, public domain: commercial use allowed, no condition (credited anyway) | Loaded (`shb`) on 2026-11-26: 2,470 businesses new to the directory, 375 already listed under the same name skipped. **Hidden (`removed`) until the build that knows `shb` is live**, see "Adding a source" |
+| Entreprendre Sherbrooke, "Répertoire des locaux et entreprises du territoire de Sherbrooke" (Données Québec, every two years; file of 2024-10-21) | CC0 1.0, public domain: commercial use allowed, no condition (credited anyway) | Loaded (`shb`) on 2026-11-26: 2,470 businesses new to the directory, 375 already listed under the same name skipped. Shown since 2026-11-26 17:22 UTC |
 | Registraire des entreprises du Québec (all enterprises) | CC BY-NC-SA 4.0, **no commercial use** | Not used. A commercial agreement with the Registraire is needed first |
 | Google Maps, Yelp, Yellow Pages, 411, RestoMontréal | Proprietary, terms forbid copying | Not used |
 | OpenStreetMap, Quebec extract | ODbL 1.0: commercial use allowed; credit "© OpenStreetMap contributors"; the `osm` rows must be shareable under ODbL on request | Imported (`osm`), every category, town found from the map position. Owner accepted the conditions on 2026-11-18. Undo: `update business_listings set status='removed' where source='osm' and status='listed'` |
@@ -92,7 +92,7 @@ Learned on 2026-11-26: rows from a source the live website did not know crashed 
 
 1. Ship the code first (source added to `SOURCES` in `src/lib/directory.ts`, French strings) and confirm it is live. Since 2026-11-26 an unknown source falls back to a neutral credit instead of crashing.
 2. Then widen the source check (migration) and run the batches.
-3. Sherbrooke rows are waiting at step 1. When PR #31 is live: `UPDATE public.business_listings SET status = 'listed', source_synced_at = now() WHERE source = 'shb' AND status = 'removed';` (no Sherbrooke business has asked to be removed), then check one page and rebuild the sitemaps.
+3. Done for Sherbrooke on 2026-11-26 once PR #31 was live, with: `UPDATE public.business_listings SET status = 'listed', source_synced_at = now() WHERE source = 'shb' AND status = 'removed';` (no Sherbrooke business has asked to be removed), then check one page and rebuild the sitemaps.
 
 ## Removal requests
 
