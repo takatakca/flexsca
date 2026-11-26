@@ -19,7 +19,6 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 | # | Item | Done when |
 | --- | --- | --- |
-| A1 | Store listing kit: texts in French and English, screenshots at the sizes both stores require | Files in `docs/store/`, screenshots taken from the built app |
 | A2 | Android: signed release build instructions and a device test checklist | `docs/MOBILE_APPS.md` updated; debug build installs |
 | A3 | Customer dashboard: compare quotes side by side | Browser scenario covers two quotes on one request |
 | A4 | Owner dashboard: list and search accounts and requests, with dates | Administrator can find a request by email or town |
@@ -29,6 +28,7 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 ## Done and verified (most recent first)
 
+- 2026-11-26 Store listing kit: `docs/store/LISTING.md` (both languages, lengths checked) and 20 screenshots at 1290 × 2796 and 1080 × 1920.
 - 2026-11-26 French pages reachable by address (`?lang=fr`), alternate-language tags, both languages in the page sitemap. Verified in a browser.
 - 2026-11-26 Coolify hosting configuration (PR #31). Tested under nginx; **not active on the live site until O1**.
 - 2026-11-26 Service matching, postal codes, town suggestions (PR #30). Verified on the live site.
