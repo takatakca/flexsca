@@ -1953,7 +1953,14 @@
   "Since": "Depuis",
   "Paid": "Payé",
   "Frozen": "Gelé",
-  "Date": "Date"
+  "Date": "Date",
+  "Write to us at": "Écrivez-nous à",
+  ". We answer in French or English.": ". Nous répondons en français ou en anglais.",
+  "Already have an account?": "Vous avez déjà un compte?",
+  "to open a support ticket and follow its replies.": "pour ouvrir une demande d'assistance et suivre les réponses.",
+  "New to FLEXS?": "Nouveau sur FLEXS?",
+  "to create your account, or": "pour créer votre compte, ou",
+  "join as a professional": "inscrivez-vous comme professionnel"
  },
  "patterns": [
   [
