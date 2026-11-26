@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { loadCities, matchCities } from "@/lib/location";
 import { servicePhoto } from "@/lib/service-photo";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -151,6 +152,10 @@ export default function ServiceFlowModal({
 
   // While the wizard is open the page behind it does not scroll.
   useEffect(() => { const previous = document.body.style.overflow; document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = previous; }; }, []);
+  // Quebec towns suggested while the customer types where the work is.
+  const [towns, setTowns] = useState<string[]>([]);
+  useEffect(() => { let active = true; void loadCities().then(list => { if (active) setTowns(list); }); return () => { active = false; }; }, []);
+  const townSuggestions = step === "location-step" ? matchCities(towns, location) : [];
   const advancing = useRef<number | null>(null);
   useEffect(() => () => { if (advancing.current) window.clearTimeout(advancing.current); }, []);
   const handleRadioSelect = (value: string) => {
@@ -612,8 +617,13 @@ export default function ServiceFlowModal({
     <p className="mb-5 mt-2 text-center text-sm leading-6 text-fx-secondary">{`The postal code or town for the address where you want the ${categoryName}.`}</p>
     <div className="relative">
       <MapPin className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-fx-ink" aria-hidden="true" />
-      <input type="text" aria-label="Postal code or town" value={location} onChange={e => setLocation(e.target.value)} maxLength={120} placeholder="Enter postal code or city" className={cn(stepField, "pl-11")} autoFocus />
+      <input type="text" aria-label="Postal code or town" value={location} onChange={e => setLocation(e.target.value)} maxLength={120} placeholder="Enter postal code or city" className={cn(stepField, "pl-11")} autoFocus autoComplete="off" role="combobox" aria-expanded={townSuggestions.length > 0} aria-controls="request-town-suggestions" aria-autocomplete="list" />
     </div>
+    {townSuggestions.length > 0 && (
+      <ul id="request-town-suggestions" role="listbox" aria-label="Matching towns" className="mt-2 overflow-hidden rounded-fx-xs border border-fx-line bg-white">
+        {townSuggestions.map(town => <li key={town} role="option" aria-selected="false"><button type="button" translate="no" onClick={() => setLocation(town)} className="block w-full px-4 py-2.5 text-left text-base text-fx-ink hover:bg-fx-soft focus-visible:bg-fx-soft focus-visible:outline-none">{town}</button></li>)}
+      </ul>
+    )}
   </>, { onBack: questions.length > 0 ? () => { setCurrentQ(questions.length - 1); setStep("questionnaire"); } : undefined, onNext: () => setStep("loading-contact"), canContinue: !!location.trim() });
 
   const renderMatchesFound = () => stepCard("matches-found", <div className="text-center">
