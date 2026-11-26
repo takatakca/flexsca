@@ -27,11 +27,19 @@ Note: the Stripe account has a second webhook whose address is a Coolify setting
 
 ## 2b. Notification emails (new request, quote, updates)
 
-Built and live in the database; nothing is sent until the mail key exists. These emails do not go through Supabase's sign-in mailer, so they need their own key:
+Built and live in the database; nothing is sent until the SMTP secrets exist. By the owner's rule these emails go through **SMTP only** (no third-party mail API). They do not use Supabase's sign-in mailer settings, so the same SMTP account is entered a second time, as function secrets:
 
-1. Create an account at resend.com, add the domain `flexs.ca` and the DNS records it shows (they prove the domain is yours).
-2. Supabase › Edge Functions › Secrets: add `RESEND_API_KEY`. Optional: `EMAIL_FROM` (default `FLEXS <no-reply@flexs.ca>`).
-3. The same Resend account can serve step 2 above: Resend gives SMTP settings for Supabase's sign-in emails.
+Supabase › Edge Functions › Secrets:
+
+| Name | Value |
+| --- | --- |
+| `SMTP_HOST` | the mail server, for example `mail.flexs.ca` |
+| `SMTP_USER` | usually `no-reply@flexs.ca` |
+| `SMTP_PASSWORD` | its password |
+| `SMTP_PORT` | optional; `465` by default. **Not 587 or 25**: Supabase functions cannot reach those two ports. Use 465, or 2525 if the mail service offers it |
+| `EMAIL_FROM` | optional; `FLEXS <no-reply@flexs.ca>` by default |
+
+The DNS records of `docs/auth-emails/README.md` (SPF, DKIM, DMARC) serve both kinds of email.
 
 What is sent, each in French then English: confirmation to the customer when a request is posted; an alert to professionals whose listed service matches; a note to the customer when a quote arrives; a copy of each in-app notice. No customer contact detail or message text is ever in an email. Each person can turn the emails off in Settings.
 

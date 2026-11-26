@@ -9,7 +9,7 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 | O1 | Coolify: Build Pack **Dockerfile** (port 80, health check `/healthz`), then Deploy | `npm run check:live` passes its "host" line |
 | O2 | Stripe: `STRIPE_SECRET_KEY`, webhook, `STRIPE_WEBHOOK_SECRET` (steps in `docs/GO_LIVE_CHECKLIST.md`) | A professional buys the smallest pack and the balance goes up |
 | O3 | SMTP for sign-in emails; raise the email rate limit | A new address receives its sign-in link from a FLEXS sender |
-| O4 | Resend: domain `flexs.ca`, `RESEND_API_KEY` | The queued confirmation for the first live request is delivered |
+| O4 | Notification emails by SMTP (owner's rule: no Resend): function secrets `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` (port 465, not 587) | The queued confirmation for the first live request is delivered |
 | O5 | Twilio / MIMT: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` | One real call connects a professional and a customer |
 | O6 | Read the French text once; lawyer review of the legal pages (English and French); final wording of the professionals' terms | Owner's written OK |
 | O7 | Apple and Google developer accounts; a Mac for the iOS build | Store listings created |
@@ -27,6 +27,7 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 ## Done and verified (most recent first)
 
+- 2026-11-26 Notification emails switched from Resend to SMTP (owner's rule found in PR #33). Function redeployed; without the secrets it answers "not enabled" and leaves the queue alone.
 - 2026-11-26 Owner dashboard: account search (email, name, business) with credits, requests, unlocks and amount paid; request dates. Function checked on the live database as the administrator and refused without.
 - 2026-11-26 Store listing kit: `docs/store/LISTING.md` (both languages, lengths checked) and 20 screenshots at 1290 × 2796 and 1080 × 1920.
 - 2026-11-26 French pages reachable by address (`?lang=fr`), alternate-language tags, both languages in the page sitemap. Verified in a browser.
