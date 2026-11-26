@@ -203,6 +203,12 @@ try {
   console.log('PASS responsive homepage navigation and service/location preserved through the questionnaire');
   await postDialog.getByRole('button',{name:'Continue',exact:true}).click();
   await postDialog.getByRole('heading',{name:'Your request is nearly ready.',exact:true}).waitFor();
+  // Escape (the Android back button in the store app) asks before leaving instead of losing the answers.
+  await page.keyboard.press('Escape');
+  await postDialog.getByRole('button',{name:'Quit',exact:true}).waitFor();
+  await postDialog.getByRole('button',{name:'Continue',exact:true}).click();
+  await postDialog.getByRole('heading',{name:'Your request is nearly ready.',exact:true}).waitFor();
+  console.log('PASS Escape in the request form asks before leaving and returns to the same step');
   await postDialog.getByRole('button',{name:'Continue',exact:true}).click();
   await postDialog.getByPlaceholder('Email address',{exact:true}).fill('customer@example.test');
   await postDialog.getByPlaceholder('Email address',{exact:true}).press('Enter');

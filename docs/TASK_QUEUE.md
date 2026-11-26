@@ -12,14 +12,13 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 | O4 | Notification emails by SMTP (owner's rule: no Resend): function secrets `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` (port 465, not 587) | The queued confirmation for the first live request is delivered |
 | O5 | Twilio / MIMT: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` | One real call connects a professional and a customer |
 | O6 | Read the French text once; lawyer review of the legal pages (English and French); final wording of the professionals' terms | Owner's written OK |
-| O7 | Apple and Google developer accounts; a Mac for the iOS build | Store listings created |
+| O7 | Apple and Google developer accounts; a Mac for the iOS build; run the phone checklist in `docs/MOBILE_APPS.md` on the test APK | Store listings created; checklist result in `WORKLOG.md` |
 | O8 | Optional: `ANTHROPIC_API_KEY` (quote drafting), TAKATAK tokens, Cloudflare Turnstile key (captcha) | Each feature tested once |
 
 ## Open work for agents, in order
 
 | # | Item | Done when |
 | --- | --- | --- |
-| A2 | Android: signed release build instructions and a device test checklist | `docs/MOBILE_APPS.md` updated; debug build installs |
 | A3 | Customer dashboard: compare quotes side by side | Browser scenario covers two quotes on one request |
 | A5 | Directory: one more open-data source outside Montréal (Québec City, Gatineau or Laval), CC BY or compatible only | Importer script, licence recorded in `docs/DIRECTORY.md` |
 | A6 | Service guides (Figma frame 36:869): needs articles from the owner | Blocked on content |
@@ -27,6 +26,7 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 ## Done and verified (most recent first)
 
+- 2026-11-26 A2 Android: release signing from an untracked key file or build secrets, version numbers on the command line, one-click "Android app build" on GitHub (test APK + bundle), phone backups off, back button closes an open form instead of leaving the page. Signed and unsigned builds verified in a cloud session with a throwaway key; **not yet run on a phone** (checklist in `docs/MOBILE_APPS.md`).
 - 2026-11-26 Notification emails switched from Resend to SMTP (owner's rule found in PR #33). Function redeployed; without the secrets it answers "not enabled" and leaves the queue alone.
 - 2026-11-26 Owner dashboard: account search (email, name, business) with credits, requests, unlocks and amount paid; request dates. Function checked on the live database as the administrator and refused without.
 - 2026-11-26 Store listing kit: `docs/store/LISTING.md` (both languages, lengths checked) and 20 screenshots at 1290 × 2796 and 1080 × 1920.
