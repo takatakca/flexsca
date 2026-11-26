@@ -20,12 +20,12 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 | # | Item | Done when |
 | --- | --- | --- |
 | A5b | Show the 2,470 Sherbrooke businesses once PR #31 is live (one UPDATE, in `docs/DIRECTORY.md` › Adding a source), check a page, rebuild sitemaps | A Sherbrooke business page opens on flexs.ca |
-| A8 | Upgrade the build and test tools (vite 5, vitest 3) to their current major versions: `npm audit` lists 16 advisories, all in developer tools (2 critical in the test runner's worker pool); `npm audit fix` without the major upgrade makes no progress. Nothing in the list is shipped to visitors | `npm audit` clean or only items with no fix; tests, build and browser scenarios pass |
 | A6 | Service guides (Figma frame 36:869): needs articles from the owner | Blocked on content |
 | A7 | Desktop wizard frames between 19:828 and 24:5974: needs node numbers | Blocked on the scanner |
 
 ## Done and verified (most recent first)
 
+- 2026-11-26 A8 Build and test tools upgraded (vite 5 → 7, vitest 3 → 5, React plugin 3 → 4, one pinned sub-dependency): `npm audit` went from 16 advisories (2 critical, 1 high, all in developer tools) to 0. Clean install, 136 tests, build, dev server and 33 browser scenarios pass. vite 8 is not used yet because the Lovable tagger plugin does not accept it.
 - 2026-11-26 SECURITY: the public views (`provider_profiles_public`, `provider_reviews_public`, `leads_safe`, `lead_last_message`) are now read-only. Before, an anonymous visitor could rename or delete professional profiles and reviews through them (proven in a rolled-back test; no profile or review existed, nothing was touched). Migration 20261126110000 applied live and re-tested as a visitor and as a member; a database test now fails if any view becomes writable again.
 - 2026-11-26 A5 Directory: Sherbrooke's open business directory (Entreprendre Sherbrooke, CC0 public domain). Importer and test in `scripts/`, licence in `docs/DIRECTORY.md`, 2,470 businesses loaded in the live database but **hidden until PR #31 is live** (the current live build crashed on them; hidden within minutes, live site checked normal).
 - 2026-11-26 A3 Customer request page: two or more quotes are shown side by side with the business name, price, availability, date and status; "Lowest price" is marked only when it is unambiguous; sort by price or date; accept, decline or message each professional from its card. Browser scenario with two quotes, French strings, checked at desktop and phone width.
