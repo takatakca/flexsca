@@ -21,6 +21,9 @@ let providerProfile={user_id:userId,company_name:'Fixture Cleaning',company_size
   service_area_province:null,match_service_area_only:false};
 const integrationEventId="abababab-abab-4bab-8bab-abababababab";
 let unlocked = false, quoteStatus = "sent";
+// Two professionals quoting on one request, switched on only for the comparison scenario.
+let compareQuotes = false; const compareStatus = { q1: "sent", q2: "sent" };
+const proA = "aaaaaaa1-aaaa-4aaa-8aaa-aaaaaaaaaaa1", proB = "bbbbbbb2-bbbb-4bbb-8bbb-bbbbbbbbbbb2";
 let searches = [], failSearch = false, customerMany=false, failCustomerRequest=false;
 let privateAttachments = [];
 const storedPrivateObjects = new Set();
@@ -89,7 +92,11 @@ await page.route('**/rest/v1/**', async route => {
   if (path === 'customer_review_status') body=quoteStatus==='accepted' ? {providerId:userId,companyName:'Fixture Cleaning',review:publishedReview ? {id:'ffffffff-ffff-4fff-8fff-ffffffffffff',rating:publishedReview.p_rating,text:publishedReview.p_text} : null} : null;
   if (path === 'submit_customer_review') { publishedReview=route.request().postDataJSON(); body='ffffffff-ffff-4fff-8fff-ffffffffffff'; }
   if (path === 'responses') body=sentQuote ? [{id:'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',lead_id:leadId,pro_id:userId,message:sentQuote.p_message,price_min:sentQuote.p_price_min,price_max:sentQuote.p_price_max,availability:null,status:quoteStatus,created_at:new Date().toISOString()}] : [];
-  if (path === 'decide_quote') { quoteStatus=route.request().postDataJSON().p_decision; body=true; }
+  if (path === 'decide_quote') { const sent=route.request().postDataJSON(); if (compareQuotes) compareStatus[sent.p_quote_id]=sent.p_decision; else quoteStatus=sent.p_decision; body=true; }
+  if (path === 'responses' && compareQuotes) body=[
+    {id:'q1',lead_id:leadId,pro_id:proA,message:'Two cleaners, supplies included',price_min:320,price_max:380,availability:'this_week',status:compareStatus.q1,created_at:new Date(Date.now()-3600e3).toISOString()},
+    {id:'q2',lead_id:leadId,pro_id:proB,message:'One cleaner, half a day',price_min:240,price_max:null,availability:'tomorrow',status:compareStatus.q2,created_at:new Date(Date.now()-7200e3).toISOString()},
+  ];
   if (path === 'create_follow_up') {
     const input=route.request().postDataJSON();
     followUps.push({id:'99999999-9999-4999-8999-999999999999',lead_id:input.p_lead_id,remind_at:input.p_remind_at,note:input.p_note,status:'open',created_at:new Date().toISOString(),request_id:input.p_request_id});
@@ -162,7 +169,7 @@ await page.route('**/rest/v1/**', async route => {
       total=records.length;const offset=Number(url.searchParams.get('offset') ?? 0),limit=Number(url.searchParams.get('limit') ?? total);body=records.slice(offset,offset+limit);
     }
   }
-  if (path === 'customer_request_providers') body = [];
+  if (path === 'customer_request_providers') body = compareQuotes ? [{user_id:proA,company_name:'Alpha Cleaning',profile_photo_url:null,contacted_at:new Date().toISOString()},{user_id:proB,company_name:'Budget Cleaners',profile_photo_url:null,contacted_at:new Date().toISOString()}] : [];
   await route.fulfill({ status:200, json:body, headers:{'access-control-allow-origin':'*', 'access-control-expose-headers':'content-range', ...(total !== undefined ? {'content-range':`0-0/${total}`} : {})} });
 });
 try {
@@ -383,6 +390,38 @@ try {
   await page.reload();
   await page.getByRole('button',{name:'Download project-plan.pdf',exact:true}).waitFor();
   console.log('PASS private request attachment upload and owner listing persist after browser reload');
+  // Two quotes on one request: side by side, cheapest first, each named, decisions per professional.
+  compareQuotes = true;
+  await page.reload();
+  const sideBySide = page.getByRole('list',{name:'Quotes side by side'});
+  await sideBySide.waitFor();
+  const cards = sideBySide.getByRole('listitem');
+  assert.equal(await cards.count(),2);
+  assert.match(await cards.nth(0).innerText(),/Budget Cleaners[\s\S]*\$240\.00[\s\S]*Lowest price[\s\S]*Tomorrow/);
+  assert.match(await cards.nth(1).innerText(),/Alpha Cleaning[\s\S]*\$320\.00 – \$380\.00[\s\S]*This week/);
+  assert.doesNotMatch(await cards.nth(1).innerText(),/Lowest price/);
+  if (process.env.COMPARE_SHOTS) {
+    const size = page.viewportSize();
+    await sideBySide.scrollIntoViewIfNeeded();
+    await page.screenshot({path:`${process.env.COMPARE_SHOTS}/compare-desktop.png`});
+    await page.setViewportSize({width:390,height:844});
+    await sideBySide.scrollIntoViewIfNeeded();
+    await page.screenshot({path:`${process.env.COMPARE_SHOTS}/compare-phone.png`});
+    await page.setViewportSize(size);
+  }
+  await page.getByRole('button',{name:'Newest first',exact:true}).click();
+  assert.match(await cards.nth(0).innerText(),/Alpha Cleaning/);
+  await cards.nth(1).getByRole('button',{name:'Message',exact:true}).click();
+  assert.equal(await page.getByRole('button',{name:/^Budget Cleaners/}).getAttribute('aria-pressed'),'true');
+  await page.getByRole('button',{name:'Decline quote from Budget Cleaners',exact:true}).click();
+  await sideBySide.getByText('declined',{exact:true}).waitFor();
+  assert.equal(compareStatus.q2,'declined'); assert.equal(compareStatus.q1,'sent');
+  assert.equal(await sideBySide.getByText('Lowest price',{exact:true}).count(),0);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  assert.ok(overflow <= 1, `comparison overflows the page by ${overflow}px`);
+  console.log('PASS customer compares two quotes side by side: names, prices, lowest price, sorting, message and decline per professional');
+  compareQuotes = false;
+  await page.reload();
   await page.getByRole('button',{name:'Accept quote',exact:true}).click();
   await page.getByText('accepted',{exact:true}).waitFor();
   console.log('PASS customer quote acceptance refreshes status');

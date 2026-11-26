@@ -19,13 +19,13 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 | # | Item | Done when |
 | --- | --- | --- |
-| A3 | Customer dashboard: compare quotes side by side | Browser scenario covers two quotes on one request |
 | A5 | Directory: one more open-data source outside Montréal (Québec City, Gatineau or Laval), CC BY or compatible only | Importer script, licence recorded in `docs/DIRECTORY.md` |
 | A6 | Service guides (Figma frame 36:869): needs articles from the owner | Blocked on content |
 | A7 | Desktop wizard frames between 19:828 and 24:5974: needs node numbers | Blocked on the scanner |
 
 ## Done and verified (most recent first)
 
+- 2026-11-26 A3 Customer request page: two or more quotes are shown side by side with the business name, price, availability, date and status; "Lowest price" is marked only when it is unambiguous; sort by price or date; accept, decline or message each professional from its card. Browser scenario with two quotes, French strings, checked at desktop and phone width.
 - 2026-11-26 A2 Android: release signing from an untracked key file or build secrets, version numbers on the command line, one-click "Android app build" on GitHub (test APK + bundle), phone backups off, back button closes an open form instead of leaving the page. Signed and unsigned builds verified in a cloud session with a throwaway key; **not yet run on a phone** (checklist in `docs/MOBILE_APPS.md`).
 - 2026-11-26 Notification emails switched from Resend to SMTP (owner's rule found in PR #33). Function redeployed; without the secrets it answers "not enabled" and leaves the queue alone.
 - 2026-11-26 Owner dashboard: account search (email, name, business) with credits, requests, unlocks and amount paid; request dates. Function checked on the live database as the administrator and refused without.

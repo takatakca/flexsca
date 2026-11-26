@@ -1960,7 +1960,17 @@
   "to open a support ticket and follow its replies.": "pour ouvrir une demande d'assistance et suivre les réponses.",
   "New to FLEXS?": "Nouveau sur FLEXS?",
   "to create your account, or": "pour créer votre compte, ou",
-  "join as a professional": "inscrivez-vous comme professionnel"
+  "join as a professional": "inscrivez-vous comme professionnel",
+  "Lowest price first": "Le plus bas prix d'abord",
+  "Lowest price": "Prix le plus bas",
+  "Availability": "Disponibilité",
+  "Received": "Reçue",
+  "Message": "Écrire",
+  "Not specified": "Non précisée",
+  "To be arranged": "À convenir",
+  "declined": "refusée",
+  "Professional": "Professionnel",
+  "Quotes side by side": "Soumissions côte à côte"
  },
  "patterns": [
   [
@@ -2198,6 +2208,26 @@
   [
    "^(.+): (.+) in (.+), Quebec\\. Business listing in the FLEXS directory\\.$",
    "$1 : $l2 à $3, Québec. Fiche d'entreprise dans le répertoire FLEXS."
+  ],
+  [
+   "^(\\d+) quotes$",
+   "$1 soumissions"
+  ],
+  [
+   "^Quote from (.+)$",
+   "Soumission de $1"
+  ],
+  [
+   "^Accept quote from (.+)$",
+   "Accepter la soumission de $1"
+  ],
+  [
+   "^Decline quote from (.+)$",
+   "Refuser la soumission de $1"
+  ],
+  [
+   "^Up to (\\$[\\d.,\\s]+)$",
+   "Jusqu'à $1"
   ],
   [
    "^(.+) \\| FLEXS$",
