@@ -21,13 +21,13 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 | --- | --- | --- |
 | A2 | Android: signed release build instructions and a device test checklist | `docs/MOBILE_APPS.md` updated; debug build installs |
 | A3 | Customer dashboard: compare quotes side by side | Browser scenario covers two quotes on one request |
-| A4 | Owner dashboard: list and search accounts and requests, with dates | Administrator can find a request by email or town |
 | A5 | Directory: one more open-data source outside Montréal (Québec City, Gatineau or Laval), CC BY or compatible only | Importer script, licence recorded in `docs/DIRECTORY.md` |
 | A6 | Service guides (Figma frame 36:869): needs articles from the owner | Blocked on content |
 | A7 | Desktop wizard frames between 19:828 and 24:5974: needs node numbers | Blocked on the scanner |
 
 ## Done and verified (most recent first)
 
+- 2026-11-26 Owner dashboard: account search (email, name, business) with credits, requests, unlocks and amount paid; request dates. Function checked on the live database as the administrator and refused without.
 - 2026-11-26 Store listing kit: `docs/store/LISTING.md` (both languages, lengths checked) and 20 screenshots at 1290 × 2796 and 1080 × 1920.
 - 2026-11-26 French pages reachable by address (`?lang=fr`), alternate-language tags, both languages in the page sitemap. Verified in a browser.
 - 2026-11-26 Coolify hosting configuration (PR #31). Tested under nginx; **not active on the live site until O1**.

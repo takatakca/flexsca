@@ -1941,7 +1941,19 @@
   "Choose a service from the list to receive its requests. A title of your own is shown on your profile only.": "Choisissez un service dans la liste pour recevoir ses demandes. Un titre de votre choix apparaît seulement sur votre profil.",
   "Add the services you offer, chosen from the FLEXS list. Your request feed and your email alerts follow these services.": "Ajoutez les services que vous offrez, choisis dans la liste FLEXS. Votre fil de demandes et vos alertes par courriel suivent ces services.",
   "Describe your project and get quotes from local professionals across Quebec. Browse the business directory, or join FLEXS as a professional.": "Décrivez votre projet et recevez des soumissions de professionnels locaux partout au Québec. Parcourez le répertoire d'entreprises ou joignez-vous à FLEXS comme professionnel.",
-  "Directory of Quebec businesses: restaurants, shops, hotels, garages, services and licensed contractors across the province. Find one near you or claim your own business for free.": "Répertoire des entreprises du Québec : restaurants, commerces, hôtels, garages, services et entrepreneurs titulaires d'une licence partout dans la province. Trouvez-en une près de chez vous ou réclamez gratuitement votre entreprise."
+  "Directory of Quebec businesses: restaurants, shops, hotels, garages, services and licensed contractors across the province. Find one near you or claim your own business for free.": "Répertoire des entreprises du Québec : restaurants, commerces, hôtels, garages, services et entrepreneurs titulaires d'une licence partout dans la province. Trouvez-en une près de chez vous ou réclamez gratuitement votre entreprise.",
+  "Search accounts": "Rechercher des comptes",
+  "Email, name or business": "Courriel, nom ou entreprise",
+  "Show latest": "Voir les plus récents",
+  "Loading accounts…": "Chargement des comptes…",
+  "Unable to load accounts.": "Impossible de charger les comptes.",
+  "Retry accounts": "Recharger les comptes",
+  "No account matches.": "Aucun compte ne correspond.",
+  "Account": "Compte",
+  "Since": "Depuis",
+  "Paid": "Payé",
+  "Frozen": "Gelé",
+  "Date": "Date"
  },
  "patterns": [
   [
