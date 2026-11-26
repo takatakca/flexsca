@@ -1934,7 +1934,8 @@
   "Unable to load the error log.": "Impossible de charger le journal des erreurs.",
   "Retry error log": "Recharger le journal des erreurs",
   "No error recorded.": "Aucune erreur enregistrée.",
-  "Technical details": "Détails techniques"
+  "Technical details": "Détails techniques",
+  "Matching towns": "Villes correspondantes"
  },
  "patterns": [
   [

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
+import { parseLocation } from '@/lib/location';
 
 export type AnswerValue = string | string[];
 export const contactSchema = z.object({
@@ -25,10 +26,10 @@ export function currentAttribution(): string | null {
 }
 export async function submitLead(category: string, form: z.infer<typeof contactSchema>, answers: Record<string, AnswerValue>, urgent = false) {
   const clean = contactSchema.parse(form);
-  const [city, postal] = clean.location.split(',').map(v => v.trim());
+  const place = parseLocation(clean.location);
   const isUrgent = urgent || Object.values(answers).flat().some(v => /emergency|asap|as soon as possible/i.test(v));
   const { data, error } = await supabase.rpc('submit_lead', {
-    p_category: category, p_location_text: clean.location, p_city: city || null, p_postal_code: postal || null,
+    p_category: category, p_location_text: place.text, p_city: place.city, p_postal_code: place.postalCode,
     p_customer_name: clean.name, p_customer_email: clean.email, p_customer_phone: clean.phone || null,
     p_details: clean.details || null, p_answers: answers, p_is_urgent: isUrgent, p_attribution_id: currentAttribution(),
   });
