@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { getLanguage, translate } from "@/lib/i18n";
 
 const SITE = "https://flexs.ca";
 
@@ -16,13 +17,19 @@ export function useSeo({ description, path, data }: { description?: string; path
   const json = data ? JSON.stringify(data) : "";
   useEffect(() => {
     if (description) {
-      const text = description.replace(/\s+/g, " ").trim().slice(0, 300);
+      // In French the description is translated like the rest of the page.
+      const text = translate(description.replace(/\s+/g, " ").trim()).slice(0, 300);
       setMeta('meta[name="description"]', () => Object.assign(document.createElement("meta"), { name: "description" }), "content", text);
       setMeta('meta[property="og:description"]', () => { const m = document.createElement("meta"); m.setAttribute("property", "og:description"); return m; }, "content", text);
     }
     if (path) {
-      const url = SITE + path;
+      // Each page exists in two languages: the plain address (English) and the same address with ?lang=fr.
+      const french = `${SITE}${path}${path.includes("?") ? "&" : "?"}lang=fr`;
+      const url = getLanguage() === "fr" ? french : SITE + path;
       setMeta('link[rel="canonical"]', () => Object.assign(document.createElement("link"), { rel: "canonical" }), "href", url);
+      for (const [code, href] of [["en-CA", SITE + path], ["fr-CA", french], ["x-default", SITE + path]]) {
+        setMeta(`link[rel="alternate"][hreflang="${code}"]`, () => Object.assign(document.createElement("link"), { rel: "alternate", hreflang: code }), "href", href);
+      }
       setMeta('meta[property="og:url"]', () => { const m = document.createElement("meta"); m.setAttribute("property", "og:url"); return m; }, "content", url);
     }
     if (!json) return;

@@ -1939,7 +1939,9 @@
   "Start typing: plumbing, ménage, peinture…": "Commencez à écrire : plomberie, ménage, peinture…",
   "This is a FLEXS service: you will be shown and emailed its new requests.": "C'est un service FLEXS : ses nouvelles demandes vous seront montrées et envoyées par courriel.",
   "Choose a service from the list to receive its requests. A title of your own is shown on your profile only.": "Choisissez un service dans la liste pour recevoir ses demandes. Un titre de votre choix apparaît seulement sur votre profil.",
-  "Add the services you offer, chosen from the FLEXS list. Your request feed and your email alerts follow these services.": "Ajoutez les services que vous offrez, choisis dans la liste FLEXS. Votre fil de demandes et vos alertes par courriel suivent ces services."
+  "Add the services you offer, chosen from the FLEXS list. Your request feed and your email alerts follow these services.": "Ajoutez les services que vous offrez, choisis dans la liste FLEXS. Votre fil de demandes et vos alertes par courriel suivent ces services.",
+  "Describe your project and get quotes from local professionals across Quebec. Browse the business directory, or join FLEXS as a professional.": "Décrivez votre projet et recevez des soumissions de professionnels locaux partout au Québec. Parcourez le répertoire d'entreprises ou joignez-vous à FLEXS comme professionnel.",
+  "Directory of Quebec businesses: restaurants, shops, hotels, garages, services and licensed contractors across the province. Find one near you or claim your own business for free.": "Répertoire des entreprises du Québec : restaurants, commerces, hôtels, garages, services et entrepreneurs titulaires d'une licence partout dans la province. Trouvez-en une près de chez vous ou réclamez gratuitement votre entreprise."
  },
  "patterns": [
   [
@@ -2169,6 +2171,14 @@
   [
    "^We need to confirm that you represent (.+)\\. You will get a notification when it is decided\\.?(.*)$",
    "Nous devons confirmer que vous représentez $1. Vous recevrez une notification lorsque la décision sera prise.$2"
+  ],
+  [
+   "^Get quotes from (.+) professionals near you in Quebec\\. Describe your project once on FLEXS; posting a request is free\\.$",
+   "Obtenez des soumissions de professionnels en $l1 près de chez vous au Québec. Décrivez votre projet une seule fois sur FLEXS; publier une demande est gratuit."
+  ],
+  [
+   "^(.+): (.+) in (.+), Quebec\\. Business listing in the FLEXS directory\\.$",
+   "$1 : $l2 à $3, Québec. Fiche d'entreprise dans le répertoire FLEXS."
   ],
   [
    "^(.+) \\| FLEXS$",

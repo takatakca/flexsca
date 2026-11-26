@@ -22,7 +22,17 @@ const translatedText = new WeakMap<Node, string>();
 const missing = new Set<string>();
 let french = new Set<string>();
 
+/** `?lang=fr` or `?lang=en` in the address: used by search engines and shared links, and remembered. */
+function languageFromAddress(): Language | null {
+  try {
+    const value = new URLSearchParams(window.location.search).get("lang");
+    return value === "fr" || value === "en" ? value : null;
+  } catch { return null; }
+}
+
 export function getLanguage(): Language {
+  const asked = languageFromAddress();
+  if (asked) { try { window.localStorage.setItem(STORAGE_KEY, asked); } catch { /* the address still decides for this page */ } return asked; }
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (saved === "fr" || saved === "en") return saved;
@@ -33,6 +43,9 @@ export function getLanguage(): Language {
 /** Saves the choice and reloads, so every screen starts again in the chosen language. */
 export function setLanguage(language: Language) {
   try { window.localStorage.setItem(STORAGE_KEY, language); } catch { /* the choice then lasts for this page only */ }
+  // The address must not keep asking for the other language.
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("lang")) { url.searchParams.delete("lang"); window.location.replace(url.toString()); return; }
   window.location.reload();
 }
 
