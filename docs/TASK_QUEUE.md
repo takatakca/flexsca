@@ -20,6 +20,7 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 | # | Item | Done when |
 | --- | --- | --- |
 | A5b | Show the 2,470 Sherbrooke businesses once PR #31 is live (one UPDATE, in `docs/DIRECTORY.md` › Adding a source), check a page, rebuild sitemaps | A Sherbrooke business page opens on flexs.ca |
+| A8 | Upgrade the build and test tools (vite 5, vitest 3) to their current major versions: `npm audit` lists 16 advisories, all in developer tools (2 critical in the test runner's worker pool); `npm audit fix` without the major upgrade makes no progress. Nothing in the list is shipped to visitors | `npm audit` clean or only items with no fix; tests, build and browser scenarios pass |
 | A6 | Service guides (Figma frame 36:869): needs articles from the owner | Blocked on content |
 | A7 | Desktop wizard frames between 19:828 and 24:5974: needs node numbers | Blocked on the scanner |
 
