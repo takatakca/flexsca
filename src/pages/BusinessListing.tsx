@@ -6,7 +6,7 @@ import { BadgeCheck, MapPin, ShieldCheck, Wrench } from "lucide-react";
 import SiteHeader from "@/components/fx/SiteHeader";
 import SiteFooter from "@/components/fx/SiteFooter";
 import { Button } from "@/components/ui/button";
-import { SOURCES, getListing, getTrialTerms, quotable } from "@/lib/directory";
+import { sourceInfo, getListing, getTrialTerms, quotable } from "@/lib/directory";
 
 /** One business from the directory. Shows what the public register shows; never a phone, email or address. */
 export default function BusinessListing() {
@@ -50,10 +50,10 @@ export default function BusinessListing() {
               ? <p className="mt-6 flex items-center gap-2 text-success"><BadgeCheck className="size-5" aria-hidden="true" />This business is on FLEXS.</p>
               : <section className="mt-6 rounded-fx-md bg-fx-soft p-5">
                   <h2 className="text-xl text-fx-ink">Is this your business?</h2>
-                  <p className="mt-2 text-fx-secondary">This listing comes from {SOURCES[listing.source].register} and has not been claimed. Claiming is free. Claim it to add your details, receive customer requests and reply to them{terms ? `, with a ${terms.trial_days}-day free trial${terms.trial_credits ? ` and ${terms.trial_credits} credits` : ""}` : ""}.</p>
+                  <p className="mt-2 text-fx-secondary">This listing comes from {sourceInfo(listing.source).register} and has not been claimed. Claiming is free. Claim it to add your details, receive customer requests and reply to them{terms ? `, with a ${terms.trial_days}-day free trial${terms.trial_credits ? ` and ${terms.trial_credits} credits` : ""}` : ""}.</p>
                   <Button asChild variant="outline" className="mt-4 h-[50px] rounded-fx-xs px-6 text-base"><Link to={`/business/${listing.slug}/claim`}>Claim this business</Link></Button>
                 </section>}
-            <p className="mt-10 text-xs text-fx-muted">Source: {SOURCES[listing.source].credit}. FLEXS is not affiliated with the source and does not verify unclaimed businesses. To correct or remove this listing, <Link to="/support" className="underline">contact us</Link>.</p>
+            <p className="mt-10 text-xs text-fx-muted">Source: {sourceInfo(listing.source).credit}. FLEXS is not affiliated with the source and does not verify unclaimed businesses. To correct or remove this listing, <Link to="/support" className="underline">contact us</Link>.</p>
           </>}
       </main>
       <SiteFooter />

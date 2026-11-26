@@ -1564,7 +1564,7 @@
   "This is the first thing customers will see when searching for a professional. As a sole-trader, you can just enter your name.": "C'est la première chose que les clients verront lorsqu'ils chercheront un professionnel. Si vous êtes travailleur autonome, vous pouvez simplement inscrire votre nom.",
   "This is the person who will be communicating with customers on FLEXS. The photo will appear alongside your messages with customers.": "Il s'agit de la personne qui communiquera avec les clients sur FLEXS. La photo apparaîtra à côté de vos messages avec les clients.",
   "This lead is archived": "Cette demande est archivée",
-  "This listing comes from": "Cette fiche provient de",
+  "This listing comes from": "Cette fiche a pour source",
   "This listing does not exist or was removed at the owner's request.": "Cette fiche n'existe pas ou a été retirée à la demande du propriétaire.",
   "This page explains how the FLEXS Terms of Use apply to professionals: requests, credits and business listings. It adds to the Terms of Use and does not replace them; if the two differ, the Terms of Use apply.": "Cette page explique comment les Conditions d'utilisation de FLEXS s'appliquent aux professionnels : demandes, crédits et fiches d'entreprise. Elle s'ajoute aux Conditions d'utilisation et ne les remplace pas; en cas de divergence entre les deux, les Conditions d'utilisation s'appliquent.",
   "This page is a working draft written for FLEXS. It has not yet been reviewed by a lawyer or approved by the owner, and the final text will replace it.": "Cette page est une ébauche de travail rédigée pour FLEXS. Elle n'a pas encore été révisée par un avocat ni approuvée par le propriétaire, et le texte définitif la remplacera.",
@@ -1970,7 +1970,15 @@
   "To be arranged": "À convenir",
   "declined": "refusée",
   "Professional": "Professionnel",
-  "Quotes side by side": "Soumissions côte à côte"
+  "Quotes side by side": "Soumissions côte à côte",
+  "Montréal's public list of food establishments": "la liste publique des établissements alimentaires de Montréal",
+  "the consumer protection office's public list of permit holders": "la liste publique des titulaires de permis de l'Office de la protection du consommateur",
+  "the Quebec tourism ministry's public directory": "le répertoire public du ministère du Tourisme du Québec",
+  "Montréal's public survey of commercial spaces": "le relevé public des locaux commerciaux de Montréal",
+  "Sherbrooke's public directory of businesses": "le répertoire public des entreprises de Sherbrooke",
+  "Entreprendre Sherbrooke, \"Répertoire des locaux et entreprises du territoire de Sherbrooke\", public domain (CC0 1.0)": "Entreprendre Sherbrooke, « Répertoire des locaux et entreprises du territoire de Sherbrooke », domaine public (CC0 1.0)",
+  "a public open-data source": "une source publique de données ouvertes",
+  "public open data": "données ouvertes publiques"
  },
  "patterns": [
   [

@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 const db = supabase as unknown as SupabaseClient;
 
 export interface Listing {
-  id: string; source: "rbq" | "mtl_food" | "mtl_shops" | "opc" | "sit" | "osm"; source_ref: string; activity: string | null; name: string; other_name: string | null; city: string; region: string | null;
+  id: string; source: "rbq" | "mtl_food" | "mtl_shops" | "opc" | "sit" | "osm" | "shb"; source_ref: string; activity: string | null; name: string; other_name: string | null; city: string; region: string | null;
   trade: string; category_slug: string | null; slug: string; status: "listed" | "claimed"; claimed_at: string | null;
 }
 export const TRADES = ["Restaurant", "Bar", "Bakery and café", "Caterer", "Grocery and food shop", "Retail shop", "Beauty and personal care", "Health and wellness",
@@ -20,7 +20,12 @@ export const SOURCES: Record<Listing["source"], { credit: string; register: stri
   sit: { credit: 'Ministère du Tourisme, "Système d\'information touristique Québec", CC BY 4.0', register: "the Quebec tourism ministry's public directory" },
   osm: { credit: "© OpenStreetMap contributors, Open Database License", register: "OpenStreetMap, the open map of the world" },
   mtl_shops: { credit: 'Ville de Montréal, "Locaux commerciaux et statuts d\'occupation", CC BY 4.0', register: "Montréal's public survey of commercial spaces" },
+  shb: { credit: 'Entreprendre Sherbrooke, "Répertoire des locaux et entreprises du territoire de Sherbrooke", public domain (CC0 1.0)', register: "Sherbrooke's public directory of businesses" },
 };
+/** A source this build does not know yet (data loaded before the code shipped) must never break a page. */
+export function sourceInfo(source: string): { credit: string; register: string } {
+  return (SOURCES as Record<string, { credit: string; register: string }>)[source] ?? { credit: "public open data", register: "a public open-data source" };
+}
 export const PAGE_SIZE = 20;
 const COLUMNS = "id,source,activity,source_ref,name,other_name,city,region,trade,category_slug,slug,status,claimed_at";
 
