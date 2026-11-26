@@ -54,7 +54,7 @@ Verified on 2026-11-13 in a container: nginx stage serves `/`, deep route `/app/
 
 ## Website hosting on MochaHost or any Apache / cPanel host (added 2026-11-21)
 
-The website is a static build: no Node process runs on the host. Two files make it work on Apache and are part of the build: `.htaccess` (single-page-app fallback, HTTPS and no-www redirect, security headers, caching) and `index.html`.
+The website is a static build: no Node process runs on the host. Two files make it work on Apache: `.htaccess` (kept as `deploy/apache.htaccess` and copied into the build by the FTP workflow; copy it by hand for a manual upload) (single-page-app fallback, HTTPS and no-www redirect, security headers, caching) and `index.html`.
 
 **Tested on 2026-11-21 under Apache 2.4 in a container:** `/`, `/app/leads` and `/services/plumbing` answer 200; a missing `/assets/` file answers 404; plain HTTP and `www` redirect with 301; security and cache headers are present; build files are compressed. Not tested on MochaHost itself.
 
