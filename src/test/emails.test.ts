@@ -46,7 +46,7 @@ describe("notification emails", () => {
     for (const port of ["587", "25"]) {
       const blocked = smtpSettings(env({ SMTP_HOST: "mail.flexs.ca", SMTP_USER: "u", SMTP_PASSWORD: "x", SMTP_PORT: port }));
       expect(blocked.ok).toBe(false);
-      expect(!blocked.ok && blocked.reason).toContain("cannot be reached");
+      expect(blocked.ok === false ? blocked.reason : "").toContain("cannot be reached");
     }
     expect(smtpSettings(env({ SMTP_HOST: "mail.flexs.ca/evil", SMTP_USER: "u", SMTP_PASSWORD: "x" })).ok).toBe(false);
     expect(smtpSettings(env({ SMTP_HOST: "mail.flexs.ca", SMTP_USER: "u", SMTP_PASSWORD: "x", EMAIL_FROM: "a\nBcc: b" })).ok).toBe(false);
