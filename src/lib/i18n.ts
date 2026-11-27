@@ -53,6 +53,8 @@ export function setLanguage(language: Language) {
 export function translate(value: string): string {
   if (!dictionary) return value;
   const core = value.trim();
+  // A number alone ("8,482") gets French thousand separators: "8 482" (no-break space).
+  if (/^\d{1,3}(?:,\d{3})+$/.test(core)) return value.replace(core, frenchNumber(core));
   if (!core || !/\p{L}/u.test(core)) return value;
   let result = dictionary.strings[core];
   if (result === undefined) {
@@ -69,9 +71,16 @@ export function translate(value: string): string {
         break;
       }
     }
+    // Numbers inside a translated sentence follow French usage too: "Environ 169 640 entreprises".
+    if (result !== undefined) result = result.replace(/\b\d{1,3}(?:,\d{3})+\b/g, frenchNumber);
   }
   if (result === undefined) { if (!french.has(core)) missing.add(core); return value; }
   return value.replace(core, () => result!);
+}
+
+/** "169,640" → "169 640" with a no-break space, as written in Quebec French. */
+function frenchNumber(english: string): string {
+  return english.replace(/,/g, "\u00a0");
 }
 
 function skipped(node: Node | null): boolean {
