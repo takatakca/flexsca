@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { homeCategoriesQuery } from "@/lib/home-queries";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import RouteTitle from "@/components/RouteTitle";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -57,6 +58,8 @@ const NotFound = lazy(() => import("@/pages/NotFound"));
 captureAttribution(window.location.search);
 
 const queryClient = new QueryClient();
+// On the home page, ask for the services now, in parallel with the page's code.
+if (window.location.pathname === "/") void queryClient.prefetchQuery(homeCategoriesQuery);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
