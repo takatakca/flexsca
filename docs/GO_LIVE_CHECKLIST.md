@@ -20,7 +20,7 @@ Note: the Stripe account has a second webhook whose address is a Coolify setting
 
 ## 2. Sign-up email (only 2 emails per hour go out today)
 
-1. Choose a mail service (the one already used for TAKATAK is fine) and get its SMTP host, port, user and password.
+1. Mail service chosen (2026-11-27): a `no-reply@flexs.ca` mailbox in MochaHost cPanel, port 465. Steps: `docs/auth-emails/README.md` section 7.
 2. Supabase › **Authentication › Emails › SMTP Settings**: turn on custom SMTP, fill the four values, sender `no-reply@flexs.ca`, name `FLEXS`.
 3. Supabase › **Authentication › Rate limits**: raise "emails sent" from 2 to at least 100 per hour.
 4. Test: on flexs.ca choose **Sign in**, enter a new address, and check that the link arrives and opens flexs.ca.
