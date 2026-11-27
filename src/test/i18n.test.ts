@@ -34,7 +34,9 @@ describe("French version", () => {
     it("applies the rules for numbers and service names", () => {
       expect(translate("47 minutes ago")).toBe("il y a 47 min");
       expect(translate("Step 4 of 9")).toBe("Étape 4 sur 9");
-      expect(translate("About 157,508 businesses")).toBe("Environ 157,508 entreprises");
+      expect(translate("About 157,508 businesses")).toBe("Environ 157\u00a0508 entreprises");
+      expect(translate("8,482")).toBe("8\u00a0482");
+      expect(translate("Page 1 of 8,482")).toBe("Page 1 sur 8\u00a0482");
       expect(translate("Find Plumbing professionals near you")).toBe("Trouvez des professionnels en plomberie près de chez vous");
     });
     it("translates text added to the page afterwards, and attributes", async () => {
