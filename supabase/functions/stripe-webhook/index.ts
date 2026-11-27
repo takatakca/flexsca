@@ -14,15 +14,16 @@ Deno.serve(async (req: Request) => {
   }
 
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
-  const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+  // Until both Stripe secrets are set, answer plainly instead of failing with an unhandled error.
+  const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+  const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+  if (!stripeKey || !webhookSecret) {
+    console.error("Stripe webhook not configured");
+    return new Response("Not configured", { status: 503 });
+  }
+  const stripe = new Stripe(stripeKey, {
     apiVersion: "2025-02-24.acacia",
   });
-
-  const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
-  if (!webhookSecret) {
-    console.error("STRIPE_WEBHOOK_SECRET not configured");
-    return new Response("Webhook secret not configured", { status: 500 });
-  }
 
   try {
     const body = await req.text();
