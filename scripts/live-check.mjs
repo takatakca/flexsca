@@ -38,7 +38,24 @@ for (const route of ['/my-requests', '/app/leads', '/app/admin']) {
   await page.close();
 }
 
-// 3. The directory finds businesses, and the request wizard opens.
+// 3. The host itself: security headers present, a missing build file is a real 404, hidden files are not served.
+try {
+  const home = await context.request.get(base + '/', { maxRedirects: 3 });
+  const headers = home.headers();
+  // The build writes the policy into the page, so it protects visitors whatever the host sends.
+  if (/http-equiv="Content-Security-Policy" content="[^"]*script-src 'self'/.test(await home.text())) console.log('OK   the page carries its own content security policy');
+  else fail('page', 'the content security policy is missing from the page itself');
+  for (const name of ['content-security-policy', 'x-frame-options', 'x-content-type-options', 'strict-transport-security']) {
+    if (!headers[name]) fail('host', `the ${name} header is missing: the site is not served with the configuration in deploy/nginx.conf`);
+  }
+  const missing = await context.request.get(base + '/assets/this-file-does-not-exist.js');
+  if (missing.status() !== 404) fail('host', `a missing build file answers ${missing.status()} instead of 404`);
+  const hidden = await context.request.get(base + '/.htaccess');
+  if (hidden.status() === 200 && !(await hidden.text()).includes('<div id="root">')) fail('host', 'the hidden file .htaccess is served to visitors');
+  if (!failures.some(line => line.startsWith('host'))) console.log('OK   host sends security headers, answers 404 for missing files, hides hidden files');
+} catch (error) { fail('host', String(error.message).split('\n')[0].slice(0, 160)); }
+
+// 4. The directory finds businesses, and the request wizard opens.
 const page = await context.newPage();
 try {
   await page.goto(`${base}/directory?city=Laval&trade=Plumbing`, { waitUntil: 'networkidle', timeout: 60000 });

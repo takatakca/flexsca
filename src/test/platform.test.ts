@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { inAppPathFromUrl, isNativeApp, publicOrigin } from "@/lib/platform";
+import { closeOpenLayer, inAppPathFromUrl, isNativeApp, publicOrigin } from "@/lib/platform";
 
 describe("platform helpers", () => {
   it("uses the browser origin on the web", () => {
@@ -17,5 +17,19 @@ describe("platform helpers", () => {
     expect(inAppPathFromUrl("http://flexs.ca/app/leads")).toBeNull();
     expect(inAppPathFromUrl("flexs://app/leads")).toBeNull();
     expect(inAppPathFromUrl("not a url")).toBeNull();
+  });
+
+  it("back button closes an open dialog with Escape and reports nothing open otherwise", () => {
+    expect(closeOpenLayer()).toBe(false);
+    const dialog = document.createElement("div");
+    dialog.setAttribute("role", "dialog");
+    document.body.appendChild(dialog);
+    const keys: string[] = [];
+    const listen = (event: KeyboardEvent) => keys.push(event.key);
+    document.addEventListener("keydown", listen);
+    expect(closeOpenLayer()).toBe(true);
+    document.removeEventListener("keydown", listen);
+    dialog.remove();
+    expect(keys).toEqual(["Escape"]);
   });
 });

@@ -119,6 +119,19 @@ export default function ServiceFlowModal({
     setStep("quit-confirm");
   };
 
+  // Escape (and the Android back button, which the app turns into Escape) asks before leaving, like the close button.
+  const closeRef = useRef(handleClose);
+  closeRef.current = handleClose;
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      if (step === "quit-confirm" || step === "loading-contact" || step === "loading-submit") return;
+      closeRef.current();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [step]);
+
   const handleQuit = () => {
     onClose();
   };

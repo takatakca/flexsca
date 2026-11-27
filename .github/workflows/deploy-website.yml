@@ -30,6 +30,8 @@ jobs:
       - run: npm run build
       - name: Add the business directory to the sitemap
         run: npm run build:sitemaps
+      - name: Add the Apache configuration (kept out of the normal build so no other host serves it)
+        run: cp deploy/apache.htaccess dist/.htaccess
       - name: Check the build holds what an Apache host needs
         run: |
           test -f dist/index.html

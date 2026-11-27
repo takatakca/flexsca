@@ -1,5 +1,18 @@
 apply plugin: 'com.android.application'
 
+// Release signing: values come from android/keystore.properties (never committed) or, on a build
+// server, from the FLEXS_KEYSTORE_* environment variables. Without either, the release bundle is
+// built unsigned, exactly as before. See docs/MOBILE_APPS.md.
+def keystoreProps = new Properties()
+def keystorePropsFile = rootProject.file('keystore.properties')
+if (keystorePropsFile.exists()) {
+    keystorePropsFile.withInputStream { keystoreProps.load(it) }
+}
+def signingValue = { String key, String env -> keystoreProps.getProperty(key) ?: System.getenv(env) }
+def releaseStoreFile = signingValue('storeFile', 'FLEXS_KEYSTORE_FILE')
+def hasReleaseSigning = releaseStoreFile && signingValue('storePassword', 'FLEXS_KEYSTORE_PASSWORD') &&
+        signingValue('keyAlias', 'FLEXS_KEY_ALIAS') && signingValue('keyPassword', 'FLEXS_KEY_PASSWORD')
+
 android {
     namespace = "ca.flexs.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +20,10 @@ android {
         applicationId "ca.flexs.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // Play Console refuses an upload whose versionCode is not higher than the last one:
+        // ./gradlew bundleRelease -PversionCode=2 -PversionName=1.0.1
+        versionCode((project.findProperty('versionCode') ?: '1') as Integer)
+        versionName((project.findProperty('versionName') ?: '1.0') as String)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +31,21 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (hasReleaseSigning) {
+                storeFile rootProject.file(releaseStoreFile)
+                storePassword signingValue('storePassword', 'FLEXS_KEYSTORE_PASSWORD')
+                keyAlias signingValue('keyAlias', 'FLEXS_KEY_ALIAS')
+                keyPassword signingValue('keyPassword', 'FLEXS_KEY_PASSWORD')
+            }
+        }
+    }
     buildTypes {
         release {
+            if (hasReleaseSigning) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
