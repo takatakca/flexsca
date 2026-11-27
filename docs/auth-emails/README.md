@@ -19,7 +19,7 @@ Aucun secret n'est écrit ici. Chaque `«…»` est une valeur à remplir par ce
 | Sender email | `no-reply@flexs.ca` (adresse déjà prévue dans le code FLEXS) |
 | Sender name | `FLEXS` |
 | Host | `«hôte SMTP du fournisseur»` (ex. `mail.«domaine»` ou `smtp.«fournisseur»`) |
-| Port number | `587` (STARTTLS) de préférence, sinon `465` (SSL). Jamais 25. |
+| Port number | `465` (SSL), la même valeur que pour les avis FLEXS. Jamais 25. |
 | Username | `«identifiant SMTP»` (souvent l'adresse complète `no-reply@flexs.ca`) |
 | Password | `«mot de passe SMTP»` — collé directement dans Supabase, jamais dans un clavardage, un fichier ou le dépôt |
 | Minimum interval between emails being sent | Laisser `60` secondes (valeur par défaut) |
@@ -64,9 +64,25 @@ Notes techniques :
 2. « Mot de passe oublié » : le bouton mène à `flexs.ca/auth/reset-password`.
 3. Dans Gmail, « Afficher l'original » : SPF, DKIM et DMARC disent PASS.
 
-## 6. Points à trancher (questions ouvertes pour Matt ou son développeur)
+## 6. Décisions (2026-11-27)
 
-1. **ALKAO est partagé avec la billetterie** (`billets.promohavana.ca`). Le SMTP et les gabarits d'Auth valent pour tout le projet : une connexion à la billetterie recevrait aussi un courriel signé FLEXS. Choix possibles : (a) accepter ; (b) gabarits neutres pour les deux produits ; (c) séparer FLEXS dans son propre projet Supabase. À décider par Matt ou son développeur avant le collage.
-2. **Quel fournisseur SMTP** pour `no-reply@flexs.ca` ? Pas encore choisi. Options sans frais ou presque : une boîte courriel sur l'hébergement du domaine flexs.ca s'il en offre, ou un service à palier gratuit (ex. Brevo, Zoho Mail). Il faut seulement qu'il donne hôte, port, identifiant, mot de passe et les enregistrements DNS.
-3. **Les avis FLEXS (nouvelle demande, soumission reçue…)** partent aujourd'hui par la fonction `send-emails`, qui est écrite pour l'API Resend (`RESEND_API_KEY`). Comme Resend est refusé, ces avis ne partiront pas tant que cette fonction n'est pas réécrite pour passer par le même SMTP. C'est du code dans le dépôt FLEXS ; je peux le préparer dans une demande de fusion si Matt le veut, le déploiement restant au développeur.
-4. `docs/GO_LIVE_CHECKLIST.md` du dépôt FLEXS parle encore de Resend (étapes 2 et 3) : à mettre à jour quand le fournisseur SMTP sera choisi.
+Matt a demandé le 2026-11-27 de « finaliser au complet » sans trancher lui-même ; Claude a retenu les options recommandées. Elles se changent plus tard sans toucher au code.
+
+1. **Fournisseur SMTP : boîte courriel `no-reply@flexs.ca` chez MochaHost** (section 7). Aucun achat, aucun nouveau compte, SMTP simple comme Matt l'a demandé. Si un jour les courriels arrivent mal en boîte de réception, passer à un service SMTP à palier gratuit (ex. Brevo) en changeant seulement les valeurs.
+2. **Billetterie (ALKAO partagé) : on accepte pour l'instant.** Les connexions de la billetterie sont surtout le personnel (`/ops`), peu nombreux ; ils recevraient des courriels signés FLEXS. Si ça dérange, la vraie solution est de séparer FLEXS dans son propre projet Supabase (travail du développeur), pas de rendre les gabarits neutres.
+3. **Avis FLEXS** : déjà passés au SMTP par une autre session le 2026-11-26 (secrets `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, port 465). Plus de Resend nulle part.
+4. Port : utiliser **465** partout (Auth et fonctions) ; les fonctions Supabase ne peuvent pas joindre 587 ni 25.
+
+## 7. Fournisseur retenu : boîte courriel MochaHost (0 $ de plus)
+
+Étapes pour le développeur (ou Matt) dans le cPanel MochaHost qui héberge flexs.ca :
+
+1. **cPanel › Email Accounts › Create** : adresse `no-reply@flexs.ca`, mot de passe long et unique (gardé dans le fichier de clés sur le PC, jamais dans un clavardage).
+2. **cPanel › Email Accounts › Connect Devices** pour cette adresse : noter « Outgoing Server » (souvent `mail.flexs.ca`) et le port SMTP SSL (souvent `465`).
+3. **cPanel › Email Deliverability** : pour flexs.ca, installer les enregistrements SPF et DKIM proposés (un clic si la zone DNS de flexs.ca est chez MochaHost ; sinon copier les valeurs chez l'hébergeur DNS). Ajouter ensuite le DMARC de la section 3.
+4. Dans Supabase (section 2) : Host = serveur noté à l'étape 2, Port = `465`, Username = `no-reply@flexs.ca`, Password = celui de l'étape 1, Sender = `no-reply@flexs.ca`, Name = `FLEXS`.
+5. Rate limit Supabase : rester à 30 courriels par heure au début (les hébergements partagés limitent souvent l'envoi par heure).
+6. Les mêmes valeurs servent aux avis FLEXS (fonction `send-emails`) : secrets `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD`, port 465 par défaut (voir `docs/GO_LIVE_CHECKLIST.md` § 2b).
+7. Faire le test de la section 5.
+
+À vérifier avant : que flexs.ca a bien un cPanel chez MochaHost avec le courriel actif (le site lui-même est maintenant chez Coolify).
