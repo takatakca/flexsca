@@ -40,7 +40,7 @@ export default function JobQuestionnaire() {
       .select("*")
       .eq("slug", slug)
       .eq("is_active", true)
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         if (data) {
           setCategory({
