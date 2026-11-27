@@ -5,7 +5,13 @@ import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
 
 // UI integration fixtures: never submit real leads or send emails/payments.
-const server = spawn('npm', ['run','dev','--','--host','127.0.0.1','--port','4173','--strictPort'], { stdio: 'ignore', detached: true });
+// SMOKE_BUILT=1 runs every scenario against the built site (dist/), where the page carries its content
+// security policy, instead of the dev server: any policy violation then fails the run.
+const built = process.env.SMOKE_BUILT === '1';
+const server = built
+  ? spawn('npx', ['vite','preview','--host','127.0.0.1','--port','4173','--strictPort'], { stdio: 'ignore', detached: true })
+  : spawn('npm', ['run','dev','--','--host','127.0.0.1','--port','4173','--strictPort'], { stdio: 'ignore', detached: true });
+const policyViolations = [];
 const axeSource=readFileSync('node_modules/axe-core/axe.min.js','utf8');
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : chromium.executablePath()), headless: true, args: ['--no-sandbox'] });
 const leadId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -39,6 +45,8 @@ async function captureVisual(path){
   visualCaptures.push({path,route:new URL(page.url()).pathname,viewport:page.viewportSize(),capturedAt:new Date().toISOString(),sha256:createHash('sha256').update(pixels).digest('hex'),text:await page.locator('body').innerText()});
 }
 page.on('pageerror', e => errors.push(e.message));
+await page.exposeFunction('__flexsPolicyViolation', line => { policyViolations.push(line); });
+await page.addInitScript(() => document.addEventListener('securitypolicyviolation', e => window.__flexsPolicyViolation(`${location.pathname}: ${e.violatedDirective} blocked ${e.blockedURI || 'inline'}`)));
 // I18N_COLLECT=<file>: run in French and keep a list of every text shown without a French translation.
 if (process.env.I18N_COLLECT) await page.addInitScript(() => { localStorage.setItem('flexs.lang','fr'); setInterval(() => { try { const seen=new Set(JSON.parse(localStorage.getItem('flexs.untranslated')||'[]')); for (const text of (window.__flexsUntranslated?.()||[])) seen.add(text); localStorage.setItem('flexs.untranslated',JSON.stringify([...seen])); } catch {} }, 250); });
 await page.route('https://images.unsplash.com/**', route => route.abort());
@@ -602,6 +610,8 @@ try {
   await page.getByRole('link',{name:'Request a new reset link',exact:true}).waitFor();
   console.log('PASS password recovery request, confirmation validation, password update, logout, and expired-link fallback');
   assert.deepEqual(errors,[]);
+  assert.deepEqual([...new Set(policyViolations)],[],'content security policy violations');
+  if (built) console.log('PASS every scenario ran on the built site with its content security policy and no violation');
   writeFileSync('/tmp/flexsca-visual-manifest.json',JSON.stringify({completed:true,fixtureData:true,captures:visualCaptures},null,2));
   console.log('PASS mobile layout and no uncaught browser errors');
 } finally {

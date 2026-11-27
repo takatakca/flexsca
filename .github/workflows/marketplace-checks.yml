@@ -26,6 +26,7 @@ jobs:
       - run: npx playwright-core install --with-deps chromium
       - run: npm run test:browser
       - run: npm run test:csp
+      - run: npm run test:browser:built
       - name: Prepare image and text review evidence
         run: |
           sudo apt-get update
