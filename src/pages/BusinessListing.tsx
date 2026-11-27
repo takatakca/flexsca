@@ -24,9 +24,9 @@ export default function BusinessListing() {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main className="mx-auto max-w-3xl px-gutter py-8">
+      <main className="mx-auto min-h-screen max-w-3xl px-gutter py-8">
         <Link to="/directory" className="text-sm text-primary">← Business directory</Link>
-        {isLoading ? <p role="status" className="mt-6 min-h-screen text-fx-muted">Loading…</p>
+        {isLoading ? <p role="status" className="mt-6 text-fx-muted">Loading…</p>
           : error ? <p role="alert" className="mt-6 text-destructive">{(error as Error).message}</p>
           : !listing ? <div className="mt-6 rounded-fx-md bg-fx-soft p-6"><h1 className="text-2xl text-fx-ink">Business not found</h1><p className="mt-2 text-fx-secondary">This listing does not exist or was removed at the owner's request.</p></div>
           : <>

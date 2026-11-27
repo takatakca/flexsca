@@ -609,6 +609,25 @@ try {
   await page.goto('http://127.0.0.1:4173/auth/reset-password');
   await page.getByRole('link',{name:'Request a new reset link',exact:true}).waitFor();
   console.log('PASS password recovery request, confirmation validation, password update, logout, and expired-link fallback');
+  // Layout stability: with slow answers from the backend, nothing already on screen may jump when the data arrives.
+  {
+    const listing={id:'e1e1e1e1-e1e1-4e1e-8e1e-e1e1e1e1e1e1',slug:'fixture-plumbing-montreal',name:'Fixture Plumbing',category:'Plumber',city:'Montréal',region:'Montréal',address:'1 Fixture Street',postal_code:'H2X 1Y4',phone:null,website:null,source:'osm',status:'listed',claimed_by:null,latitude:null,longitude:null};
+    await page.route('**/rest/v1/business_listings**',route=>route.fulfill({status:200,contentType:'application/json',headers:{'content-range':'0-0/1'},body:JSON.stringify(route.request().headers().accept?.includes('vnd.pgrst.object')?listing:[listing])}));
+    await page.route('**/rest/v1/directory_settings**',route=>route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({trial_days:30,trial_credits:0})}));
+    const slow=async route=>{ await new Promise(done=>setTimeout(done,350)); return route.fallback(); };
+    await page.route('**/rest/v1/**',slow);
+    await page.setViewportSize({width:412,height:915});
+    for(const path of ['/','/services','/pro','/business/fixture-plumbing-montreal']){
+      await page.goto(`http://127.0.0.1:4173${path}`);
+      await page.locator('footer').waitFor();
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(500);
+      const shift=await page.evaluate(()=>new Promise(done=>{ let total=0; new PerformanceObserver(list=>{ for(const entry of list.getEntries()) if(!entry.hadRecentInput) total+=entry.value; }).observe({type:'layout-shift',buffered:true}); setTimeout(()=>done(total),200); }));
+      assert.ok(shift<0.1,`${path} jumps while loading: layout shift ${shift.toFixed(3)} (limit 0.1)`);
+    }
+    await page.unroute('**/rest/v1/**',slow);
+    console.log('PASS home, services, professionals and business pages do not jump while their data loads (phone width, slow backend)');
+  }
   assert.deepEqual(errors,[]);
   assert.deepEqual([...new Set(policyViolations)],[],'content security policy violations');
   if (built) console.log('PASS every scenario ran on the built site with its content security policy and no violation');
