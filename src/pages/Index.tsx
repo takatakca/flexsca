@@ -84,7 +84,9 @@ export default function Index() {
         {leaves.length > 0 && <p className="mt-5 text-xs text-fx-muted">Popular: {leaves.slice(0, 3).map((c, i) => <span key={c.id}>{i > 0 && ', '}<Link to={`/services/${c.slug}`} className="hover:text-fx-ink">{c.name}</Link></span>)}</p>}
       </section>
 
-      {categories.isLoading ? <p role="status" className="min-h-screen px-gutter text-fx-muted">Loading services…</p>
+      {/* A full screen is kept for the services whatever their number, so the blocks below never move into or out of view while they load. */}
+      <div className="min-h-screen">
+      {categories.isLoading ? <p role="status" className="px-gutter text-fx-muted">Loading services…</p>
         : categories.error ? <div role="alert" className="mx-gutter rounded-fx-md border border-fx-line p-6"><p>Services could not be loaded.</p><Button variant="outline" onClick={() => void categories.refetch()} className="mt-3">Retry services</Button></div>
         : topLevel.length === 0 ? <p className="px-gutter text-fx-muted">Service listings are being updated. Visit the service finder to check availability.</p>
         : <>
@@ -127,6 +129,7 @@ export default function Index() {
           </section>}
         </>}
 
+      </div>
       {!!reviews.data?.length && <section className="mt-24 bg-fx-soft px-gutter py-14 text-center" aria-label="Verified customer reviews">
         <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">{reviews.data.map(review => (
           <figure key={review.id}><blockquote className="text-lg leading-relaxed text-fx-ink">{review.review_text || 'This customer left a rating.'}</blockquote>

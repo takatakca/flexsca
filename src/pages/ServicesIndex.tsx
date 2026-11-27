@@ -24,10 +24,10 @@ export default function ServicesIndex() {
   return (
     <div className="min-h-screen bg-background text-fx-ink">
       <SiteHeader />
-      <main className="mx-auto max-w-6xl px-gutter pb-20 pt-10">
+      <main className="mx-auto min-h-screen max-w-6xl px-gutter pb-20 pt-10">
         <h1 className="text-4xl md:text-[52px]">All services</h1>
         <p className="mt-3 max-w-2xl text-fx-secondary">Choose a service to describe your project and receive quotes. Posting a request is free.</p>
-        {rows === null ? <p role="status" className="mt-10 min-h-screen text-fx-muted">Loading services…</p>
+        {rows === null ? <p role="status" className="mt-10 text-fx-muted">Loading services…</p>
           : failed ? <p role="alert" className="mt-10">Services could not be loaded. Reload the page to try again.</p>
           : <>
             {groups.map(group => (
