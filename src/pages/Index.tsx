@@ -86,14 +86,14 @@ export default function Index() {
         {leaves.length > 0 && <p className="mt-5 text-xs text-fx-muted">Popular: {leaves.slice(0, 3).map((c, i) => <span key={c.id}>{i > 0 && ', '}<Link to={`/services/${c.slug}`} className="hover:text-fx-ink">{c.name}</Link></span>)}</p>}
       </section>
 
-      {categories.isLoading ? <p role="status" className="px-gutter text-fx-muted">Loading services…</p>
+      {categories.isLoading ? <p role="status" className="min-h-screen px-gutter text-fx-muted">Loading services…</p>
         : categories.error ? <div role="alert" className="mx-gutter rounded-fx-md border border-fx-line p-6"><p>Services could not be loaded.</p><Button variant="outline" onClick={() => void categories.refetch()} className="mt-3">Retry services</Button></div>
         : topLevel.length === 0 ? <p className="px-gutter text-fx-muted">Service listings are being updated. Visit the service finder to check availability.</p>
         : <>
           <section aria-label="Featured services" className="flex snap-x snap-mandatory gap-[18px] overflow-x-auto px-gutter pb-2 [scrollbar-width:none]">
-            {leaves.slice(0, 8).map(c => (
+            {leaves.slice(0, 8).map((c, index) => (
               <Link key={c.id} to={`/services/${c.slug}`} className="relative h-[137px] w-[202px] shrink-0 snap-center overflow-hidden rounded-fx-xs bg-fx-sunken">
-                {c.hero_image && <img src={servicePhoto(c.hero_image)} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />}
+                {c.hero_image && <img src={servicePhoto(c.hero_image)} alt="" loading={index < 2 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "auto"} className="absolute inset-0 size-full object-cover" />}
                 <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-2 pb-2 pt-8 text-xs text-white">{c.name}</span>
               </Link>
             ))}
