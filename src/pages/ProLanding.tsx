@@ -22,7 +22,7 @@ const PANEL = [
 export default function ProLanding() {
   const navigate = useNavigate();
   const [service, setService] = useState("");
-  const [services, setServices] = useState<{ name: string; slug: string }[]>([]);
+  const [services, setServices] = useState<{ name: string; slug: string }[] | null>(null);
   const [facts, setFacts] = useState<{ services: number; listings: number } | null>(null);
 
   useEffect(() => {
@@ -53,7 +53,12 @@ export default function ProLanding() {
                 <input id="pro-service" value={service} onChange={e => setService(e.target.value)} maxLength={100} placeholder="What service do you provide?" className="h-[52px] min-w-0 flex-1 rounded-fx-xs border border-fx-muted bg-white px-4 text-base placeholder:text-fx-muted focus:border-primary focus:outline-none" />
                 <Button type="submit" className="h-[52px] rounded-fx-xs px-5 text-base shadow-fx-button">GO</Button>
               </form>
-              {services.length > 0 && <>
+              {/* While the list loads, the same block is laid out empty so the buttons below do not jump. */}
+              {services === null && <div aria-hidden="true" className="invisible">
+                <p className="mt-8 text-sm">&nbsp;</p>
+                <ul className="mt-3 grid max-w-xl grid-cols-2 gap-x-6 gap-y-2.5 text-sm">{Array.from({ length: 12 }, (_, i) => <li key={i}>&nbsp;</li>)}</ul>
+              </div>}
+              {services !== null && services.length > 0 && <>
                 <h2 className="mt-8 text-sm text-fx-ink">Popular services</h2>
                 <ul className="mt-3 grid max-w-xl grid-cols-2 gap-x-6 gap-y-2.5 text-sm text-fx-secondary">
                   {services.map(item => <li key={item.slug}><Link to={`/services/${item.slug}`} className="hover:text-primary">{item.name}</Link></li>)}
