@@ -131,6 +131,7 @@ Not done yet: cloud sessions cannot run a phone or an emulator. Do it once on th
 | 12 | Professional: upload a document under Profile | Upload completes; file listed |
 | 13 | Rotate the phone; use a small phone and a large one | Nothing cut off; content clear of the notch and the bottom bar |
 | 14 | Put the app in the background for 10 minutes, come back | Same screen, still signed in |
+| 16 | Open the map on the Leads page and a professional's video, if any | Map tiles and video load (the app now carries the site's content security policy) |
 | 15 | Settings › Account details › Delete my account (test account) | Account gone; sign-in refused afterwards |
 
 Write the phone model, Android version and any failing step number in `WORKLOG.md`.

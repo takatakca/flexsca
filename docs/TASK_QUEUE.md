@@ -6,7 +6,7 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 | # | Item | Done when |
 | --- | --- | --- |
-| O1 | Coolify: Build Pack **Dockerfile** (port 80, health check `/healthz`), then Deploy | `npm run check:live` passes its "host" line |
+| O1 | Coolify: Build Pack **Dockerfile** (port 80, health check `/healthz`), then Deploy. Still needed for strict transport security, no-sniff, real 404s and the business sitemap; the content policy and frame protection no longer depend on it | `npm run check:live` passes its "host" line |
 | O2 | Stripe: `STRIPE_SECRET_KEY`, webhook, `STRIPE_WEBHOOK_SECRET` (steps in `docs/GO_LIVE_CHECKLIST.md`) | A professional buys the smallest pack and the balance goes up |
 | O3 | SMTP for sign-in emails; raise the email rate limit | A new address receives its sign-in link from a FLEXS sender |
 | O4 | Notification emails by SMTP (owner's rule: no Resend): function secrets `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` (port 465, not 587) | The queued confirmation for the first live request is delivered |
@@ -24,6 +24,7 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 ## Done and verified (most recent first)
 
+- 2026-11-26 Security without waiting for the host: the build writes the content security policy into the page, the site refuses to render inside another site's frame, and the Apache `.htaccess` is no longer shipped in the public build. Found on the way: the form-validation library probed for `eval` on every page, which the policy reports; switched off. `npm run test:csp` loads 14 pages of the built site and fails on any violation (in CI).
 - 2026-11-26 A5b PR #31 merged and live; the 2,470 Sherbrooke businesses are shown (155,634 in the directory). A Sherbrooke page checked on flexs.ca in both languages. The business sitemap picks them up once Coolify builds with the Dockerfile (O1).
 - 2026-11-26 A8 Build and test tools upgraded (vite 5 → 7, vitest 3 → 5, React plugin 3 → 4, one pinned sub-dependency): `npm audit` went from 16 advisories (2 critical, 1 high, all in developer tools) to 0. Clean install, 136 tests, build, dev server and 33 browser scenarios pass. vite 8 is not used yet because the Lovable tagger plugin does not accept it.
 - 2026-11-26 SECURITY: the public views (`provider_profiles_public`, `provider_reviews_public`, `leads_safe`, `lead_last_message`) are now read-only. Before, an anonymous visitor could rename or delete professional profiles and reviews through them (proven in a rolled-back test; no profile or review existed, nothing was touched). Migration 20261126110000 applied live and re-tested as a visitor and as a member; a database test now fails if any view becomes writable again.

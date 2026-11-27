@@ -64,11 +64,13 @@ The feature is built and deployed but stays hidden until three Supabase secrets 
 
 Since 2026-11-26 flexs.ca is served by Coolify (nginx) and updates by itself a few minutes after each merge to `main`. It currently uses Coolify's default static setup, so the site has **no security headers**, a missing file answers as if it existed, the hidden `.htaccess` is readable, and the sitemap does not list the business pages.
 
+Since 2026-11-26 the build also writes the content security policy into the page itself and the site refuses to render inside another site's frame, so those two protections work with Coolify's default setup too. The Dockerfile is still needed for the rest: strict transport security, no content sniffing, real 404s for missing files and the full business sitemap.
+
 Fix, once: in Coolify open the FLEXS application › **General** › **Build Pack** and choose **Dockerfile** (Dockerfile location `/Dockerfile`, port `80`, health check path `/healthz`), then **Deploy**. The repository's `Dockerfile` and `deploy/nginx.conf` then apply: security headers and content security policy on every response, real 404s, hidden files blocked, long caching for build files, and all business pages in the sitemap.
 
 `npm run check:live` (and the daily **Live site check** in GitHub) fails on the "host" line until this is done, and passes after.
 
-The Apache files (`public/.htaccess`, the FTP deploy workflow) remain for an Apache host and are not used by Coolify.
+The Apache files (`deploy/apache.htaccess` (copied to `dist/.htaccess` by the FTP workflow only), the FTP deploy workflow) remain for an Apache host and are not used by Coolify.
 
 ## Decisions still open
 

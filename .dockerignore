@@ -8,4 +8,5 @@ docs
 supabase
 scripts/*
 !scripts/build-sitemaps.mjs
+!scripts/csp-meta.mjs
 *.md

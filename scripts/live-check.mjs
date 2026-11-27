@@ -42,6 +42,9 @@ for (const route of ['/my-requests', '/app/leads', '/app/admin']) {
 try {
   const home = await context.request.get(base + '/', { maxRedirects: 3 });
   const headers = home.headers();
+  // The build writes the policy into the page, so it protects visitors whatever the host sends.
+  if (/http-equiv="Content-Security-Policy" content="[^"]*script-src 'self'/.test(await home.text())) console.log('OK   the page carries its own content security policy');
+  else fail('page', 'the content security policy is missing from the page itself');
   for (const name of ['content-security-policy', 'x-frame-options', 'x-content-type-options', 'strict-transport-security']) {
     if (!headers[name]) fail('host', `the ${name} header is missing: the site is not served with the configuration in deploy/nginx.conf`);
   }
