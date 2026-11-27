@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { servicePhoto } from "@/lib/service-photo";
+import { homeCategoriesQuery, type HomeCategory } from "@/lib/home-queries";
 import { useSeo } from '@/lib/seo';
 import { matchServices } from '@/lib/service-search';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,7 +12,7 @@ import SiteHeader from '@/components/fx/SiteHeader';
 import SiteFooter from '@/components/fx/SiteFooter';
 import CategoryCard, { SectionTitle, type CategoryCardData } from '@/components/fx/CategoryCard';
 
-type Category = CategoryCardData & { parent_slug: string | null };
+type Category = HomeCategory;
 const POPULAR_PAGE = 3;
 
 export default function Index() {
@@ -28,10 +29,7 @@ export default function Index() {
   const [location, setLocation] = useState('');
   const [popularPage, setPopularPage] = useState(0);
   const sections = useRef<Record<string, HTMLElement | null>>({});
-  const categories = useQuery({ queryKey: ['home-categories'], queryFn: async () => {
-    const result = await supabase.from('service_categories').select('id,name,slug,icon,parent_slug,hero_image').eq('is_active', true).order('sort_order');
-    if (result.error) throw new Error('Unable to load services.'); return result.data as Category[];
-  } });
+  const categories = useQuery(homeCategoriesQuery);
   const reviews = useQuery({ queryKey: ['home-verified-reviews'], queryFn: async () => {
     const result = await supabase.from('provider_reviews_public').select('id,rating,review_text,reviewer_name').eq('verified', true).order('created_at', { ascending: false }).limit(3);
     if (result.error) throw new Error('Unable to load reviews.'); return result.data;
