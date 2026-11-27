@@ -6,7 +6,6 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 | # | Item | Done when |
 | --- | --- | --- |
-| O1 | Coolify: Build Pack **Dockerfile** (port 80, health check `/healthz`), then Deploy. Still needed for strict transport security, no-sniff, real 404s and the business sitemap; the content policy and frame protection no longer depend on it | `npm run check:live` passes its "host" line |
 | O2 | Stripe: `STRIPE_SECRET_KEY`, webhook, `STRIPE_WEBHOOK_SECRET` (steps in `docs/GO_LIVE_CHECKLIST.md`) | A professional buys the smallest pack and the balance goes up |
 | O3 | SMTP for sign-in emails; raise the email rate limit | A new address receives its sign-in link from a FLEXS sender |
 | O4 | Notification emails by SMTP (owner's rule: no Resend): function secrets `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` (port 465, not 587) | The queued confirmation for the first live request is delivered |
@@ -24,6 +23,7 @@ Updated 2026-11-26. One line per item, in order. **Owner** items need the owner'
 
 ## Done and verified (most recent first)
 
+- 2026-11-27 O1 DONE by the owner: Coolify now builds with the Dockerfile. Verified on flexs.ca at 22:54 UTC: the server sends the content security policy, strict transport security, no-sniff, frame denial, referrer and permissions policies; a missing build file answers 404; `/healthz` answers ok; `/.htaccess` answers 404; build files are cached for a year and the page itself is not; `npm run check:live` passes all 26 lines for the first time; 14 pages loaded with no policy violation and no page error; the sitemap index lists 156 pages and 155,634 business pages in four files.
 - 2026-11-27 Page stability, guarded: #41 verified live (business page 0.00, professionals' page 0.01, home and services 0.00 on flexs.ca, phone-sized browser). A browser scenario now loads the home, services, professionals and business pages at phone width with a slow backend and fails above a layout shift of 0.1; it was shown to fail when the fix is removed. Its first run found one more case, fixed: with only a few services the footer of the services page jumped up.
 - 2026-11-27 Home photo strip uses small copies (560 × 280) of the service photos: the eight photos weigh 113 KB instead of 421 KB. Checked sharp on a phone-sized screen. #37 verified live the same day: layout shift 0.00 on the home and services pages of flexs.ca.
 - 2026-11-27 Page stability: on a phone the home page and the services page jumped when the services arrived (layout shift 0.49 and 0.58 measured on flexs.ca; above 0.25 counts as poor). Space is now reserved while they load: 0.00 on the built site, same measure. The first two home photos load at once and the browser connects to the backend earlier. Live figure to re-measure after merge.
